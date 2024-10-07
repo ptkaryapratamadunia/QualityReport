@@ -324,8 +324,9 @@ if uploaded_file is not None:
 		with bariskiri:
 			# Tampilkan tautan unduhan di Streamlit
 			st.download_button(
-				label="Download File Excel after Cleaning",
+				label="Download File Excel",
 				data=output,
+				help="Klik untuk mendownload file hasil Cleaning"
 				file_name='File_after_Cleaning.xlsx',
 				mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 			)

@@ -1,0 +1,3 @@
+Code pyhton dan streamlit sederhana ini dibuat untuk memudahkan user pengguna App. AUTOCON-KPD yang sering tidak mendapatkan laporan siap pakai untuk menganalisa masalah. Langkah2 rumit yang harus ditempuh untuk mendapatkan data siap saji untuk analisa masalah dan pengambilan kepususan.
+Diharapkan user dapat banyak menghemat waktu jika menggunakan aplikasi ini pada saat telah mengekspor data dari App.AUTOCON_KPD. Jadi aplikasi ini akan berjalan lancar tanpa error jika file data yang di-upload berasal dari hasil ekspor App.AUTOCON-KPD, selain itu akan timbul beberapa Error dan tidak bisa dijalankan.
+Dedicated to PT. KARYAPRATAMA DUNIA, 07 Oct 2024 - idea dan code by Imam W.

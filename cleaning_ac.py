@@ -338,12 +338,13 @@ if uploaded_file is not None:
 		st.markdown("---")
 
 		# -------------------------------------
-		# Membuat tabel pivot by MONTH and LINE---------------
+		# Membuat tabel pivot NG% by MONTH and LINE---------------
 		df['Date']=pd.to_datetime(df['Date'])
 		df['Date'] = df['Date'].dt.strftime("%b-%Y")
 		pivot_df_bulan_line= pd.pivot_table(df, values='NG_%', index='Date',columns='Line', aggfunc={'NG_%': 'mean'},margins=True,margins_name='Total')
+		# Membuat tabel pivot Qty (Lot) by MONTH and LINE---------------
 		pivot_df_bulan_line2= pd.pivot_table(df, values='Insp(B/H)', index='Date',columns='Line', aggfunc='sum',margins=True,margins_name='Total')
-		pivot_df_bulan_line.to_csv('pivot_bulan_line.csv',index=False)
+
 		# # Pisahkan baris 'Total'
 		# total_row = pivot_df_bulan_line.loc['Total']
 		# pivot_df_bulan_line = pivot_df_bulan_line.drop('Total')
@@ -357,6 +358,7 @@ if uploaded_file is not None:
 
 		# pivot_df_bulan_line.sort_index(inplace=True)
 		# pivot_df_bulan_line.reset_index(inplace=True)
+
 		st.subheader('Summary Data')
 		kiri,kanan=st.columns(2)
 		with kiri:
@@ -365,9 +367,21 @@ if uploaded_file is not None:
 		with kanan:
 			st.write('Data Quantity (lot) by Line & Month')
 			st.write(pivot_df_bulan_line2)
-# ---------------------------------------
+		# ---------------------------------------
+		# Membuat tabel pivot NG by Customer and LINE---------------
 
-# ---------------------------------------
+		pt_customer_line=pd.pivot_table(df,values='NG_%',index='Cust.ID',columns='Line',aggfunc='mean',margins=True,margins_name='Total')
+		
+		pt_customer_line2=pd.pivot_table(df,values='Insp(B/H)',index='Cust.ID',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
+
+		cl1,cl2=st.columns(2)
+		with cl1:
+			st.write('Data NG (%) by Line & Customer')
+			st.write(pt_customer_line)
+		with cl2:
+			st.write('Data Quantity (lot) by Line & Customer')
+			st.write(pt_customer_line2)
+		# ---------------------------------------
 		# Membuat tabel pivot NG by Kategori and LINE---------------
 
 		pt_kategori_line=pd.pivot_table(df,values='NG_%',index='Kategori',columns='Line',aggfunc='mean',margins=True,margins_name='Total')
@@ -380,7 +394,6 @@ if uploaded_file is not None:
 		with colnan:
 			st.write('Data Quantity (lot) by Line & Kategori')
 			st.write(pt_kategori_line2)
-
 
 		#----------------- JUMLAH KOLOM TYPE NG ----------------
 		# Daftar kolom yang ingin dijumlahkan
@@ -413,7 +426,6 @@ if uploaded_file is not None:
 		# df_total_JenisNG['NG%']=(df_total_JenisNG[new_columns]/TotalNG)*100
 		# st.write(df_total_JenisNG)
 		
-
 	else:
 		st.write("File tidak ditemukan")
 

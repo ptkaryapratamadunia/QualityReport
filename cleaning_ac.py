@@ -296,6 +296,10 @@ if uploaded_file is not None:
 		# Mengisi kolom M/C No. berdasarkan kondisi
 		df['M/C No.'] = df['NoJig'].apply(get_mc_no)
 
+		# Mengubah tipe data kolom 'SHift ' menjadi string
+		df['Shift'] = df['Shift'].astype(str)
+		df['NoBarrelHanger']=df['NoBarrelHanger'].astype(str)
+		
 		# st.write('Preview Data setelah dirapihkan (cleaning):')
 		#dataframe - script ini untuk filtering model tree
 		with st.expander("Preview Data setelah dirapihkan (cleaning)"):

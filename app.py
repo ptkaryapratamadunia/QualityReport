@@ -447,18 +447,15 @@ if uploaded_file is not None:
 		total_row.set_index('index', inplace=True)
 		st.write(total_row)
 
-		# # Menambahkan baris total ke DataFrame
-		# df = pd.concat([df, total_row])
-
-		# # Menampilkan DataFrame dengan baris Total
-		# st.write(df)
+		st.write(f"Total NG (lot) : {df['Tot_NG'].sum():.0f}")
 		#-------------------------------------------------------
-		st.write(f"Total NG (lot) : {df['Tot_NG'].sum()}")
+
 		total_rowNG = (total_row/df['Tot_NG'].sum())*100
 		total_rowNG['index']='Total_NG%'
 		total_rowNG.set_index('index', inplace=True)
 		st.write(total_rowNG)
 
+		st.write(f"Total NG (%) : {df['NG_%'].mean():0.2f}")
 		# df_total_JenisNG['NG%']=(df_total_JenisNG[new_columns]/TotalNG)*100
 		# st.write(df_total_JenisNG)
 		

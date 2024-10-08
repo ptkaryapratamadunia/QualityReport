@@ -4,6 +4,7 @@
 import streamlit as st
 import pandas as pd
 import xlrd
+import xlsxwriter
 from xlsxwriter import Workbook
 import numpy as np
 from streamlit_extras.dataframe_explorer import dataframe_explorer

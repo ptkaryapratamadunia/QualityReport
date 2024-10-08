@@ -25,7 +25,7 @@ def get_image_as_base64(image_path):
 		return base64.b64encode(img_file.read()).decode()
 		
 # heading
-kolkir,kolnan=st.columns(2)
+kolkir,kolnan=st.columns((2,1))	#artinya kolom sebelahkiri lebih lebar 2x dari kanan
 
 with kolkir:
 	st.markdown("""<h2 style="color:yellow;margin-top:-10px;margin-bottom:0px;"> 🧹CLEANING DATA </h2>""", unsafe_allow_html=True)

@@ -406,7 +406,7 @@ if uploaded_file is not None:
 		# ---------------------------------------
 		# Membuat tabel pivot NG by Kategori and LINE---------------
 
-		pt_kategori_line=pd.pivot_table(df,values='NG_%',index='Kategori',columns='Line',aggfunc='mean')
+		pt_kategori_line=pd.pivot_table(df,values='NG_%',index='Kategori',columns='Line',aggfunc='mean',margins=True,margins_name='Total')
 		pt_kategori_line2=pd.pivot_table(df,values='Insp(B/H)',index='Kategori',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
 
 		colkir,colnan=st.columns(2)
@@ -414,17 +414,18 @@ if uploaded_file is not None:
 			st.write('Data NG (%) by Line & Kategori')
 			st.write(pt_kategori_line)
 
-			# Mengonversi pivot tabel dari bentuk wide ke long untuk plotly
-			pivot_df_melted = pt_kategori_line.melt(id_vars=['Kategori'], var_name='Line', value_name='Average NG%')
-
-			# Menggambar grafik batang interaktif
-			fig = px.bar(pivot_df_melted, x='Kategori', y='Average NG%', color='Line', barmode='group', title='Average NG% per Line by Kategori')
-
-			# Menampilkan grafik di Streamlit
-			st.plotly_chart(fig)
 		with colnan:
 			st.write('Data Quantity (lot) by Line & Kategori')
 			st.write(pt_kategori_line2)
+
+		# # Mengonversi pivot tabel dari bentuk wide ke long untuk plotly
+		# pivot_df_melted = pt_kategori_line.melt(id_vars=['Kategori'], var_name='Line', value_name='Average NG%')
+
+		# # Menggambar grafik batang interaktif
+		# fig = px.bar(pivot_df_melted, x='Kategori', y='Average NG%', color='Line', barmode='group', title='Average NG% per Line by Kategori')
+
+		# # Menampilkan grafik di Streamlit
+		# st.plotly_chart(fig)
 
 		#----------------- JUMLAH KOLOM TYPE NG ----------------
 		# Daftar kolom yang ingin dijumlahkan
@@ -448,7 +449,7 @@ if uploaded_file is not None:
 		# # Menampilkan DataFrame dengan baris Total
 		# st.write(df)
 		#-------------------------------------------------------
-		st.write(df['Tot_NG'].sum())
+		st.write(f"Total NG (lot) : {df['Tot_NG'].sum()}")
 		total_rowNG = (total_row/df['Tot_NG'].sum())*100
 		total_rowNG['index']='Total_NG%'
 		total_rowNG.set_index('index', inplace=True)

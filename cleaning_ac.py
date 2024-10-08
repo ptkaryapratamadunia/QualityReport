@@ -11,6 +11,8 @@ from st_aggrid import AgGrid, GridOptionsBuilder
 import base64
 import webbrowser
 from io import BytesIO	#untuk menyimpan df di memory IO sebelum di download
+import matplotlib.pyplot as plt
+import plotly.express as px
 
 # Fungsi untuk mengubah gambar menjadi base64
 def get_image_as_base64(image_path):
@@ -318,7 +320,13 @@ if uploaded_file is not None:
 			df.to_excel(writer, index=False, sheet_name='Sheet1')
 			writer.close()
 		output.seek(0)
+		#Cara lain menyimpan di memori parquet
+		# Menyimpan DataFrame sebagai Parquet
+		df.to_parquet('cleaned_data.parquet', index=False)
+		# Membaca DataFrame dari Parquet
+		# df = pd.read_parquet('cleaned_data.parquet')
 
+		#------------------ view di 2 kolom
 		bariskiri,bariskanan=st.columns(2)
 
 		with bariskiri:
@@ -341,10 +349,23 @@ if uploaded_file is not None:
 		# Membuat tabel pivot NG% by MONTH and LINE---------------
 		df['Date']=pd.to_datetime(df['Date'])
 		df['Date'] = df['Date'].dt.strftime("%b-%Y")
-		pivot_df_bulan_line= pd.pivot_table(df, values='NG_%', index='Date',columns='Line', aggfunc={'NG_%': 'mean'},margins=True,margins_name='Total')
+
+		pivot_df_bulan_line= pd.pivot_table(df, values='NG_%', index='Date',columns='Line', aggfunc='mean',margins=True,margins_name='Total')
 		# Membuat tabel pivot Qty (Lot) by MONTH and LINE---------------
 		pivot_df_bulan_line2= pd.pivot_table(df, values='Insp(B/H)', index='Date',columns='Line', aggfunc='sum',margins=True,margins_name='Total')
 
+			#Grafik 
+		# Menggambar grafik batang
+		fig, ax = plt.subplots(figsize=(12, 6))
+		pivot_df_bulan_line.plot(kind='bar', ax=ax)
+
+		ax.set_xlabel('Date')
+		ax.set_ylabel('Average NG%')
+		ax.set_title('Average NG% per Line by Date')
+		ax.legend(title='Line')
+
+		st.pyplot(fig)
+	#--------
 		# # Pisahkan baris 'Total'
 		# total_row = pivot_df_bulan_line.loc['Total']
 		# pivot_df_bulan_line = pivot_df_bulan_line.drop('Total')
@@ -384,13 +405,22 @@ if uploaded_file is not None:
 		# ---------------------------------------
 		# Membuat tabel pivot NG by Kategori and LINE---------------
 
-		pt_kategori_line=pd.pivot_table(df,values='NG_%',index='Kategori',columns='Line',aggfunc='mean',margins=True,margins_name='Total')
+		pt_kategori_line=pd.pivot_table(df,values='NG_%',index='Kategori',columns='Line',aggfunc='mean')
 		pt_kategori_line2=pd.pivot_table(df,values='Insp(B/H)',index='Kategori',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
 
 		colkir,colnan=st.columns(2)
 		with colkir:
 			st.write('Data NG (%) by Line & Kategori')
 			st.write(pt_kategori_line)
+
+			# Mengonversi pivot tabel dari bentuk wide ke long untuk plotly
+			pivot_df_melted = pt_kategori_line.melt(id_vars=['Kategori'], var_name='Line', value_name='Average NG%')
+
+			# Menggambar grafik batang interaktif
+			fig = px.bar(pivot_df_melted, x='Kategori', y='Average NG%', color='Line', barmode='group', title='Average NG% per Line by Kategori')
+
+			# Menampilkan grafik di Streamlit
+			st.plotly_chart(fig)
 		with colnan:
 			st.write('Data Quantity (lot) by Line & Kategori')
 			st.write(pt_kategori_line2)

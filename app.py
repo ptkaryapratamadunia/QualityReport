@@ -367,17 +367,26 @@ if uploaded_file is not None:
 		# Membuat tabel pivot Qty Insp(Lot) by MONTH and LINE---------------
 		pivot_df_bulan_line3= pd.pivot_table(df, values='Insp(B/H)', index='Date',columns='Line', aggfunc='sum',margins=True,margins_name='Total')
 
-			#Grafik 
-		# Menggambar grafik batang
-		fig, ax = plt.subplots(figsize=(12, 6))
-		pivot_df_bulan_line_grafik.plot(kind='bar', ax=ax)
+			#Grafik area
+		grafik_kiri,grafik_tengah,grafik_kanan=st.columns(3)
 
-		ax.set_xlabel('Date')
-		ax.set_ylabel('Average NG%')
-		ax.set_title('Average NG% per Line by Date')
-		ax.legend(title='Line')
+		with grafik_kiri:
+			# Menggambar grafik batang
+			fig, ax = plt.subplots(figsize=(12, 6))
+			pivot_df_bulan_line_grafik.plot(kind='bar', ax=ax)
 
-		st.pyplot(fig)
+			ax.set_xlabel('Date')
+			ax.set_ylabel('Average NG%')
+			ax.set_title('Average NG% per Line by Date')
+			ax.legend(title='Line')
+
+			st.pyplot(fig)
+		
+		with grafik_tengah:
+			st.write("Tengah")
+
+		with grafik_kanan:
+			st.write("Kanan")
 	#--------
 		# # Pisahkan baris 'Total'
 		# total_row = pivot_df_bulan_line.loc['Total']

@@ -1,5 +1,6 @@
 # Khusus untuk cleaning data keluaran dari autocon untuk ke Excel, Looker, Tableau dll
-# 03 Oct 2024
+# 03 Oct 2024 start build
+# 08 Oct 2024 start deploy : qualityreportkpd.streamlit.app
 
 import streamlit as st
 import pandas as pd
@@ -15,6 +16,8 @@ import webbrowser
 from io import BytesIO	#untuk menyimpan df di memory IO sebelum di download
 import matplotlib.pyplot as plt
 import plotly.express as px
+
+st.set_page_config(layout="wide")
 
 # Fungsi untuk mengubah gambar menjadi base64
 def get_image_as_base64(image_path):

@@ -27,7 +27,8 @@ with kolkir:
 	st.write("Data output dari Autocon agar siap disantap.")
 	st.write("Beberapa data output dari aplikasi AUTOCON-KPD belum siap pakai,\
 			 oleh karena itu dilakukan proses cleaning, seperti mengkonversi data TEXT menjadi angka,\
-			 konversi type NG ABCDSEFGIJKLMN menjadi definisi type NG, menghapus kolom yang tidak perlu\
+			 konversi type NG ABCDSEFGIJKLMN menjadi definisi type NG, mengekstrasi data Nomer Jig\
+		  	 menjadi Nomer Mesin SMallpart, menghapus kolom yang tidak perlu\
 			 dan menambah kolom yang diperlukan,dll.")
 with kolnan:
 

@@ -86,10 +86,12 @@ with kolnan:
 	)
 
 	st.markdown("---")
-	st.info('Link to Prefessional Summary Report',icon="📊")
+	st.info('Developed by e-WeYe ©️2024',icon="📊")
+	
+	st.write('<div style="text-align: right;">', unsafe_allow_html=True)
 	if st.button('Quality Summary Web Report'):
-        	webbrowser.open_new_tab('https://lookerstudio.google.com/reporting/e4a5c3f7-bf91-44e0-9ced-2b7a01eafa3d/page/FsgzD?s=qyZPms8Wytc')
-
+			webbrowser.open_new_tab('https://lookerstudio.google.com/reporting/e4a5c3f7-bf91-44e0-9ced-2b7a01eafa3d/page/FsgzD?s=qyZPms8Wytc')
+	st.write('</div>', unsafe_allow_html=True)
     
     # --------akhir naroh Logo
 
@@ -359,13 +361,16 @@ if uploaded_file is not None:
 		df['Date'] = df['Date'].dt.strftime("%b-%Y")
 
 		pivot_df_bulan_line= pd.pivot_table(df, values='NG_%', index='Date',columns='Line', aggfunc='mean',margins=True,margins_name='Total')
-		# Membuat tabel pivot Qty (Lot) by MONTH and LINE---------------
-		pivot_df_bulan_line2= pd.pivot_table(df, values='Insp(B/H)', index='Date',columns='Line', aggfunc='sum',margins=True,margins_name='Total')
+		pivot_df_bulan_line_grafik= pd.pivot_table(df, values='NG_%', index='Date',columns='Line', aggfunc='mean')
+		# Membuat tabel pivot Qty NG(Lot) by MONTH and LINE---------------
+		pivot_df_bulan_line2= pd.pivot_table(df, values='Tot_NG', index='Date',columns='Line', aggfunc='sum',margins=True,margins_name='Total')
+		# Membuat tabel pivot Qty Insp(Lot) by MONTH and LINE---------------
+		pivot_df_bulan_line3= pd.pivot_table(df, values='Insp(B/H)', index='Date',columns='Line', aggfunc='sum',margins=True,margins_name='Total')
 
 			#Grafik 
 		# Menggambar grafik batang
 		fig, ax = plt.subplots(figsize=(12, 6))
-		pivot_df_bulan_line.plot(kind='bar', ax=ax)
+		pivot_df_bulan_line_grafik.plot(kind='bar', ax=ax)
 
 		ax.set_xlabel('Date')
 		ax.set_ylabel('Average NG%')
@@ -389,13 +394,17 @@ if uploaded_file is not None:
 		# pivot_df_bulan_line.reset_index(inplace=True)
 
 		st.subheader('Summary Data')
-		kiri,kanan=st.columns(2)
+		kiri,tengah,kanan=st.columns(3)
 		with kiri:
 			st.write('Data NG (%) by Line & Month')
 			st.write(pivot_df_bulan_line)
-		with kanan:
-			st.write('Data Quantity (lot) by Line & Month')
+		with tengah:
+			st.write('Data Qty NG (lot) by Line & Month')
 			st.write(pivot_df_bulan_line2)
+
+		with kanan:
+			st.write('Data Qty Inspected (lot) by Line & Month')
+			st.write(pivot_df_bulan_line3)
 		# ---------------------------------------
 		# Membuat tabel pivot NG by Customer and LINE---------------
 
@@ -459,9 +468,12 @@ if uploaded_file is not None:
 		st.write(total_rowNG)
 
 		st.write(f"Total NG (%) : {df['NG_%'].mean():0.2f}")
-		# df_total_JenisNG['NG%']=(df_total_JenisNG[new_columns]/TotalNG)*100
-		# st.write(df_total_JenisNG)
-		
+
+		# Membuat tabel pivot NG by M/C No ---------------
+
+		pt_MesinNo=pd.pivot_table(df,values='NG_%',index='M/C No.',aggfunc='mean',margins=True,margins_name='Total')
+		st.write('Data NG (%) by Nomer Mesin Stamping')
+		st.write(pt_MesinNo)
 	else:
 		st.write("File tidak ditemukan")
 

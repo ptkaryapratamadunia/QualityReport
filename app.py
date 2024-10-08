@@ -10,6 +10,7 @@ import numpy as np
 from streamlit_extras.dataframe_explorer import dataframe_explorer
 from st_aggrid import AgGrid, GridOptionsBuilder
 import base64
+import os
 import webbrowser
 from io import BytesIO	#untuk menyimpan df di memory IO sebelum di download
 import matplotlib.pyplot as plt
@@ -32,9 +33,11 @@ with kolkir:
 		  	 menjadi Nomer Mesin SMallpart, menghapus kolom yang tidak perlu\
 			 dan menambah kolom yang diperlukan,dll.")
 with kolnan:
-
+	# Adjust the file path based on the current directory
+	current_dir = os.path.dirname(os.path.abspath(__file__))
+	logo_KPD = os.path.join(current_dir, 'logoKPD.png')
 	# Memuat gambar dan mengubahnya menjadi base64
-	logo_KPD ='logoKPD.PNG'
+	# logo_KPD ='logoKPD.png'
 	image_base64 = get_image_as_base64(logo_KPD)
 	
     # Menampilkan gambar dan teks di kolom kanan dengan posisi berdampingan

@@ -17,7 +17,7 @@ from io import BytesIO	#untuk menyimpan df di memory IO sebelum di download
 import matplotlib.pyplot as plt
 import plotly.express as px
 
-st.set_page_config(layout="wide")
+st.set_page_config(page_title="Quality Report", page_icon=":bar_chart:",layout="wide")
 
 # Fungsi untuk mengubah gambar menjadi base64
 def get_image_as_base64(image_path):
@@ -494,10 +494,22 @@ if uploaded_file is not None:
 		st.write(f"Total NG (%) : {df['NG_%'].mean():0.2f}")
 
 		# Membuat tabel pivot NG by M/C No ---------------
-
-		pt_MesinNo=pd.pivot_table(df,values='NG_%',index='M/C No.',aggfunc='mean',margins=True,margins_name='Total')
+		# Filter DataFrame to exclude empty or '00' in 'M/C No.'
+		# Ensure correct column names without leading/trailing spaces
+		df.columns = df.columns.str.strip()
+		df_filtered = df[df['M/C No.'].notnull() & (df['M/C No.'] != '00')]		
+		pt_MesinNo = pd.pivot_table(df_filtered, 
+                            values=['NG_%', 'Insp(B/H)'], 
+                            index='M/C No.', 
+                            aggfunc={'NG_%': 'mean', 'Insp(B/H)': 'sum'}, 
+                            margins=True, 
+                            margins_name='Total')
+		# Transpose the pivot table
 		st.write('Data NG (%) by Nomer Mesin Stamping')
-		st.write(pt_MesinNo)
+		pt_MesinNo_transposed = pt_MesinNo.transpose()
+		st.write(pt_MesinNo_transposed)
+
+		
 	else:
 		st.write("File tidak ditemukan")
 

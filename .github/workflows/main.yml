@@ -1,0 +1,17 @@
+name: Deploy to Streamlit Cloud
+on: 
+  push:
+    branches: [main]  # Deploy setiap push ke branch 'main'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Deploy to Streamlit Cloud
+        uses: streamlit/deploy@v1
+        with:
+          account: ptkaryapratanadunia
+          app: app.py
+          branch: main
+          commit_ref: ${{ github.sha }} # Mengambil commit hash

@@ -501,9 +501,15 @@ if uploaded_file is not None:
 
 		# Membuat tabel pivot NG by M/C No ---------------
 		# Filter DataFrame to exclude empty or '00' in 'M/C No.'
+		
 		# Ensure correct column names without leading/trailing spaces
 		df.columns = df.columns.str.strip()
-		df_filtered = df[df['M/C No.'].notnull() & (df['M/C No.'] != '00')]		
+
+		# Ensure the 'M/C No.' column is of string type
+		df['M/C No.'] = df['M/C No.'].astype(str)
+
+		# Apply filter to exclude rows where 'M/C No.' is null, empty, or '00'
+		df_filtered = df[(df['M/C No.'].notnull()) & (df['M/C No.'] != '') & (df['M/C No.'] != '00')]	
 		pt_MesinNo = pd.pivot_table(df_filtered, 
                             values=['NG_%', 'Insp(B/H)'], 
                             index='M/C No.', 

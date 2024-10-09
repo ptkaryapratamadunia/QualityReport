@@ -352,7 +352,7 @@ if uploaded_file is not None:
 		# df = pd.read_parquet('cleaned_data.parquet')
 
 		#------------------ view di 2 kolom
-		bariskiri,bariskanan=st.columns(2)
+		bariskiri,bt1,bt2,bt3,bariskanan=st.columns(5)
 
 		with bariskiri:
 			# Tampilkan tautan unduhan di Streamlit
@@ -363,9 +363,15 @@ if uploaded_file is not None:
 				file_name='File_after_Cleaning.xlsx',
 				mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 			)
-			
-		with bariskanan:
+		with bt1:
+		
 			st.markdown("""<h4 style="color:yellow;" > ⬅️Klik tombol download </h4>""", unsafe_allow_html=True)
+		with bt2:
+			st.write("")
+		with bt3:
+			st.write("")
+		with bariskanan:
+			st.write("")
 		# df.to_excel('File_after_Cleaning.xlsx',index=False)
 		# st.write("File after Cleaning juga telah disimpan dalam bentuk .xlsx dengan nama : 'File after Cleaning'")
 		st.markdown("---")
@@ -509,7 +515,7 @@ if uploaded_file is not None:
 		pt_MesinNo_transposed = pt_MesinNo.transpose()
 		st.write(pt_MesinNo_transposed)
 
-		
+
 	else:
 		st.write("File tidak ditemukan")
 

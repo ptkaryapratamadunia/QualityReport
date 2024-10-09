@@ -87,11 +87,15 @@ with kolnan:
 
 	st.markdown("---")
 
-	st.markdown('<div style="text-align: right;">', unsafe_allow_html=True)
-	st.write('Developed by e-WeYe ©️2024')
-	if st.button('Quality Summary Web Report'):
-				webbrowser.open_new_tab('https://lookerstudio.google.com/reporting/e4a5c3f7-bf91-44e0-9ced-2b7a01eafa3d/page/FsgzD?s=qyZPms8Wytc') 
-	st.markdown('</div>', unsafe_allow_html=True)
+	kolkir2,kolnan2=st.columns(2)
+	with kolkir2:
+		st.write("")
+	with kolnan2:
+		st.markdown('<div style="text-align: right;">', unsafe_allow_html=True)
+		st.write('Developed by e-WeYe ©️2024')
+		if st.button('Quality Summary Web Report'):
+					webbrowser.open_new_tab('https://lookerstudio.google.com/reporting/e4a5c3f7-bf91-44e0-9ced-2b7a01eafa3d/page/FsgzD?s=qyZPms8Wytc') 
+		st.markdown('</div>', unsafe_allow_html=True)
 	
 	# st.markdown(
     #     """

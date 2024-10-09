@@ -29,7 +29,7 @@ kolkir,kolnan=st.columns((2,1))	#artinya kolom sebelahkiri lebih lebar 2x dari k
 
 with kolkir:
 	st.markdown("""<h2 style="color:yellow;margin-top:-10px;margin-bottom:0px;"> 🧹CLEANING DATA </h2>""", unsafe_allow_html=True)
-	st.write("Data output dari Autocon agar siap disantap.")
+	st.write("Tools Pengolahan Data")
 	st.write("Beberapa data output dari aplikasi AUTOCON-KPD belum siap pakai,\
 			 oleh karena itu dilakukan proses cleaning, seperti mengkonversi data TEXT menjadi angka,\
 			 konversi type NG ABCDSEFGIJKLMN menjadi definisi type NG, mengekstrasi data Nomer Jig\
@@ -86,14 +86,25 @@ with kolnan:
 	)
 
 	st.markdown("---")
-	st.info('Developed by e-WeYe ©️2024',icon="📊")
-	
-	st.write('<div style="text-align: right;">', unsafe_allow_html=True)
+
+	st.markdown('<div style="text-align: right;">', unsafe_allow_html=True)
+	st.write('Developed by e-WeYe ©️2024')
 	if st.button('Quality Summary Web Report'):
-			webbrowser.open_new_tab('https://lookerstudio.google.com/reporting/e4a5c3f7-bf91-44e0-9ced-2b7a01eafa3d/page/FsgzD?s=qyZPms8Wytc')
-	st.write('</div>', unsafe_allow_html=True)
-    
-    # --------akhir naroh Logo
+				webbrowser.open_new_tab('https://lookerstudio.google.com/reporting/e4a5c3f7-bf91-44e0-9ced-2b7a01eafa3d/page/FsgzD?s=qyZPms8Wytc') 
+	st.markdown('</div>', unsafe_allow_html=True)
+	
+	# st.markdown(
+    #     """
+    #     <div style="text-align: right;">
+    #         <button style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; cursor: pointer;" href="https://lookerstudio.google.com/reporting/e4a5c3f7-bf91-44e0-9ced-2b7a01eafa3d/page/FsgzD?s=qyZPms8Wytc">
+    #             Quality Summary Web Report
+    #         </button>
+    #     </div>
+    #     """,
+    #     unsafe_allow_html=True
+    # )
+
+    # --------akhir naroh Logo :lookerstudio.google.com/reporting/e4a5c3f7-bf91-44e0-9ced-2b7a01eafa3d/page/FsgzD?s=qyZPms8Wytc
 
 st.markdown("---")
 

@@ -439,16 +439,18 @@ if uploaded_file is not None:
 		# Membuat tabel pivot NG by Customer and LINE---------------
 
 		pt_customer_line=pd.pivot_table(df,values='NG_%',index='Cust.ID',columns='Line',aggfunc='mean',margins=True,margins_name='Total')
+		st.write('Data NG (%) by Line & Customer')
+		pt_customer_line_transposed=pt_customer_line.transpose()
+		st.write(pt_customer_line_transposed)
 		
 		pt_customer_line2=pd.pivot_table(df,values='Insp(B/H)',index='Cust.ID',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
+		st.write('Data Quantity (lot) by Line & Customer')
+		pt_customer_line2_tranposed=pt_customer_line2.transpose()
+		st.write(pt_customer_line2_tranposed)
 
-		cl1,cl2=st.columns(2)
-		with cl1:
-			st.write('Data NG (%) by Line & Customer')
-			st.write(pt_customer_line)
-		with cl2:
-			st.write('Data Quantity (lot) by Line & Customer')
-			st.write(pt_customer_line2)
+		# cl1,cl2=st.columns(2)
+		# with cl1:
+		# with cl2:
 		# ---------------------------------------
 		# Membuat tabel pivot NG by Kategori and LINE---------------
 

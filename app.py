@@ -440,10 +440,14 @@ if uploaded_file is not None:
 
 		pt_customer_line=pd.pivot_table(df,values='NG_%',index='Cust.ID',columns='Line',aggfunc='mean',margins=True,margins_name='Total')
 		st.write('Data NG (%) by Line & Customer')
+		# Bulatkan nilai-nilai ke angka bulat terdekat
+		pt_customer_line = pt_customer_line.round(2)
 		pt_customer_line_transposed=pt_customer_line.transpose()
 		st.write(pt_customer_line_transposed)
 		
 		pt_customer_line2=pd.pivot_table(df,values='Insp(B/H)',index='Cust.ID',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
+		# Bulatkan nilai-nilai ke angka bulat terdekat
+		pt_customer_line2 = pt_customer_line2.round()
 		st.write('Data Quantity (lot) by Line & Customer')
 		pt_customer_line2_tranposed=pt_customer_line2.transpose()
 		st.write(pt_customer_line2_tranposed)

@@ -417,7 +417,7 @@ if uploaded_file is not None:
 				x='Date:T',
 				y='NG_%:Q'
 			).properties(
-				title='Average NG% per Bulan'
+				title='Average NG% per Bulan',
 				width=600,
     			height=400
 			)

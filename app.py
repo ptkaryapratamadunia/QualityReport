@@ -415,7 +415,7 @@ if uploaded_file is not None:
 			# ax.legend(title='Line')
 
 			# st.pyplot(fig)
-			st.line_chart(pivot_df_bulan_line_grafik,x='Date',y='NG_%',x_label="Bulan",y_label="Average NG%",color=color,use_container_width=True)
+			st.line_chart(pivot_df_bulan_line_grafik,x='Date',y='NG_%',x_label="Bulan",y_label="Average NG%",color="#ffaa00",use_container_width=True)
 		with grafik_kanan:
 			st.write("Kanan")
 	#--------

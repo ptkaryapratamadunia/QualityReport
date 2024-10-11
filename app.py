@@ -2,21 +2,16 @@
 # 03 Oct 2024 start build
 # 08 Oct 2024 start deploy : qualityreportkpd.streamlit.app
 
-from turtle import color
 import streamlit as st
 import pandas as pd
-import xlrd
-import xlsxwriter
-from xlsxwriter import Workbook
 import numpy as np
 from streamlit_extras.dataframe_explorer import dataframe_explorer
-from st_aggrid import AgGrid, GridOptionsBuilder
 import base64
 import os
 import webbrowser
 from io import BytesIO	#untuk menyimpan df di memory IO sebelum di download
 import matplotlib.pyplot as plt
-import plotly.express as px
+import altair as alt
 
 st.set_page_config(page_title="Quality Report", page_icon=":bar_chart:",layout="wide")
 
@@ -415,7 +410,18 @@ if uploaded_file is not None:
 			# ax.legend(title='Line')
 
 			# st.pyplot(fig)
-			st.line_chart(pivot_df_bulan_line_grafik,x='Date',y='NG_%',x_label="Bulan",y_label="Average NG%",color="#ffaa00",use_container_width=True)
+			# st.line_chart(pivot_df_bulan_line_grafik,x='Date',y='NG_%',x_label="Bulan",y_label="Average NG%",color="#ffaa00",use_container_width=True)
+
+			# Buat grafik menggunakan Altair -----------
+			chart = alt.Chart(pivot_df_bulan_line_grafik).mark_line(color='#ffaa00').encode(
+				x='Date:T',
+				y='NG_%:Q'
+			).properties(
+				title='Average NG% per Bulan'
+			)
+
+			st.altair_chart(chart, use_container_width=True)
+			#----------
 		with grafik_kanan:
 			st.write("Kanan")
 	#--------

@@ -406,7 +406,7 @@ if uploaded_file is not None:
 		with grafik_tengah:
 				# Menggambar grafik batang
 			fig, ax = plt.subplots(figsize=(12, 6))
-			pivot_df_bulan_line_grafik.plot(kind='ine', ax=ax)
+			pivot_df_bulan_line_grafik.plot(kind='line', ax=ax)
 
 			ax.set_xlabel('Date')
 			ax.set_ylabel('Average NG%')

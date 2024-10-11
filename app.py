@@ -404,7 +404,16 @@ if uploaded_file is not None:
 			st.pyplot(fig)
 		
 		with grafik_tengah:
-			st.write("Tengah")
+				# Menggambar grafik batang
+			fig, ax = plt.subplots(figsize=(12, 6))
+			pivot_df_bulan_line_grafik.plot(kind='ine', ax=ax)
+
+			ax.set_xlabel('Date')
+			ax.set_ylabel('Average NG%')
+			ax.set_title('Average NG% per Line by Date')
+			ax.legend(title='Line')
+
+			st.pyplot(fig)
 
 		with grafik_kanan:
 			st.write("Kanan")

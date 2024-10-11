@@ -412,18 +412,24 @@ if uploaded_file is not None:
 			# st.pyplot(fig)
 			# st.line_chart(pivot_df_bulan_line_grafik,x='Date',y='NG_%',x_label="Bulan",y_label="Average NG%",color="#ffaa00",use_container_width=True)
 
-			# Buat grafik menggunakan Altair -----------
-			chart = alt.Chart(pivot_df_bulan_line_grafik).mark_line(color='#ffaa00').encode(
-				x='Date:T',
-				y='NG_%:Q'
-			).properties(
-				title='Average NG% per Bulan',
-				width=600,
-    			height=400
-			)
+			# # Buat grafik menggunakan Altair -----------
+			# chart = alt.Chart(pivot_df_bulan_line_grafik).mark_line(color='#ffaa00').encode(
+			# 	x='Date:T',
+			# 	y='NG_%:Q'
+			# ).properties(
+			# 	title='Average NG% per Bulan',
+			# 	width=600,
+    		# 	height=400
+			# )
 
-			st.altair_chart(chart, use_container_width=True)
+			# st.altair_chart(chart, use_container_width=True)
 			#----------
+
+			# # Ensure the DataFrame is in the correct order if needed
+			# df = df.sort_values(by='Date')
+
+			# Plot the line chart using Streamlit
+			st.line_chart(pivot_df_bulan_line_grafik.set_index('Date')['NG_%'])
 		with grafik_kanan:
 			st.write("Kanan")
 	#--------

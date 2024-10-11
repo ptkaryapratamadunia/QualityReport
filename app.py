@@ -2,6 +2,7 @@
 # 03 Oct 2024 start build
 # 08 Oct 2024 start deploy : qualityreportkpd.streamlit.app
 
+from turtle import color
 import streamlit as st
 import pandas as pd
 import xlrd
@@ -405,16 +406,16 @@ if uploaded_file is not None:
 		
 		with grafik_tengah:
 				# Menggambar grafik batang
-			fig, ax = plt.subplots(figsize=(12, 6))
-			pivot_df_bulan_line_grafik.plot(kind='line', ax=ax)
+			# fig, ax = plt.subplots(figsize=(12, 6))
+			# pivot_df_bulan_line_grafik.plot(kind='line', ax=ax)
 
-			ax.set_xlabel('Date')
-			ax.set_ylabel('Average NG%')
-			ax.set_title('Average NG% per Line by Date')
-			ax.legend(title='Line')
+			# ax.set_xlabel('Date')
+			# ax.set_ylabel('Average NG%')
+			# ax.set_title('Average NG% per Line by Date')
+			# ax.legend(title='Line')
 
-			st.pyplot(fig)
-
+			# st.pyplot(fig)
+			st.line_chart(pivot_df_bulan_line_grafik,x='Date',y='NG_%',x_label="Bulan",y_label="Average NG%",color=color,use_container_width=True)
 		with grafik_kanan:
 			st.write("Kanan")
 	#--------

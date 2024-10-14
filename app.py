@@ -8,10 +8,16 @@ import numpy as np
 from streamlit_extras.dataframe_explorer import dataframe_explorer
 import base64
 import os
+import pickle
 import webbrowser
 from io import BytesIO	#untuk menyimpan df di memory IO sebelum di download
 import matplotlib.pyplot as plt
 import altair as alt
+import plotly.express as px
+import plotly.graph_objects as go       #cara 2 agar data terlihat saat mouse over
+from plotly.subplots import make_subplots
+
+
 
 st.set_page_config(page_title="Quality Report", page_icon=":bar_chart:",layout="wide")
 
@@ -341,11 +347,34 @@ if uploaded_file is not None:
 			df.to_excel(writer, index=False, sheet_name='Sheet1')
 			writer.close()
 		output.seek(0)
-		#Cara lain menyimpan di memori parquet
-		# Menyimpan DataFrame sebagai Parquet
-		df.to_parquet('cleaned_data.parquet', index=False)
-		# Membaca DataFrame dari Parquet
-		# df = pd.read_parquet('cleaned_data.parquet')
+
+		#Cara lain menyimpan di memori pickle
+
+		# Simpan DataFrame ke file pickle
+		with open('df_cache.pkl', 'wb') as f:
+			pickle.dump(df, f)
+
+		#groupby dataframe	---------------
+		NG_by_kategori=(
+		df[["Kategori","NG_%"]]
+		.groupby(by="Kategori")
+		.mean()
+		.sort_values(by="NG_%",ascending=False)
+		.reset_index()
+		)
+		st.write(NG_by_kategori)
+		# Buat grafik garis
+		# Buat grafik garis interaktif
+		# Buat grafik batang interaktif
+		fig = go.Figure(data=go.Line(x=NG_by_kategori['Kategori'], y=NG_by_kategori['NG_%'],
+								marker_color='yellow'))  # Sesuaikan warna jika ingin
+
+		fig.update_layout(title='Rata-rata NG_% per Kategori',
+						xaxis_title='Kategori',
+						yaxis_title='NG_%')
+
+		st.plotly_chart(fig)
+
 
 		#------------------ view di 2 kolom
 		bariskiri,bt1,bt2,bt3,bariskanan=st.columns(5)
@@ -361,7 +390,7 @@ if uploaded_file is not None:
 			)
 		with bt1:
 		
-			st.markdown("""<h4 style="color:yellow;" > ⬅️Klik tombol download </h4>""", unsafe_allow_html=True)
+			st.markdown("""<h6 style="color:yellow;" > ⬅️Klik tombol download </h6>""", unsafe_allow_html=True)
 		with bt2:
 			st.write("")
 		with bt3:
@@ -385,7 +414,7 @@ if uploaded_file is not None:
 		pivot_df_bulan_line3= pd.pivot_table(df, values='Insp(B/H)', index='Date',columns='Line', aggfunc='sum',margins=True,margins_name='Total')
 
 			#Grafik area
-		grafik_kiri,grafik_tengah,grafik_kanan=st.columns(3)
+		grafik_kiri,grafik_tengah=st.columns(2)
 
 		with grafik_kiri:
 			# Menggambar grafik batang
@@ -400,64 +429,79 @@ if uploaded_file is not None:
 			st.pyplot(fig)
 		
 		with grafik_tengah:
-				# Menggambar grafik batang
-			# fig, ax = plt.subplots(figsize=(12, 6))
-			# pivot_df_bulan_line_grafik.plot(kind='line', ax=ax)
+				# Hitung agregasi untuk setiap kategori
+			NG_by_kategori_ng = df.groupby('Kategori').agg({'NG_%': 'mean'}).reset_index()
+			NG_by_kategori_insp = df.groupby('Kategori').agg({'Insp(B/H)': 'sum'}).reset_index()
 
-			# ax.set_xlabel('Date')
-			# ax.set_ylabel('Average NG%')
-			# ax.set_title('Average NG% per Line by Date')
-			# ax.legend(title='Line')
+			# # Pastikan indeks sama dan tipe data benar
+			# NG_by_kategori_ng.set_index('Kategori', inplace=True)
+			# NG_by_kategori_insp.set_index('Kategori', inplace=True)
 
-			# st.pyplot(fig)
-			# st.line_chart(pivot_df_bulan_line_grafik,x='Date',y='NG_%',x_label="Bulan",y_label="Average NG%",color="#ffaa00",use_container_width=True)
+			# fig = go.Figure()
 
-			# # Buat grafik menggunakan Altair -----------
-			# chart = alt.Chart(pivot_df_bulan_line_grafik).mark_line(color='#ffaa00').encode(
-			# 	x='Date:T',
-			# 	y='NG_%:Q'
-			# ).properties(
-			# 	title='Average NG% per Bulan',
-			# 	width=600,
-    		# 	height=400
+			# # Tambahkan trace pertama (NG_%) dengan sumbu y sekunder
+			# fig.add_trace(go.Scatter(x=NG_by_kategori_ng.index, y=NG_by_kategori_ng['NG_%'], mode='lines+markers', name='NG_%', marker_color='blue'), secondary_y=True)
+
+			# # Tambahkan trace kedua (Insp(B/H))
+			# fig.add_trace(go.Bar(x=NG_by_kategori_insp.index, y=NG_by_kategori_insp['Insp(B/H)'], name='Insp(B/H)', marker_color='orange'))
+
+			# # Update layout untuk sumbu y sekunder
+			# fig.update_layout(
+			# 	title='Perbandingan Agregasi per Kategori',
+			# 	xaxis_title='Kategori',
+			# 	yaxis=dict(title='Insp(B/H)'),
+			# 	yaxis2=dict(title='NG_%', overlaying='y', side='right')
 			# )
 
-			# st.altair_chart(chart, use_container_width=True)
-			#----------
+			# fig = go.Figure()
 
-			# # Ensure the DataFrame is in the correct order if needed
-			# df = df.sort_values(by='Date')
+			# # Tambahkan trace pertama (NG_%) dengan sumbu y sekunder
+			# fig.add_trace(go.Line(x=NG_by_kategori_ng['Kategori'], y=NG_by_kategori_ng['NG_%'], name='NG_%', marker_color='blue'), secondary_y=True)
 
-			# Plot the line chart using Streamlit
-			st.line_chart(pivot_df_bulan_line_grafik.set_index('Date')['NG_%'])
-		with grafik_kanan:
-			st.write("Kanan")
-	#--------
-		# # Pisahkan baris 'Total'
-		# total_row = pivot_df_bulan_line.loc['Total']
-		# pivot_df_bulan_line = pivot_df_bulan_line.drop('Total')
+			# # Tambahkan trace kedua (Insp(B/H))
+			# fig.add_trace(go.Bar(x=NG_by_kategori_insp['Kategori'], y=NG_by_kategori_insp['Insp(B/H)'], name='Insp(B/H)', marker_color='orange'))
 
-		# Urutkan bulan secara ascending
-		# pivot_df_bulan_line = pivot_df_bulan_line.sort_index(key=lambda x: pd.to_datetime(x, format='%b-%Y'))
-		# pivot_df_bulan_line2 = pivot_df_bulan_line2.sort_index(key=lambda x: pd.to_datetime(x, format='%b-%Y'))
-		# pivot_df_bulan_line['Date'] = pd.to_datetime(pivot_df_bulan_line['Date'])
-		# pivot_df_bulan_line['Date'] = pivot_df_bulan_line['Date'].dt.strftime('%b-%Y')
-		# pivot_df_bulan_line = pivot_df_bulan_line.sort_values(by='Date')
+			# # Update layout untuk sumbu y sekunder
+			# fig.update_layout(
+			# 	title='Perbandingan Agregasi per Kategori',
+			# 	xaxis_title='Kategori',
+			# 	yaxis=dict(title='Insp(B/H)'),
+			# 	yaxis2=dict(title='NG_%', overlaying='y', side='right')
+			# )
 
-		# pivot_df_bulan_line.sort_index(inplace=True)
-		# pivot_df_bulan_line.reset_index(inplace=True)
+			# Create a figure with a 1x2 subplot grid (1 row, 2 columns)
+			fig = make_subplots(rows=1, cols=2)
+
+			# Add traces to the subplots
+			fig.add_trace(go.Bar(x=NG_by_kategori_ng['Kategori'], y=NG_by_kategori_ng['NG_%'], name='NG_%', marker_color='blue'), row=1, col=1)
+			fig.add_trace(go.Bar(x=NG_by_kategori_insp['Kategori'], y=NG_by_kategori_insp['Insp(B/H)'], name='Insp(B/H)', marker_color='orange'), row=1, col=2)
+
+			# Update layout for secondary y-axis (optional)
+			fig.update_layout(
+				title='Perbandingan Agregasi per Kategori',
+				xaxis_title='Kategori',
+				yaxis=dict(title='Insp(B/H)'),
+				yaxis2=dict(title='NG_%', overlaying='y', side='right')  # If needed for overlay
+			)
+
+			# Display the plot
+			st.plotly_chart(fig)
+
 
 		st.subheader('Summary Data')
 		kiri,tengah,kanan=st.columns(3)
 		with kiri:
 			st.write('Data NG (%) by Line & Month')
+			pivot_df_bulan_line = pivot_df_bulan_line.round(2)
 			st.write(pivot_df_bulan_line)
 		with tengah:
 			st.write('Data Qty NG (lot) by Line & Month')
+			pivot_df_bulan_line2 = pivot_df_bulan_line2.round(0)
 			st.write(pivot_df_bulan_line2)
 
 		with kanan:
 			st.write('Data Qty Inspected (lot) by Line & Month')
+			pivot_df_bulan_line3 = pivot_df_bulan_line3.round(0)
 			st.write(pivot_df_bulan_line3)
 		# ---------------------------------------
 		# Membuat tabel pivot NG by Customer and LINE---------------
@@ -468,7 +512,46 @@ if uploaded_file is not None:
 		pt_customer_line = pt_customer_line.round(2)
 		pt_customer_line_transposed=pt_customer_line.transpose()
 		st.write(pt_customer_line_transposed)
-		
+
+		#gambar grafik line	
+
+		# Asumsikan data Anda sudah dalam bentuk CSV dengan nama 'data.csv'
+		# Sesuaikan nama file jika berbeda
+		df_grafik=pd.DataFrame(pt_customer_line_transposed)
+		st.write(df_grafik)
+		# Memilih kolom yang ingin diplotkan (kecuali kolom 'Total')
+		columns_to_plot = pt_customer_line_transposed.columns[:-1]  # Mengambil semua kolom kecuali yang terakhir
+		chart_data = pd.DataFrame(pt_customer_line_transposed,index=['Line'], columns=columns_to_plot)
+		# axis_x=pt_customer_line_transposed['Line']
+		# st.write(axis_x)
+		# st.line_chart(chart_data)
+		# Membuat grafik garis
+		# pt_customer_line_transposed[columns_to_plot].plot(kind='line', figsize=(10, 6))
+
+		# # Menambahkan judul dan label sumbu
+		# plt.title('Data NG (%) by Line & Customer')
+		# plt.xlabel('Cust ID')
+		# plt.ylabel('%NG')
+
+		# # Menampilkan grafik
+		# plt.show()
+	
+		# st.line_chart(chart_data, 
+		# 		x=columns_to_plot, 
+		# 		y=['NG_%'], 
+		# 		x_label="Cust_ID", 
+		# 		y_label='%NG', 
+		# 		use_container_width=True
+		# 		)
+
+		# # Plot the line chart
+		# st.line_chart(
+		# 	pt_customer_line,
+		# 	x_label="Cust_ID",
+		# 	y_label='%NG',
+		# 	use_container_width=True
+		# )
+		#---------
 		pt_customer_line2=pd.pivot_table(df,values='Insp(B/H)',index='Cust.ID',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
 		# Bulatkan nilai-nilai ke angka bulat terdekat
 		pt_customer_line2 = pt_customer_line2.round()
@@ -489,6 +572,8 @@ if uploaded_file is not None:
 		with colkir:
 			st.write('Data NG (%) by Line & Kategori')
 			st.write(pt_kategori_line)
+
+
 
 		with colnan:
 			st.write('Data Quantity (lot) by Line & Kategori')

@@ -405,42 +405,6 @@ if uploaded_file is not None:
 			NG_by_kategori_ng = df.groupby('Kategori').agg({'NG_%': 'mean'}).reset_index()
 			NG_by_kategori_insp = df.groupby('Kategori').agg({'Insp(B/H)': 'sum'}).reset_index()
 
-			# # Pastikan indeks sama dan tipe data benar
-			# NG_by_kategori_ng.set_index('Kategori', inplace=True)
-			# NG_by_kategori_insp.set_index('Kategori', inplace=True)
-
-			# fig = go.Figure()
-
-			# # Tambahkan trace pertama (NG_%) dengan sumbu y sekunder
-			# fig.add_trace(go.Scatter(x=NG_by_kategori_ng.index, y=NG_by_kategori_ng['NG_%'], mode='lines+markers', name='NG_%', marker_color='blue'), secondary_y=True)
-
-			# # Tambahkan trace kedua (Insp(B/H))
-			# fig.add_trace(go.Bar(x=NG_by_kategori_insp.index, y=NG_by_kategori_insp['Insp(B/H)'], name='Insp(B/H)', marker_color='orange'))
-
-			# # Update layout untuk sumbu y sekunder
-			# fig.update_layout(
-			# 	title='Perbandingan Agregasi per Kategori',
-			# 	xaxis_title='Kategori',
-			# 	yaxis=dict(title='Insp(B/H)'),
-			# 	yaxis2=dict(title='NG_%', overlaying='y', side='right')
-			# )
-
-			# fig = go.Figure()
-
-			# # Tambahkan trace pertama (NG_%) dengan sumbu y sekunder
-			# fig.add_trace(go.Line(x=NG_by_kategori_ng['Kategori'], y=NG_by_kategori_ng['NG_%'], name='NG_%', marker_color='blue'), secondary_y=True)
-
-			# # Tambahkan trace kedua (Insp(B/H))
-			# fig.add_trace(go.Bar(x=NG_by_kategori_insp['Kategori'], y=NG_by_kategori_insp['Insp(B/H)'], name='Insp(B/H)', marker_color='orange'))
-
-			# # Update layout untuk sumbu y sekunder
-			# fig.update_layout(
-			# 	title='Perbandingan Agregasi per Kategori',
-			# 	xaxis_title='Kategori',
-			# 	yaxis=dict(title='Insp(B/H)'),
-			# 	yaxis2=dict(title='NG_%', overlaying='y', side='right')
-			# )
-
 			# Create a figure with a 1x2 subplot grid (1 row, 2 columns)
 			fig = make_subplots(rows=1, cols=2)
 
@@ -526,7 +490,7 @@ if uploaded_file is not None:
 		#---------
 		pt_customer_line2=pd.pivot_table(df,values='Insp(B/H)',index='Cust.ID',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
 		# Bulatkan nilai-nilai ke angka bulat terdekat
-		pt_customer_line2 = pt_customer_line2.round()
+		pt_customer_line2 = pt_customer_line2.round(0)
 		st.write('Data Quantity (lot) by Line & Customer')
 		pt_customer_line2_tranposed=pt_customer_line2.transpose()
 		st.write(pt_customer_line2_tranposed)
@@ -549,6 +513,7 @@ if uploaded_file is not None:
 
 		with colnan:
 			st.write('Data Quantity (lot) by Line & Kategori')
+			pt_kategori_line2 = pt_kategori_line2.round(0)
 			st.write(pt_kategori_line2)
 
 		# # Mengonversi pivot tabel dari bentuk wide ke long untuk plotly
@@ -574,6 +539,7 @@ if uploaded_file is not None:
 		total_row = df[new_columns].sum().to_frame().T
 		total_row['index'] = 'Total_NG(lot)'
 		total_row.set_index('index', inplace=True)
+		total_row=total_row.round(0)
 		st.write(total_row)
 
 		st.write(f"Total NG (lot) : {df['Tot_NG'].sum():.0f}")
@@ -582,6 +548,7 @@ if uploaded_file is not None:
 		total_rowNG = (total_row/df['Tot_NG'].sum())*100
 		total_rowNG['index']='Total_NG%'
 		total_rowNG.set_index('index', inplace=True)
+		total_rowNG=total_rowNG.round(2)
 		st.write(total_rowNG)
 
 		st.write(f"Total NG (%) : {df['NG_%'].mean():0.2f}")
@@ -606,6 +573,7 @@ if uploaded_file is not None:
 		# Transpose the pivot table
 		st.write('Data NG (%) by Nomer Mesin Stamping')
 		pt_MesinNo_transposed = pt_MesinNo.transpose()
+		pt_MesinNo_transposed=pt_MesinNo_transposed.round(2)
 		st.write(pt_MesinNo_transposed)
 
 		#groupby dataframe	---------------

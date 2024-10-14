@@ -36,7 +36,8 @@ with kolkir:
 			 oleh karena itu dilakukan proses cleaning, seperti mengkonversi data TEXT menjadi angka,\
 			 konversi type NG ABCDSEFGIJKLMN menjadi definisi type NG, mengekstrasi data Nomer Jig\
 		  	 menjadi Nomer Mesin SMallpart, menghapus kolom yang tidak perlu\
-			 dan menambah kolom yang diperlukan,dll.")
+			 dan menambah kolom yang diperlukan,dll. Tanpa buang waktu sudah disediakan juga\
+		  	 summary report berupa Table dan Grafik yang siap digunkan untuk analisa")
 with kolnan:
 	# Adjust the file path based on the current directory
 	current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -179,13 +180,6 @@ if uploaded_file is not None:
 		df.drop(columns=['DocNo'], inplace=True)
 		
 		pd.set_option('display.max_columns', None)                      # Mengatur pandas untuk menampilkan semua kolom
-		# memindahkan posisi kolom Y ke setelah kolom X
-			# 1. Daftar kolom saat ini
-		# columns = df.columns.tolist()
-		#     # 2. Pindahkan kolom 'Y' setelah kolom 'X'
-		# columns.insert(columns.index('X'), columns.pop(columns.index('Y')))
-		#     # 3. Atur ulang dataframe dengan urutan kolom baru
-		# df = df.reindex(columns=columns)
 		
 		# Mengganti nama kolom jenis NG ke nama Aslinya
 		new_columns = {
@@ -354,28 +348,6 @@ if uploaded_file is not None:
 		with open('df_cache.pkl', 'wb') as f:
 			pickle.dump(df, f)
 
-		#groupby dataframe	---------------
-		NG_by_kategori=(
-		df[["Kategori","NG_%"]]
-		.groupby(by="Kategori")
-		.mean()
-		.sort_values(by="NG_%",ascending=False)
-		.reset_index()
-		)
-		st.write(NG_by_kategori)
-		# Buat grafik garis
-		# Buat grafik garis interaktif
-		# Buat grafik batang interaktif
-		fig = go.Figure(data=go.Line(x=NG_by_kategori['Kategori'], y=NG_by_kategori['NG_%'],
-								marker_color='yellow'))  # Sesuaikan warna jika ingin
-
-		fig.update_layout(title='Rata-rata NG_% per Kategori',
-						xaxis_title='Kategori',
-						yaxis_title='NG_%')
-
-		st.plotly_chart(fig)
-
-
 		#------------------ view di 2 kolom
 		bariskiri,bt1,bt2,bt3,bariskanan=st.columns(5)
 
@@ -414,7 +386,7 @@ if uploaded_file is not None:
 		pivot_df_bulan_line3= pd.pivot_table(df, values='Insp(B/H)', index='Date',columns='Line', aggfunc='sum',margins=True,margins_name='Total')
 
 			#Grafik area
-		grafik_kiri,grafik_tengah=st.columns(2)
+		grafik_kiri,grafik_kanan=st.columns(2)
 
 		with grafik_kiri:
 			# Menggambar grafik batang
@@ -428,7 +400,7 @@ if uploaded_file is not None:
 
 			st.pyplot(fig)
 		
-		with grafik_tengah:
+		with grafik_kanan:
 				# Hitung agregasi untuk setiap kategori
 			NG_by_kategori_ng = df.groupby('Kategori').agg({'NG_%': 'mean'}).reset_index()
 			NG_by_kategori_insp = df.groupby('Kategori').agg({'Insp(B/H)': 'sum'}).reset_index()
@@ -636,6 +608,26 @@ if uploaded_file is not None:
 		pt_MesinNo_transposed = pt_MesinNo.transpose()
 		st.write(pt_MesinNo_transposed)
 
+		#groupby dataframe	---------------
+		NG_by_kategori=(
+		df[["Kategori","NG_%"]]
+		.groupby(by="Kategori")
+		.mean()
+		.sort_values(by="NG_%",ascending=False)
+		.reset_index()
+		)
+		st.write(NG_by_kategori)
+		# Buat grafik garis
+		# Buat grafik garis interaktif
+		# Buat grafik batang interaktif
+		fig = go.Figure(data=go.Bar(x=NG_by_kategori['Kategori'], y=NG_by_kategori['NG_%'],
+								marker_color='yellow'))  # Sesuaikan warna jika ingin
+
+		fig.update_layout(title='Rata-rata NG_% per Kategori',
+						xaxis_title='Kategori',
+						yaxis_title='NG_%')
+
+		st.plotly_chart(fig)
 
 	else:
 		st.write("File tidak ditemukan")

@@ -458,35 +458,7 @@ if uploaded_file is not None:
 		# Memilih kolom yang ingin diplotkan (kecuali kolom 'Total')
 		columns_to_plot = pt_customer_line_transposed.columns[:-1]  # Mengambil semua kolom kecuali yang terakhir
 		chart_data = pd.DataFrame(pt_customer_line_transposed,index=['Line'], columns=columns_to_plot)
-		# axis_x=pt_customer_line_transposed['Line']
-		# st.write(axis_x)
-		# st.line_chart(chart_data)
-		# Membuat grafik garis
-		# pt_customer_line_transposed[columns_to_plot].plot(kind='line', figsize=(10, 6))
-
-		# # Menambahkan judul dan label sumbu
-		# plt.title('Data NG (%) by Line & Customer')
-		# plt.xlabel('Cust ID')
-		# plt.ylabel('%NG')
-
-		# # Menampilkan grafik
-		# plt.show()
 	
-		# st.line_chart(chart_data, 
-		# 		x=columns_to_plot, 
-		# 		y=['NG_%'], 
-		# 		x_label="Cust_ID", 
-		# 		y_label='%NG', 
-		# 		use_container_width=True
-		# 		)
-
-		# # Plot the line chart
-		# st.line_chart(
-		# 	pt_customer_line,
-		# 	x_label="Cust_ID",
-		# 	y_label='%NG',
-		# 	use_container_width=True
-		# )
 		#---------
 		pt_customer_line2=pd.pivot_table(df,values='Insp(B/H)',index='Cust.ID',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
 		# Bulatkan nilai-nilai ke angka bulat terdekat
@@ -577,25 +549,13 @@ if uploaded_file is not None:
 		st.write(pt_MesinNo_transposed)
 
 		#groupby dataframe	---------------
-		NG_by_kategori=(
-		df[["Kategori","NG_%"]]
-		.groupby(by="Kategori")
-		.mean()
-		.sort_values(by="NG_%",ascending=False)
-		.reset_index()
-		)
-		st.write(NG_by_kategori)
-		# Buat grafik garis
-		# Buat grafik garis interaktif
-		# Buat grafik batang interaktif
-		fig = go.Figure(data=go.Bar(x=NG_by_kategori['Kategori'], y=NG_by_kategori['NG_%'],
-								marker_color='yellow'))  # Sesuaikan warna jika ingin
 
-		fig.update_layout(title='Rata-rata NG_% per Kategori',
-						xaxis_title='Kategori',
-						yaxis_title='NG_%')
+		sikir,sinan=st.columns(2)
 
-		st.plotly_chart(fig)
+		with sikir:
+		
+	with sinan:
+		st.write("Sisi kanan grafik lagi")
 
 	else:
 		st.write("File tidak ditemukan")

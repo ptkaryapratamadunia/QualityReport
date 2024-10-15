@@ -553,9 +553,27 @@ if uploaded_file is not None:
 		sikir,sinan=st.columns(2)
 
 		with sikir:
-		
-	with sinan:
-		st.write("Sisi kanan grafik lagi")
+			NG_by_kategori=(
+			df[["Kategori","NG_%"]]
+			.groupby(by="Kategori")
+			.mean()
+			.sort_values(by="NG_%",ascending=False)
+			.reset_index()
+			)
+			# st.write(NG_by_kategori)
+			
+			# Buat grafik batang interaktif
+			fig = go.Figure(data=go.Bar(x=NG_by_kategori['Kategori'], y=NG_by_kategori['NG_%'],
+									marker_color='yellow'))  # Sesuaikan warna jika ingin
+
+			fig.update_layout(title='Rata-rata NG_% per Kategori',
+							xaxis_title='Kategori',
+							yaxis_title='NG_%')
+
+			st.plotly_chart(fig)
+
+		with sinan:
+			st.write("Sisi kanan grafik lagi")
 
 	else:
 		st.write("File tidak ditemukan")

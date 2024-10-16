@@ -570,7 +570,7 @@ if uploaded_file is not None:
 			st.plotly_chart(fig)
 
 		with sinan:
-			st.write("Sisi kanan grafik lagi")
+		
 			NG_by_Cust=(
 			df[["Cust.ID","NG_%"]]
 			.groupby(by="Cust.ID")
@@ -582,9 +582,9 @@ if uploaded_file is not None:
 			
 			# Buat grafik batang interaktif
 			fig = go.Figure(data=go.Bar(x=NG_by_Cust['Cust.ID'], y=NG_by_Cust['NG_%'],
-									marker_color='yellow'))  # Sesuaikan warna jika ingin
+									marker_color='blue'))  # Sesuaikan warna jika ingin
 
-			fig.update_layout(title='Rata-rata NG_% per Kategori',
+			fig.update_layout(title='Rata-rata NG_% by Customer',
 							xaxis_title='Cust.ID',
 							yaxis_title='NG_%')
 

@@ -17,8 +17,6 @@ import plotly.express as px
 import plotly.graph_objects as go       #cara 2 agar data terlihat saat mouse over
 from plotly.subplots import make_subplots
 
-
-
 st.set_page_config(page_title="Quality Report", page_icon=":bar_chart:",layout="wide")
 
 # Fungsi untuk mengubah gambar menjadi base64
@@ -482,7 +480,6 @@ if uploaded_file is not None:
 			st.write(pt_kategori_line)
 
 
-
 		with colnan:
 			st.write('Data Quantity (lot) by Line & Kategori')
 			pt_kategori_line2 = pt_kategori_line2.round(0)
@@ -574,6 +571,24 @@ if uploaded_file is not None:
 
 		with sinan:
 			st.write("Sisi kanan grafik lagi")
+			NG_by_Cust=(
+			df[["Cust.ID","NG_%"]]
+			.groupby(by="Cust.ID")
+			.mean()
+			.sort_values(by="NG_%",ascending=False)
+			.reset_index()
+			)
+			# st.write(NG_by_kategori)
+			
+			# Buat grafik batang interaktif
+			fig = go.Figure(data=go.Bar(x=NG_by_kategori['Cust.ID'], y=NG_by_kategori['NG_%'],
+									marker_color='yellow'))  # Sesuaikan warna jika ingin
+
+			fig.update_layout(title='Rata-rata NG_% per Kategori',
+							xaxis_title='Cust.ID',
+							yaxis_title='NG_%')
+
+			st.plotly_chart(fig)
 
 	else:
 		st.write("File tidak ditemukan")

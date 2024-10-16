@@ -581,7 +581,7 @@ if uploaded_file is not None:
 			# st.write(NG_by_kategori)
 			
 			# Buat grafik batang interaktif
-			fig = go.Figure(data=go.Bar(x=NG_by_kategori['Cust.ID'], y=NG_by_kategori['NG_%'],
+			fig = go.Figure(data=go.Bar(x=NG_by_Cust['Cust.ID'], y=NG_by_Cust['NG_%'],
 									marker_color='yellow'))  # Sesuaikan warna jika ingin
 
 			fig.update_layout(title='Rata-rata NG_% per Kategori',

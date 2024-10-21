@@ -326,8 +326,13 @@ if uploaded_file is not None:
 		with st.expander("Preview Data setelah dirapihkan (cleaning)"):
 			df3 = dataframe_explorer(df, case=False)
 			st.dataframe(df, use_container_width=True)
-		# AgGrid(df, height=400)
-		# st.write(df)
+
+		#------------- merapihkan kolom sama dengan target looker 21Oct2024
+		file_kolom=pd.read_excel(df2.xlsx)
+		# Dapatkan urutan kolom dari df
+		kolom_std = file_kolom.columns.tolist()
+		# Susun ulang df2 agar kolomnya mengikuti df1
+		df = df[kolom_std]
 
         # menghapus kolom yg tidak akan digunakan'
 		# df.drop(columns=['Tot_NG'], inplace=True)

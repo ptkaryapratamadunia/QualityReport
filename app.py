@@ -95,7 +95,6 @@ with kolnan:
 	with kolnan2:
 		st.markdown('<div style="text-align: right;"> Quality Dept. - 2024', unsafe_allow_html=True)
 		st.markdown("---")
-		# st.write('Quality Dept. - 2024')
 		if st.button('Summary Web Report'):
 					webbrowser.open_new_tab('https://lookerstudio.google.com/reporting/e4a5c3f7-bf91-44e0-9ced-2b7a01eafa3d/page/FsgzD?s=qyZPms8Wytc') 
 		st.markdown('</div>', unsafe_allow_html=True)
@@ -592,11 +591,11 @@ if uploaded_file is not None:
 		with sinan:
 		
 			NG_by_Cust=(
-			df[["Cust.ID","NG_%"]]
-			.groupby(by="Cust.ID")
-			.mean()
-			.sort_values(by="NG_%",ascending=False)
-			.reset_index()
+					df[["Cust.ID","NG_%"]]
+					.groupby(by="Cust.ID")
+					.mean()
+					.sort_values(by="NG_%",ascending=False)
+					.reset_index()
 			)
 			# st.write(NG_by_kategori)
 			
@@ -610,9 +609,32 @@ if uploaded_file is not None:
 
 			st.plotly_chart(fig)
 
+		#--------------------------------------
+
+		Insp_by_Cust=(
+				df[["Cust.ID","Insp(B/H)"]]
+				.groupby(by="Cust.ID")
+				.sum()
+				.sort_values(by="Insp(B/H)",ascending=False)
+				.reset_index()
+		)
+		
+		# Create a pie chart
+		fig = go.Figure(data=go.Pie(labels=Insp_by_Cust['Cust.ID'], values=Insp_by_Cust['Insp(B/H)'], marker=dict(colors=['green', 'yellow', 'red', 'blue'])))
+
+		fig.update_layout(title='Tot. Inspected(lot) by Customer',
+						xaxis_title='Cust.ID',
+						yaxis_title='Qty (lot)')
+
+		st.plotly_chart(fig)
+
 	else:
 		st.write("File tidak ditemukan")
 
+
+
+	#Footer diisi foto ditaruh ditengah
+	st.markdown("---")
 	kaki_kiri,kaki_kiri2, kaki_tengah,kaki_kanan2, kaki_kanan=st.columns((2,2,1,2,2))
 
 	with kaki_kiri:

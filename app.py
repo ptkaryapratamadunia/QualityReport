@@ -328,20 +328,21 @@ if uploaded_file is not None:
 			st.dataframe(df, use_container_width=True)
 
 		#------------- merapihkan kolom sama dengan target looker 21Oct2024
-		file_kolom=pd.read_excel(df2.xlsx)
+		df_4_ekspor=df
+        # menghapus kolom yg tidak akan digunakan'
+		df_4_ekspor.drop(columns=['Tot_NG'], inplace=False)
+		#buka file kolom standar looker studi
+		file_kolom=pd.read_csv("df2_standar_kolom.csv")
 		# Dapatkan urutan kolom dari df
 		kolom_std = file_kolom.columns.tolist()
 		# Susun ulang df2 agar kolomnya mengikuti df1
-		df = df[kolom_std]
-
-        # menghapus kolom yg tidak akan digunakan'
-		# df.drop(columns=['Tot_NG'], inplace=True)
+		df_4_ekspor = df_4_ekspor[kolom_std]
 
 		#simpan di memori dan harus di-download
 		# Simpan DataFrame ke file Excel dalam memori
 		output = BytesIO()
 		with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-			df.to_excel(writer, index=False, sheet_name='Sheet1')
+			df_4_ekspor.to_excel(writer, index=False, sheet_name='Sheet1')
 			writer.close()
 		output.seek(0)
 
@@ -352,6 +353,16 @@ if uploaded_file is not None:
 			pickle.dump(df, f)
 
 		#------------------ view di 2 kolom
+		# Membuat tabel pivot NG% by MONTH and LINE---------------
+		df['Date']=pd.to_datetime(df['Date'])
+		df['Date'] = df['Date'].dt.strftime("%b-%Y")
+
+		pivot_df_bulan_line= pd.pivot_table(df, values='NG_%', index='Date',columns='Line', aggfunc='mean',margins=True,margins_name='Total')
+		pivot_df_bulan_line_grafik= pd.pivot_table(df, values='NG_%', index='Date',columns='Line', aggfunc='mean')
+		# Membuat tabel pivot Qty NG(Lot) by MONTH and LINE---------------
+		pivot_df_bulan_line2= pd.pivot_table(df, values='Tot_NG', index='Date',columns='Line', aggfunc='sum',margins=True,margins_name='Total')
+		# Membuat tabel pivot Qty Insp(Lot) by MONTH and LINE---------------
+		pivot_df_bulan_line3= pd.pivot_table(df, values='Insp(B/H)', index='Date',columns='Line', aggfunc='sum',margins=True,margins_name='Total')
 		bariskiri,bt1,bt2,bt3,bariskanan=st.columns(5)
 
 		with bariskiri:
@@ -367,26 +378,18 @@ if uploaded_file is not None:
 		
 			st.markdown("""<h6 style="color:yellow;" > ⬅️Klik tombol download </h6>""", unsafe_allow_html=True)
 		with bt2:
-			st.write("")
+			st.write("Total NG (lot):")
 		with bt3:
-			st.write("")
+			st.write("Total NG (%)")
+			tot_piv_NG%=pivot_df_bulan_line['Total']
+			st.write("tot_piv_NG%")
 		with bariskanan:
-			st.write("")
+			st.write("Total Qty (lot)")
 		# df.to_excel('File_after_Cleaning.xlsx',index=False)
 		# st.write("File after Cleaning juga telah disimpan dalam bentuk .xlsx dengan nama : 'File after Cleaning'")
 		st.markdown("---")
 
 		# -------------------------------------
-		# Membuat tabel pivot NG% by MONTH and LINE---------------
-		df['Date']=pd.to_datetime(df['Date'])
-		df['Date'] = df['Date'].dt.strftime("%b-%Y")
-
-		pivot_df_bulan_line= pd.pivot_table(df, values='NG_%', index='Date',columns='Line', aggfunc='mean',margins=True,margins_name='Total')
-		pivot_df_bulan_line_grafik= pd.pivot_table(df, values='NG_%', index='Date',columns='Line', aggfunc='mean')
-		# Membuat tabel pivot Qty NG(Lot) by MONTH and LINE---------------
-		pivot_df_bulan_line2= pd.pivot_table(df, values='Tot_NG', index='Date',columns='Line', aggfunc='sum',margins=True,margins_name='Total')
-		# Membuat tabel pivot Qty Insp(Lot) by MONTH and LINE---------------
-		pivot_df_bulan_line3= pd.pivot_table(df, values='Insp(B/H)', index='Date',columns='Line', aggfunc='sum',margins=True,margins_name='Total')
 
 			#Grafik area
 		grafik_kiri,grafik_kanan=st.columns(2)
@@ -454,8 +457,6 @@ if uploaded_file is not None:
 
 		#gambar grafik line	
 
-		# Asumsikan data Anda sudah dalam bentuk CSV dengan nama 'data.csv'
-		# Sesuaikan nama file jika berbeda
 		df_grafik=pd.DataFrame(pt_customer_line_transposed)
 		st.write(df_grafik)
 		# Memilih kolom yang ingin diplotkan (kecuali kolom 'Total')
@@ -516,16 +517,16 @@ if uploaded_file is not None:
 		total_row=total_row.round(0)
 		st.write(total_row)
 
-		st.write(f"Total NG (lot) : {df['Tot_NG'].sum():.0f}")
+		# st.write(f"Total NG (lot) : {df['Tot_NG'].sum():.0f}")
 		#-------------------------------------------------------
 
-		total_rowNG = (total_row/df['Tot_NG'].sum())*100
-		total_rowNG['index']='Total_NG%'
-		total_rowNG.set_index('index', inplace=True)
-		total_rowNG=total_rowNG.round(2)
-		st.write(total_rowNG)
+		# total_rowNG = (total_row/df['Tot_NG'].sum())*100
+		# total_rowNG['index']='Total_NG%'
+		# total_rowNG.set_index('index', inplace=True)
+		# total_rowNG=total_rowNG.round(2)
+		# st.write(total_rowNG)
 
-		st.write(f"Total NG (%) : {df['NG_%'].mean():0.2f}")
+		# st.write(f"Total NG (%) : {df['NG_%'].mean():0.2f}")
 
 		# Membuat tabel pivot NG by M/C No ---------------
 		# Filter DataFrame to exclude empty or '00' in 'M/C No.'

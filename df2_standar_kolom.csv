@@ -1,0 +1,4 @@
+Line,Date,Shift,NoJig,M/C No.,NoCard,Std Load,NoBarrelHanger,NoBak,Cust.ID,Part.ID,PartName,OK(pcs),Qty(NG),QInspec,Insp(B/H),OK(B/H),NG(B/H),% NG,NG_%,Warna,Buram,Berbayang,Kotor,Tdk Terplating,Rontok/ Blister,Tipis/ EE No Plating,Flek Kuning,Terbakar,Watermark,Jig Mark/ Renggang,Lecet/ Scratch,Seret,Flek Hitam,Flek Tangan,Belang/ Dempet,Bintik,Kilap,Tebal,Flek Putih,Spark,Kotor H/ Oval,Terkikis/ Crack,Dimensi/ Penyok,MTL/ SLipMelintir,Kategori
+Barrel 4,02-01-24 0:00,1,R,,1,500,7,1,CHI,CHI SPR 911,Spring Coil P/N 911-4940,500,0,500,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,OTH
+Barrel 4,02-01-24 0:00,1,L,,2,500,17,6,CHI,CHI SPR 911,Spring Coil P/N 911-4940,500,0,500,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,OTH
+Barrel 4,02-01-24 0:00,1,28.12.01.09.17.01,9,70,5000,22,1R,DNIA,DNIAF GAS RING X,Gasket Ring X JK067604-0410,4966,34,5000,1,0.9932,0.0068,0.0068,0.2,0,0,0,0,0.002,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.0048,SMP

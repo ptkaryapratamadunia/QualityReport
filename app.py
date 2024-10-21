@@ -93,8 +93,9 @@ with kolnan:
 	with kolkir2:
 		st.write("")
 	with kolnan2:
-		st.markdown('<div style="text-align: right;">', unsafe_allow_html=True)
-		st.write('Developed by e-WeYe ©️2024')
+		st.markdown('<div style="text-align: right;"> Quality Dept. - 2024', unsafe_allow_html=True)
+		st.markdown("---")
+		# st.write('Quality Dept. - 2024')
 		if st.button('Summary Web Report'):
 					webbrowser.open_new_tab('https://lookerstudio.google.com/reporting/e4a5c3f7-bf91-44e0-9ced-2b7a01eafa3d/page/FsgzD?s=qyZPms8Wytc') 
 		st.markdown('</div>', unsafe_allow_html=True)
@@ -612,27 +613,42 @@ if uploaded_file is not None:
 	else:
 		st.write("File tidak ditemukan")
 
+	kaki_kiri,kaki_kiri2, kaki_tengah,kaki_kanan2, kaki_kanan=st.columns((2,2,1,2,2))
+
+	with kaki_kiri:
+		st.write("")
+
+	with kaki_kiri2:
+		st.write("")
+
+	with kaki_tengah:
+		# kontener_photo=st.container(border=True)
+		# Adjust the file path based on the current directory
+		current_dir = os.path.dirname(os.path.abspath(__file__))
+		e_WeYe = os.path.join(current_dir, 'eweye.png')
+		# Memuat gambar dan mengubahnya menjadi base64
+		# logo_KPD ='logoKPD.png'
+		image_base64 = get_image_as_base64(e_WeYe)
+		st.image(e_WeYe,"Web Developer - eWeYe ©️2024",use_column_width="always")
+
+	with kaki_kanan2:
+		st.write("")
+
+	with kaki_kanan:
+		st.write("")
+
+
+
+
+
+
+
 else:
 	st.write("Menunggu file diupload....")
 
 
 # End of Cleaning Data
 
-kaki_kiri, kaki_tengah, kaki_kanan=st.columns(3)
-
-with kaki_kiri:
-	st.write("")
-with kaki_tengah:
-	kontener_photo=st.container(border=True)
-	# Adjust the file path based on the current directory
-	current_dir = os.path.dirname(os.path.abspath(__file__))
-	e_WeYe = os.path.join(current_dir, 'eweye.png')
-	# Memuat gambar dan mengubahnya menjadi base64
-	# logo_KPD ='logoKPD.png'
-	image_base64 = get_image_as_base64(e_WeYe)
-
-with kaki_kanan:
-	st.write("")
 
 
 # ---- HIDE STREAMLIT STYLE ----

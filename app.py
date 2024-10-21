@@ -31,11 +31,12 @@ with kolkir:
 	st.markdown("""<h2 style="color:yellow;margin-top:-10px;margin-bottom:0px;"> 🧹CLEANING DATA </h2>""", unsafe_allow_html=True)
 	st.write("Tools Pengolahan Data")
 	st.write("Beberapa data output dari aplikasi AUTOCON-KPD belum siap pakai,\
-			 oleh karena itu dilakukan proses cleaning, seperti mengkonversi data TEXT menjadi angka,\
+			 oleh karena itu perlu dilakukan proses cleaning, seperti mengkonversi data TEXT menjadi angka,\
 			 konversi type NG ABCDSEFGIJKLMN menjadi definisi type NG, mengekstrasi data Nomer Jig\
 		  	 menjadi Nomer Mesin SMallpart, menghapus kolom yang tidak perlu\
 			 dan menambah kolom yang diperlukan,dll. Tanpa buang waktu sudah disediakan juga\
-		  	 summary report berupa Table dan Grafik yang siap digunkan untuk analisa")
+		  	 summary report berupa Table dan Grafik yang siap digunakan untuk analisa dan pengambilan keputusan")
+	
 with kolnan:
 	# Adjust the file path based on the current directory
 	current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -376,26 +377,29 @@ if uploaded_file is not None:
 			)
 		with bt1:
 		
-			st.markdown("""<h6 style="color:yellow;" > ⬅️Klik tombol download </h6>""", unsafe_allow_html=True)
+			st.markdown("""<h6 style="color:blue;" > METRIC SUMMARY  ➡️ </h6>""", unsafe_allow_html=True)
+
 		with bt2:
-			tot_NG_lot=df['Tot_NG'].sum()
-			tot_NG_lot=tot_NG_lot.round(0)
-			st.write(f"{tot_NG_lot:.0f}")
-			bt2.metric("Total NG (lot):",f"{tot_NG_lot:.0f}")
+			container3=st.container(border=True)
+			tot_Qty_lot=df['Insp(B/H)'].sum()
+			container3.write(f"Total Inspected (lot)	:{tot_Qty_lot:.0f}")
+			# bariskanan.metric("Total Inspected (lot)",f"{tot_Qty_lot:.0F}")
+
 		with bt3:
-			tot_NG_persen=df['NG_%'].mean()
-			st.write(f"{tot_NG_persen:.2f}")
-			bt3.metric("Total NG (%)",f"{tot_NG_persen:.2f}")
+			container=st.container(border=True)
+			tot_NG_lot=df['Tot_NG'].sum()
+			container.write(f"Tot. NG (lot)  :  {tot_NG_lot:.0f}")
+			# bt2.metric("Total NG (lot):",f"{tot_NG_lot:.0f}")
 
 		with bariskanan:
-			tot_Qty_lot=df['Insp(B/H)'].sum()
-			tot_Qty_lot=tot_Qty_lot.round(0)
-			st.write(f"{tot_Qty_lot:.0f}")
-			bariskanan.metric("Total Inspected (lot)",f"{tot_Qty_lot:.0F}")
+			container2=st.container(border=True)
+			tot_NG_persen=df['NG_%'].mean()
+			container2.write(f"Tot. NG (%)	: {tot_NG_persen:.2f}")
+			# bt3.metric("Total NG (%)",f"{tot_NG_persen:.2f}")
+		st.markdown("---")
 
 		# df.to_excel('File_after_Cleaning.xlsx',index=False)
 		# st.write("File after Cleaning juga telah disimpan dalam bentuk .xlsx dengan nama : 'File after Cleaning'")
-		st.markdown("---")
 
 		# -------------------------------------
 
@@ -437,6 +441,7 @@ if uploaded_file is not None:
 			# Display the plot
 			st.plotly_chart(fig)
 
+		st.markdown("---")
 
 		st.subheader('Summary Data')
 		kiri,tengah,kanan=st.columns(3)
@@ -612,6 +617,23 @@ else:
 
 
 # End of Cleaning Data
+
+kaki_kiri, kaki_tengah, kaki_kanan=st.columns(3)
+
+with kaki_kiri:
+	st.write("")
+with kaki_tengah:
+	kontener_photo=st.container(border=True)
+	# Adjust the file path based on the current directory
+	current_dir = os.path.dirname(os.path.abspath(__file__))
+	e_WeYe = os.path.join(current_dir, 'eweye.png')
+	# Memuat gambar dan mengubahnya menjadi base64
+	# logo_KPD ='logoKPD.png'
+	image_base64 = get_image_as_base64(e_WeYe)
+
+with kaki_kanan:
+	st.write("")
+
 
 # ---- HIDE STREAMLIT STYLE ----
 hide_st_style = """

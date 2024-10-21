@@ -94,7 +94,7 @@ with kolnan:
 	with kolnan2:
 		st.markdown('<div style="text-align: right;">', unsafe_allow_html=True)
 		st.write('Developed by e-WeYe ©️2024')
-		if st.button('Quality Summary Web Report'):
+		if st.button('Summary Web Report'):
 					webbrowser.open_new_tab('https://lookerstudio.google.com/reporting/e4a5c3f7-bf91-44e0-9ced-2b7a01eafa3d/page/FsgzD?s=qyZPms8Wytc') 
 		st.markdown('</div>', unsafe_allow_html=True)
 	
@@ -378,13 +378,21 @@ if uploaded_file is not None:
 		
 			st.markdown("""<h6 style="color:yellow;" > ⬅️Klik tombol download </h6>""", unsafe_allow_html=True)
 		with bt2:
-			st.write("Total NG (lot):")
+			tot_NG_lot=df['Tot_NG'].sum()
+			tot_NG_lot=tot_NG_lot.round(0)
+			st.write(f"{tot_NG_lot:.0f}")
+			bt2.metric("Total NG (lot):",f"{tot_NG_lot:.0f}")
 		with bt3:
-			st.write("Total NG (%)")
-			tot_piv_NG%=pivot_df_bulan_line['Total']
-			st.write("tot_piv_NG%")
+			tot_NG_persen=df['NG_%'].mean()
+			st.write(f"{tot_NG_persen:.2f}")
+			bt3.metric("Total NG (%)",f"{tot_NG_persen:.2f}")
+
 		with bariskanan:
-			st.write("Total Qty (lot)")
+			tot_Qty_lot=df['Insp(B/H)'].sum()
+			tot_Qty_lot=tot_Qty_lot.round(0)
+			st.write(f"{tot_Qty_lot:.0f}")
+			bariskanan.metric("Total Inspected (lot)",f"{tot_Qty_lot:.0F}")
+
 		# df.to_excel('File_after_Cleaning.xlsx',index=False)
 		# st.write("File after Cleaning juga telah disimpan dalam bentuk .xlsx dengan nama : 'File after Cleaning'")
 		st.markdown("---")

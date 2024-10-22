@@ -610,23 +610,45 @@ if uploaded_file is not None:
 			st.plotly_chart(fig)
 
 		#--------------------------------------
+		pie_kiri,pie_kanan=st.columns(2)
+		with pie_kiri:
+			Insp_by_Cust=(
+					df[["Cust.ID","Insp(B/H)"]]
+					.groupby(by="Cust.ID")
+					.sum()
+					.sort_values(by="Insp(B/H)",ascending=False)
+					.reset_index()
+			)
+			
+			# Create a pie chart
+			fig = go.Figure(data=go.Pie(labels=Insp_by_Cust['Cust.ID'], values=Insp_by_Cust['Insp(B/H)'], marker=dict(colors=['green', 'yellow', 'red', 'blue'])))
 
-		Insp_by_Cust=(
-				df[["Cust.ID","Insp(B/H)"]]
-				.groupby(by="Cust.ID")
-				.sum()
-				.sort_values(by="Insp(B/H)",ascending=False)
-				.reset_index()
-		)
-		
-		# Create a pie chart
-		fig = go.Figure(data=go.Pie(labels=Insp_by_Cust['Cust.ID'], values=Insp_by_Cust['Insp(B/H)'], marker=dict(colors=['green', 'yellow', 'red', 'blue'])))
+			fig.update_layout(title='Porsion Qty Inspected(lot) by Customer',
+							xaxis_title='Cust.ID',
+							yaxis_title='Qty (lot)')
 
-		fig.update_layout(title='Tot. Inspected(lot) by Customer',
-						xaxis_title='Cust.ID',
-						yaxis_title='Qty (lot)')
+			st.plotly_chart(fig)
 
-		st.plotly_chart(fig)
+		with pie_kanan:
+
+			Insp_by_Kategori=(
+					df[["Kategori","Insp(B/H)"]]
+					.groupby(by="Kategori")
+					.sum()
+					.sort_values(by="Insp(B/H)",ascending=False)
+					.reset_index()
+			)
+			
+			# Create a pie chart
+			fig = go.Figure(data=go.Pie(labels=Insp_by_Kategori['Kategori'], values=Insp_by_Kategori['Insp(B/H)'], marker=dict(colors=['green', 'yellow', 'red', 'blue'])))
+
+			fig.update_layout(title='Porsion Tot. Inspected(lot) by Kategori',
+							xaxis_title='Kategori',
+							yaxis_title='Qty (lot)')
+
+			st.plotly_chart(fig)
+
+
 
 	else:
 		st.write("File tidak ditemukan")

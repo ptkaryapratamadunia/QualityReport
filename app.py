@@ -359,11 +359,14 @@ if uploaded_file is not None:
 		df['Date'] = df['Date'].dt.strftime("%b-%Y")
 
 		pivot_df_bulan_line= pd.pivot_table(df, values='NG_%', index='Date',columns='Line', aggfunc='mean',margins=True,margins_name='Total')
-		pivot_df_bulan_line_grafik= pd.pivot_table(df, values='NG_%', index='Date',columns='Line', aggfunc='mean')
+		pivot_df_bulan_line_grafik= pd.pivot_table(df, values='NG_%', index='Date', aggfunc='mean')
 		# Membuat tabel pivot Qty NG(Lot) by MONTH and LINE---------------
 		pivot_df_bulan_line2= pd.pivot_table(df, values='Tot_NG', index='Date',columns='Line', aggfunc='sum',margins=True,margins_name='Total')
 		# Membuat tabel pivot Qty Insp(Lot) by MONTH and LINE---------------
 		pivot_df_bulan_line3= pd.pivot_table(df, values='Insp(B/H)', index='Date',columns='Line', aggfunc='sum',margins=True,margins_name='Total')
+		pivot_df_bulan_line3_grafik= pd.pivot_table(df, values='Insp(B/H)', index='Date', aggfunc='sum')
+
+
 		bariskiri,bt1,bt2,bt3,bariskanan=st.columns(5)
 
 		with bariskiri:
@@ -408,16 +411,30 @@ if uploaded_file is not None:
 
 		with grafik_kiri:
 			# Menggambar grafik batang
-			fig, ax = plt.subplots(figsize=(12, 6))
-			pivot_df_bulan_line_grafik.plot(kind='bar', ax=ax)
+			data_grafik=pivot_df_bulan_line_grafik.reset_index()
+			data_grafik=data_grafik.sort_index(ascending=True)
+			data_grafik2=pivot_df_bulan_line3_grafik.reset_index()
+			data_grafik2=data_grafik2.sort_index(ascending=True)
+			# NG_by_kategori_ng = df.groupby('Date').agg({'NG_%': 'mean'}).reset_index()
+			# NG_by_kategori_insp = df.groupby('Kategori').agg({'Insp(B/H)': 'sum'}).reset_index()
 
-			ax.set_xlabel('Date')
-			ax.set_ylabel('Average NG%')
-			ax.set_title('Average NG% per Line by Date')
-			ax.legend(title='Line')
+			# Create a figure with a 1x2 subplot grid (1 row, 2 columns)
+			fig = make_subplots(rows=1, cols=2)
 
-			st.pyplot(fig)
-		
+			# Add traces to the subplots
+			fig.add_trace(go.Bar(x=data_grafik['Date'], y=data_grafik['NG_%'], name='NG_%', marker_color='blue'), row=1, col=1)
+			fig.add_trace(go.Bar(x=data_grafik2['Date'], y=data_grafik2['Insp(B/H)'], name='Insp(B/H)', marker_color='orange'), row=1, col=2)
+
+			# Update layout for secondary y-axis (optional)
+			fig.update_layout(
+				title='Grafik NG% & Qty Inspeted (lot) by Month',
+				xaxis_title='Month',
+				yaxis=dict(title='NG_%'),
+				yaxis2=dict(title='NG_%', overlaying='y', side='right')  # If needed for overlay
+			)
+
+			# Display the plot
+			st.plotly_chart(fig)
 		with grafik_kanan:
 				# Hitung agregasi untuk setiap kategori
 			NG_by_kategori_ng = df.groupby('Kategori').agg({'NG_%': 'mean'}).reset_index()

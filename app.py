@@ -331,7 +331,7 @@ if uploaded_file is not None:
 		#------------- merapihkan kolom sama dengan target looker 21Oct2024
 		df_4_ekspor=df
         # menghapus kolom yg tidak akan digunakan'
-		df_4_ekspor.drop(columns=['Tot_NG'], inplace=False)
+		# df_4_ekspor.drop(columns=['Tot_NG'], inplace=False)
 		#buka file kolom standar looker studi
 		file_kolom=pd.read_csv("df2_standar_kolom.csv")
 		# Dapatkan urutan kolom dari df

@@ -650,10 +650,10 @@ if uploaded_file is not None:
 		sikir2,sinan2=st.columns(2)
 
 		with sikir2:
-
+			list_line=df['Line'].unique()
 			pilihan_line = st.selectbox(
 			"Pilih Line :",
-			("Barrel 4", "Rack 1", "Nickel"),
+			list_line,
 			index=None,
 			placeholder="Pilih Line di sini...",
 )

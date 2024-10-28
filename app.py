@@ -521,6 +521,7 @@ if uploaded_file is not None:
 
 		# Terapkan format ke seluruh pivot table
 		pt_kategori_line = pt_kategori_line.applymap(format_with_comma)	
+		pt_kategori_line3 = pt_kategori_line3.applymap(format_with_comma)	
 
 		#buat kolom	
 		colkir,colteng,colnan=st.columns(3)

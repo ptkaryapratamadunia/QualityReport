@@ -272,6 +272,8 @@ if uploaded_file is not None:
 		# menghitung prosentase NG dengan syarat TotInsp(Lot) <>0, jika 0 maka 0
 		df['NG_%'] = np.where(df['Insp(B/H)'] == 0, 0, (df['Tot_NG'] / df['Insp(B/H)']) * 100)
 
+		#mengganti semua nilai pada kolom NG(B/H) dari kolom Tot_NG
+		df['NG(B/H)'] = df['Tot_NG']
 
 		# Mengganti nilai kosong dengan 0
 		df['NG_%'] = df['NG_%'].fillna(0)
@@ -331,7 +333,7 @@ if uploaded_file is not None:
 		#------------- merapihkan kolom sama dengan target looker 21Oct2024
 		df_4_ekspor=df
         # menghapus kolom yg tidak akan digunakan'
-		# df_4_ekspor.drop(columns=['Tot_NG'], inplace=False)
+		df_4_ekspor.drop(columns=['Tot_NG'], inplace=False)
 		#buka file kolom standar looker studi
 		file_kolom=pd.read_csv("df2_standar_kolom.csv")
 		# Dapatkan urutan kolom dari df

@@ -650,13 +650,14 @@ if uploaded_file is not None:
 		sikir2,sinan2=st.columns(2)
 
 		with sikir2:
-			list_line=df['Line'].unique()
-			pilihan_line = st.selectbox(
-			"Pilih Line :",
-			list_line,
-			index=None,
-			placeholder="Pilih Line di sini...",
-)
+
+				list_line=df['Line'].unique()
+				pilihan_line = st.selectbox(
+				"Pilih Line :",
+				list_line,
+				index=None,
+				placeholder="Pilih Line di sini...",
+				)
 			# NG_by_part=(
 			# df[["PartName","NG_%"]]
 			# .groupby(by="Kategori")
@@ -697,7 +698,9 @@ if uploaded_file is not None:
 
 			# st.plotly_chart(fig)
 		#--------------------------------------
-		pie_kiri,pie_kanan=st.columns(2)
+
+			pie_kiri,pie_kanan=st.columns(2)
+
 		with pie_kiri:
 			Insp_by_Cust=(
 					df[["Cust.ID","Insp(B/H)"]]

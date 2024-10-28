@@ -530,7 +530,7 @@ if uploaded_file is not None:
 
 		with colteng:
 			st.write('Data Qty NG (lot) by Line & Kategori')
-			pt_kategori_line3 = pt_kategori_line2.round(0)
+			pt_kategori_line3 = pt_kategori_line3.round(0)
 			st.write(pt_kategori_line3)
 
 		with colnan:

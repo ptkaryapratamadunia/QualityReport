@@ -645,7 +645,57 @@ if uploaded_file is not None:
 							yaxis_title='NG_%')
 
 			st.plotly_chart(fig)
+		
+		#kolom lagi
+		sikir2,sinan2=st.columns(2)
 
+		with sikir2:
+
+			pilihan_line = st.selectbox(
+			"Pilih Line :",
+			("Barrel 4", "Rack 1", "Nickel"),
+			index=None,
+			placeholder="Pilih Line di sini...",
+)
+			# NG_by_part=(
+			# df[["PartName","NG_%"]]
+			# .groupby(by="Kategori")
+			# .mean()
+			# .sort_values(by="NG_%",ascending=False)
+			# .reset_index()
+			# )
+			# # st.write(NG_by_kategori)
+			
+			# # Buat grafik batang interaktif
+			# fig = go.Figure(data=go.Bar(x=NG_by_kategori['Kategori'], y=NG_by_kategori['NG_%'],
+			# 						marker_color='yellow'))  # Sesuaikan warna jika ingin
+
+			# fig.update_layout(title='Rata-rata NG_% per Kategori',
+			# 				xaxis_title='Kategori',
+			# 				yaxis_title='NG_%')
+
+			# st.plotly_chart(fig)
+
+		with sinan2:
+		
+			NG_by_Cust=(
+					df[["Cust.ID","NG_%"]]
+					.groupby(by="Cust.ID")
+					.mean()
+					.sort_values(by="NG_%",ascending=False)
+					.reset_index()
+			)
+			# st.write(NG_by_kategori)
+			
+			# Buat grafik batang interaktif
+			fig = go.Figure(data=go.Bar(x=NG_by_Cust['Cust.ID'], y=NG_by_Cust['NG_%'],
+									marker_color='blue'))  # Sesuaikan warna jika ingin
+
+			fig.update_layout(title='Rata-rata NG_% by Customer',
+							xaxis_title='Cust.ID',
+							yaxis_title='NG_%')
+
+			st.plotly_chart(fig)
 		#--------------------------------------
 		pie_kiri,pie_kanan=st.columns(2)
 		with pie_kiri:

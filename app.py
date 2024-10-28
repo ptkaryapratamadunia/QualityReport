@@ -518,16 +518,16 @@ if uploaded_file is not None:
 		colkir,colteng,colnan=st.columns(3)
 		with colkir:
 			st.write('Data NG (%) by Line & Kategori')
-			st.write(pt_kategori_line)
+			st.write(f"{pt_kategori_line:0.2f}")
 
 		with colteng:
 			st.write('Data Qty NG (lot) by Line & Kategori')
-			st.write(pt_kategori_line3)
+			st.write(f"{pt_kategori_line3:.0f}")
 
 		with colnan:
 			st.write('Data Quantity (lot) by Line & Kategori')
 			pt_kategori_line2 = pt_kategori_line2.round(0)
-			st.write(pt_kategori_line2)
+			st.write(f"{pt_kategori_line2:.0f}")
 
 		# # Mengonversi pivot tabel dari bentuk wide ke long untuk plotly
 		# pivot_df_melted = pt_kategori_line.melt(id_vars=['Kategori'], var_name='Line', value_name='Average NG%')

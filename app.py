@@ -513,12 +513,16 @@ if uploaded_file is not None:
 
 		pt_kategori_line=pd.pivot_table(df,values='NG_%',index='Kategori',columns='Line',aggfunc='mean',margins=True,margins_name='Total')
 		pt_kategori_line2=pd.pivot_table(df,values='Insp(B/H)',index='Kategori',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
+		pt_kategori_line3=pd.pivot_table(df,values='Tot_NG',index='Kategori',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
 
-		colkir,colnan=st.columns(2)
+		colkir,colteng,colnan=st.columns(3)
 		with colkir:
 			st.write('Data NG (%) by Line & Kategori')
 			st.write(pt_kategori_line)
 
+		with colteng:
+			st.write('Data Qty NG (lot) by Line & Kategori')
+			st.write(pt_kategori_line3)
 
 		with colnan:
 			st.write('Data Quantity (lot) by Line & Kategori')

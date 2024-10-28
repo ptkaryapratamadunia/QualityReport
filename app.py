@@ -515,6 +515,14 @@ if uploaded_file is not None:
 		pt_kategori_line2=pd.pivot_table(df,values='Insp(B/H)',index='Kategori',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
 		pt_kategori_line3=pd.pivot_table(df,values='Tot_NG',index='Kategori',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
 
+		# Fungsi untuk format angka dengan koma
+		def format_with_comma(value):
+			return "{:,.2f}".format(value)
+
+		# Terapkan format ke seluruh pivot table
+		pt_kategori_line = pt_kategori_line.applymap(format_with_comma)	
+
+		#buat kolom	
 		colkir,colteng,colnan=st.columns(3)
 		with colkir:
 			st.write('Data NG (%) by Line & Kategori')
@@ -522,6 +530,7 @@ if uploaded_file is not None:
 
 		with colteng:
 			st.write('Data Qty NG (lot) by Line & Kategori')
+			pt_kategori_line3 = pt_kategori_line2.round(0)
 			st.write(pt_kategori_line3)
 
 		with colnan:

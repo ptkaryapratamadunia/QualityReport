@@ -1,6 +1,6 @@
 # Khusus untuk cleaning data keluaran dari autocon untuk ke Excel, Looker, Tableau dll
 # 03 Oct 2024 start build
-# 08 Oct 2024 start deploy : qualityreportkpd.streamlit.app
+# 08 Oct 2024 start deploy : qualityreportkpd.streamlit.app atau s.id/kpdqualitydatacleaner
 
 import streamlit as st
 import pandas as pd
@@ -28,7 +28,7 @@ def get_image_as_base64(image_path):
 kolkir,kolnan=st.columns((2,1))	#artinya kolom sebelahkiri lebih lebar 2x dari kanan
 
 with kolkir:
-	st.markdown("""<h2 style="color:yellow;margin-top:-10px;margin-bottom:0px;"> 🧹CLEANING DATA </h2>""", unsafe_allow_html=True)
+	st.markdown("""<h2 style="color:green;margin-top:-10px;margin-bottom:0px;"> 🧹CLEANING DATA </h2>""", unsafe_allow_html=True)
 	st.write("Tools Pengolahan Data")
 	st.write("Beberapa data output dari aplikasi AUTOCON-KPD belum siap pakai,\
 			 oleh karena itu perlu dilakukan proses cleaning, seperti mengkonversi data TEXT menjadi angka,\
@@ -435,6 +435,7 @@ if uploaded_file is not None:
 
 			# Display the plot
 			st.plotly_chart(fig)
+			
 		with grafik_kanan:
 				# Hitung agregasi untuk setiap kategori
 			NG_by_kategori_ng = df.groupby('Kategori').agg({'NG_%': 'mean'}).reset_index()

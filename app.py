@@ -678,24 +678,24 @@ if uploaded_file is not None:
 
 		with sinan2:
 		
-			NG_by_Cust=(
-					df[["Cust.ID","NG_%"]]
-					.groupby(by="Cust.ID")
-					.mean()
-					.sort_values(by="NG_%",ascending=False)
-					.reset_index()
-			)
-			# st.write(NG_by_kategori)
+			# NG_by_Cust=(
+			# 		df[["Cust.ID","NG_%"]]
+			# 		.groupby(by="Cust.ID")
+			# 		.mean()
+			# 		.sort_values(by="NG_%",ascending=False)
+			# 		.reset_index()
+			# )
+			# # st.write(NG_by_kategori)
 			
-			# Buat grafik batang interaktif
-			fig = go.Figure(data=go.Bar(x=NG_by_Cust['Cust.ID'], y=NG_by_Cust['NG_%'],
-									marker_color='blue'))  # Sesuaikan warna jika ingin
+			# # Buat grafik batang interaktif
+			# fig = go.Figure(data=go.Bar(x=NG_by_Cust['Cust.ID'], y=NG_by_Cust['NG_%'],
+			# 						marker_color='blue'))  # Sesuaikan warna jika ingin
 
-			fig.update_layout(title='Rata-rata NG_% by Customer',
-							xaxis_title='Cust.ID',
-							yaxis_title='NG_%')
+			# fig.update_layout(title='Rata-rata NG_% by Customer',
+			# 				xaxis_title='Cust.ID',
+			# 				yaxis_title='NG_%')
 
-			st.plotly_chart(fig)
+			# st.plotly_chart(fig)
 		#--------------------------------------
 		pie_kiri,pie_kanan=st.columns(2)
 		with pie_kiri:

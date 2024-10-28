@@ -562,7 +562,9 @@ if uploaded_file is not None:
 		total_row = df[new_columns].sum().to_frame().T
 		total_row['index'] = 'Total_NG(lot)'
 		total_row.set_index('index', inplace=True)
-		total_row=total_row.round(0)
+
+		# total_row=total_row.round(0)
+		total_row = total_row.applymap(format_with_comma)		#pengganti format diatas, meskipun unit nya lot krn actualnya ada yg kecil di bawah 1 lot
 		st.write(total_row)
 
 		# st.write(f"Total NG (lot) : {df['Tot_NG'].sum():.0f}")

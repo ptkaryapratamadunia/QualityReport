@@ -518,11 +518,11 @@ if uploaded_file is not None:
 		colkir,colteng,colnan=st.columns(3)
 		with colkir:
 			st.write('Data NG (%) by Line & Kategori')
-			st.write(f"{pt_kategori_line:0.2f}")
+			st.write(pt_kategori_line)
 
 		with colteng:
 			st.write('Data Qty NG (lot) by Line & Kategori')
-			st.write(f"{pt_kategori_line3:.0f}")
+			st.markdown(f"{pt_kategori_line3:.0f}",unsafe_allow_html=True)
 
 		with colnan:
 			st.write('Data Quantity (lot) by Line & Kategori')

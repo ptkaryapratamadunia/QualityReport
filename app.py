@@ -515,14 +515,24 @@ if uploaded_file is not None:
 		pt_kategori_line2=pd.pivot_table(df,values='Insp(B/H)',index='Kategori',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
 		pt_kategori_line3=pd.pivot_table(df,values='Tot_NG',index='Kategori',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
 
+		#pt by kategori pcs 
+		pt_kategori_line_NGpcs=pd.pivot_table(df,values='Qty(NG)',index='Kategori',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
+		pt_kategori_line_InspPcs=pd.pivot_table(df,values='QInspec',index='Kategori',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
+
 		# Fungsi untuk format angka dengan koma
+		# def format_with_comma(value):
+		# 	return "{:,.2f}".format(value)
 		def format_with_comma(value):
-			return "{:,.2f}".format(value)
+			if isinstance(value, (int, float)):
+				return "{:,.2f}".format(value)
+			return value
 
 		# Terapkan format ke seluruh pivot table
 		pt_kategori_line = pt_kategori_line.applymap(format_with_comma)	
 		pt_kategori_line3 = pt_kategori_line3.applymap(format_with_comma)	
+		pt_kategori_line_NGpcs=pt_kategori_line_NGpcs.applymap(format_with_comma)
 
+	
 		#buat kolom	
 		colkir,colteng,colnan=st.columns(3)
 		with colkir:
@@ -531,13 +541,17 @@ if uploaded_file is not None:
 
 		with colteng:
 			st.write('Data Qty NG (lot) by Line & Kategori')
-			pt_kategori_line3 = pt_kategori_line3.round(0)
 			st.write(pt_kategori_line3)
-
+			st.write('Data Qty NG (pcs) by Line & Kategori')
+			st.write(pt_kategori_line_NGpcs)
 		with colnan:
-			st.write('Data Quantity (lot) by Line & Kategori')
+			st.write('Data Quantity Inspected (lot) by Line & Kategori')
 			pt_kategori_line2 = pt_kategori_line2.round(0)
 			st.write(pt_kategori_line2)
+
+			st.write('Data Quantity Inspected (pcs) by Line & Kategori')
+			pt_kategori_line_InspPcs = pt_kategori_line_InspPcs.round(0)
+			st.write(pt_kategori_line_InspPcs)
 
 		# # Mengonversi pivot tabel dari bentuk wide ke long untuk plotly
 		# pivot_df_melted = pt_kategori_line.melt(id_vars=['Kategori'], var_name='Line', value_name='Average NG%')

@@ -433,14 +433,14 @@ if uploaded_file is not None:
 				title='Grafik NG% & Qty Inspeted (lot) by Month',
 				xaxis_title='Month',
 				yaxis=dict(title='NG_%'),
-				yaxis2=dict(title='NG_%', overlaying='y', side='right')  # If needed for overlay
+				yaxis2=dict(title='Qty Inspected (lot)', overlaying='y', side='right')  # If needed for overlay
 			)
 
 			# Display the plot
 			st.plotly_chart(fig)
 			
 		with grafik_kanan:
-				# Hitung agregasi untuk setiap kategori
+			# Hitung agregasi untuk setiap kategori
 			NG_by_kategori_ng = df.groupby('Kategori').agg({'NG_%': 'mean'}).reset_index()
 			NG_by_kategori_insp = df.groupby('Kategori').agg({'Insp(B/H)': 'sum'}).reset_index()
 
@@ -453,10 +453,10 @@ if uploaded_file is not None:
 
 			# Update layout for secondary y-axis (optional)
 			fig.update_layout(
-				title='Perbandingan Agregasi per Kategori',
+				title='Grafik Total Inspected (lot) Vs Average NG (% ) per Kategori',
 				xaxis_title='Kategori',
-				yaxis=dict(title='Insp(B/H)'),
-				yaxis2=dict(title='NG_%', overlaying='y', side='right')  # If needed for overlay
+				yaxis=dict(title='Average NG (%)'),
+				yaxis2=dict(title='Qty Inspected (lot)', overlaying='y', side='right')  # If needed for overlay
 			)
 
 			# Display the plot
@@ -519,6 +519,9 @@ if uploaded_file is not None:
 		pt_kategori_line_NGpcs=pd.pivot_table(df,values='Qty(NG)',index='Kategori',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
 		pt_kategori_line_InspPcs=pd.pivot_table(df,values='QInspec',index='Kategori',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
 
+		#grafik pcs hanya untuk busi
+
+
 		# Fungsi untuk format angka dengan koma
 		# def format_with_comma(value):
 		# 	return "{:,.2f}".format(value)
@@ -532,7 +535,7 @@ if uploaded_file is not None:
 		pt_kategori_line3 = pt_kategori_line3.applymap(format_with_comma)	
 		pt_kategori_line_NGpcs=pt_kategori_line_NGpcs.applymap(format_with_comma)
 
-	
+
 		#buat kolom	
 		colkir,colteng,colnan=st.columns(3)
 		with colkir:

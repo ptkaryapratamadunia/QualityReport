@@ -12,7 +12,7 @@ from streamlit_extras.dataframe_explorer import dataframe_explorer
 import base64
 import os
 import pickle
-import webbrowser
+# import webbrowser
 from io import BytesIO	#untuk menyimpan df di memory IO sebelum di download
 import matplotlib.pyplot as plt
 import altair as alt
@@ -21,6 +21,14 @@ import plotly.graph_objects as go       #cara 2 agar data terlihat saat mouse ov
 from plotly.subplots import make_subplots
 
 st.set_page_config(page_title="Quality Report", page_icon=":bar_chart:",layout="wide")
+
+#pilihan sebelum lanjut
+left,, right = st.columns(2)
+if left.button("Plain button", use_container_width=True):
+    left.markdown("You clicked the plain button.")
+
+if right.button("Material button", icon=":material/mood:", use_container_width=True):
+    right.markdown("You clicked the Material button.")
 
 # Fungsi untuk mengubah gambar menjadi base64
 def get_image_as_base64(image_path):

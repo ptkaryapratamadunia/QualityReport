@@ -100,6 +100,8 @@ with kolnan:
 	with kolnan2:
 		st.markdown('<div style="color:brown;text-align: right;"> Quality Dept. - 2024', unsafe_allow_html=True)
 		st.markdown("---")
+		link_url_looker='https://lookerstudio.google.com/reporting/e4a5c3f7-bf91-44e0-9ced-2b7a01eafa3d/page/FsgzD?s=qyZPms8Wytc'
+		st.link_button('Summary Web Report',link_url_looker,icon='📊')
 		if st.button('Summary Web Report'):
 					webbrowser.open_new_tab('https://lookerstudio.google.com/reporting/e4a5c3f7-bf91-44e0-9ced-2b7a01eafa3d/page/FsgzD?s=qyZPms8Wytc') 
 		st.markdown('</div>', unsafe_allow_html=True)

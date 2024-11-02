@@ -2,6 +2,9 @@
 # 03 Oct 2024 start build
 # 08 Oct 2024 start deploy : qualityreportkpd.streamlit.app atau s.id/kpdqualitydatacleaner
 
+from re import X
+from unicodedata import category
+from referencing import Anchor
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -35,9 +38,9 @@ with kolkir:
 			 konversi type NG ABCDSEFGIJKLMN menjadi definisi type NG, mengekstrasi data Nomer Jig\
 		  	 menjadi Nomer Mesin SMallpart, menghapus kolom yang tidak perlu\
 			 dan menambah kolom yang diperlukan,dll. Tanpa buang waktu sudah disediakan juga\
-		  	 summary report berupa Table dan Grafik yang siap digunakan untuk analisa dan pengambilan keputusan\
+		  	 summary report berupa Table dan Grafik yang siap digunakan untuk analisa dan pengambilan keputusan.\
 		  	 Disclaimer: Tools ini dapat dijalankan hanya jika sumber file nya adalah hasil ekspor dari program\
-		     Autocon dan hanya diperuntukkan untuk internal KPD")
+		     Autocon QC dan hanya diperuntukkan untuk internal KPD")
 	
 with kolnan:
 	# Adjust the file path based on the current directory
@@ -95,7 +98,7 @@ with kolnan:
 	with kolkir2:
 		st.write("")
 	with kolnan2:
-		st.markdown('<div style="text-align: right;"> Quality Dept. - 2024', unsafe_allow_html=True)
+		st.markdown('<div style="color:brown;text-align: right;"> Quality Dept. - 2024', unsafe_allow_html=True)
 		st.markdown("---")
 		if st.button('Summary Web Report'):
 					webbrowser.open_new_tab('https://lookerstudio.google.com/reporting/e4a5c3f7-bf91-44e0-9ced-2b7a01eafa3d/page/FsgzD?s=qyZPms8Wytc') 
@@ -115,6 +118,8 @@ with kolnan:
     # --------akhir naroh Logo :lookerstudio.google.com/reporting/e4a5c3f7-bf91-44e0-9ced-2b7a01eafa3d/page/FsgzD?s=qyZPms8Wytc
 
 st.markdown("---")
+
+
 
 #Upload File Data
 
@@ -371,6 +376,7 @@ if uploaded_file is not None:
 		pivot_df_bulan_line3= pd.pivot_table(df, values='Insp(B/H)', index='Date',columns='Line', aggfunc='sum',margins=True,margins_name='Total')
 		pivot_df_bulan_line3_grafik= pd.pivot_table(df, values='Insp(B/H)', index='Date', aggfunc='sum')
 
+		st.write(pivot_df_bulan_line3_grafik)
 
 		bariskiri,bt1,bt2,bt3,bariskanan=st.columns(5)
 
@@ -420,26 +426,66 @@ if uploaded_file is not None:
 			data_grafik=data_grafik.sort_index(ascending=True)
 			data_grafik2=pivot_df_bulan_line3_grafik.reset_index()
 			data_grafik2=data_grafik2.sort_index(ascending=True)
-			# NG_by_kategori_ng = df.groupby('Date').agg({'NG_%': 'mean'}).reset_index()
-			# NG_by_kategori_insp = df.groupby('Kategori').agg({'Insp(B/H)': 'sum'}).reset_index()
+			# Create a figure with one subplot
+			fig = go.Figure()
 
-			# Create a figure with a 1x2 subplot grid (1 row, 2 columns)
-			fig = make_subplots(rows=1, cols=2)
+			# Add NG_% bar trace
+			fig.add_trace(go.Scatter(
+				x=data_grafik['Date'],
+				y=data_grafik['NG_%'],
+				name='NG_%',
+				mode='lines+markers',  # Combine line and markers
+				marker_color='blue',
+				line_color='blue',   # Set line color explicitly
+				yaxis='y2'
+			))
 
-			# Add traces to the subplots
-			fig.add_trace(go.Bar(x=data_grafik['Date'], y=data_grafik['NG_%'], name='NG_%', marker_color='blue'), row=1, col=1)
-			fig.add_trace(go.Bar(x=data_grafik2['Date'], y=data_grafik2['Insp(B/H)'], name='Insp(B/H)', marker_color='orange'), row=1, col=2)
+			# Add Insp(B/H) line trace (overlay on same y-axis)
+			fig.add_trace(go.Bar(  # Use Scatter for line chart
+				x=data_grafik2['Date'],
+				y=data_grafik2['Insp(B/H)'],
+				name='Insp(B/H)',
+				marker_color='orange',
+			))
 
-			# Update layout for secondary y-axis (optional)
+			# Customize layout
 			fig.update_layout(
-				title='Grafik NG% & Qty Inspeted (lot) by Month',
-				xaxis_title='Month',
-				yaxis=dict(title='NG_%'),
-				yaxis2=dict(title='Qty Inspected (lot)', overlaying='y', side='right')  # If needed for overlay
+				
+			title='Grafik NG% & Qty Inspeted by Month',
+			xaxis=dict(title='Month',type='category'),
+			yaxis=dict(title='Qty Inspected (pcs)', titlefont=dict(color='green'), tickfont=dict(color='green')),
+			yaxis2=dict(title='NG%', titlefont=dict(color='blue'), tickfont=dict(color='blue'), overlaying='y', side='right', anchor='x'),
+				paper_bgcolor='rgba(0,0,0,0)',      # Warna background keseluruhan
+				plot_bgcolor='rgba(0,0,0,0)',       # Warna background area plot
+				legend=dict(
+					yanchor="top",
+					y=-0.2,  # Posisi vertikal di bawah sumbu X
+					xanchor="center",
+					x=0.5   # Posisi horizontal di tengah
+				),
+				legend_title_text='Metric'
+			
 			)
-
 			# Display the plot
 			st.plotly_chart(fig)
+
+			# # Create a figure with a 1x2 subplot grid (1 row, 2 columns)
+			# fig = make_subplots(rows=1, cols=2)
+
+			# # Add traces to the subplots
+			# fig.add_trace(go.Bar(x=data_grafik['Date'], y=data_grafik['NG_%'], name='NG_%', marker_color='blue'), row=1, col=1)
+			# fig.add_trace(go.Bar(x=data_grafik2['Date'], y=data_grafik2['Insp(B/H)'], name='Insp(B/H)', marker_color='orange'), row=1, col=2)
+
+			# # Update layout for secondary y-axis (optional)
+			# fig.update_layout(
+			# 	title='Grafik NG% & Qty Inspeted (lot) by Month',
+			# 	xaxis_title='Month',
+			# 	yaxis=dict(title='NG_%'),
+			# 	yaxis2=dict(title='Qty Inspected (lot)', overlaying='y', side='right')  # If needed for overlay
+			# )
+
+			# # Display the plot
+			# st.plotly_chart(fig)
 			
 		with grafik_kanan:
 			# Hitung agregasi untuk setiap kategori

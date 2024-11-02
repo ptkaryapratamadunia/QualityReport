@@ -490,9 +490,8 @@ if uploaded_file is not None:
 		st.write(pt_customer_line_transposed)
 
 		#gambar grafik line	
-
 		df_grafik=pd.DataFrame(pt_customer_line_transposed)
-		st.write(df_grafik)
+
 		# Memilih kolom yang ingin diplotkan (kecuali kolom 'Total')
 		columns_to_plot = pt_customer_line_transposed.columns[:-1]  # Mengambil semua kolom kecuali yang terakhir
 		chart_data = pd.DataFrame(pt_customer_line_transposed,index=['Line'], columns=columns_to_plot)
@@ -501,6 +500,7 @@ if uploaded_file is not None:
 		pt_customer_line2=pd.pivot_table(df,values='Insp(B/H)',index='Cust.ID',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
 		# Bulatkan nilai-nilai ke angka bulat terdekat
 		pt_customer_line2 = pt_customer_line2.round(0)
+
 		st.write('Data Quantity (lot) by Line & Customer')
 		pt_customer_line2_tranposed=pt_customer_line2.transpose()
 		st.write(pt_customer_line2_tranposed)
@@ -519,7 +519,8 @@ if uploaded_file is not None:
 		pt_kategori_line_NGpcs=pd.pivot_table(df,values='Qty(NG)',index='Kategori',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
 		pt_kategori_line_InspPcs=pd.pivot_table(df,values='QInspec',index='Kategori',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
 
-		#grafik pcs hanya untuk busi
+		pt_kategori_line_NGpcs_grafik=pd.pivot_table(df,values='Qty(NG)',index='Kategori',aggfunc='sum',margins=True,margins_name='Total')
+		pt_kategori_line_InspPcs_grafik=pd.pivot_table(df,values='QInspec',index='Kategori',aggfunc='sum',margins=True,margins_name='Total')
 
 
 		# Fungsi untuk format angka dengan koma
@@ -533,8 +534,6 @@ if uploaded_file is not None:
 		# Terapkan format ke seluruh pivot table
 		pt_kategori_line = pt_kategori_line.applymap(format_with_comma)	
 		pt_kategori_line3 = pt_kategori_line3.applymap(format_with_comma)	
-		pt_kategori_line_NGpcs=pt_kategori_line_NGpcs.applymap(format_with_comma)
-
 
 		#buat kolom	
 		colkir,colteng,colnan=st.columns(3)
@@ -542,10 +541,29 @@ if uploaded_file is not None:
 			st.write('Data NG (%) by Line & Kategori')
 			st.write(pt_kategori_line)
 
+			#grafik pcs hanya untuk busi
+			pt_kategori_line_NGpcs_grafikBUSI=pt_kategori_line_NGpcs_grafik.loc['BUSI']
+			pt_kategori_line_InspPcs_grafikBUSI=pt_kategori_line_InspPcs_grafik.loc['BUSI']
+
+			#gabung data
+			combined_data=pd.concat([pt_kategori_line_InspPcs_grafikBUSI,pt_kategori_line_NGpcs_grafikBUSI],ignore_index=True)
+			df_grup_grafik=pd.DataFrame(combined_data)
+			#nambah kolom satuan
+			grup=['Qty Inspected (pcs)','Qty NG (pcs)']
+			df_grup_grafik['Satuan']=grup
+
+			# Buat grafik batang dengan Plotly
+			fig = px.bar(df_grup_grafik, x='Satuan', y='BUSI', color='Satuan', barmode='group')
+			fig.update_layout(title='Grafik Qty Insp dan Qty NG untuk BUSI (pcs)',
+							xaxis_title='-',
+							yaxis_title='(pcs)')
+			st.plotly_chart(fig)
+
 		with colteng:
 			st.write('Data Qty NG (lot) by Line & Kategori')
 			st.write(pt_kategori_line3)
 			st.write('Data Qty NG (pcs) by Line & Kategori')
+			pt_kategori_line_NGpcs = pt_kategori_line_NGpcs.round(0)
 			st.write(pt_kategori_line_NGpcs)
 		with colnan:
 			st.write('Data Quantity Inspected (lot) by Line & Kategori')

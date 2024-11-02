@@ -23,7 +23,7 @@ from plotly.subplots import make_subplots
 st.set_page_config(page_title="Quality Report", page_icon=":bar_chart:",layout="wide")
 
 #pilihan sebelum lanjut
-left,, right = st.columns(2)
+left, right = st.columns(2)
 if left.button("Plain button", use_container_width=True):
     left.markdown("You clicked the plain button.")
 

@@ -35,7 +35,9 @@ with kolkir:
 			 konversi type NG ABCDSEFGIJKLMN menjadi definisi type NG, mengekstrasi data Nomer Jig\
 		  	 menjadi Nomer Mesin SMallpart, menghapus kolom yang tidak perlu\
 			 dan menambah kolom yang diperlukan,dll. Tanpa buang waktu sudah disediakan juga\
-		  	 summary report berupa Table dan Grafik yang siap digunakan untuk analisa dan pengambilan keputusan")
+		  	 summary report berupa Table dan Grafik yang siap digunakan untuk analisa dan pengambilan keputusan\
+		  	 Disclaimer: Tools ini dapat dijalankan hanya jika sumber file nya adalah hasil ekspor dari program\
+		     Autocon dan hanya diperuntukkan untuk internal KPD")
 	
 with kolnan:
 	# Adjust the file path based on the current directory

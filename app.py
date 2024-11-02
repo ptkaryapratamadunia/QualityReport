@@ -22,13 +22,7 @@ from plotly.subplots import make_subplots
 
 st.set_page_config(page_title="Quality Report", page_icon=":bar_chart:",layout="wide")
 
-#pilihan sebelum lanjut
-left, right = st.columns(2)
-if left.button("Plain button", use_container_width=True):
-    left.markdown("You clicked the plain button.")
 
-if right.button("Material button", icon=":material/mood:", use_container_width=True):
-    right.markdown("You clicked the Material button.")
 
 # Fungsi untuk mengubah gambar menjadi base64
 def get_image_as_base64(image_path):
@@ -129,6 +123,13 @@ with kolnan:
 
 st.markdown("---")
 
+#pilihan sebelum lanjut
+left, right = st.columns(2)
+if left.button("Menggunakan file yang terakhir pernah di-upload...", use_container_width=True):
+    left.markdown("You clicked the plain button.")
+
+if right.button("Upload file baru...", icon=":material/mood:", use_container_width=True):
+    right.markdown("You clicked the Material button.")
 
 
 #Upload File Data

@@ -111,6 +111,38 @@ with kolnan:
 st.markdown("---")	#--------------------------batas akhir styling HEADER -----------------
 
 #---START CLEANING ---------
+
+def show_footer():
+
+	
+	#Footer diisi foto ditaruh ditengah
+	st.markdown("---")
+
+
+	kaki_kiri,kaki_kiri2, kaki_tengah,kaki_kanan2, kaki_kanan=st.columns((2,2,1,2,2))
+
+	with kaki_kiri:
+		st.write("")
+
+	with kaki_kiri2:
+		st.write("")
+
+	with kaki_tengah:
+		# kontener_photo=st.container(border=True)
+		# Adjust the file path based on the current directory
+		current_dir = os.path.dirname(os.path.abspath(__file__))
+		e_WeYe = os.path.join(current_dir, 'eweye.png')
+		# Memuat gambar dan mengubahnya menjadi base64
+		# logo_KPD ='logoKPD.png'
+		image_base64 = get_image_as_base64(e_WeYe)
+		st.image(e_WeYe,"Web Developer - eWeYe ©️2024",use_column_width="always")
+
+	with kaki_kanan2:
+		st.write("")
+
+	with kaki_kanan:
+		st.write("")
+
 #flexible read data:
 def read_file(uploaded_file):		
 	# Mendapatkan nama file
@@ -119,17 +151,17 @@ def read_file(uploaded_file):
 	# Memeriksa ekstensi file
 	if file_name.endswith('.xls'):
 		# Menggunakan engine 'xlrd' untuk file .xls
-		df2 = pd.read_excel(uploaded_file, engine='xlrd')
+		df = pd.read_excel(uploaded_file, engine='xlrd')
 	elif file_name.endswith('.xlsx'):
 		# Menggunakan engine 'openpyxl' untuk file .xlsx
-		df2 = pd.read_excel(uploaded_file, engine='openpyxl')
+		df = pd.read_excel(uploaded_file, engine='openpyxl')
 	elif file_name.endswith('.csv'):
 		# Menggunakan pandas untuk membaca file .csv
-		df2 = pd.read_csv(uploaded_file)
+		df = pd.read_csv(uploaded_file)
 	else:
 		raise ValueError("File harus memiliki ekstensi .xls, .xlsx, atau .csv")
 	
-		return df2
+	return df
 	
 
 def simpan_file(df,filename="arsip_file.csv"):
@@ -725,60 +757,7 @@ def cleaning_process(df):
 
 			st.plotly_chart(fig)
 		
-		#kolom lagi
-		sikir2,sinan2=st.columns(2)
-
-		with sikir2:
-
-				list_line=df['Line'].unique()
-				pilihan_line = st.selectbox(
-				"Pilih Line :",
-				list_line,
-				index=None,
-				placeholder="Pilih Line di sini...",
-				)
-			# NG_by_part=(
-			# df[["PartName","NG_%"]]
-			# .groupby(by="Kategori")
-			# .mean()
-			# .sort_values(by="NG_%",ascending=False)
-			# .reset_index()
-			# )
-			# # st.write(NG_by_kategori)
-			
-			# # Buat grafik batang interaktif
-			# fig = go.Figure(data=go.Bar(x=NG_by_kategori['Kategori'], y=NG_by_kategori['NG_%'],
-			# 						marker_color='yellow'))  # Sesuaikan warna jika ingin
-
-			# fig.update_layout(title='Rata-rata NG_% per Kategori',
-			# 				xaxis_title='Kategori',
-			# 				yaxis_title='NG_%')
-
-			# st.plotly_chart(fig)
-
-		with sinan2:
-		
-			# NG_by_Cust=(
-			# 		df[["Cust.ID","NG_%"]]
-			# 		.groupby(by="Cust.ID")
-			# 		.mean()
-			# 		.sort_values(by="NG_%",ascending=False)
-			# 		.reset_index()
-			# )
-			# # st.write(NG_by_kategori)
-			
-			# # Buat grafik batang interaktif
-			# fig = go.Figure(data=go.Bar(x=NG_by_Cust['Cust.ID'], y=NG_by_Cust['NG_%'],
-			# 						marker_color='blue'))  # Sesuaikan warna jika ingin
-
-			# fig.update_layout(title='Rata-rata NG_% by Customer',
-			# 				xaxis_title='Cust.ID',
-			# 				yaxis_title='NG_%')
-
-			# st.plotly_chart(fig)
-		#--------------------------------------
-
-			pie_kiri,pie_kanan=st.columns(2)
+		pie_kiri,pie_kanan=st.columns(2)
 
 		with pie_kiri:
 			Insp_by_Cust=(
@@ -817,12 +796,68 @@ def cleaning_process(df):
 
 			st.plotly_chart(fig)
 
+		# #kolom lagi
+		# sikir2,sinan2=st.columns(2)
+
+		# with sikir2:
+
+		# 		# list_line=df['Line'].unique()
+		# 		# pilihan_line = st.selectbox(
+		# 		# "Pilih Line :",
+		# 		# list_line,
+		# 		# index=None,
+		# 		# placeholder="Pilih Line di sini...",
+		# 		# )
+		# 	# NG_by_part=(
+		# 	# df[["PartName","NG_%"]]
+		# 	# .groupby(by="Kategori")
+		# 	# .mean()
+		# 	# .sort_values(by="NG_%",ascending=False)
+		# 	# .reset_index()
+		# 	# )
+		# 	# # st.write(NG_by_kategori)
+			
+		# 	# # Buat grafik batang interaktif
+		# 	# fig = go.Figure(data=go.Bar(x=NG_by_kategori['Kategori'], y=NG_by_kategori['NG_%'],
+		# 	# 						marker_color='yellow'))  # Sesuaikan warna jika ingin
+
+		# 	# fig.update_layout(title='Rata-rata NG_% per Kategori',
+		# 	# 				xaxis_title='Kategori',
+		# 	# 				yaxis_title='NG_%')
+
+		# 	# st.plotly_chart(fig)
+
+		# with sinan2:
+		
+		# 	# NG_by_Cust=(
+		# 	# 		df[["Cust.ID","NG_%"]]
+		# 	# 		.groupby(by="Cust.ID")
+		# 	# 		.mean()
+		# 	# 		.sort_values(by="NG_%",ascending=False)
+		# 	# 		.reset_index()
+		# 	# )
+		# 	# # st.write(NG_by_kategori)
+			
+		# 	# # Buat grafik batang interaktif
+		# 	# fig = go.Figure(data=go.Bar(x=NG_by_Cust['Cust.ID'], y=NG_by_Cust['NG_%'],
+		# 	# 						marker_color='blue'))  # Sesuaikan warna jika ingin
+
+		# 	# fig.update_layout(title='Rata-rata NG_% by Customer',
+		# 	# 				xaxis_title='Cust.ID',
+		# 	# 				yaxis_title='NG_%')
+
+		# 	# st.plotly_chart(fig)
+		# #--------------------------------------
+
+
 
 
 	else:
 		st.write("File tidak ditemukan")
 
 	return df
+
+
 
 #MAIN module --------------------
 def main():
@@ -836,68 +871,48 @@ def main():
 
 			df=cleaning_process(df)
 
+			show_footer()
+
 		except FileNotFoundError:
 			st.error("File arsip tidak ditemukan. Silakan unggah file baru.")
 			
-
-		if st.button("Upload file baru...", icon="💾", type='primary'):
-
-			uploaded_file=st.file_uploader("Pilih file Excel (.xls, .xlsx, csv):")
-
-			if uploaded_file is not None:
-				# baca dataframe df
-				df2 = read_file(uploaded_file)
-				
-				df=pd.DataFrame(df2)
-
-				df=data_tanggal(df)
-
-				#simpan untuk arsip
-				df=simpan_file(df)
-				# df.to_csv("arsip_file.csv",index=False)
-				df=cleaning_process(df)
-			else:
-				st.write("Menunggu file diupload....")
-
-
-				
-		
 		return
+
 
 if __name__ == "__main__":
 	main()
 	
+	#Nama file yang akan dihapus saat mulai
+	files_to_delete = ["arsip_file.csv"]
+	# Loop melalui setiap file dan hapus jika ada
+	for file in files_to_delete:
+		if os.path.exists(file):
+			os.remove(file)
 
-	#Footer diisi foto ditaruh ditengah
-st.markdown("---")
-kaki_kiri,kaki_kiri2, kaki_tengah,kaki_kanan2, kaki_kanan=st.columns((2,2,1,2,2))
+# File uploader
+	uploaded_file = st.file_uploader("Pilih file Excel (.xls, .xlsx, csv):")
 
-with kaki_kiri:
-	st.write("")
+	if uploaded_file is not None:
 
-with kaki_kiri2:
-	st.write("")
+		# Read the file
+		if uploaded_file.name.endswith('.xls'):
+			df = pd.read_excel(uploaded_file, engine='xlrd')
+		elif uploaded_file.name.endswith('.xlsx'):
+			df = pd.read_excel(uploaded_file, engine='openpyxl')
+		elif uploaded_file.name.endswith('.csv'):
+			df = pd.read_csv(uploaded_file)
+		else:
+			raise ValueError("File harus memiliki ekstensi .xls, .xlsx, atau .csv")
+		
+		# Save a copy for archive
+		df.to_csv("arsip_file.csv", index=False)
 
-with kaki_tengah:
-	# kontener_photo=st.container(border=True)
-	# Adjust the file path based on the current directory
-	current_dir = os.path.dirname(os.path.abspath(__file__))
-	e_WeYe = os.path.join(current_dir, 'eweye.png')
-	# Memuat gambar dan mengubahnya menjadi base64
-	# logo_KPD ='logoKPD.png'
-	image_base64 = get_image_as_base64(e_WeYe)
-	st.image(e_WeYe,"Web Developer - eWeYe ©️2024",use_column_width="always")
+		st.write("File berhasil di-upload dan langsung diproses Cleaning.")
+							
+		main()
 
-with kaki_kanan2:
-	st.write("")
-
-with kaki_kanan:
-	st.write("")
-
-
-
-
-
+	else:
+		st.write("Menunggu file diupload....")
 
 
 # ---- HIDE STREAMLIT STYLE ----

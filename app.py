@@ -108,65 +108,52 @@ with kolnan:
 		# 			webbrowser.open_new_tab('https://lookerstudio.google.com/reporting/e4a5c3f7-bf91-44e0-9ced-2b7a01eafa3d/page/FsgzD?s=qyZPms8Wytc') 
 		st.markdown('</div>', unsafe_allow_html=True)
 	
-	# st.markdown(
-    #     """
-    #     <div style="text-align: right;">
-    #         <button style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; cursor: pointer;" href="https://lookerstudio.google.com/reporting/e4a5c3f7-bf91-44e0-9ced-2b7a01eafa3d/page/FsgzD?s=qyZPms8Wytc">
-    #             Quality Summary Web Report
-    #         </button>
-    #     </div>
-    #     """,
-    #     unsafe_allow_html=True
-    # )
+st.markdown("---")	#--------------------------batas akhir styling HEADER -----------------
 
-    # --------akhir naroh Logo :lookerstudio.google.com/reporting/e4a5c3f7-bf91-44e0-9ced-2b7a01eafa3d/page/FsgzD?s=qyZPms8Wytc
+#---START CLEANING ---------
+#flexible read data:
+def read_file(uploaded_file):		
+	# Mendapatkan nama file
+	file_name = uploaded_file.name
 
-st.markdown("---")
-
-#pilihan sebelum lanjut
-left, right = st.columns(2)
-if left.button("Menggunakan file yang terakhir pernah di-upload...", use_container_width=True):
-    left.markdown("You clicked the plain button.")
-
-if right.button("Upload file baru...", icon=":material/mood:", use_container_width=True):
-    right.markdown("You clicked the Material button.")
-
-
-#Upload File Data
-
-uploaded_file=st.file_uploader("Pilih file Excel (.xls, .xlsx, csv):")
-
-if uploaded_file is not None:
-
-    # ---- READ FILE XLS, XLSX, CSV ----
-
-    #flexible read data:
-	def read_file(uploaded_file):
-		# Mendapatkan nama file
-		file_name = uploaded_file.name
-		
-		# Memeriksa ekstensi file
-		if file_name.endswith('.xls'):
-			# Menggunakan engine 'xlrd' untuk file .xls
-			df2 = pd.read_excel(uploaded_file, engine='xlrd')
-		elif file_name.endswith('.xlsx'):
-			# Menggunakan engine 'openpyxl' untuk file .xlsx
-			df2 = pd.read_excel(uploaded_file, engine='openpyxl')
-		elif file_name.endswith('.csv'):
-			# Menggunakan pandas untuk membaca file .csv
-			df2 = pd.read_csv(uploaded_file)
-		else:
-			raise ValueError("File harus memiliki ekstensi .xls, .xlsx, atau .csv")
-		
+	# Memeriksa ekstensi file
+	if file_name.endswith('.xls'):
+		# Menggunakan engine 'xlrd' untuk file .xls
+		df2 = pd.read_excel(uploaded_file, engine='xlrd')
+	elif file_name.endswith('.xlsx'):
+		# Menggunakan engine 'openpyxl' untuk file .xlsx
+		df2 = pd.read_excel(uploaded_file, engine='openpyxl')
+	elif file_name.endswith('.csv'):
+		# Menggunakan pandas untuk membaca file .csv
+		df2 = pd.read_csv(uploaded_file)
+	else:
+		raise ValueError("File harus memiliki ekstensi .xls, .xlsx, atau .csv")
+	
 		return df2
 	
-	# baca dataframe df2
 
-	df2 = read_file(uploaded_file)
+def simpan_file(df,filename="arsip_file.csv"):
+	df.to_csv(filename, index=False)
 
+def data_tanggal(df):
+	df['DocDate'] = pd.to_datetime(df['DocDate'])
+
+	# Tanggal tertua
+	tanggal_tertua = df['DocDate'].min()
+
+	# Tanggal termuda
+	tanggal_termuda = df['DocDate'].max()
+
+	st.write(f"""
+			Periode dari Tanggal: {tanggal_tertua}
+			Sampai Tanggal : {tanggal_termuda}
+			""")
+	return df
+
+def cleaning_process(df):
 	#dataframe - script ini untuk filtering model tree
 	with st.expander("Preview Original Data"):
-		df = dataframe_explorer(df2, case=False)
+		df2 = dataframe_explorer(df, case=False)
 		st.dataframe(df2, use_container_width=True)
 
 	df=pd.DataFrame(df2)
@@ -347,7 +334,7 @@ if uploaded_file is not None:
 		#dataframe - script ini untuk filtering model tree
 		with st.expander("Preview Data setelah dirapihkan (cleaning)"):
 			df3 = dataframe_explorer(df, case=False)
-			st.dataframe(df, use_container_width=True)
+			st.dataframe(df3, use_container_width=True)
 
 		#------------- merapihkan kolom sama dengan target looker 21Oct2024
 		df_4_ekspor=df
@@ -387,8 +374,6 @@ if uploaded_file is not None:
 		pivot_df_bulan_line3= pd.pivot_table(df, values='Insp(B/H)', index='Date',columns='Line', aggfunc='sum',margins=True,margins_name='Total')
 		pivot_df_bulan_line3_grafik= pd.pivot_table(df, values='Insp(B/H)', index='Date', aggfunc='sum')
 
-		st.write(pivot_df_bulan_line3_grafik)
-
 		bariskiri,bt1,bt2,bt3,bariskanan=st.columns(5)
 
 		with bariskiri:
@@ -423,7 +408,7 @@ if uploaded_file is not None:
 			# bt3.metric("Total NG (%)",f"{tot_NG_persen:.2f}")
 		st.markdown("---")
 
-		# df.to_excel('File_after_Cleaning.xlsx',index=False)
+		# df.to_csv('arsip_file.csv',index=False)
 		# st.write("File after Cleaning juga telah disimpan dalam bentuk .xlsx dengan nama : 'File after Cleaning'")
 
 		# -------------------------------------
@@ -837,45 +822,81 @@ if uploaded_file is not None:
 	else:
 		st.write("File tidak ditemukan")
 
+	return df
 
+#MAIN module --------------------
+def main():
+#Main - module yg akan pertama dijalankan - improved @home 03-Nov2024
+		try:
+			#arsip file yg lalu .csv
+			arsip_file= "arsip_file.csv"
+			df = pd.read_csv(arsip_file)
+
+			df=data_tanggal(df)
+
+			df=cleaning_process(df)
+
+		except FileNotFoundError:
+			st.error("File arsip tidak ditemukan. Silakan unggah file baru.")
+			
+
+		if st.button("Upload file baru...", icon="💾", type='primary'):
+
+			uploaded_file=st.file_uploader("Pilih file Excel (.xls, .xlsx, csv):")
+
+			if uploaded_file is not None:
+				# baca dataframe df
+				df2 = read_file(uploaded_file)
+				
+				df=pd.DataFrame(df2)
+
+				df=data_tanggal(df)
+
+				#simpan untuk arsip
+				df=simpan_file(df)
+				# df.to_csv("arsip_file.csv",index=False)
+				df=cleaning_process(df)
+			else:
+				st.write("Menunggu file diupload....")
+
+
+				
+		
+		return
+
+if __name__ == "__main__":
+	main()
+	
 
 	#Footer diisi foto ditaruh ditengah
-	st.markdown("---")
-	kaki_kiri,kaki_kiri2, kaki_tengah,kaki_kanan2, kaki_kanan=st.columns((2,2,1,2,2))
+st.markdown("---")
+kaki_kiri,kaki_kiri2, kaki_tengah,kaki_kanan2, kaki_kanan=st.columns((2,2,1,2,2))
 
-	with kaki_kiri:
-		st.write("")
+with kaki_kiri:
+	st.write("")
 
-	with kaki_kiri2:
-		st.write("")
+with kaki_kiri2:
+	st.write("")
 
-	with kaki_tengah:
-		# kontener_photo=st.container(border=True)
-		# Adjust the file path based on the current directory
-		current_dir = os.path.dirname(os.path.abspath(__file__))
-		e_WeYe = os.path.join(current_dir, 'eweye.png')
-		# Memuat gambar dan mengubahnya menjadi base64
-		# logo_KPD ='logoKPD.png'
-		image_base64 = get_image_as_base64(e_WeYe)
-		st.image(e_WeYe,"Web Developer - eWeYe ©️2024",use_column_width="always")
+with kaki_tengah:
+	# kontener_photo=st.container(border=True)
+	# Adjust the file path based on the current directory
+	current_dir = os.path.dirname(os.path.abspath(__file__))
+	e_WeYe = os.path.join(current_dir, 'eweye.png')
+	# Memuat gambar dan mengubahnya menjadi base64
+	# logo_KPD ='logoKPD.png'
+	image_base64 = get_image_as_base64(e_WeYe)
+	st.image(e_WeYe,"Web Developer - eWeYe ©️2024",use_column_width="always")
 
-	with kaki_kanan2:
-		st.write("")
+with kaki_kanan2:
+	st.write("")
 
-	with kaki_kanan:
-		st.write("")
-
-
+with kaki_kanan:
+	st.write("")
 
 
 
 
-
-else:
-	st.write("Menunggu file diupload....")
-
-
-# End of Cleaning Data
 
 
 

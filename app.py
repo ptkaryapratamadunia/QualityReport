@@ -792,7 +792,6 @@ def cleaning_process(df):
 					.sort_values(by="NG_%",ascending=False)
 					.reset_index()
 			)
-			# st.write(NG_by_kategori)
 			
 			# Buat grafik batang interaktif
 			fig = go.Figure(data=go.Bar(x=NG_by_Cust['Cust.ID'], y=NG_by_Cust['NG_%'],
@@ -844,58 +843,58 @@ def cleaning_process(df):
 
 			st.plotly_chart(fig)
 
-		# #kolom lagi
-		# sikir2,sinan2=st.columns(2)
+		#kolom lagi untuk grafik NG by Part Name
+		sikir2,sinan2=st.columns(2)
 
-		# with sikir2:
+		with sikir2:
+			# #buat list Line untuk Filter Option
+			# List_line=df['Line'].unique()
+			# pilihan_line=st.selectbox('Filter by Line: ',List_line)
 
-		# 		# list_line=df['Line'].unique()
-		# 		# pilihan_line = st.selectbox(
-		# 		# "Pilih Line :",
-		# 		# list_line,
-		# 		# index=None,
-		# 		# placeholder="Pilih Line di sini...",
-		# 		# )
-		# 	# NG_by_part=(
-		# 	# df[["PartName","NG_%"]]
-		# 	# .groupby(by="Kategori")
-		# 	# .mean()
-		# 	# .sort_values(by="NG_%",ascending=False)
-		# 	# .reset_index()
-		# 	# )
-		# 	# # st.write(NG_by_kategori)
+			#filter df hanya yg tampil sesuai Line yg dipilih
+			df_byLine=df[df['Line']=='Barrel 4']
+
+			NG_by_part=(
+			df_byLine[["PartName","NG_%"]]
+			.groupby(by="PartName")
+			.mean()
+			.sort_values(by="NG_%",ascending=False)
+			.reset_index()
+			)
 			
-		# 	# # Buat grafik batang interaktif
-		# 	# fig = go.Figure(data=go.Bar(x=NG_by_kategori['Kategori'], y=NG_by_kategori['NG_%'],
-		# 	# 						marker_color='yellow'))  # Sesuaikan warna jika ingin
+			# NG_by_part_transposed=NG_by_part.transpose()
+			
+			# Buat grafik batang interaktif
+			fig = go.Figure(data=go.Bar(x=NG_by_part['PartName'], y=NG_by_part['NG_%'],
+									marker_color='grey'))  # Sesuaikan warna jika ingin
 
-		# 	# fig.update_layout(title='Rata-rata NG_% per Kategori',
-		# 	# 				xaxis_title='Kategori',
-		# 	# 				yaxis_title='NG_%')
+			fig.update_layout(title='Rata-rata NG_% per Part - LB4',
+							xaxis_title='PartName',
+							yaxis_title='NG_%')
 
-		# 	# st.plotly_chart(fig)
+			st.plotly_chart(fig)
 
-		# with sinan2:
+		with sinan2:
 		
-		# 	# NG_by_Cust=(
-		# 	# 		df[["Cust.ID","NG_%"]]
-		# 	# 		.groupby(by="Cust.ID")
-		# 	# 		.mean()
-		# 	# 		.sort_values(by="NG_%",ascending=False)
-		# 	# 		.reset_index()
-		# 	# )
-		# 	# # st.write(NG_by_kategori)
+			NGLot_by_part=(
+			df_byLine[["PartName","NG(B/H)"]]
+			.groupby(by="PartName")
+			.sum()
+			.sort_values(by="NG(B/H)",ascending=False)
+			.reset_index()
+			)
+			# st.write(NG_by_kategori)
 			
-		# 	# # Buat grafik batang interaktif
-		# 	# fig = go.Figure(data=go.Bar(x=NG_by_Cust['Cust.ID'], y=NG_by_Cust['NG_%'],
-		# 	# 						marker_color='blue'))  # Sesuaikan warna jika ingin
+			# Buat grafik batang interaktif
+			fig = go.Figure(data=go.Bar(x=NGLot_by_part['PartName'], y=NGLot_by_part['NG(B/H)'],
+									marker_color='blue'))  # Sesuaikan warna jika ingin
 
-		# 	# fig.update_layout(title='Rata-rata NG_% by Customer',
-		# 	# 				xaxis_title='Cust.ID',
-		# 	# 				yaxis_title='NG_%')
+			fig.update_layout(title='Qty NG (lot) per Part - LB4',
+							xaxis_title='PartName',
+							yaxis_title='NG (lot)')
 
-		# 	# st.plotly_chart(fig)
-		# #--------------------------------------
+			st.plotly_chart(fig)
+		#--------------------------------------
 
 
 

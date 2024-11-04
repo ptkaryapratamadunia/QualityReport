@@ -667,7 +667,7 @@ def cleaning_process(df):
 		pt_kategori_line = pt_kategori_line.applymap(format_with_comma)	
 		pt_kategori_line3 = pt_kategori_line3.applymap(format_with_comma)	
 
-		#buat kolom	
+		#buat kolom	untuk grafik dan tabel BUSI
 		colkir,colteng,colnan=st.columns(3)
 		with colkir:
 			st.write('Data NG (%) by Line & Kategori')
@@ -861,18 +861,26 @@ def cleaning_process(df):
 			.sort_values(by="NG_%",ascending=False)
 			.reset_index()
 			)
-			
-			# NG_by_part_transposed=NG_by_part.transpose()
-			
-			# Buat grafik batang interaktif
-			fig = go.Figure(data=go.Bar(x=NG_by_part['PartName'], y=NG_by_part['NG_%'],
-									marker_color='grey'))  # Sesuaikan warna jika ingin
 
-			fig.update_layout(title='Rata-rata NG_% per Part - LB4',
-							xaxis_title='PartName',
-							yaxis_title='NG_%')
-
+			# Buat grafik batang dengan Plotly
+			fig = px.bar(NG_by_part, x='NG_%', y='PartName', color='NG_%',barmode="relative")
+			fig.update_layout(title='Grafik NG (%) by Part Name - LB4',
+							xaxis_title='NG_%',
+							yaxis_title='PartName')
 			st.plotly_chart(fig)
+
+			NG_by_part = NG_by_part.map(format_with_comma)
+			st.write(NG_by_part)
+			
+			# # Buat grafik batang interaktif
+			# fig = go.Figure(data=go.Bar(x=NG_by_part['PartName'], y=NG_by_part['NG_%'],
+			# 						marker_color='grey'))  # Sesuaikan warna jika ingin
+
+			# fig.update_layout(title='Rata-rata NG_% per Part - LB4',
+			# 				xaxis_title='PartName',
+			# 				yaxis_title='NG_%')
+
+			# st.plotly_chart(fig)
 
 		with sinan2:
 		
@@ -883,17 +891,26 @@ def cleaning_process(df):
 			.sort_values(by="NG(B/H)",ascending=False)
 			.reset_index()
 			)
-			# st.write(NG_by_kategori)
-			
-			# Buat grafik batang interaktif
-			fig = go.Figure(data=go.Bar(x=NGLot_by_part['PartName'], y=NGLot_by_part['NG(B/H)'],
-									marker_color='blue'))  # Sesuaikan warna jika ingin
 
-			fig.update_layout(title='Qty NG (lot) per Part - LB4',
-							xaxis_title='PartName',
-							yaxis_title='NG (lot)')
-
+			# Buat grafik batang dengan Plotly
+			fig = px.bar(NGLot_by_part, x='NG(B/H)', y='PartName', color='NG(B/H)',barmode="group")
+			fig.update_layout(title='Grafik Qty NG (lot) by Part Name - LB4',
+							xaxis_title='Qty NG (lot)',
+							yaxis_title='PartName')
 			st.plotly_chart(fig)
+
+			NGLot_by_part = NGLot_by_part.map(format_with_comma)
+			st.write(NGLot_by_part)
+
+			# # Buat grafik batang interaktif
+			# fig = go.Figure(data=go.Bar(x=NGLot_by_part['PartName'], y=NGLot_by_part['NG(B/H)'],
+			# 						marker_color='blue'))  # Sesuaikan warna jika ingin
+
+			# fig.update_layout(title='Qty NG (lot) per Part - LB4',
+			# 				xaxis_title='PartName',
+			# 				yaxis_title='NG (lot)')
+
+			# st.plotly_chart(fig)
 		#--------------------------------------
 
 

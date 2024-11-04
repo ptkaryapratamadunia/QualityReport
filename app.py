@@ -440,9 +440,6 @@ def cleaning_process(df):
 			# bt3.metric("Total NG (%)",f"{tot_NG_persen:.2f}")
 		st.markdown("---")
 
-		# df.to_csv('arsip_file.csv',index=False)
-		# st.write("File after Cleaning juga telah disimpan dalam bentuk .xlsx dengan nama : 'File after Cleaning'")
-
 		# -------------------------------------
 
 			#Grafik area
@@ -556,6 +553,65 @@ def cleaning_process(df):
 			pivot_df_bulan_line3 = pivot_df_bulan_line3.round(0)
 			st.write(pivot_df_bulan_line3)
 		# ---------------------------------------
+
+		#Grafik NG by Line % & Lot	04NOv2024
+		chart_kiri, chart_tengah,chart_kanan=st.columns(3)		
+		with chart_kiri:
+				NG_by_Line=(
+						df[["Line","NG_%"]]
+						.groupby(by="Line")
+						.mean()
+						.sort_values(by="NG_%",ascending=False)
+						.reset_index()
+				)
+				
+				# Buat grafik batang interaktif
+				fig = go.Figure(data=go.Bar(x=NG_by_Line['Line'], y=NG_by_Line['NG_%'],
+										marker_color='green'))  # Sesuaikan warna jika ingin
+
+				fig.update_layout(title='Rata-rata NG_% by Line',
+								xaxis_title='Line',
+								yaxis_title='NG_%')
+
+				st.plotly_chart(fig)
+		with chart_tengah:
+			NGLot_by_Line=(
+					df[["Line","NG(B/H)"]]
+					.groupby(by="Line")
+					.sum()
+					.sort_values(by="NG(B/H)",ascending=False)
+					.reset_index()
+			)
+			
+			# Buat grafik batang interaktif
+			fig = go.Figure(data=go.Bar(x=NGLot_by_Line['Line'], y=NGLot_by_Line['NG(B/H)'],
+									marker_color='blue'))  # Sesuaikan warna jika ingin
+
+			fig.update_layout(title='QTy NG (lot) by Line',
+							xaxis_title='Line',
+							yaxis_title='Qty NG (lot)')
+
+			st.plotly_chart(fig)		
+		with chart_kanan:
+				InspLot_by_Line=(
+						df[["Line","Insp(B/H)"]]
+						.groupby(by="Line")
+						.sum()
+						.sort_values(by="Insp(B/H)",ascending=False)
+						.reset_index()
+				)
+				
+				# Buat grafik batang interaktif
+				fig = go.Figure(data=go.Bar(x=InspLot_by_Line['Line'], y=InspLot_by_Line['Insp(B/H)'],
+										marker_color='orange'))  # Sesuaikan warna jika ingin
+
+				fig.update_layout(title='QTy Inspected (lot) by Line',
+								xaxis_title='Line',
+								yaxis_title='Qty (lot)')
+
+				st.plotly_chart(fig)
+
+
 		# Membuat tabel pivot NG by Customer and LINE---------------
 
 		pt_customer_line=pd.pivot_table(df,values='NG_%',index='Cust.ID',columns='Line',aggfunc='mean',margins=True,margins_name='Total')
@@ -571,6 +627,8 @@ def cleaning_process(df):
 		# Memilih kolom yang ingin diplotkan (kecuali kolom 'Total')
 		columns_to_plot = pt_customer_line_transposed.columns[:-1]  # Mengambil semua kolom kecuali yang terakhir
 		chart_data = pd.DataFrame(pt_customer_line_transposed,index=['Line'], columns=columns_to_plot)
+
+		# st.bar_chart(df_grafik,x="NG_%",y="Barrel 4",x_label="Customer",y_label="% NG",horizontal=False) ---------- gagal terus euy
 	
 		#---------
 		pt_customer_line2=pd.pivot_table(df,values='Insp(B/H)',index='Cust.ID',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
@@ -581,9 +639,7 @@ def cleaning_process(df):
 		pt_customer_line2_tranposed=pt_customer_line2.transpose()
 		st.write(pt_customer_line2_tranposed)
 
-		# cl1,cl2=st.columns(2)
-		# with cl1:
-		# with cl2:
+
 		# ---------------------------------------
 		# Membuat tabel pivot NG by Kategori and LINE---------------
 
@@ -649,15 +705,6 @@ def cleaning_process(df):
 			st.write('Data Quantity Inspected (pcs) by Line & Kategori')
 			pt_kategori_line_InspPcs = pt_kategori_line_InspPcs.round(0)
 			st.write(pt_kategori_line_InspPcs)
-
-		# # Mengonversi pivot tabel dari bentuk wide ke long untuk plotly
-		# pivot_df_melted = pt_kategori_line.melt(id_vars=['Kategori'], var_name='Line', value_name='Average NG%')
-
-		# # Menggambar grafik batang interaktif
-		# fig = px.bar(pivot_df_melted, x='Kategori', y='Average NG%', color='Line', barmode='group', title='Average NG% per Line by Kategori')
-
-		# # Menampilkan grafik di Streamlit
-		# st.plotly_chart(fig)
 
 		#----------------- JUMLAH KOLOM TYPE NG ----------------
 		# Daftar kolom yang ingin dijumlahkan
@@ -757,6 +804,7 @@ def cleaning_process(df):
 
 			st.plotly_chart(fig)
 		
+		#grafik PIE
 		pie_kiri,pie_kanan=st.columns(2)
 
 		with pie_kiri:
@@ -863,7 +911,6 @@ def cleaning_process(df):
 def main():
 #Main - module yg akan pertama dijalankan - improved @home 03-Nov2024
 		try:
-
 			#arsip file yg lalu .csv
 			arsip_file= "arsip_file.csv"
 			df = pd.read_csv(arsip_file)
@@ -873,12 +920,9 @@ def main():
 			df=cleaning_process(df)
 
 			show_footer()
-
 		except FileNotFoundError:
-			st.error("File arsip tidak ditemukan. Silakan unggah file baru.")
-			
+			st.error("File arsip tidak ditemukan. Silakan unggah file baru.")	
 		return
-
 
 if __name__ == "__main__":
 	main()

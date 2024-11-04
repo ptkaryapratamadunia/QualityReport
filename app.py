@@ -863,6 +863,7 @@ def cleaning_process(df):
 def main():
 #Main - module yg akan pertama dijalankan - improved @home 03-Nov2024
 		try:
+
 			#arsip file yg lalu .csv
 			arsip_file= "arsip_file.csv"
 			df = pd.read_csv(arsip_file)
@@ -904,8 +905,14 @@ if __name__ == "__main__":
 		else:
 			raise ValueError("File harus memiliki ekstensi .xls, .xlsx, atau .csv")
 		
+		# Get the absolute path for saving the file
+		save_path = os.path.join(os.path.dirname(__file__), 'arsip_file.csv')
+		
 		# Save a copy for archive
-		df.to_csv("arsip_file.csv", index=False)
+		df.to_csv(save_path, index=False)
+
+		# # Save a copy for archive
+		# df.to_csv("arsip_file.csv", index=False)
 
 		st.write("File berhasil di-upload dan langsung diproses Cleaning.")
 							

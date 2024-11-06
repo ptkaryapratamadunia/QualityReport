@@ -391,7 +391,7 @@ def cleaning_process(df):
 
 		# Simpan DataFrame ke file pickle
 		with open('df_cache.pkl', 'wb') as f:
-			pickle.dump(df, f)
+			pickle.dump(df_4_ekspor, f)
 
 		#------------------ view di 2 kolom
 		# Membuat tabel pivot NG% by MONTH and LINE---------------

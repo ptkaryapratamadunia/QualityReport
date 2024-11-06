@@ -22,8 +22,6 @@ from plotly.subplots import make_subplots
 
 st.set_page_config(page_title="Quality Report", page_icon=":bar_chart:",layout="wide")
 
-
-
 # Fungsi untuk mengubah gambar menjadi base64
 def get_image_as_base64(image_path):
 	with open(image_path, "rb") as img_file:
@@ -207,6 +205,7 @@ def cleaning_process(df):
 		#df.rename(columns={'OK(B/H)': 'OK(Lot)'}, inplace=True)     # Mengganti nama kolom 'Keterangan' menjadi 'Kategori'
 		df.rename(columns={'Keterangan': 'Kategori'}, inplace=True)                 # Mengganti nama kolom 'Keterangan' menjadi 'Kategori'
 		
+		df["NG(pcs)"]=(df['Qty(NG)']- df['Y'])							#menambah kolom NG(pcs) krn ada permintaan menggunakan satuan pcs start 06Nov2024
 		# df["Month"] = pd.to_datetime(df["Date"]).dt.month               # menambah kolom 'Month' hasil ekstrasi dari kolom 'Date
 		# df["Year"] = pd.to_datetime(df["Date"]).dt.year                 # menambah kolom 'Month' hasil ekstrasi dari kolom 'Date
 		#df['Month']=df['Date'].dt.strftime('%b-%Y')                        # Short month name, like 'Jan', 'Feb'
@@ -214,6 +213,8 @@ def cleaning_process(df):
         # menghapus kolom yg tidak akan digunakan'
 		df.drop(columns=['Cheklist'], inplace=True)
 		df.drop(columns=['DocNo'], inplace=True)
+		df.drop(columns=['Qty(NG)'], inplace=True)						#kolom ini dihapus krn nilainya belum dikurangin NGM atau kolom Y, diganti mjd kolom NG(pcs)
+		df.rename(columns={'NG(pcs)': 'Qty(NG)'}, inplace=True)			#agar tdk report menghapus hingga ke bawah, kolom asli Qty(NG) dikembalikan dengan nilai baru
 		
 		pd.set_option('display.max_columns', None)                      # Mengatur pandas untuk menampilkan semua kolom
 		
@@ -337,7 +338,6 @@ def cleaning_process(df):
 		#kosong pengganti '' yang tidak terdeteksi sebagai .isna() -- 28 Sept 2024 at home after short gowes
 
 		# Mengisi kolom Kategori yang kosong berdasarkan kondisi
-		# df.loc[(df['Line'] == 'Barrel 4') & (df['Cust.ID'] == 'HDI') & (df['Kategori'].isna()), 'Kategori'] = 'HDI'
 		df.loc[(df['Line'] == 'Barrel 4') & (df['Cust.ID'] == 'HDI') & (df['Kategori']=='kosong'), 'Kategori'] = 'HDI'
 		df.loc[(df['Line'] == 'Barrel 4') & (df['Kategori']=='kosong'), 'Kategori'] = 'BUSI'
 		df.loc[(df['Line'] == 'Rack 1') & (df['Kategori']=='kosong'), 'Kategori'] = 'RACK 1'

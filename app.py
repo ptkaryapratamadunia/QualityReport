@@ -618,7 +618,7 @@ def cleaning_process(df):
 		# Membuat tabel pivot NG by Customer and LINE---------------
 
 		pt_customer_line=pd.pivot_table(df,values='NG_%',index='Cust.ID',columns='Line',aggfunc='mean',margins=True,margins_name='Total')
-		st.write('Data NG (%) by Line & Customer')
+		st.write('NG (%) by Line & Customer')
 		# Bulatkan nilai-nilai ke angka bulat terdekat
 		pt_customer_line = pt_customer_line.round(2)
 		pt_customer_line_transposed=pt_customer_line.transpose()
@@ -638,7 +638,7 @@ def cleaning_process(df):
 		# Bulatkan nilai-nilai ke angka bulat terdekat
 		pt_customer_line2 = pt_customer_line2.map(format_with_comma)
 
-		st.write('Data Quantity (lot) by Line & Customer')
+		st.write('Quantity (lot) by Line & Customer')
 		pt_customer_line2_tranposed=pt_customer_line2.transpose()
 		st.write(pt_customer_line2_tranposed)
 
@@ -665,7 +665,7 @@ def cleaning_process(df):
 		#buat kolom	untuk grafik dan tabel BUSI
 		colkir,colteng,colnan=st.columns(3)
 		with colkir:
-			st.write('Data NG (%) by Line & Kategori')
+			st.write('NG (%) by Line & Kategori')
 			st.write(pt_kategori_line)
 
 			#grafik pcs hanya untuk busi
@@ -693,11 +693,11 @@ def cleaning_process(df):
 			pt_kategori_line_NGpcs = pt_kategori_line_NGpcs.round(0)
 			st.write(pt_kategori_line_NGpcs)
 		with colnan:
-			st.write('Data Quantity Inspected (lot) by Line & Kategori')
-			pt_kategori_line2 = pt_kategori_line2.round(0)
+			st.write('Quantity Inspected (lot) by Line & Kategori')
+			pt_kategori_line2 = pt_kategori_line2.map(format_with_comma)
 			st.write(pt_kategori_line2)
 
-			st.write('Data Quantity Inspected (pcs) by Line & Kategori')
+			st.write('Quantity Inspected (pcs) by Line & Kategori')
 			pt_kategori_line_InspPcs = pt_kategori_line_InspPcs.round(0)
 			st.write(pt_kategori_line_InspPcs)
 
@@ -711,15 +711,32 @@ def cleaning_process(df):
 			'Dimensi/ Penyok', 'MTL/ SLipMelintir'
 		]
 
-		# # Menjumlahkan kolom-kolom yang diinginkan
-		total_row = df[new_columns].sum().to_frame().T
+	#LB4
+		df_LB4=df[df['Line']=='Barrel 4']
+
+		# # Menjumlahkan kolom-kolom yang diinginkan (lot)
+		total_row = df_LB4[new_columns].sum().to_frame().T
 		total_row['index'] = 'Total_NG(lot)'
 		total_row.set_index('index', inplace=True)
 
 		total_row=total_row.map(format_with_comma)
 		# total_row = total_row.applymap(format_with_comma)		#pengganti format diatas, meskipun unit nya lot krn actualnya ada yg kecil di bawah 1 lot
-
+		st.write("Tabel Jenis NG (Lot) - Line Barrel 4")
 		st.write(total_row)
+
+	#LR1
+
+		df_LR1=df[df['Line']=='Rack 1']
+		# # Menjumlahkan kolom-kolom yang diinginkan (pcs)
+		total_row2 = df_LR1[new_columns].sum().to_frame().T
+		total_row2['index'] = 'Total_NG(lot)'
+		total_row2.set_index('index', inplace=True)
+
+		total_row2=total_row2.map(format_with_comma)
+		# total_row = total_row.applymap(format_with_comma)		#pengganti format diatas, meskipun unit nya lot krn actualnya ada yg kecil di bawah 1 lot
+		st.write("Tabel Jenis NG (lot) - Line Rack 1")
+		st.write(total_row2)
+
 
 		# st.write(f"Total NG (lot) : {df['Tot_NG'].sum():.0f}")
 		#-------------------------------------------------------

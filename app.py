@@ -420,31 +420,48 @@ def cleaning_process(df):
 			)
 			# st.success("Jangan lupa selalu bersyukur!")
 		with bt1:
-		
+			
 			st.markdown("""<h6 style="color:blue;" > METRIC SUMMARY  ➡️ </h6>""", unsafe_allow_html=True)
 
 		with bt2:
 			container3=st.container(border=True)
 			tot_Qty_lot=df['Insp(B/H)'].sum()
-			container3.write(f"Total Inspected (lot)	:{tot_Qty_lot:.0f}")
-			# bariskanan.metric("Total Inspected (lot)",f"{tot_Qty_lot:.0F}")
+			# container3.write(f"Total Inspected (lot)	:{tot_Qty_lot:.0f}")
+			bt2.metric("Total Inspected (lot)",f"{tot_Qty_lot:.0F}")
 
 		with bt3:
 			container=st.container(border=True)
 			tot_NG_lot=df['Tot_NG'].sum()
-			container.write(f"Tot. NG (lot)  :  {tot_NG_lot:.0f}")
-			# bt2.metric("Total NG (lot):",f"{tot_NG_lot:.0f}")
+			# container.write(f"Tot. NG (lot)  :  {tot_NG_lot:.0f}")
+			bt3.metric("Total NG (lot):",f"{tot_NG_lot:.2f}")
 
 		with bariskanan:
 			container2=st.container(border=True)
 			tot_NG_persen=df['NG_%'].mean()
-			container2.write(f"Tot. NG (%)	: {tot_NG_persen:.2f}")
-			# bt3.metric("Total NG (%)",f"{tot_NG_persen:.2f}")
+			# container2.write(f"Tot. NG (%)	: {tot_NG_persen:.2f}")
+			bariskanan.metric("Total NG (%)",f"{tot_NG_persen:.2f}")
 		st.markdown("---")
 
 		# -------------------------------------
+		#SUMMARY DATA
+		st.subheader('Summary Data')
+		kiri,tengah,kanan=st.columns(3)
+		with kiri:
+			st.write('Table NG (%) by Line & Month')
+			pivot_df_bulan_line = pivot_df_bulan_line.round(2)
+			st.write(pivot_df_bulan_line)
+		with tengah:
+			st.write('Table Qty NG (lot) by Line & Month')
+			pivot_df_bulan_line2 = pivot_df_bulan_line2.map(format_with_comma)
+			st.write(pivot_df_bulan_line2)
+		with kanan:
+			st.write('Table Qty Inspected (lot) by Line & Month')
+			pivot_df_bulan_line3 = pivot_df_bulan_line3.round(0)
+			st.write(pivot_df_bulan_line3)
 
-			#Grafik area
+		st.markdown("---")
+
+		#Grafik area
 		grafik_kiri,grafik_kanan=st.columns(2)
 
 		with grafik_kiri:
@@ -539,22 +556,7 @@ def cleaning_process(df):
 
 		st.markdown("---")
 
-#SUMMARY DATA
-		st.subheader('Summary Data')
-		kiri,tengah,kanan=st.columns(3)
-		with kiri:
-			st.write('Data NG (%) by Line & Month')
-			pivot_df_bulan_line = pivot_df_bulan_line.round(2)
-			st.write(pivot_df_bulan_line)
-		with tengah:
-			st.write('Data Qty NG (lot) by Line & Month')
-			pivot_df_bulan_line2 = pivot_df_bulan_line2.map(format_with_comma)
-			st.write(pivot_df_bulan_line2)
 
-		with kanan:
-			st.write('Data Qty Inspected (lot) by Line & Month')
-			pivot_df_bulan_line3 = pivot_df_bulan_line3.round(0)
-			st.write(pivot_df_bulan_line3)
 		# ---------------------------------------
 
 		#Grafik NG by Line % & Lot	04NOv2024

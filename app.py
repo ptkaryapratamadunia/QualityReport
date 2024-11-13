@@ -984,25 +984,25 @@ def main():
 if __name__ == "__main__":
 	main()
 	
-	#Nama file yang akan dihapus saat mulai
-	files_to_delete = ["arsip_file.csv"]
-	# Loop melalui setiap file dan hapus jika ada
-	for file in files_to_delete:
-		if os.path.exists(file):
-			os.remove(file)
+	# #Nama file yang akan dihapus saat mulai
+	# files_to_delete = ["arsip_file.csv"]
+	# # Loop melalui setiap file dan hapus jika ada
+	# for file in files_to_delete:
+	# 	if os.path.exists(file):
+	# 		os.remove(file)
 
-	# File uploader
-	uploaded_file = st.file_uploader("Pilih file Excel (.xls, .xlsx, csv):")
-	if uploaded_file is not None:
-		# 	# Read the file
-		if uploaded_file.name.endswith('.xls'):
-			df = pd.read_excel(uploaded_file, engine='xlrd')
-		elif uploaded_file.name.endswith('.xlsx'):
-			df = pd.read_excel(uploaded_file, engine='openpyxl')
-		elif uploaded_file.name.endswith('.csv'):
-			df = pd.read_csv(uploaded_file)
-		else:
-			raise ValueError("File harus memiliki ekstensi .xls, .xlsx, atau .csv")
+	# # File uploader
+	# uploaded_file = st.file_uploader("Pilih file Excel (.xls, .xlsx, csv):")
+	# if uploaded_file is not None:
+	# 	# 	# Read the file
+	# 	if uploaded_file.name.endswith('.xls'):
+	# 		df = pd.read_excel(uploaded_file, engine='xlrd')
+	# 	elif uploaded_file.name.endswith('.xlsx'):
+	# 		df = pd.read_excel(uploaded_file, engine='openpyxl')
+	# 	elif uploaded_file.name.endswith('.csv'):
+	# 		df = pd.read_csv(uploaded_file)
+	# 	else:
+	# 		raise ValueError("File harus memiliki ekstensi .xls, .xlsx, atau .csv")
 
 		# # Get the absolute path for saving the file
 		# save_path = os.path.join(os.path.dirname(__file__), 'arsip_file.csv')	

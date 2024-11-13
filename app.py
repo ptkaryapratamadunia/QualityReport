@@ -403,7 +403,7 @@ def cleaning_process(df):
 		bariskiri,bt1,bt2,bt3,bariskanan=st.columns(5)
 
 		with bariskiri:
-			Tampilkan tautan unduhan di Streamlit
+			# Tampilkan tautan unduhan di Streamlit
 			st.download_button(
 				label="Download File Excel",
 				data=output,

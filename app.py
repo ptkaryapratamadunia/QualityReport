@@ -411,7 +411,7 @@ def cleaning_process(df):
 			# 	file_name='File_after_Cleaning.xlsx',
 			# 	mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 			# )
-			st.success("Jangan lupa selalu bersyukur & memberi manfaat pada orang lain")
+			st.success("Jangan lupa selalu bersyukur!")
 		with bt1:
 		
 			st.markdown("""<h6 style="color:blue;" > METRIC SUMMARY  ➡️ </h6>""", unsafe_allow_html=True)

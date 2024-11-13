@@ -111,6 +111,13 @@ with kolnan:
 	
 st.markdown("---")	#--------------------------batas akhir styling HEADER -----------------
 
+# Fungsi untuk format angka dengan koma
+# def format_with_comma(value):
+# 	return "{:,.2f}".format(value)
+def format_with_comma(value):
+	if isinstance(value, (int, float)):
+		return "{:,.2f}".format(value)
+	return value
 
 def show_footer():
 
@@ -532,6 +539,7 @@ def cleaning_process(df):
 
 		st.markdown("---")
 
+#SUMMARY DATA
 		st.subheader('Summary Data')
 		kiri,tengah,kanan=st.columns(3)
 		with kiri:
@@ -540,7 +548,7 @@ def cleaning_process(df):
 			st.write(pivot_df_bulan_line)
 		with tengah:
 			st.write('Data Qty NG (lot) by Line & Month')
-			pivot_df_bulan_line2 = pivot_df_bulan_line2.round(2)
+			pivot_df_bulan_line2 = pivot_df_bulan_line2.map(format_with_comma)
 			st.write(pivot_df_bulan_line2)
 
 		with kanan:
@@ -628,7 +636,7 @@ def cleaning_process(df):
 		#---------
 		pt_customer_line2=pd.pivot_table(df,values='Insp(B/H)',index='Cust.ID',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
 		# Bulatkan nilai-nilai ke angka bulat terdekat
-		pt_customer_line2 = pt_customer_line2.round(0)
+		pt_customer_line2 = pt_customer_line2.map(format_with_comma)
 
 		st.write('Data Quantity (lot) by Line & Customer')
 		pt_customer_line2_tranposed=pt_customer_line2.transpose()
@@ -649,14 +657,6 @@ def cleaning_process(df):
 		pt_kategori_line_NGpcs_grafik=pd.pivot_table(df,values='Qty(NG)',index='Kategori',aggfunc='sum',margins=True,margins_name='Total')
 		pt_kategori_line_InspPcs_grafik=pd.pivot_table(df,values='QInspec',index='Kategori',aggfunc='sum',margins=True,margins_name='Total')
 
-
-		# Fungsi untuk format angka dengan koma
-		# def format_with_comma(value):
-		# 	return "{:,.2f}".format(value)
-		def format_with_comma(value):
-			if isinstance(value, (int, float)):
-				return "{:,.2f}".format(value)
-			return value
 
 		# Terapkan format ke seluruh pivot table
 		pt_kategori_line = pt_kategori_line.map(format_with_comma)	
@@ -716,7 +716,7 @@ def cleaning_process(df):
 		total_row['index'] = 'Total_NG(lot)'
 		total_row.set_index('index', inplace=True)
 
-		total_row=total_row.round(0)
+		total_row=total_row.map(format_with_comma)
 		# total_row = total_row.applymap(format_with_comma)		#pengganti format diatas, meskipun unit nya lot krn actualnya ada yg kecil di bawah 1 lot
 
 		st.write(total_row)

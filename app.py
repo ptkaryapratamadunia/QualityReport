@@ -916,25 +916,70 @@ def cleaning_process(df):
 
 #MAIN module --------------------
 def main():
-#Main - module yg akan pertama dijalankan - improved @home 03-Nov2024
-		try:
-			#arsip file yg lalu .csv
+#Main - module yg akan pertama dijalankan - improved @home 03-Nov2024 - dirubah lagi ke model uploaded pertama krn error
 
-			# Dapatkan direktori tempat file Python ini berada, improved 13Nov2024
-			current_dir = os.path.dirname(os.path.abspath(__file__))
-			# Gabungkan dengan nama file
-			file_path = os.path.join(current_dir, "file_arsip.csv")
-			# arsip_file= "arsip_file.csv"
-			df = pd.read_csv(file_path)
+	#Nama file yang akan dihapus saat mulai
+	files_to_delete = ["arsip_file.csv"]
+	# Loop melalui setiap file dan hapus jika ada
+	for file in files_to_delete:
+		if os.path.exists(file):
+			os.remove(file)
 
-			df=data_tanggal(df)
+	# File uploader
+	uploaded_file = st.file_uploader("Pilih file Excel (.xls, .xlsx, csv):")
+	if uploaded_file is not None:
+		# 	# Read the file
+		if uploaded_file.name.endswith('.xls'):
+			df = pd.read_excel(uploaded_file, engine='xlrd')
+		elif uploaded_file.name.endswith('.xlsx'):
+			df = pd.read_excel(uploaded_file, engine='openpyxl')
+		elif uploaded_file.name.endswith('.csv'):
+			df = pd.read_csv(uploaded_file)
+		else:
+			raise ValueError("File harus memiliki ekstensi .xls, .xlsx, atau .csv")
 
-			df=cleaning_process(df)
+	
+		#------- simpan arsip file #sistem simpan baru, dicoba ken simpan model di atas tsb tidak efektif
+		# Dapatkan direktori tempat file Python ini berada, improved 13Nov2024
+		current_dir = os.path.dirname(os.path.abspath(__file__))
+		# Gabungkan dengan nama file
+		file_path = os.path.join(current_dir, "file_arsip.csv")
+		# Simpan file
+		df.to_csv(file_path, index=False)
+		# with open(file_path, 'w+') as f:
+		# 	f.write()
+		st.success("File_arsip.csv berhasil disimpan!")
+		
+		st.success("File berhasil di-upload dan langsung diproses Cleaning.")
 
-			show_footer()
-		except FileNotFoundError:
-			st.error("File arsip tidak ditemukan. Silakan unggah file baru.")	
-		return
+		df = pd.read_csv(file_path)
+
+		df=data_tanggal(df)
+
+		df=cleaning_process(df)
+
+		show_footer()
+
+
+# #Main - module yg akan pertama dijalankan - improved @home 03-Nov2024
+# 		try:
+# 			#arsip file yg lalu .csv
+
+# 			# Dapatkan direktori tempat file Python ini berada, improved 13Nov2024
+# 			current_dir = os.path.dirname(os.path.abspath(__file__))
+# 			# Gabungkan dengan nama file
+# 			file_path = os.path.join(current_dir, "file_arsip.csv")
+# 			# arsip_file= "arsip_file.csv"
+# 			df = pd.read_csv(file_path)
+
+# 			df=data_tanggal(df)
+
+# 			df=cleaning_process(df)
+
+# 			show_footer()
+# 		except FileNotFoundError:
+# 			st.error("File arsip tidak ditemukan. Silakan unggah file baru.")	
+# 		return
 
 if __name__ == "__main__":
 	main()
@@ -967,29 +1012,29 @@ if __name__ == "__main__":
 		# df.to_csv("arsip_file.csv", index=False)
 		# simpan_file(uploaded_file)			#sistem simpan baru, dicoba ken simpan model di atas tsb tidak efektif
 
-		#------- simpan arsip file #sistem simpan baru, dicoba ken simpan model di atas tsb tidak efektif
-		# Dapatkan direktori tempat file Python ini berada, improved 13Nov2024
-		current_dir = os.path.dirname(os.path.abspath(__file__))
-		# Gabungkan dengan nama file
-		file_path = os.path.join(current_dir, "file_arsip.csv")
-		# Simpan file
-		df.to_csv(file_path, index=False)
-		# with open(file_path, 'w+') as f:
-		# 	f.write()
-		st.success("File_arsip.csv berhasil disimpan!")
+		# #------- simpan arsip file #sistem simpan baru, dicoba ken simpan model di atas tsb tidak efektif
+		# # Dapatkan direktori tempat file Python ini berada, improved 13Nov2024
+		# current_dir = os.path.dirname(os.path.abspath(__file__))
+		# # Gabungkan dengan nama file
+		# file_path = os.path.join(current_dir, "file_arsip.csv")
+		# # Simpan file
+		# df.to_csv(file_path, index=False)
+		# # with open(file_path, 'w+') as f:
+		# # 	f.write()
+		# st.success("File_arsip.csv berhasil disimpan!")
 		
-		st.write("File berhasil di-upload dan langsung diproses Cleaning.")		
+		# st.success("File berhasil di-upload dan langsung diproses Cleaning.")		
 	
-		# st.cache_resource.clear()
+		# # st.cache_resource.clear()
 
-		# Command to run check.py 
-		subprocess.run(["python", "app2.py"]) 
-		# Exit app.py 
-		sys.exit()
+		# # Command to run check.py 
+		# # subprocess.run(["python", "app2.py"]) 
+		# # # Exit app.py 
+		# # sys.exit()
 
 		# main()
 	else:
-		st.write("Menunggu file diupload....")
+		st.error("Menunggu file diupload....")
 
 
 # ---- HIDE STREAMLIT STYLE ----

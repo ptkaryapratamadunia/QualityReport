@@ -980,6 +980,8 @@ def main():
 # 		except FileNotFoundError:
 # 			st.error("File arsip tidak ditemukan. Silakan unggah file baru.")	
 # 		return
+	else:
+		st.error("Menunggu file diupload....")
 
 if __name__ == "__main__":
 	main()
@@ -1033,8 +1035,6 @@ if __name__ == "__main__":
 		# # sys.exit()
 
 		# main()
-	else:
-		st.error("Menunggu file diupload....")
 
 
 # ---- HIDE STREAMLIT STYLE ----

@@ -980,7 +980,7 @@ if __name__ == "__main__":
 		
 		st.write("File berhasil di-upload dan langsung diproses Cleaning.")		
 	
-		st.cache_resource.clear()
+		# st.cache_resource.clear()
 
 		# Command to run check.py 
 		subprocess.run(["python", "app2.py"]) 

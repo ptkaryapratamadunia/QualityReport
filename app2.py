@@ -540,7 +540,7 @@ def cleaning_process(df):
 			st.write(pivot_df_bulan_line)
 		with tengah:
 			st.write('Data Qty NG (lot) by Line & Month')
-			pivot_df_bulan_line2 = pivot_df_bulan_line2.round(2)
+			pivot_df_bulan_line2 = pivot_df_bulan_line2.round(0)
 			st.write(pivot_df_bulan_line2)
 
 		with kanan:
@@ -982,11 +982,10 @@ if __name__ == "__main__":
 	
 		st.cache_resource.clear()
 
-		# Command to run check.py 
-		subprocess.run(["python", "app2.py"]) 
-		# Exit app.py 
+		# Command to run app.py 
+		subprocess.run(["python", "app1.py"]) 
+		# Exit app2.py 
 		sys.exit()
-
 		# main()
 	else:
 		st.write("Menunggu file diupload....")

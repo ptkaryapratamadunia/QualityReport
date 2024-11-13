@@ -403,15 +403,15 @@ def cleaning_process(df):
 		bariskiri,bt1,bt2,bt3,bariskanan=st.columns(5)
 
 		with bariskiri:
-			# Tampilkan tautan unduhan di Streamlit
-			# st.download_button(
-			# 	label="Download File Excel",
-			# 	data=output,
-			# 	help="Klik untuk mendownload file hasil Cleaning",
-			# 	file_name='File_after_Cleaning.xlsx',
-			# 	mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-			# )
-			st.success("Jangan lupa selalu bersyukur!")
+			Tampilkan tautan unduhan di Streamlit
+			st.download_button(
+				label="Download File Excel",
+				data=output,
+				help="Klik untuk mendownload file hasil Cleaning",
+				file_name='File_after_Cleaning.xlsx',
+				mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+			)
+			# st.success("Jangan lupa selalu bersyukur!")
 		with bt1:
 		
 			st.markdown("""<h6 style="color:blue;" > METRIC SUMMARY  ➡️ </h6>""", unsafe_allow_html=True)
@@ -948,7 +948,7 @@ def main():
 		df.to_csv(file_path, index=False)
 		# with open(file_path, 'w+') as f:
 		# 	f.write()
-		st.success("File_arsip.csv berhasil disimpan!")
+		# st.success("File_arsip.csv berhasil disimpan!")
 		
 		st.success("File berhasil di-upload dan langsung diproses Cleaning.")
 

@@ -546,7 +546,7 @@ def cleaning_process(df):
 				.sum()
 				.sort_values(by="Insp(B/H)",ascending=False)
 				.reset_index()
-		)
+			)
 		
 			# Create a pie chart
 			fig = go.Figure(data=go.Pie(labels=LotInsp_by_Line['Line'], values=LotInsp_by_Line['Insp(B/H)'], marker=dict(colors=['green', 'yellow', 'red', 'blue'])))

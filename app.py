@@ -171,7 +171,7 @@ def data_tanggal(df):
 
 	st.write(f"""
 			Periode dari Tanggal: {tanggal_tertua}
-			Sampai Tanggal : {tanggal_termuda}
+			sampai Tanggal : {tanggal_termuda}
 			""")
 	return df
 
@@ -192,28 +192,28 @@ def cleaning_process(df):
 		# Membersihkan nama kolom dari spasi atau karakter tersembunyi
 		df.columns = df.columns.str.strip()
 
-		df['DocDate'] = pd.to_datetime(df['DocDate'],errors='coerce')             #konversi tanggal ke tanggal pandas
-		df['Cust.ID'] = df['ItemCode'].str.split(' ').str[0]            # Membuat kolom baru 'Cust_ID' dengan mengambil karakter sebelum spasi pertama
+		df['DocDate'] = pd.to_datetime(df['DocDate'],errors='coerce')             	#konversi tanggal ke tanggal pandas
+		df['Cust.ID'] = df['ItemCode'].str.split(' ').str[0]           	 			# Membuat kolom baru 'Cust_ID' dengan mengambil karakter sebelum spasi pertama
 		df.rename(columns={'DocDate': 'Date'}, inplace=True)                        #'DocDate' menjadi 'Date'
-		df['Cust.ID'] = df['Cust.ID'].str.strip().str.upper()			#cust id huruf besar semua
+		df['Cust.ID'] = df['Cust.ID'].str.strip().str.upper()						#cust id huruf besar semua
 		
-		df.rename(columns={'ItemCode': 'Part.ID'}, inplace=True)              # Mengganti nama kolom 'Keterangan' menjadi 'Kategori'
-		df.rename(columns={'Description': 'PartName'}, inplace=True)     # Mengganti nama kolom 'Keterangan' menjadi 'Kategori'
-		#df.rename(columns={'OK(B/H)': 'OK(Lot)'}, inplace=True)     # Mengganti nama kolom 'Keterangan' menjadi 'Kategori'
+		df.rename(columns={'ItemCode': 'Part.ID'}, inplace=True)              		# Mengganti nama kolom 'Keterangan' menjadi 'Kategori'
+		df.rename(columns={'Description': 'PartName'}, inplace=True)     			# Mengganti nama kolom 'Keterangan' menjadi 'Kategori'
+		#df.rename(columns={'OK(B/H)': 'OK(Lot)'}, inplace=True)     				# Mengganti nama kolom 'Keterangan' menjadi 'Kategori'
 		df.rename(columns={'Keterangan': 'Kategori'}, inplace=True)                 # Mengganti nama kolom 'Keterangan' menjadi 'Kategori'
 		
-		df["NG(pcs)"]=(df['Qty(NG)']- df['Y'])							#menambah kolom NG(pcs) krn ada permintaan menggunakan satuan pcs start 06Nov2024
-		# df["Month"] = pd.to_datetime(df["Date"]).dt.month               # menambah kolom 'Month' hasil ekstrasi dari kolom 'Date
-		# df["Year"] = pd.to_datetime(df["Date"]).dt.year                 # menambah kolom 'Month' hasil ekstrasi dari kolom 'Date
-		#df['Month']=df['Date'].dt.strftime('%b-%Y')                        # Short month name, like 'Jan', 'Feb'
+		df["NG(pcs)"]=(df['Qty(NG)']- df['Y'])										#menambah kolom NG(pcs) krn ada permintaan menggunakan satuan pcs start 06Nov2024
+		# df["Month"] = pd.to_datetime(df["Date"]).dt.month               			# menambah kolom 'Month' hasil ekstrasi dari kolom 'Date
+		# df["Year"] = pd.to_datetime(df["Date"]).dt.year                			# menambah kolom 'Month' hasil ekstrasi dari kolom 'Date
+		#df['Month']=df['Date'].dt.strftime('%b-%Y')                        		# Short month name, like 'Jan', 'Feb'
         
         # menghapus kolom yg tidak akan digunakan'
 		df.drop(columns=['Cheklist'], inplace=True)
 		df.drop(columns=['DocNo'], inplace=True)
-		df.drop(columns=['Qty(NG)'], inplace=True)						#kolom ini dihapus krn nilainya belum dikurangin NGM atau kolom Y, diganti mjd kolom NG(pcs)
-		df.rename(columns={'NG(pcs)': 'Qty(NG)'}, inplace=True)			#agar tdk report menghapus hingga ke bawah, kolom asli Qty(NG) dikembalikan dengan nilai baru
+		df.drop(columns=['Qty(NG)'], inplace=True)									#kolom ini dihapus krn nilainya belum dikurangin NGM atau kolom Y, diganti mjd kolom NG(pcs)
+		df.rename(columns={'NG(pcs)': 'Qty(NG)'}, inplace=True)						#agar tdk report menghapus hingga ke bawah, kolom asli Qty(NG) dikembalikan dengan nilai baru
 		
-		pd.set_option('display.max_columns', None)                      # Mengatur pandas untuk menampilkan semua kolom
+		pd.set_option('display.max_columns', None)                     				 # Mengatur pandas untuk menampilkan semua kolom
 		
 		# Mengganti nama kolom jenis NG ke nama Aslinya
 		new_columns = {
@@ -539,7 +539,23 @@ def cleaning_process(df):
 			# st.plotly_chart(fig)
 			
 		with grafik_kanan:
-			st.success("Jangan lupa beryukur!")
+			# Pie Chart
+			LotInsp_by_Line=(
+				df[["Line","Insp(B/H)"]]
+				.groupby(by="Line")
+				.sum()
+				.sort_values(by="Insp(B/H)",ascending=False)
+				.reset_index()
+		)
+		
+		# Create a pie chart
+		fig = go.Figure(data=go.Pie(labels=LotInsp_by_Line['Line'], values=LotInsp_by_Line['Insp(B/H)'], marker=dict(colors=['green', 'yellow', 'red', 'blue'])))
+
+		fig.update_layout(title='Porsion Tot. Inspected(lot) by Line',
+						xaxis_title='Line',
+						yaxis_title='Qty (lot)')
+
+		st.plotly_chart(fig)
 
 		st.markdown("---")
 
@@ -585,8 +601,6 @@ def cleaning_process(df):
 
 		st.markdown("---")
 		# ---------------------------------------
-
-
 
 		# Membuat tabel pivot NG by Customer and LINE---------------
 

@@ -548,14 +548,14 @@ def cleaning_process(df):
 				.reset_index()
 		)
 		
-		# Create a pie chart
-		fig = go.Figure(data=go.Pie(labels=LotInsp_by_Line['Line'], values=LotInsp_by_Line['Insp(B/H)'], marker=dict(colors=['green', 'yellow', 'red', 'blue'])))
+			# Create a pie chart
+			fig = go.Figure(data=go.Pie(labels=LotInsp_by_Line['Line'], values=LotInsp_by_Line['Insp(B/H)'], marker=dict(colors=['green', 'yellow', 'red', 'blue'])))
 
-		fig.update_layout(title='Porsion Tot. Inspected(lot) by Line',
-						xaxis_title='Line',
-						yaxis_title='Qty (lot)')
+			fig.update_layout(title='Porsion Tot. Inspected(lot) by Line',
+							xaxis_title='Line',
+							yaxis_title='Qty (lot)')
 
-		st.plotly_chart(fig)
+			st.plotly_chart(fig)
 
 		st.markdown("---")
 

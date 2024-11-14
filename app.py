@@ -604,23 +604,71 @@ def cleaning_process(df):
 
 		# Membuat tabel pivot NG by Customer and LINE---------------
 
-		pt_customer_line=pd.pivot_table(df,values='NG_%',index='Cust.ID',columns='Line',aggfunc='mean',margins=True,margins_name='Total')
+		# Pivot table creation for B4
+		pt_customer_line = pd.pivot_table(df, values='NG_%', index='Cust.ID', columns='Line', aggfunc='mean', margins=True, margins_name='Total')
 		st.write('NG (%) by Line & Customer')
-		# Bulatkan nilai-nilai ke angka bulat terdekat
+
+		# Round the values to 2 decimal places
 		pt_customer_line = pt_customer_line.round(2)
-		pt_customer_line_transposed=pt_customer_line.transpose()
+		pt_customer_line_transposed = pt_customer_line.transpose()
 		st.write(pt_customer_line_transposed)
 
-		#gambar grafik line	
-		df_grafik=pd.DataFrame(pt_customer_line_transposed)
+		# Extract 'Barrel 4' line and exclude 'Total' column
+		barrel4_data = pt_customer_line['Barrel 4'].drop('Total').reset_index()
 
-		# Memilih kolom yang ingin diplotkan (kecuali kolom 'Total')
-		columns_to_plot = pt_customer_line_transposed.columns[:-1]  # Mengambil semua kolom kecuali yang terakhir
-		chart_data = pd.DataFrame(pt_customer_line_transposed,index=['Line'], columns=columns_to_plot)
+		# Filter out rows where 'Barrel 4' is zero 
+		barrel4_data_filtered = barrel4_data[barrel4_data['Barrel 4'] > 0]
 
-		# st.bar_chart(df_grafik,x="NG_%",y="Barrel 4",x_label="Customer",y_label="% NG",horizontal=False) ---------- gagal terus euy
-	
-		#---------
+		# Sort the data by NG_% in descending order
+		barrel4_data_sorted = barrel4_data_filtered.sort_values(by='Barrel 4', ascending=False)
+
+		# Create the bar chart
+		fig = px.bar(barrel4_data_sorted, x='Cust.ID', y='Barrel 4', title='NG (%) for Barrel 4 by Customer',
+					labels={'Barrel 4': 'NG (%)', 'Cust.ID': 'Customer'},
+					color='Cust.ID',  # Different color for each customer
+					color_discrete_sequence=px.colors.qualitative.Plotly)
+
+		# Customize the layout
+		fig.update_layout(
+			xaxis_title="Customer",
+			yaxis_title="NG (%)",
+			xaxis_tickangle=-45
+		)
+
+		# Display the plot in Streamlit
+		st.plotly_chart(fig)
+
+		# Pivot table creation for R1
+
+		# Extract 'Barrel 4' line and exclude 'Total' column
+		R1_data = pt_customer_line['Rack 1'].drop('Total').reset_index()
+
+		# Filter out rows where 'Barrel 4' is zero 
+		R1_data_filtered = R1_data[R1_data['Rack 1'] > 0]
+
+		# Sort the data by NG_% in descending order
+		R1_data_sorted = R1_data_filtered.sort_values(by='Rack 1', ascending=False)
+
+		# Create the bar chart
+		fig = px.bar(R1_data_sorted, x='Cust.ID', y='Rack 1', title='NG (%) for Rack 1 by Customer',
+					labels={'Rack 1': 'NG (%)', 'Cust.ID': 'Customer'},
+					color='Cust.ID',  # Different color for each customer
+					color_discrete_sequence=px.colors.qualitative.Plotly)
+
+		# Customize the layout
+		fig.update_layout(
+			xaxis_title="Customer",
+			yaxis_title="NG (%)",
+			xaxis_tickangle=-45
+		)
+
+		# Display the plot in Streamlit
+		st.plotly_chart(fig)
+
+
+		st.markdown("---")
+
+		#--------- pivot lagi
 		pt_customer_line2=pd.pivot_table(df,values='Insp(B/H)',index='Cust.ID',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
 		# Bulatkan nilai-nilai ke angka bulat terdekat
 		pt_customer_line2 = pt_customer_line2.map(format_with_comma)

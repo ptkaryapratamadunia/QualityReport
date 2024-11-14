@@ -556,7 +556,45 @@ def cleaning_process(df):
 
 		st.markdown("---")
 
+		#grafik PIE ----------------------
 
+		pie_kiri,pie_kanan=st.columns(2)
+
+		with pie_kiri:
+			Insp_by_Cust=(
+					df[["Cust.ID","Insp(B/H)"]]
+					.groupby(by="Cust.ID")
+					.sum()
+					.sort_values(by="Insp(B/H)",ascending=False)
+					.reset_index()
+			)
+			
+			# Create a pie chart
+			fig = go.Figure(data=go.Pie(labels=Insp_by_Cust['Cust.ID'], values=Insp_by_Cust['Insp(B/H)'], marker=dict(colors=['green', 'yellow', 'red', 'blue'])))
+
+			fig.update_layout(title='Porsion Qty Inspected(lot) by Customer',
+							xaxis_title='Cust.ID',
+							yaxis_title='Qty (lot)')
+
+			st.plotly_chart(fig)
+
+		with pie_kanan:
+			Insp_by_Kategori=(
+					df[["Kategori","Insp(B/H)"]]
+					.groupby(by="Kategori")
+					.sum()
+					.sort_values(by="Insp(B/H)",ascending=False)
+					.reset_index()
+			)
+			
+			# Create a pie chart
+			fig = go.Figure(data=go.Pie(labels=Insp_by_Kategori['Kategori'], values=Insp_by_Kategori['Insp(B/H)'], marker=dict(colors=['green', 'yellow', 'red', 'blue'])))
+
+			fig.update_layout(title='Porsion Tot. Inspected(lot) by Kategori',
+							xaxis_title='Kategori',
+							yaxis_title='Qty (lot)')
+
+			st.plotly_chart(fig)
 		# ---------------------------------------
 
 		#Grafik NG by Line % & Lot	04NOv2024
@@ -817,46 +855,6 @@ def cleaning_process(df):
 							yaxis_title='NG_%')
 
 			st.plotly_chart(fig)
-		
-		#grafik PIE
-		pie_kiri,pie_kanan=st.columns(2)
-
-		with pie_kiri:
-			Insp_by_Cust=(
-					df[["Cust.ID","Insp(B/H)"]]
-					.groupby(by="Cust.ID")
-					.sum()
-					.sort_values(by="Insp(B/H)",ascending=False)
-					.reset_index()
-			)
-			
-			# Create a pie chart
-			fig = go.Figure(data=go.Pie(labels=Insp_by_Cust['Cust.ID'], values=Insp_by_Cust['Insp(B/H)'], marker=dict(colors=['green', 'yellow', 'red', 'blue'])))
-
-			fig.update_layout(title='Porsion Qty Inspected(lot) by Customer',
-							xaxis_title='Cust.ID',
-							yaxis_title='Qty (lot)')
-
-			st.plotly_chart(fig)
-
-		with pie_kanan:
-
-			Insp_by_Kategori=(
-					df[["Kategori","Insp(B/H)"]]
-					.groupby(by="Kategori")
-					.sum()
-					.sort_values(by="Insp(B/H)",ascending=False)
-					.reset_index()
-			)
-			
-			# Create a pie chart
-			fig = go.Figure(data=go.Pie(labels=Insp_by_Kategori['Kategori'], values=Insp_by_Kategori['Insp(B/H)'], marker=dict(colors=['green', 'yellow', 'red', 'blue'])))
-
-			fig.update_layout(title='Porsion Tot. Inspected(lot) by Kategori',
-							xaxis_title='Kategori',
-							yaxis_title='Qty (lot)')
-
-			st.plotly_chart(fig)
 
 		#kolom lagi untuk grafik NG by Part Name
 		sikir2,sinan2=st.columns(2)
@@ -917,15 +915,6 @@ def cleaning_process(df):
 			NGLot_by_part = NGLot_by_part.map(format_with_comma)
 			st.write(NGLot_by_part)
 
-			# # Buat grafik batang interaktif
-			# fig = go.Figure(data=go.Bar(x=NGLot_by_part['PartName'], y=NGLot_by_part['NG(B/H)'],
-			# 						marker_color='blue'))  # Sesuaikan warna jika ingin
-
-			# fig.update_layout(title='Qty NG (lot) per Part - LB4',
-			# 				xaxis_title='PartName',
-			# 				yaxis_title='NG (lot)')
-
-			# st.plotly_chart(fig)
 		#--------------------------------------
 		#      NG Plating Smallpart by M/C NO.
 		#--------------------------------------

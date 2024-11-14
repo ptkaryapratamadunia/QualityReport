@@ -726,53 +726,53 @@ def cleaning_process(df):
 		st.write("Tabel Jenis NG (Lot) - Line Barrel 4")
 		st.write(total_row)
 
+		#tampilkan grafik batangnya -- 14Nov2024
+		# Convert the total_row to a DataFrame for plotting 
+		total_row_df = total_row.transpose().reset_index() 
+		total_row_df.columns = ['Defect Type', 'Total NG (lot)'] 
+		# Convert 'Total NG (lot)' to numeric, forcing errors to NaN 
+		total_row_df['Total NG (lot)'] = pd.to_numeric(total_row_df['Total NG (lot)'], errors='coerce')
+		# Filter out rows where 'Total NG (lot)' is zero 
+		total_row_df_filtered = total_row_df[total_row_df['Total NG (lot)'] > 0] 
+		#Sort values from largest to smallest 
+		total_row_df_sorted = total_row_df_filtered.sort_values(by='Total NG (lot)', ascending=False)
+		# Plot using plotly for interactivity 
+		fig = px.bar(total_row_df_sorted, x='Defect Type', y='Total NG (lot)', title='Defect Types - Line Barrel 4', labels={'Defect Type': 'Defect Type', 'Total NG (lot)': 'Total NG (lot)'}, color_discrete_sequence=['blue']) 
+		fig.update_layout( xaxis_title="Defect Type", yaxis_title="Total NG (lot)", xaxis_tickangle=-45)
+		st.plotly_chart(fig)
+
 	#LR1
 
 		df_LR1=df[df['Line']=='Rack 1']
 		# # Menjumlahkan kolom-kolom yang diinginkan (pcs)
-		total_row2 = df_LR1[new_columns].sum().to_frame().T
-		total_row2['index'] = 'Total_NG(lot)'
-		total_row2.set_index('index', inplace=True)
+		total_row = df_LR1[new_columns].sum().to_frame().T
+		total_row['index'] = 'Total_NG(lot)'
+		total_row.set_index('index', inplace=True)
 
-		total_row2=total_row2.map(format_with_comma)
+		total_row=total_row.map(format_with_comma)
 		# total_row = total_row.applymap(format_with_comma)		#pengganti format diatas, meskipun unit nya lot krn actualnya ada yg kecil di bawah 1 lot
 		st.write("Tabel Jenis NG (lot) - Line Rack 1")
-		st.write(total_row2)
+		st.write(total_row)
+
+		#tampilkan grafik batangnya -- 14Nov2024
+		# Convert the total_row to a DataFrame for plotting 
+		total_row_df = total_row.transpose().reset_index() 
+		total_row_df.columns = ['Defect Type', 'Total NG (lot)'] 
+		# Convert 'Total NG (lot)' to numeric, forcing errors to NaN 
+		total_row_df['Total NG (lot)'] = pd.to_numeric(total_row_df['Total NG (lot)'], errors='coerce')
+		# Filter out rows where 'Total NG (lot)' is zero 
+		total_row_df_filtered = total_row_df[total_row_df['Total NG (lot)'] > 0] 
+		#Sort values from largest to smallest 
+		total_row_df_sorted = total_row_df_filtered.sort_values(by='Total NG (lot)', ascending=False)
+		# Plot using plotly for interactivity 
+		fig = px.bar(total_row_df_sorted, x='Defect Type', y='Total NG (lot)', title='Defect Types - Line Rack 1', labels={'Defect Type': 'Defect Type', 'Total NG (lot)': 'Total NG (lot)'}, color_discrete_sequence=['green']) 
+		fig.update_layout( xaxis_title="Defect Type", yaxis_title="Total NG (lot)", xaxis_tickangle=-45)
+		st.plotly_chart(fig)
 
 
-		# st.write(f"Total NG (lot) : {df['Tot_NG'].sum():.0f}")
 		#-------------------------------------------------------
 
-		# total_rowNG = (total_row/df['Tot_NG'].sum())*100
-		# total_rowNG['index']='Total_NG%'
-		# total_rowNG.set_index('index', inplace=True)
-		# total_rowNG=total_rowNG.round(2)
-		# st.write(total_rowNG)
 
-		# st.write(f"Total NG (%) : {df['NG_%'].mean():0.2f}")
-
-		# Membuat tabel pivot NG by M/C No ---------------
-		# Filter DataFrame to exclude empty or '00' in 'M/C No.'
-		
-		# Ensure correct column names without leading/trailing spaces
-		df.columns = df.columns.str.strip()
-
-		# Ensure the 'M/C No.' column is of string type
-		df['M/C No.'] = df['M/C No.'].astype(str)
-
-		# Apply filter to exclude rows where 'M/C No.' is null, empty, or '00'
-		df_filtered = df[(df['M/C No.'].notnull()) & (df['M/C No.'] != '') & (df['M/C No.'] != '00')]	
-		pt_MesinNo = pd.pivot_table(df_filtered, 
-                            values=['NG_%', 'Insp(B/H)'], 
-                            index='M/C No.', 
-                            aggfunc={'NG_%': 'mean', 'Insp(B/H)': 'sum'}, 
-                            margins=True, 
-                            margins_name='Total')
-		# Transpose the pivot table
-		st.write('Data NG (%) by Nomer Mesin Stamping')
-		pt_MesinNo_transposed = pt_MesinNo.transpose()
-		pt_MesinNo_transposed=pt_MesinNo_transposed.round(2)
-		st.write(pt_MesinNo_transposed)
 
 		#groupby dataframe	---------------
 
@@ -927,6 +927,26 @@ def cleaning_process(df):
 
 			# st.plotly_chart(fig)
 		#--------------------------------------
+		#      NG Plating Smallpart by M/C NO.
+		#--------------------------------------
+		df.columns = df.columns.str.strip()
+
+		# Ensure the 'M/C No.' column is of string type
+		df['M/C No.'] = df['M/C No.'].astype(str)
+
+		# Apply filter to exclude rows where 'M/C No.' is null, empty, or '00'
+		df_filtered = df[(df['M/C No.'].notnull()) & (df['M/C No.'] != '') & (df['M/C No.'] != '00')]	
+		pt_MesinNo = pd.pivot_table(df_filtered, 
+                            values=['NG_%', 'Insp(B/H)'], 
+                            index='M/C No.', 
+                            aggfunc={'NG_%': 'mean', 'Insp(B/H)': 'sum'}, 
+                            margins=True, 
+                            margins_name='Total')
+		# Transpose the pivot table
+		st.write('NG (%) by M/C No. Stamping')
+		pt_MesinNo_transposed = pt_MesinNo.transpose()
+		pt_MesinNo_transposed=pt_MesinNo_transposed.round(2)
+		st.write(pt_MesinNo_transposed)
 	else:
 		st.write("File tidak ditemukan")
 	return df

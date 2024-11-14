@@ -408,7 +408,7 @@ def cleaning_process(df):
 		pivot_df_bulan_line3_grafik= pd.pivot_table(df, values='Insp(B/H)', index='Date', aggfunc='sum')
 
 		bariskiri,bt1,bt2,bt3,bariskanan=st.columns(5)
-
+		#Metrics column
 		with bariskiri:
 			# Tampilkan tautan unduhan di Streamlit
 			st.download_button(
@@ -424,22 +424,29 @@ def cleaning_process(df):
 			st.markdown("""<h6 style="color:blue;" > METRIC SUMMARY  ➡️ </h6>""", unsafe_allow_html=True)
 
 		with bt2:
-			container3=st.container(border=True)
+			# container3=st.container(border=True)
 			tot_Qty_lot=df['Insp(B/H)'].sum()
 			# container3.write(f"Total Inspected (lot)	:{tot_Qty_lot:.0f}")
-			bt2.metric("Total Inspected (lot)",f"{tot_Qty_lot:.0F}")
+			# Create a styled container with a border 
+			container_html = f""" <div style='border: 2px solid #4CAF50; padding: 2px; border-radius: 5px; text-align: center;'> <h4 style='font-size:12px; margin:0;color:yellow;'>Total Inspected (lot)</h4> <p style='font-size:46px; margin:0;'>{tot_Qty_lot:,.0f}</p> </div> """
+			st.markdown(container_html, unsafe_allow_html=True)
+			# bt2.metric("Total Inspected (lot)",f"{tot_Qty_lot:,.0f}")
 
 		with bt3:
-			container=st.container(border=True)
+			# container=st.container(border=True)
 			tot_NG_lot=df['Tot_NG'].sum()
 			# container.write(f"Tot. NG (lot)  :  {tot_NG_lot:.0f}")
-			bt3.metric("Total NG (lot):",f"{tot_NG_lot:.2f}")
+			container_html = f""" <div style='border: 2px solid #4CAF50; padding: 2px; border-radius: 5px; text-align: center;'> <h4 style='font-size:12px; margin:0;color:yellow;'>"Total NG (lot)</h4> <p style='font-size:46px; margin:0;'>{tot_NG_lot:,.2f}</p> </div> """
+			st.markdown(container_html, unsafe_allow_html=True)
+			# bt3.metric("Total NG (lot):",f"{tot_NG_lot:.2f}")
 
 		with bariskanan:
-			container2=st.container(border=True)
+			# container2=st.container(border=True)
 			tot_NG_persen=df['NG_%'].mean()
 			# container2.write(f"Tot. NG (%)	: {tot_NG_persen:.2f}")
-			bariskanan.metric("Total NG (%)",f"{tot_NG_persen:.2f}")
+			container_html = f""" <div style='border: 2px solid #4CAF50; padding: 2px; border-radius: 5px; text-align: center;'> <h4 style='font-size:12px; margin:0;color:yellow;'>Total NG (%)</h4> <p style='font-size:46px; margin:0;'>{tot_NG_persen:,.2f}</p> </div> """
+			st.markdown(container_html, unsafe_allow_html=True)			
+			# bariskanan.metric("Total NG (%)",f"{tot_NG_persen:.2f}")
 		st.markdown("---")
 
 		# -------------------------------------
@@ -595,7 +602,54 @@ def cleaning_process(df):
 							yaxis_title='Qty (lot)')
 
 			st.plotly_chart(fig)
+
+		st.markdown("---")
 		# ---------------------------------------
+
+
+
+		# Membuat tabel pivot NG by Customer and LINE---------------
+
+		pt_customer_line=pd.pivot_table(df,values='NG_%',index='Cust.ID',columns='Line',aggfunc='mean',margins=True,margins_name='Total')
+		st.write('NG (%) by Line & Customer')
+		# Bulatkan nilai-nilai ke angka bulat terdekat
+		pt_customer_line = pt_customer_line.round(2)
+		pt_customer_line_transposed=pt_customer_line.transpose()
+		st.write(pt_customer_line_transposed)
+
+		#gambar grafik line	
+		df_grafik=pd.DataFrame(pt_customer_line_transposed)
+
+		# Memilih kolom yang ingin diplotkan (kecuali kolom 'Total')
+		columns_to_plot = pt_customer_line_transposed.columns[:-1]  # Mengambil semua kolom kecuali yang terakhir
+		chart_data = pd.DataFrame(pt_customer_line_transposed,index=['Line'], columns=columns_to_plot)
+
+		# st.bar_chart(df_grafik,x="NG_%",y="Barrel 4",x_label="Customer",y_label="% NG",horizontal=False) ---------- gagal terus euy
+	
+		#---------
+		pt_customer_line2=pd.pivot_table(df,values='Insp(B/H)',index='Cust.ID',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
+		# Bulatkan nilai-nilai ke angka bulat terdekat
+		pt_customer_line2 = pt_customer_line2.map(format_with_comma)
+
+		st.write('Quantity (lot) by Line & Customer')
+		pt_customer_line2_tranposed=pt_customer_line2.transpose()
+		st.write(pt_customer_line2_tranposed)
+
+
+		# ---------------------------------------
+		# Membuat tabel pivot NG by Kategori and LINE---------------
+
+		pt_kategori_line=pd.pivot_table(df,values='NG_%',index='Kategori',columns='Line',aggfunc='mean',margins=True,margins_name='Total')
+		pt_kategori_line2=pd.pivot_table(df,values='Insp(B/H)',index='Kategori',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
+		pt_kategori_line3=pd.pivot_table(df,values='Tot_NG',index='Kategori',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
+
+		#pt by kategori pcs 
+		pt_kategori_line_NGpcs=pd.pivot_table(df,values='Qty(NG)',index='Kategori',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
+		pt_kategori_line_InspPcs=pd.pivot_table(df,values='QInspec',index='Kategori',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
+
+		pt_kategori_line_NGpcs_grafik=pd.pivot_table(df,values='Qty(NG)',index='Kategori',aggfunc='sum',margins=True,margins_name='Total')
+		pt_kategori_line_InspPcs_grafik=pd.pivot_table(df,values='QInspec',index='Kategori',aggfunc='sum',margins=True,margins_name='Total')
+
 
 		#Grafik NG by Line % & Lot	04NOv2024
 		chart_kiri, chart_tengah,chart_kanan=st.columns(3)		
@@ -653,50 +707,6 @@ def cleaning_process(df):
 								yaxis_title='Qty (lot)')
 
 				st.plotly_chart(fig)
-
-
-		# Membuat tabel pivot NG by Customer and LINE---------------
-
-		pt_customer_line=pd.pivot_table(df,values='NG_%',index='Cust.ID',columns='Line',aggfunc='mean',margins=True,margins_name='Total')
-		st.write('NG (%) by Line & Customer')
-		# Bulatkan nilai-nilai ke angka bulat terdekat
-		pt_customer_line = pt_customer_line.round(2)
-		pt_customer_line_transposed=pt_customer_line.transpose()
-		st.write(pt_customer_line_transposed)
-
-		#gambar grafik line	
-		df_grafik=pd.DataFrame(pt_customer_line_transposed)
-
-		# Memilih kolom yang ingin diplotkan (kecuali kolom 'Total')
-		columns_to_plot = pt_customer_line_transposed.columns[:-1]  # Mengambil semua kolom kecuali yang terakhir
-		chart_data = pd.DataFrame(pt_customer_line_transposed,index=['Line'], columns=columns_to_plot)
-
-		# st.bar_chart(df_grafik,x="NG_%",y="Barrel 4",x_label="Customer",y_label="% NG",horizontal=False) ---------- gagal terus euy
-	
-		#---------
-		pt_customer_line2=pd.pivot_table(df,values='Insp(B/H)',index='Cust.ID',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
-		# Bulatkan nilai-nilai ke angka bulat terdekat
-		pt_customer_line2 = pt_customer_line2.map(format_with_comma)
-
-		st.write('Quantity (lot) by Line & Customer')
-		pt_customer_line2_tranposed=pt_customer_line2.transpose()
-		st.write(pt_customer_line2_tranposed)
-
-
-		# ---------------------------------------
-		# Membuat tabel pivot NG by Kategori and LINE---------------
-
-		pt_kategori_line=pd.pivot_table(df,values='NG_%',index='Kategori',columns='Line',aggfunc='mean',margins=True,margins_name='Total')
-		pt_kategori_line2=pd.pivot_table(df,values='Insp(B/H)',index='Kategori',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
-		pt_kategori_line3=pd.pivot_table(df,values='Tot_NG',index='Kategori',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
-
-		#pt by kategori pcs 
-		pt_kategori_line_NGpcs=pd.pivot_table(df,values='Qty(NG)',index='Kategori',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
-		pt_kategori_line_InspPcs=pd.pivot_table(df,values='QInspec',index='Kategori',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
-
-		pt_kategori_line_NGpcs_grafik=pd.pivot_table(df,values='Qty(NG)',index='Kategori',aggfunc='sum',margins=True,margins_name='Total')
-		pt_kategori_line_InspPcs_grafik=pd.pivot_table(df,values='QInspec',index='Kategori',aggfunc='sum',margins=True,margins_name='Total')
-
 
 		# Terapkan format ke seluruh pivot table
 		pt_kategori_line = pt_kategori_line.map(format_with_comma)	

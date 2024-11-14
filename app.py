@@ -164,10 +164,10 @@ def data_tanggal(df):
 	df['DocDate'] = pd.to_datetime(df['DocDate'])
 
 	# Tanggal tertua
-	tanggal_tertua = df['DocDate'].min()
+	tanggal_tertua = df['DocDate'].min().strftime('%d-%b-%Y')
 
 	# Tanggal termuda
-	tanggal_termuda = df['DocDate'].max()
+	tanggal_termuda = df['DocDate'].max().strftime('%d-%b-%Y')
 
 	st.write(f"""
 			Periode dari Tanggal: {tanggal_tertua}

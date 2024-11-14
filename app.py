@@ -539,27 +539,7 @@ def cleaning_process(df):
 			# st.plotly_chart(fig)
 			
 		with grafik_kanan:
-			# Hitung agregasi untuk setiap kategori
-			NG_by_kategori_ng = df.groupby('Kategori').agg({'NG_%': 'mean'}).reset_index()
-			NG_by_kategori_insp = df.groupby('Kategori').agg({'Insp(B/H)': 'sum'}).reset_index()
-
-			# Create a figure with a 1x2 subplot grid (1 row, 2 columns)
-			fig = make_subplots(rows=1, cols=2)
-
-			# Add traces to the subplots
-			fig.add_trace(go.Bar(x=NG_by_kategori_ng['Kategori'], y=NG_by_kategori_ng['NG_%'], name='NG_%', marker_color='blue'), row=1, col=1)
-			fig.add_trace(go.Bar(x=NG_by_kategori_insp['Kategori'], y=NG_by_kategori_insp['Insp(B/H)'], name='Insp(B/H)', marker_color='orange'), row=1, col=2)
-
-			# Update layout for secondary y-axis (optional)
-			fig.update_layout(
-				title='Grafik Total Inspected (lot) Vs Average NG (% ) per Kategori',
-				xaxis_title='Kategori',
-				yaxis=dict(title='Average NG (%)'),
-				yaxis2=dict(title='Qty Inspected (lot)', overlaying='y', side='right')  # If needed for overlay
-			)
-
-			# Display the plot
-			st.plotly_chart(fig)
+			st.success("Jangan lupa beryukur!")
 
 		st.markdown("---")
 

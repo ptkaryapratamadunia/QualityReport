@@ -960,12 +960,16 @@ def cleaning_process(df):
 			.sort_values(by="NG_%",ascending=False)
 			.reset_index()
 			)
+			# Filter nilai yang lebih besar dari 0 
+			NG_by_part = NG_by_part[NG_by_part['NG_%'] > 0]
 
 			# Buat grafik batang dengan Plotly
 			fig = px.bar(NG_by_part, x='NG_%', y='PartName', color='NG_%',barmode="relative")
 			fig.update_layout(title='Grafik NG (%) by Part Name - LB4',
 							xaxis_title='NG_%',
-							yaxis_title='PartName')
+							yaxis_title='PartName',
+							yaxis=dict(categoryorder='total ascending') 	 # Mengatur urutan sumbu y dari terbesar ke terkecil
+				 )	
 			st.plotly_chart(fig)
 
 			NG_by_part = NG_by_part.map(format_with_comma)
@@ -989,16 +993,20 @@ def cleaning_process(df):
 			NGpersenR1_by_part=(
 			df_byLine[["PartName","NG_%"]]
 			.groupby(by="PartName")
-			.sum()
+			.mean()
 			.sort_values(by="NG_%",ascending=False)
 			.reset_index()
 			)
+			# Filter nilai yang lebih besar dari 0 
+			NGpersenR1_by_part = NGpersenR1_by_part[NGpersenR1_by_part['NG_%'] > 0]
 
 			# Buat grafik batang dengan Plotly
 			fig = px.bar(NGpersenR1_by_part, x="NG_%", y='PartName', color="NG_%",barmode="group")
 			fig.update_layout(title='Grafik NG (%) by Part Name - LR1',
 							xaxis_title='NG (%)',
-							yaxis_title='PartName')
+							yaxis_title='PartName',
+							yaxis=dict(categoryorder='total ascending') # Mengatur urutan sumbu y dari terbesar ke terkecil
+							)
 			st.plotly_chart(fig)
 
 			NGpersenR1_by_part = NGpersenR1_by_part.map(format_with_comma)
@@ -1006,6 +1014,68 @@ def cleaning_process(df):
 
 		st.markdown("---")
 
+		#kolom lagi untuk Qty OK NG
+		kolomkiri,kolomkanan=st.columns(2)
+
+		with kolomkiri:
+
+			#filter df hanya yg tampil sesuai Line yg dipilih
+			df_byLine=df[df['Line']=='Rack 1']
+
+			List_Qty_B4=(
+			df_byLine[["PartName","Qty(NG)","QInspec"]]
+			.groupby(by="PartName")
+			.sum()
+			.sort_values(by="Qty(NG)",ascending=False)
+			.reset_index()
+			)
+
+			# Buat grafik batang dengan Plotly
+			# fig = px.bar(NG_by_part, x='NG_%', y='PartName', color='NG_%',barmode="relative")
+			# fig.update_layout(title='Grafik NG (%) by Part Name - LB4',
+			# 				xaxis_title='NG_%',
+			# 				yaxis_title='PartName')
+			# st.plotly_chart(fig)
+
+			List_Qty_B4 = List_Qty_B4.map(format_with_comma)
+			st.write(List_Qty_B4)
+			
+			# # Buat grafik batang interaktif
+			# fig = go.Figure(data=go.Bar(x=NG_by_part['PartName'], y=NG_by_part['NG_%'],
+			# 						marker_color='grey'))  # Sesuaikan warna jika ingin
+
+			# fig.update_layout(title='Rata-rata NG_% per Part - LB4',
+			# 				xaxis_title='PartName',
+			# 				yaxis_title='NG_%')
+
+			# st.plotly_chart(fig)
+
+		with kolomkanan:
+
+			st.success("OK")
+
+			# #filter df hanya yg tampil sesuai Line yg dipilih
+			# df_byLine=df[df['Line']=='Rack 1']
+
+			# NGpersenR1_by_part=(
+			# df_byLine[["PartName","NG_%"]]
+			# .groupby(by="PartName")
+			# .sum()
+			# .sort_values(by="NG_%",ascending=False)
+			# .reset_index()
+			# )
+
+			# # Buat grafik batang dengan Plotly
+			# fig = px.bar(NGpersenR1_by_part, x="NG_%", y='PartName', color="NG_%",barmode="group")
+			# fig.update_layout(title='Grafik NG (%) by Part Name - LR1',
+			# 				xaxis_title='NG (%)',
+			# 				yaxis_title='PartName')
+			# st.plotly_chart(fig)
+
+			# NGpersenR1_by_part = NGpersenR1_by_part.map(format_with_comma)
+			# st.write(NGpersenR1_by_part)
+
+		st.markdown("---")
 
 		#--------------------------------------
 		#      NG Plating Smallpart by M/C NO.

@@ -975,16 +975,6 @@ def cleaning_process(df):
 			NG_by_part = NG_by_part.map(format_with_comma)
 			st.write(NG_by_part)
 			
-			# # Buat grafik batang interaktif
-			# fig = go.Figure(data=go.Bar(x=NG_by_part['PartName'], y=NG_by_part['NG_%'],
-			# 						marker_color='grey'))  # Sesuaikan warna jika ingin
-
-			# fig.update_layout(title='Rata-rata NG_% per Part - LB4',
-			# 				xaxis_title='PartName',
-			# 				yaxis_title='NG_%')
-
-			# st.plotly_chart(fig)
-
 		with sinan2:
 		
 			#filter df hanya yg tampil sesuai Line yg dipilih
@@ -1020,7 +1010,7 @@ def cleaning_process(df):
 		with kolomkiri:
 
 			#filter df hanya yg tampil sesuai Line yg dipilih
-			df_byLine=df[df['Line']=='Rack 1']
+			df_byLine=df[df['Line']=='Barrel 4']
 
 			List_Qty_B4=(
 			df_byLine[["PartName","Qty(NG)","QInspec"]]
@@ -1038,6 +1028,7 @@ def cleaning_process(df):
 			# st.plotly_chart(fig)
 
 			List_Qty_B4 = List_Qty_B4.map(format_with_comma)
+			st.write("Tabel Qty (pcs) by Part Name Line Barrel 4")
 			st.write(List_Qty_B4)
 			
 			# # Buat grafik batang interaktif
@@ -1051,30 +1042,27 @@ def cleaning_process(df):
 			# st.plotly_chart(fig)
 
 		with kolomkanan:
+			#filter df hanya yg tampil sesuai Line yg dipilih
+			df_byLine=df[df['Line']=='Rack 1']
 
-			st.success("OK")
+			List_Qty_R1=(
+			df_byLine[["PartName","Qty(NG)","QInspec"]]
+			.groupby(by="PartName")
+			.sum()
+			.sort_values(by="Qty(NG)",ascending=False)
+			.reset_index()
+			)
 
-			# #filter df hanya yg tampil sesuai Line yg dipilih
-			# df_byLine=df[df['Line']=='Rack 1']
-
-			# NGpersenR1_by_part=(
-			# df_byLine[["PartName","NG_%"]]
-			# .groupby(by="PartName")
-			# .sum()
-			# .sort_values(by="NG_%",ascending=False)
-			# .reset_index()
-			# )
-
-			# # Buat grafik batang dengan Plotly
-			# fig = px.bar(NGpersenR1_by_part, x="NG_%", y='PartName', color="NG_%",barmode="group")
-			# fig.update_layout(title='Grafik NG (%) by Part Name - LR1',
-			# 				xaxis_title='NG (%)',
+			# Buat grafik batang dengan Plotly
+			# fig = px.bar(NG_by_part, x='NG_%', y='PartName', color='NG_%',barmode="relative")
+			# fig.update_layout(title='Grafik NG (%) by Part Name - LB4',
+			# 				xaxis_title='NG_%',
 			# 				yaxis_title='PartName')
 			# st.plotly_chart(fig)
 
-			# NGpersenR1_by_part = NGpersenR1_by_part.map(format_with_comma)
-			# st.write(NGpersenR1_by_part)
-
+			List_Qty_R1 = List_Qty_R1.map(format_with_comma)
+			st.write("Tabel Qty (pcs) by Part Name Line Rack 1")
+			st.write(List_Qty_R1)
 		st.markdown("---")
 
 		#--------------------------------------

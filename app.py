@@ -996,8 +996,8 @@ def cleaning_process(df):
 
 			# Buat grafik batang dengan Plotly
 			fig = px.bar(NGpersenR1_by_part, x="NG_%", y='PartName', color="NG_%",barmode="group")
-			fig.update_layout(title='Grafik Qty NG (%) by Part Name - LR1',
-							xaxis_title='Qty NG (%)',
+			fig.update_layout(title='Grafik NG (%) by Part Name - LR1',
+							xaxis_title='NG (%)',
 							yaxis_title='PartName')
 			st.plotly_chart(fig)
 

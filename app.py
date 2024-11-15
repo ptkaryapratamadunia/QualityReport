@@ -745,6 +745,7 @@ def cleaning_process(df):
 							yaxis_title='Qty NG (lot)')
 
 			st.plotly_chart(fig)		
+
 		with chart_kanan:
 				InspLot_by_Line=(
 						df[["Line","Insp(B/H)"]]
@@ -835,7 +836,8 @@ def cleaning_process(df):
 			'Tipis/ EE No Plating', 'Flek Kuning', 'Terbakar', 'Watermark', 'Jig Mark/ Renggang',
 			'Lecet/ Scratch', 'Seret', 'Flek Hitam', 'Flek Tangan', 'Belang/ Dempet', 'Bintik',
 			'Kilap', 'Tebal', 'Flek Putih', 'Spark', 'Kotor H/ Oval', 'Terkikis/ Crack',
-			'Dimensi/ Penyok', 'MTL/ SLipMelintir'
+			'Dimensi/ Penyok', 
+			# 'MTL/ SLipMelintir'
 		]
 
 	#LB4
@@ -858,7 +860,7 @@ def cleaning_process(df):
 		# Convert 'Total NG (lot)' to numeric, forcing errors to NaN 
 		total_row_df['Total NG (lot)'] = pd.to_numeric(total_row_df['Total NG (lot)'], errors='coerce')
 		# Filter out rows where 'Total NG (lot)' is zero 
-		total_row_df_filtered = total_row_df[total_row_df['Total NG (lot)'] > 0] 
+		total_row_df_filtered = total_row_df[total_row_df['Total NG (lot)'] > 0 ] 
 		#Sort values from largest to smallest 
 		total_row_df_sorted = total_row_df_filtered.sort_values(by='Total NG (lot)', ascending=False)
 		# Plot using plotly for interactivity 

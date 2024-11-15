@@ -949,9 +949,6 @@ def cleaning_process(df):
 		sikir2,sinan2=st.columns(2)
 
 		with sikir2:
-			# #buat list Line untuk Filter Option
-			# List_line=df['Line'].unique()
-			# pilihan_line=st.selectbox('Filter by Line: ',List_line)
 
 			#filter df hanya yg tampil sesuai Line yg dipilih
 			df_byLine=df[df['Line']=='Barrel 4']
@@ -986,23 +983,29 @@ def cleaning_process(df):
 
 		with sinan2:
 		
-			NGLot_by_part=(
-			df_byLine[["PartName","NG(B/H)"]]
+			#filter df hanya yg tampil sesuai Line yg dipilih
+			df_byLine=df[df['Line']=='Rack 1']
+
+			NGpersenR1_by_part=(
+			df_byLine[["PartName","NG_%"]]
 			.groupby(by="PartName")
 			.sum()
-			.sort_values(by="NG(B/H)",ascending=False)
+			.sort_values(by="NG_%",ascending=False)
 			.reset_index()
 			)
 
 			# Buat grafik batang dengan Plotly
-			fig = px.bar(NGLot_by_part, x='NG(B/H)', y='PartName', color='NG(B/H)',barmode="group")
-			fig.update_layout(title='Grafik Qty NG (lot) by Part Name - LB4',
-							xaxis_title='Qty NG (lot)',
+			fig = px.bar(NGpersenR1_by_part, x="NG_%", y='PartName', color="NG_%",barmode="group")
+			fig.update_layout(title='Grafik Qty NG (%) by Part Name - LR1',
+							xaxis_title='Qty NG (%)',
 							yaxis_title='PartName')
 			st.plotly_chart(fig)
 
-			NGLot_by_part = NGLot_by_part.map(format_with_comma)
-			st.write(NGLot_by_part)
+			NGpersenR1_by_part = NGpersenR1_by_part.map(format_with_comma)
+			st.write(NGpersenR1_by_part)
+
+		st.markdown("---")
+
 
 		#--------------------------------------
 		#      NG Plating Smallpart by M/C NO.

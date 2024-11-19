@@ -272,6 +272,9 @@ def cleaning_process(df):
 								'Terkikis/ Crack',
 								'Dimensi/ Penyok',
 								'MTL/ SLipMelintir']
+		# Menduplikasi kolom dengan loop 
+		for kolom in kolom_untuk_dibagi: #untuk diduplikasi
+			df[kolom + '(pcs)'] = df[kolom]	#kolom tambahan 19Nov2024 kolom berisi jenis NG satuan pcs
 
 		for col in kolom_untuk_dibagi:
 			df[col]=df[col]/df['Std Load']		#konversi dari pcs ke lot
@@ -370,6 +373,10 @@ def cleaning_process(df):
 			st.dataframe(df3, use_container_width=True)
 
 		#------------- merapihkan kolom sama dengan target looker 21Oct2024
+		# Menghapus kolom tambahan 19Nov2024 kolom berisi jenis NG satuan pcs
+		for kolom in kolom_untuk_dibagi: 
+			df.drop(columns=[kolom + '(pcs)'], inplace=True)
+		#create variabel df	
 		df_4_ekspor=df
         # menghapus kolom yg tidak akan digunakan'
 		df_4_ekspor.drop(columns=['Tot_NG'], inplace=False)

@@ -1093,6 +1093,15 @@ def cleaning_process(df):
 		pt_MesinNo_transposed = pt_MesinNo.transpose()
 		pt_MesinNo_transposed=pt_MesinNo_transposed.round(2)
 		st.write(pt_MesinNo_transposed)
+
+		#menampilkan tabel berdasarkan filter - 19Nov2024
+		# Mendapatkan unique values dari kolom 'Kategori' 
+		filter_kategori = df3['Kategori'].unique() 
+		# Membuat selectbox untuk memilih kategori 
+		selected_kategori = st.selectbox("Pilih Kategori:", filter_kategori) 
+		# Menampilkan tabel berdasarkan filter 
+		filtered_df = df3[df3['Kategori'] == selected_kategori] 
+		st.write(filtered_df)	
 	else:
 		st.write("File tidak ditemukan")
 	return df

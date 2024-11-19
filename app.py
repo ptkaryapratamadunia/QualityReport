@@ -1126,14 +1126,16 @@ def cleaning_process(df):
 			kolom_tersedia = df3.columns.tolist()
 
 			# Menghapus kolom 'Kategori' dan 'Line' dari daftar kolom yang tersedia
-			kolom_tersedia.remove('Kategori')
-			kolom_tersedia.remove('Line')
+			# kolom_tersedia.remove('Kategori')
+			# kolom_tersedia.remove('Line')
 
-			# Membuat multiselect untuk memilih kolom yang akan ditampilkan
-			selected_columns = st.multiselect("Pilih Kolom untuk Ditampilkan:", kolom_tersedia, kolom_tersedia)
+			# Membuat multiselect untuk memilih kolom yang akan ditampilkan 
+			default_columns = ['Line', 'Kategori']
+			kolom_tersedia_for_multiselect = [col for col in kolom_tersedia if col not in default_columns] 
+			selected_columns = st.multiselect("Pilih Kolom untuk Ditampilkan:", kolom_tersedia, default=default_columns)
 
 			# Menampilkan tabel berdasarkan filter kategori dan kolom yang dipilih
-			filtered_df = filtered_df[['Line', 'Kategori'] + selected_columns]
+			filtered_df = filtered_df[selected_columns]
 
 		st.write("Data hasil filtering:")
 		st.write(filtered_df)

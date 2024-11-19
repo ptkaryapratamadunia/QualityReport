@@ -1095,24 +1095,44 @@ def cleaning_process(df):
 		st.write(pt_MesinNo_transposed)
 
 		st.markdown("---")
-		st.subheader("Tools Filtering Data")
+
 		#menampilkan tabel berdasarkan filter - 19Nov2024
-		# Mendapatkan unique values dari kolom 'Kategori' 
-		filter_kategori = df3['Kategori'].unique() 
-		# Membuat selectbox untuk memilih kategori 
-		selected_kategori = st.selectbox("Pilih Kategori:", filter_kategori) 
-		# Menampilkan tabel berdasarkan filter 
-		filtered_df = df3[df3['Kategori'] == selected_kategori] 
-		# Mendapatkan daftar semua kolom yang tersedia 
-		kolom_tersedia = df3.columns.tolist() 
-		# Menghapus kolom 'Kategori' dari daftar kolom yang tersedia 
-		kolom_tersedia.remove('Kategori') 
-		# Membuat multiselect untuk memilih kolom yang akan ditampilkan 
-		selected_columns = st.multiselect("Pilih Kolom untuk Ditampilkan:", kolom_tersedia, kolom_tersedia) 
-		# Menampilkan tabel berdasarkan filter kategori dan kolom yang dipilih 
-		filtered_df = df3[df3['Kategori'] == selected_kategori][['Kategori'] + selected_columns]
+		#----------
+		st.subheader("Tools Filtering Data")
+
+
+		# Mendapatkan unique values dari kolom 'Line'
+		filter_line = df3['Line'].unique()
+
+		# Membuat selectbox untuk memilih Line
+		selected_Line = st.selectbox("Pilih Line:", filter_line)
+
+		# Menampilkan tabel berdasarkan filter Line
+		filtered_line_df = df3[df3['Line'] == selected_Line]
+
+		# Mendapatkan unique values dari kolom 'Kategori'
+		filter_kategori = filtered_line_df['Kategori'].unique()
+
+		# Membuat selectbox untuk memilih kategori
+		selected_kategori = st.selectbox("Pilih Kategori:", filter_kategori)
+
+		# Menampilkan tabel berdasarkan filter Kategori
+		filtered_df = filtered_line_df[filtered_line_df['Kategori'] == selected_kategori]
+
+		# Mendapatkan daftar semua kolom yang tersedia
+		kolom_tersedia = df3.columns.tolist()
+
+		# Menghapus kolom 'Kategori' dan 'Line' dari daftar kolom yang tersedia
+		kolom_tersedia.remove('Kategori')
+		kolom_tersedia.remove('Line')
+
+		# Membuat multiselect untuk memilih kolom yang akan ditampilkan
+		selected_columns = st.multiselect("Pilih Kolom untuk Ditampilkan:", kolom_tersedia, kolom_tersedia)
+
+		# Menampilkan tabel berdasarkan filter kategori dan kolom yang dipilih
+		filtered_df = filtered_df[['Line', 'Kategori'] + selected_columns]
 		st.write("Data hasil filtering:")
-		st.write(filtered_df)	
+		st.write(filtered_df)
 	else:
 		st.write("File tidak ditemukan")
 	return df

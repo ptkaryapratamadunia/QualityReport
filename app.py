@@ -1094,6 +1094,8 @@ def cleaning_process(df):
 		pt_MesinNo_transposed=pt_MesinNo_transposed.round(2)
 		st.write(pt_MesinNo_transposed)
 
+		st.markdown("---")
+		st.subheader("Tools Filtering Data")
 		#menampilkan tabel berdasarkan filter - 19Nov2024
 		# Mendapatkan unique values dari kolom 'Kategori' 
 		filter_kategori = df3['Kategori'].unique() 
@@ -1101,6 +1103,15 @@ def cleaning_process(df):
 		selected_kategori = st.selectbox("Pilih Kategori:", filter_kategori) 
 		# Menampilkan tabel berdasarkan filter 
 		filtered_df = df3[df3['Kategori'] == selected_kategori] 
+		# Mendapatkan daftar semua kolom yang tersedia 
+		kolom_tersedia = df3.columns.tolist() 
+		# Menghapus kolom 'Kategori' dari daftar kolom yang tersedia 
+		kolom_tersedia.remove('Kategori') 
+		# Membuat multiselect untuk memilih kolom yang akan ditampilkan 
+		selected_columns = st.multiselect("Pilih Kolom untuk Ditampilkan:", kolom_tersedia, kolom_tersedia) 
+		# Menampilkan tabel berdasarkan filter kategori dan kolom yang dipilih 
+		filtered_df = df3[df3['Kategori'] == selected_kategori][['Kategori'] + selected_columns]
+		st.write("Data hasil filtering:")
 		st.write(filtered_df)	
 	else:
 		st.write("File tidak ditemukan")

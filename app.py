@@ -888,78 +888,6 @@ def cleaning_process(df):
 			pt_kategori_line_InspPcs = pt_kategori_line_InspPcs.round(0)
 			st.write(pt_kategori_line_InspPcs)
 
-		#----------------- JUMLAH KOLOM TYPE NG ----------------
-		# Daftar kolom yang ingin dijumlahkan
-		new_columns = [
-			'Warna', 'Buram', 'Berbayang', 'Kotor', 'Tdk Terplating', 'Rontok/ Blister',
-			'Tipis/ EE No Plating', 'Flek Kuning', 'Terbakar', 'Watermark', 'Jig Mark/ Renggang',
-			'Lecet/ Scratch', 'Seret', 'Flek Hitam', 'Flek Tangan', 'Belang/ Dempet', 'Bintik',
-			'Kilap', 'Tebal', 'Flek Putih', 'Spark', 'Kotor H/ Oval', 'Terkikis/ Crack',
-			'Dimensi/ Penyok', 
-			# 'MTL/ SLipMelintir'
-		]
-
-	#LB4
-		df_LB4=df[df['Line']=='Barrel 4']
-
-		# # Menjumlahkan kolom-kolom yang diinginkan (lot)
-		total_row = df_LB4[new_columns].sum().to_frame().T
-		total_row['index'] = 'Total_NG(lot)'
-		total_row.set_index('index', inplace=True)
-
-		total_row=total_row.map(format_with_comma)
-		# total_row = total_row.applymap(format_with_comma)		#pengganti format diatas, meskipun unit nya lot krn actualnya ada yg kecil di bawah 1 lot
-		st.write("Tabel Jenis NG (Lot) - Line Barrel 4")
-		st.write(total_row)
-
-		#tampilkan grafik batangnya -- 14Nov2024
-		# Convert the total_row to a DataFrame for plotting 
-		total_row_df = total_row.transpose().reset_index() 
-		total_row_df.columns = ['Defect Type', 'Total NG (lot)'] 
-		# Convert 'Total NG (lot)' to numeric, forcing errors to NaN 
-		total_row_df['Total NG (lot)'] = pd.to_numeric(total_row_df['Total NG (lot)'], errors='coerce')
-		# Filter out rows where 'Total NG (lot)' is zero 
-		total_row_df_filtered = total_row_df[total_row_df['Total NG (lot)'] > 0 ] 
-		#Sort values from largest to smallest 
-		total_row_df_sorted = total_row_df_filtered.sort_values(by='Total NG (lot)', ascending=False)
-		# Plot using plotly for interactivity 
-		fig = px.bar(total_row_df_sorted, x='Defect Type', y='Total NG (lot)', title='Defect Types - Line Barrel 4', labels={'Defect Type': 'Defect Type', 'Total NG (lot)': 'Total NG (lot)'}, color_discrete_sequence=['blue']) 
-		fig.update_layout( xaxis_title="Defect Type", yaxis_title="Total NG (lot)", xaxis_tickangle=-45)
-		st.plotly_chart(fig)
-
-	#LR1
-
-		df_LR1=df[df['Line']=='Rack 1']
-		# # Menjumlahkan kolom-kolom yang diinginkan (pcs)
-		total_row = df_LR1[new_columns].sum().to_frame().T
-		total_row['index'] = 'Total_NG(lot)'
-		total_row.set_index('index', inplace=True)
-
-		total_row=total_row.map(format_with_comma)
-		# total_row = total_row.applymap(format_with_comma)		#pengganti format diatas, meskipun unit nya lot krn actualnya ada yg kecil di bawah 1 lot
-		st.write("Tabel Jenis NG (lot) - Line Rack 1")
-		st.write(total_row)
-
-		#tampilkan grafik batangnya -- 14Nov2024
-		# Convert the total_row to a DataFrame for plotting 
-		total_row_df = total_row.transpose().reset_index() 
-		total_row_df.columns = ['Defect Type', 'Total NG (lot)'] 
-		# Convert 'Total NG (lot)' to numeric, forcing errors to NaN 
-		total_row_df['Total NG (lot)'] = pd.to_numeric(total_row_df['Total NG (lot)'], errors='coerce')
-		# Filter out rows where 'Total NG (lot)' is zero 
-		total_row_df_filtered = total_row_df[total_row_df['Total NG (lot)'] > 0] 
-		#Sort values from largest to smallest 
-		total_row_df_sorted = total_row_df_filtered.sort_values(by='Total NG (lot)', ascending=False)
-		# Plot using plotly for interactivity 
-		fig = px.bar(total_row_df_sorted, y='Defect Type', x='Total NG (lot)', title='Defect Types - Line Rack 1', labels={'Defect Type': 'Defect Type', 'Total NG (lot)': 'Total NG (lot)'}, color_discrete_sequence=['green']) 
-		fig.update_layout( yaxis_title="Defect Type", xaxis_title="Total NG (lot)", yaxis_tickangle=-45)
-		st.plotly_chart(fig)
-
-
-		#-------------------------------------------------------
-
-
-
 		#groupby dataframe	---------------
 
 		sikir,sinan=st.columns(2)
@@ -1004,68 +932,82 @@ def cleaning_process(df):
 
 			st.plotly_chart(fig)
 
-		#kolom lagi untuk grafik NG by Part Name
-		sikir2,sinan2=st.columns(2)
+		st.markdown("---")
+		#----------------- JUMLAH KOLOM TYPE NG ----------------
+		# Daftar kolom Jenis NG yang ingin dijumlahkan
+		new_columns = [
+			'Warna', 'Buram', 'Berbayang', 'Kotor', 'Tdk Terplating', 'Rontok/ Blister',
+			'Tipis/ EE No Plating', 'Flek Kuning', 'Terbakar', 'Watermark', 'Jig Mark/ Renggang',
+			'Lecet/ Scratch', 'Seret', 'Flek Hitam', 'Flek Tangan', 'Belang/ Dempet', 'Bintik',
+			'Kilap', 'Tebal', 'Flek Putih', 'Spark', 'Kotor H/ Oval', 'Terkikis/ Crack',
+			'Dimensi/ Penyok', 
+			# 'MTL/ SLipMelintir'
+		]
 
-		with sikir2:
+		#LB4
+		df_LB4=df[df['Line']=='Barrel 4']
 
-			#filter df hanya yg tampil sesuai Line yg dipilih
-			df_byLine=df[df['Line']=='Barrel 4']
+		# # Menjumlahkan kolom-kolom yang diinginkan (lot)
+		total_rowB4 = df_LB4[new_columns].sum().to_frame().T
+		total_rowB4['index'] = 'Total_NG(lot)'
+		total_rowB4.set_index('index', inplace=True)
 
-			NG_by_part=(
-			df_byLine[["PartName","NG_%"]]
-			.groupby(by="PartName")
-			.mean()
-			.sort_values(by="NG_%",ascending=False)
-			.reset_index()
-			)
-			# Filter nilai yang lebih besar dari 0 
-			NG_by_part = NG_by_part[NG_by_part['NG_%'] > 0]
+		total_rowB4=total_rowB4.map(format_with_comma)
+		st.write("Tabel Jenis NG (Lot) - Line Barrel 4")
+		st.write(total_rowB4)
 
-			# Buat grafik batang dengan Plotly
-			fig = px.bar(NG_by_part, x='NG_%', y='PartName', color='NG_%',barmode="relative")
-			fig.update_layout(title='Grafik NG (%) by Part Name - LB4',
-							xaxis_title='NG_%',
-							yaxis_title='PartName',
-							yaxis=dict(categoryorder='total ascending') 	 # Mengatur urutan sumbu y dari terbesar ke terkecil
-				 )	
+		#LR1
+		df_LR1=df[df['Line']=='Rack 1']
+		# # Menjumlahkan kolom-kolom yang diinginkan (pcs)
+		total_row = df_LR1[new_columns].sum().to_frame().T
+		total_row['index'] = 'Total_NG(lot)'
+		total_row.set_index('index', inplace=True)
+
+		total_row=total_row.map(format_with_comma)
+		# total_row = total_row.applymap(format_with_comma)		#pengganti format diatas, meskipun unit nya lot krn actualnya ada yg kecil di bawah 1 lot
+		st.write("Tabel Jenis NG (lot) - Line Rack 1")
+
+		st.write(total_row)	
+
+		#tampilkan grafik batangnya -- 14Nov2024
+		barisB4, barisR1=st.columns(2)
+
+		with barisB4:
+			# Convert the total_row to a DataFrame for plotting 
+			total_row_df = total_rowB4.transpose().reset_index() 
+			total_row_df.columns = ['Defect Type', 'Total NG (lot)'] 
+			# Convert 'Total NG (lot)' to numeric, forcing errors to NaN 
+			total_row_df['Total NG (lot)'] = pd.to_numeric(total_row_df['Total NG (lot)'], errors='coerce')
+			# Filter out rows where 'Total NG (lot)' is zero 
+			total_row_df_filtered = total_row_df[total_row_df['Total NG (lot)'] > 0 ] 
+			#Sort values from largest to smallest 
+			total_row_df_sorted = total_row_df_filtered.sort_values(by='Total NG (lot)', ascending=True)
+			# Plot using plotly for interactivity 
+			fig = px.bar(total_row_df_sorted, y='Defect Type', x='Total NG (lot)', title='Defect Types - Line Barrel 4', labels={'Defect Type': 'Defect Type', 'Total NG (lot)': 'Total NG (lot)'}, color_discrete_sequence=['blue']) 
+			fig.update_layout( yaxis_title="Defect Type", xaxis_title="Total NG (lot)", yaxis_tickangle=0)
 			st.plotly_chart(fig)
 
-			NG_by_part = NG_by_part.map(format_with_comma)
-			st.write(NG_by_part)
-			
-		with sinan2:
-		
-			#filter df hanya yg tampil sesuai Line yg dipilih
-			df_byLine=df[df['Line']=='Rack 1']
-
-			NGpersenR1_by_part=(
-			df_byLine[["PartName","NG_%"]]
-			.groupby(by="PartName")
-			.mean()
-			.sort_values(by="NG_%",ascending=False)
-			.reset_index()
-			)
-			# Filter nilai yang lebih besar dari 0 
-			NGpersenR1_by_part = NGpersenR1_by_part[NGpersenR1_by_part['NG_%'] > 0]
-
-			# Buat grafik batang dengan Plotly
-			fig = px.bar(NGpersenR1_by_part, x="NG_%", y='PartName', color="NG_%",barmode="group")
-			fig.update_layout(title='Grafik NG (%) by Part Name - LR1',
-							xaxis_title='NG (%)',
-							yaxis_title='PartName',
-							yaxis=dict(categoryorder='total ascending') # Mengatur urutan sumbu y dari terbesar ke terkecil
-							)
+		with barisR1:
+			#tampilkan grafik batangnya -- 14Nov2024
+			# Convert the total_row to a DataFrame for plotting 
+			total_row_df = total_row.transpose().reset_index() 
+			total_row_df.columns = ['Defect Type', 'Total NG (lot)'] 
+			# Convert 'Total NG (lot)' to numeric, forcing errors to NaN 
+			total_row_df['Total NG (lot)'] = pd.to_numeric(total_row_df['Total NG (lot)'], errors='coerce')
+			# Filter out rows where 'Total NG (lot)' is zero 
+			total_row_df_filtered = total_row_df[total_row_df['Total NG (lot)'] > 0] 
+			#Sort values from largest to smallest 
+			total_row_df_sorted = total_row_df_filtered.sort_values(by='Total NG (lot)', ascending=True)
+			# Plot using plotly for interactivity 
+			fig = px.bar(total_row_df_sorted, y='Defect Type', x='Total NG (lot)', title='Defect Types - Line Rack 1', labels={'Defect Type': 'Defect Type', 'Total NG (lot)': 'Total NG (lot)'}, color_discrete_sequence=['green']) 
+			fig.update_layout( yaxis_title="Defect Type", xaxis_title="Total NG (lot)", yaxis_tickangle=0)
 			st.plotly_chart(fig)
-
-			NGpersenR1_by_part = NGpersenR1_by_part.map(format_with_comma)
-			st.write(NGpersenR1_by_part)
 
 		st.markdown("---")
-
-		#kolom lagi untuk Qty OK NG
+		#-------------------------------------------------------
+		#kolom lagi untuk Tabel Qty OK NG (pcs) by PartName
 		kolomkiri,kolomkanan=st.columns(2)
-
+		#Qty (pcs) B4
 		with kolomkiri:
 
 			#filter df hanya yg tampil sesuai Line yg dipilih
@@ -1099,9 +1041,9 @@ def cleaning_process(df):
 			# 				yaxis_title='NG_%')
 
 			# st.plotly_chart(fig)
-
+		#Qty (pcs) R1
 		with kolomkanan:
-			#filter df hanya yg tampil sesuai Line yg dipilih
+
 			df_byLine=df[df['Line']=='Rack 1']
 
 			List_Qty_R1=(
@@ -1122,6 +1064,67 @@ def cleaning_process(df):
 			List_Qty_R1 = List_Qty_R1.map(format_with_comma)
 			st.write("Tabel Qty (pcs) by Part Name Line Rack 1")
 			st.write(List_Qty_R1)
+		#kolom lagi untuk grafik NG by Part Name B4 dan R1 only
+		sikir2,sinan2=st.columns(2)
+
+		#sisi kiri Grafik Batang Vertikal by PartName B4
+		with sikir2:
+
+			df_byLine=df[df['Line']=='Barrel 4']
+
+			NG_by_part=(
+			df_byLine[["PartName","NG_%"]]
+			.groupby(by="PartName")
+			.mean()
+			.sort_values(by="NG_%",ascending=False)
+			.reset_index()
+			)
+			# Filter nilai yang lebih besar dari 0 
+			NG_by_part = NG_by_part[NG_by_part['NG_%'] > 0]
+
+			# Buat grafik batang dengan Plotly
+			fig = px.bar(NG_by_part, x='NG_%', y='PartName', color='NG_%',barmode="relative")
+			fig.update_layout(title='Grafik NG (%) by Part Name - LB4',
+							xaxis_title='NG_%',
+							yaxis_title='PartName',
+							yaxis=dict(categoryorder='total ascending') 	 # Mengatur urutan sumbu y dari terbesar ke terkecil
+				 )	
+			st.plotly_chart(fig)
+
+			NG_by_part = NG_by_part.map(format_with_comma)
+			st.write(NG_by_part)
+
+		#sisi kanan Grafik Batang Vertikal by PartName R1	
+		with sinan2:
+		
+			#filter df hanya yg tampil sesuai Line yg dipilih
+			df_byLine=df[df['Line']=='Rack 1']
+
+			NGpersenR1_by_part=(
+			df_byLine[["PartName","NG_%"]]
+			.groupby(by="PartName")
+			.mean()
+			.sort_values(by="NG_%",ascending=False)
+			.reset_index()
+			)
+			# Filter nilai yang lebih besar dari 0 
+			NGpersenR1_by_part = NGpersenR1_by_part[NGpersenR1_by_part['NG_%'] > 0]
+
+			# Buat grafik batang dengan Plotly
+			fig = px.bar(NGpersenR1_by_part, x="NG_%", y='PartName', color="NG_%",barmode="group")
+			fig.update_layout(title='Grafik NG (%) by Part Name - LR1',
+							xaxis_title='NG (%)',
+							yaxis_title='PartName',
+							yaxis=dict(categoryorder='total ascending') # Mengatur urutan sumbu y dari terbesar ke terkecil
+							)
+			st.plotly_chart(fig)
+
+			NGpersenR1_by_part = NGpersenR1_by_part.map(format_with_comma)
+			st.write(NGpersenR1_by_part)
+
+		#-------------------------------------------------------
+
+
 		st.markdown("---")
 
 		#--------------------------------------

@@ -751,9 +751,6 @@ def cleaning_process(df):
 		pt_customer_line2_tranposed=pt_customer_line2.transpose()
 		st.write(pt_customer_line2_tranposed)
 
-		
-		
-
 		# ---------------------------------------
 		# Membuat tabel pivot NG by Kategori and LINE---------------
 
@@ -954,8 +951,8 @@ def cleaning_process(df):
 		#Sort values from largest to smallest 
 		total_row_df_sorted = total_row_df_filtered.sort_values(by='Total NG (lot)', ascending=False)
 		# Plot using plotly for interactivity 
-		fig = px.bar(total_row_df_sorted, x='Defect Type', y='Total NG (lot)', title='Defect Types - Line Rack 1', labels={'Defect Type': 'Defect Type', 'Total NG (lot)': 'Total NG (lot)'}, color_discrete_sequence=['green']) 
-		fig.update_layout( xaxis_title="Defect Type", yaxis_title="Total NG (lot)", xaxis_tickangle=-45)
+		fig = px.bar(total_row_df_sorted, y='Defect Type', x='Total NG (lot)', title='Defect Types - Line Rack 1', labels={'Defect Type': 'Defect Type', 'Total NG (lot)': 'Total NG (lot)'}, color_discrete_sequence=['green']) 
+		fig.update_layout( yaxis_title="Defect Type", xaxis_title="Total NG (lot)", yaxis_tickangle=-45)
 		st.plotly_chart(fig)
 
 

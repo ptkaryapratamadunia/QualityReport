@@ -674,18 +674,18 @@ def cleaning_process(df):
 		# ---------------------------------------
 
 		# Membuat tabel pivot NG by Customer and LINE---------------
+
+		# Pivot table creation for B4
+		pt_customer_line = pd.pivot_table(df, values='NG_%', index='Cust.ID', columns='Line', aggfunc='mean', margins=True, margins_name='Total')
+		st.write('NG (%) by Line & Customer')
+
+		# Round the values to 2 decimal places
+		pt_customer_line = pt_customer_line.round(2)
+		pt_customer_line_transposed = pt_customer_line.transpose()
+		st.write(pt_customer_line_transposed)
+
 		dew1, dew2=st.columns(2)
-
 		with dew1:
-			# Pivot table creation for B4
-			pt_customer_line = pd.pivot_table(df, values='NG_%', index='Cust.ID', columns='Line', aggfunc='mean', margins=True, margins_name='Total')
-			st.write('NG (%) by Line & Customer')
-
-			# Round the values to 2 decimal places
-			pt_customer_line = pt_customer_line.round(2)
-			pt_customer_line_transposed = pt_customer_line.transpose()
-			st.write(pt_customer_line_transposed)
-
 			# Extract 'Barrel 4' line and exclude 'Total' column
 			barrel4_data = pt_customer_line['Barrel 4'].drop('Total').reset_index()
 

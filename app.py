@@ -698,6 +698,55 @@ def cleaning_process(df):
 		pt_customer_line2_tranposed=pt_customer_line2.transpose()
 		st.write(pt_customer_line2_tranposed)
 
+		
+		#5 kolom buat tabel by Line and Shift - 26Nov2024
+		col1,col2,col3,col4,col5=st.columns(5)
+			
+		with col1:
+			#NG % by Line and Shift - 26Nov2024
+			pt_NGpersen_line_by_shift=pd.pivot_table(df,values='NG_%',index='Line',columns='Shift',aggfunc='mean',margins=True,margins_name='Total')
+			# Bulatkan nilai-nilai ke angka bulat terdekat
+			pt_NGpersen_line_by_shift = pt_NGpersen_line_by_shift.map(format_with_comma)
+
+			st.write('NG (%) by Line & Shift')
+			st.write(pt_NGpersen_line_by_shift)
+			
+		with col2:	
+			#Qty Inspected Lot by Line and Shift - 26Nov2024
+			pt_InspLot_line_by_shift=pd.pivot_table(df,values='Insp(B/H)',index='Line',columns='Shift',aggfunc='sum',margins=True,margins_name='Total')
+			# Bulatkan nilai-nilai ke angka bulat terdekat
+			pt_InspLot_line_by_shif = pt_InspLot_line_by_shift.map(format_with_comma)
+
+			st.write('Qty Inspected (lot) by Line & Shift')
+			st.write(pt_InspLot_line_by_shif)
+			
+		with col3:	
+			#Qty Insp pcs by Line and Shift - 26Nov2024
+			pt_InspPcs_line_by_shift=pd.pivot_table(df,values='QInspec',index='Line',columns='Shift',aggfunc='sum',margins=True,margins_name='Total')
+			# Bulatkan nilai-nilai ke angka bulat terdekat
+			pt_InspPcs_line_by_shif = pt_InspPcs_line_by_shift.map(format_with_comma)
+
+			st.write('Qty Inspected (pcs) by Line & Shift')
+			st.write(pt_InspPcs_line_by_shif)
+			
+		with col4:	
+			#Qty NG Lot by Line and Shift - 26Nov2024
+			pt_NGLot_line_by_shift=pd.pivot_table(df,values='NG(B/H)',index='Line',columns='Shift',aggfunc='sum',margins=True,margins_name='Total')
+			# Bulatkan nilai-nilai ke angka bulat terdekat
+			pt_NGLot_line_by_shift = pt_NGLot_line_by_shift.map(format_with_comma)
+
+			st.write('Qty NG (lot) by Line & Shift')
+			st.write(pt_NGLot_line_by_shift)
+			
+		with col5:	
+			#Qty NG pcs by Line and Shift - 26Nov2024
+			pt_NGPcs_line_by_shift=pd.pivot_table(df,values='Qty(NG)',index='Line',columns='Shift',aggfunc='sum',margins=True,margins_name='Total')
+			# Bulatkan nilai-nilai ke angka bulat terdekat
+			pt_NGPcs_line_by_shif = pt_NGPcs_line_by_shift.map(format_with_comma)
+
+			st.write('Qty Inspected (pcs) by Line & Shift')
+			st.write(pt_NGPcs_line_by_shif)
+		
 
 		# ---------------------------------------
 		# Membuat tabel pivot NG by Kategori and LINE---------------

@@ -700,7 +700,7 @@ def cleaning_process(df):
 
 		
 		#5 kolom buat tabel by Line and Shift - 26Nov2024
-		col1,col2,col3,col4,col5=st.columns(5)
+		col1,col2,col3,=st.columns(3)
 			
 		with col1:
 			#NG % by Line and Shift - 26Nov2024
@@ -717,35 +717,35 @@ def cleaning_process(df):
 			# Bulatkan nilai-nilai ke angka bulat terdekat
 			pt_InspLot_line_by_shif = pt_InspLot_line_by_shift.map(format_with_comma)
 
-			st.write('Qty Inspected (lot) by Line & Shift')
+			st.write('Qty Insp(lot) by Line-Shift')
 			st.write(pt_InspLot_line_by_shif)
 			
-		with col3:	
-			#Qty Insp pcs by Line and Shift - 26Nov2024
-			pt_InspPcs_line_by_shift=pd.pivot_table(df,values='QInspec',index='Line',columns='Shift',aggfunc='sum',margins=True,margins_name='Total')
-			# Bulatkan nilai-nilai ke angka bulat terdekat
-			pt_InspPcs_line_by_shif = pt_InspPcs_line_by_shift.map(format_with_comma)
+		# with col3:	
+		# 	#Qty Insp pcs by Line and Shift - 26Nov2024
+		# 	pt_InspPcs_line_by_shift=pd.pivot_table(df,values='QInspec',index='Line',columns='Shift',aggfunc='sum',margins=True,margins_name='Total')
+		# 	# Bulatkan nilai-nilai ke angka bulat terdekat
+		# 	pt_InspPcs_line_by_shif = pt_InspPcs_line_by_shift.map(format_with_comma)
 
-			st.write('Qty Inspected (pcs) by Line & Shift')
-			st.write(pt_InspPcs_line_by_shif)
+		# 	st.write('Qty Insp(pcs) by Line-Shift')
+		# 	st.write(pt_InspPcs_line_by_shif)
 			
-		with col4:	
+		with col3:	
 			#Qty NG Lot by Line and Shift - 26Nov2024
 			pt_NGLot_line_by_shift=pd.pivot_table(df,values='NG(B/H)',index='Line',columns='Shift',aggfunc='sum',margins=True,margins_name='Total')
 			# Bulatkan nilai-nilai ke angka bulat terdekat
 			pt_NGLot_line_by_shift = pt_NGLot_line_by_shift.map(format_with_comma)
 
-			st.write('Qty NG (lot) by Line & Shift')
+			st.write('NG (lot) by Line-Shift')
 			st.write(pt_NGLot_line_by_shift)
 			
-		with col5:	
-			#Qty NG pcs by Line and Shift - 26Nov2024
-			pt_NGPcs_line_by_shift=pd.pivot_table(df,values='Qty(NG)',index='Line',columns='Shift',aggfunc='sum',margins=True,margins_name='Total')
-			# Bulatkan nilai-nilai ke angka bulat terdekat
-			pt_NGPcs_line_by_shif = pt_NGPcs_line_by_shift.map(format_with_comma)
+		# with col5:	
+		# 	#Qty NG pcs by Line and Shift - 26Nov2024
+		# 	pt_NGPcs_line_by_shift=pd.pivot_table(df,values='Qty(NG)',index='Line',columns='Shift',aggfunc='sum',margins=True,margins_name='Total')
+		# 	# Bulatkan nilai-nilai ke angka bulat terdekat
+		# 	pt_NGPcs_line_by_shif = pt_NGPcs_line_by_shift.map(format_with_comma)
 
-			st.write('Qty Inspected (pcs) by Line & Shift')
-			st.write(pt_NGPcs_line_by_shif)
+		# 	st.write('NG (pcs) by Line-Shift')
+		# 	st.write(pt_NGPcs_line_by_shif)
 		
 
 		# ---------------------------------------

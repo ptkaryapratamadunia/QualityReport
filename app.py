@@ -573,7 +573,7 @@ def cleaning_process(df):
 			# Customize layout
 			fig.update_layout(
 				
-			title='Grafik NG% & Qty Inspeted by Month',
+			title='Grafik NG% & Qty Inspected by Month',
 			xaxis=dict(title='Month',type='category'),
 			yaxis=dict(title='Qty Inspected (pcs)', titlefont=dict(color='green'), tickfont=dict(color='green')),
 			yaxis2=dict(title='NG%', titlefont=dict(color='blue'), tickfont=dict(color='blue'), overlaying='y', side='right', anchor='x'),
@@ -705,7 +705,7 @@ def cleaning_process(df):
 			fig.update_layout(
 				xaxis_title="Customer",
 				yaxis_title="NG (%)",
-				xaxis_tickangle=-45
+				xaxis_tickangle=0
 			)
 
 			# Display the plot in Streamlit
@@ -733,7 +733,7 @@ def cleaning_process(df):
 			fig.update_layout(
 				xaxis_title="Customer",
 				yaxis_title="NG (%)",
-				xaxis_tickangle=-45
+				xaxis_tickangle=0
 			)
 
 			# Display the plot in Streamlit
@@ -767,7 +767,8 @@ def cleaning_process(df):
 
 
 		#Grafik NG by Line % & Lot	04NOv2024
-		chart_kiri, chart_tengah,chart_kanan=st.columns(3)		
+		chart_kiri, chart_tengah,chart_kanan=st.columns(3)	
+		#Grafik batang Qty NG(%) by Line Green
 		with chart_kiri:
 				NG_by_Line=(
 						df[["Line","NG_%"]]
@@ -786,6 +787,7 @@ def cleaning_process(df):
 								yaxis_title='NG_%')
 
 				st.plotly_chart(fig)
+		#Grafik batang Qty NG(Lot) by Line Blue	
 		with chart_tengah:
 			NGLot_by_Line=(
 					df[["Line","NG(B/H)"]]
@@ -799,12 +801,12 @@ def cleaning_process(df):
 			fig = go.Figure(data=go.Bar(x=NGLot_by_Line['Line'], y=NGLot_by_Line['NG(B/H)'],
 									marker_color='blue'))  # Sesuaikan warna jika ingin
 
-			fig.update_layout(title='QTy NG (lot) by Line',
+			fig.update_layout(title='Qty NG (lot) by Line',
 							xaxis_title='Line',
 							yaxis_title='Qty NG (lot)')
 
 			st.plotly_chart(fig)		
-
+		#Grafik batang Qty Inspected Lot by Line Orange
 		with chart_kanan:
 				InspLot_by_Line=(
 						df[["Line","Insp(B/H)"]]
@@ -818,7 +820,7 @@ def cleaning_process(df):
 				fig = go.Figure(data=go.Bar(x=InspLot_by_Line['Line'], y=InspLot_by_Line['Insp(B/H)'],
 										marker_color='orange'))  # Sesuaikan warna jika ingin
 
-				fig.update_layout(title='QTy Inspected (lot) by Line',
+				fig.update_layout(title='Qty Inspected (lot) by Line',
 								xaxis_title='Line',
 								yaxis_title='Qty (lot)')
 
@@ -828,9 +830,10 @@ def cleaning_process(df):
 		pt_kategori_line = pt_kategori_line.map(format_with_comma)	
 		pt_kategori_line3 = pt_kategori_line3.map(format_with_comma)	
 
-		#buat kolom	untuk grafik dan tabel BUSI
-		colkir,colteng,colnan=st.columns(3)
-		with colkir:
+		#Grafik model double axis:kiri %NG kanan Qty Inspected - 27Nov2024 @home before PILKADA
+		ibnu,zahra=st.columns([3,1])
+		#Grafik NG% by Line& Kategori
+		with ibnu:
 			# Hitung agregasi untuk setiap kategori
 			NG_by_kategori_ng = df.groupby('Kategori').agg({'NG_%': 'mean'}).reset_index()
 			NG_by_kategori_insp = df.groupby('Kategori').agg({'Insp(B/H)': 'sum'}).reset_index()
@@ -852,8 +855,62 @@ def cleaning_process(df):
 
 			# Display the plot
 			st.plotly_chart(fig)
+		#Tabel NG% by Line& Kategori
+		with zahra:
 			st.write('NG (%) by Line & Kategori')
 			st.write(pt_kategori_line)
+		
+		#-----------------
+		st.markdown("---")
+		#buat kolom	untuk grafik dan tabel BUSI
+		colkir,colteng,colnan=st.columns(3)
+		#kolom kiri untuk tempat PETUNJUK SINGKAT
+		with colkir:
+
+			st.markdown("""<h5 style="color:blue;margin-top:-10px;margin-bottom:0px;"> PETUNJUK SINGKAT </h5>""", unsafe_allow_html=True)
+			st.markdown("---")
+			st.markdown("""<h6 style="color:green;margin-top:-10px;margin-bottom:0px;"> TABEL </h6>""", unsafe_allow_html=True)
+			st.write("Tampilan tabel terdiri dari beberapa kolom,ada yang menggunakan kolom index (adalah\
+					  nomer urut yg diawali dengan angka nol) dan ada juga ada yang tidak menggunakan.\
+					Jika ingin melihat menu lainnya terkait tindakan yang akan diperlakukan terhadap tabel tersebut, caranya \
+			arahkan mouse ke tabel pada bagian atas kanan tabel. Akan ditemukan menu: Download, Search dan Full Screen.\
+				Isi tabel tidak bisa diubah. Lebar kolom bisa diatur lebarnya dengan cara meletakkan cursor mouse di antara batas\
+			antar tabel lalu geser kanan atau kiri. Bila ada tabel yang menampilkan banyak kolom yang tidak terlihat di bagian kanan tabel\
+			untuk melihatnya, arahkan mouse ke bagian bawah tabel sampai muncul 'scroll-bar' lalu tahan dengan mouse dan geser kanan kiri.")
+
+			st.write("***")
+			st.markdown("""<h6 style="color:green;margin-top:-10px;margin-bottom:0px;"> GRAFIK </h6>""", unsafe_allow_html=True)
+			st.markdown("""<h6 style="color:white;margin-top:-10px;margin-bottom:0px;"> 
+			   ✔️ Tidak bisa di-edit <br>
+			   ✔️ Bisa di-download sebagai gambar .png <br>
+			   ✔️ Bisa di Zoom-IN dan Zoom-OUT <br>
+			   ✔️ Bisa di-pan / geser kanan kiri <br>
+			   ✔️ Bisa di-auto scale </h6>""", unsafe_allow_html=True)
+
+
+			# # Hitung agregasi untuk setiap kategori
+			# NG_by_kategori_ng = df.groupby('Kategori').agg({'NG_%': 'mean'}).reset_index()
+			# NG_by_kategori_insp = df.groupby('Kategori').agg({'Insp(B/H)': 'sum'}).reset_index()
+
+			# # Create a figure with a 1x2 subplot grid (1 row, 2 columns)
+			# fig = make_subplots(rows=1, cols=2)
+
+			# # Add traces to the subplots
+			# fig.add_trace(go.Bar(x=NG_by_kategori_ng['Kategori'], y=NG_by_kategori_ng['NG_%'], name='NG_%', marker_color='blue'), row=1, col=1)
+			# fig.add_trace(go.Bar(x=NG_by_kategori_insp['Kategori'], y=NG_by_kategori_insp['Insp(B/H)'], name='Insp(B/H)', marker_color='orange'), row=1, col=2)
+
+			# # Update layout for secondary y-axis (optional)
+			# fig.update_layout(
+			# 	title='Grafik NG (% ) Vs Insp (lot) per Kategori',
+			# 	xaxis_title='Kategori',
+			# 	yaxis=dict(title='Average NG (%)'),
+			# 	yaxis2=dict(title='Qty Inspected (lot)', overlaying='y', side='right')  # If needed for overlay
+			# )
+
+			# # Display the plot
+			# st.plotly_chart(fig)
+			# st.write('NG (%) by Line & Kategori')
+			# st.write(pt_kategori_line)
 
 			# #grafik pcs hanya untuk busi
 			# pt_kategori_line_NGpcs_grafikBUSI=pt_kategori_line_NGpcs_grafik.loc['BUSI']
@@ -872,13 +929,14 @@ def cleaning_process(df):
 			# 				xaxis_title='-',
 			# 				yaxis_title='(pcs)')
 			# st.plotly_chart(fig)
-
+		#Tabel Data Qty NG (lot) by Line & Kategori
 		with colteng:
 			st.write('Data Qty NG (lot) by Line & Kategori')
 			st.write(pt_kategori_line3)
 			st.write('Data Qty NG (pcs) by Line & Kategori')
 			pt_kategori_line_NGpcs = pt_kategori_line_NGpcs.round(0)
 			st.write(pt_kategori_line_NGpcs)
+		#Tabel Quantity Inspected (lot) by Line & Kategori
 		with colnan:
 			st.write('Quantity Inspected (lot) by Line & Kategori')
 			pt_kategori_line2 = pt_kategori_line2.map(format_with_comma)
@@ -888,30 +946,34 @@ def cleaning_process(df):
 			pt_kategori_line_InspPcs = pt_kategori_line_InspPcs.round(0)
 			st.write(pt_kategori_line_InspPcs)
 
+		st.markdown("---")
 		#groupby dataframe	---------------
 
 		sikir,sinan=st.columns(2)
-
+		
 		with sikir:
-			NG_by_kategori=(
-			df[["Kategori","NG_%"]]
-			.groupby(by="Kategori")
-			.mean()
-			.sort_values(by="NG_%",ascending=False)
-			.reset_index()
-			)
-			# st.write(NG_by_kategori)
+		
+			st.write("Kosong")
+
+			# NG_by_kategori=(
+			# df[["Kategori","NG_%"]]
+			# .groupby(by="Kategori")
+			# .mean()
+			# .sort_values(by="NG_%",ascending=False)
+			# .reset_index()
+			# )
+			# # st.write(NG_by_kategori)
 			
-			# Buat grafik batang interaktif
-			fig = go.Figure(data=go.Bar(x=NG_by_kategori['Kategori'], y=NG_by_kategori['NG_%'],
-									marker_color='yellow'))  # Sesuaikan warna jika ingin
+			# # Buat grafik batang interaktif
+			# fig = go.Figure(data=go.Bar(x=NG_by_kategori['Kategori'], y=NG_by_kategori['NG_%'],
+			# 						marker_color='yellow'))  # Sesuaikan warna jika ingin
 
-			fig.update_layout(title='Rata-rata NG_% per Kategori',
-							xaxis_title='Kategori',
-							yaxis_title='NG_%')
+			# fig.update_layout(title='Rata-rata NG_% per Kategori',
+			# 				xaxis_title='Kategori',
+			# 				yaxis_title='NG_%')
 
-			st.plotly_chart(fig)
-
+			# st.plotly_chart(fig)
+		#Grafik NG% by Cust.ID Blue
 		with sinan:
 		
 			NG_by_Cust=(
@@ -971,7 +1033,7 @@ def cleaning_process(df):
 
 		#tampilkan grafik batangnya -- 14Nov2024
 		barisB4, barisR1=st.columns(2)
-
+		#baris kiri Grafik Vertical Bar B4 Hijau		
 		with barisB4:
 			# Convert the total_row to a DataFrame for plotting 
 			total_row_df = total_rowB4.transpose().reset_index() 
@@ -986,7 +1048,7 @@ def cleaning_process(df):
 			fig = px.bar(total_row_df_sorted, y='Defect Type', x='Total NG (lot)', title='Defect Types - Line Barrel 4', labels={'Defect Type': 'Defect Type', 'Total NG (lot)': 'Total NG (lot)'}, color_discrete_sequence=['blue']) 
 			fig.update_layout( yaxis_title="Defect Type", xaxis_title="Total NG (lot)", yaxis_tickangle=0)
 			st.plotly_chart(fig)
-
+		#baris kanan Grafik Vertical Bar R1 Hijau
 		with barisR1:
 			#tampilkan grafik batangnya -- 14Nov2024
 			# Convert the total_row to a DataFrame for plotting 

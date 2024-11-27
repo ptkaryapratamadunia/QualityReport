@@ -953,44 +953,44 @@ def cleaning_process(df):
 		
 		with sikir:
 		
-			st.write("Kosong")
+			df_byLine=df[df['Line']=='Barrel 4']		
 
-			# NG_by_kategori=(
-			# df[["Kategori","NG_%"]]
-			# .groupby(by="Kategori")
-			# .mean()
-			# .sort_values(by="NG_%",ascending=False)
-			# .reset_index()
-			# )
-			# # st.write(NG_by_kategori)
+			NG_by_custid=(
+			df_byLine[["Cust.ID","NG(B/H)"]]
+			.groupby(by="Cust.ID")
+			.sum()
+			.sort_values(by="NG(B/H)",ascending=False)
+			.reset_index()
+			)
+			# st.write(NG_by_kategori)
 			
-			# # Buat grafik batang interaktif
-			# fig = go.Figure(data=go.Bar(x=NG_by_kategori['Kategori'], y=NG_by_kategori['NG_%'],
-			# 						marker_color='yellow'))  # Sesuaikan warna jika ingin
+			# Buat grafik batang interaktif
+			fig = go.Figure(data=go.Bar(x=NG_by_custid['Cust.ID'], y=NG_by_custid['NG(B/H)'],
+									marker_color='yellow'))  # Sesuaikan warna jika ingin
 
-			# fig.update_layout(title='Rata-rata NG_% per Kategori',
-			# 				xaxis_title='Kategori',
-			# 				yaxis_title='NG_%')
+			fig.update_layout(title='Grafik Qty NG(lot) by Cust.ID - Barrel 4',
+							xaxis_title='Cust.ID',
+							yaxis_title='NG(B/H)')
 
-			# st.plotly_chart(fig)
+			st.plotly_chart(fig)
 		#Grafik NG% by Cust.ID Blue
 		with sinan:
-		
+			df_byLineR1=df[df['Line']=='Rack 1']
 			NG_by_Cust=(
-					df[["Cust.ID","NG_%"]]
+					df_byLineR1[["Cust.ID","NG(B/H)"]]
 					.groupby(by="Cust.ID")
-					.mean()
-					.sort_values(by="NG_%",ascending=False)
+					.sum()
+					.sort_values(by="NG(B/H)",ascending=False)
 					.reset_index()
 			)
 			
 			# Buat grafik batang interaktif
-			fig = go.Figure(data=go.Bar(x=NG_by_Cust['Cust.ID'], y=NG_by_Cust['NG_%'],
+			fig = go.Figure(data=go.Bar(x=NG_by_Cust['Cust.ID'], y=NG_by_Cust['NG(B/H)'],
 									marker_color='blue'))  # Sesuaikan warna jika ingin
 
-			fig.update_layout(title='Rata-rata NG_% by Customer',
+			fig.update_layout(title="Grafik Qty NG(lot) by Cust.ID - Rack 1",
 							xaxis_title='Cust.ID',
-							yaxis_title='NG_%')
+							yaxis_title='NG(B/H)')
 
 			st.plotly_chart(fig)
 

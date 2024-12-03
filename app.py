@@ -1269,41 +1269,40 @@ def cleaning_process(df):
 			# Menampilkan tabel berdasarkan filter Kategori
 			filtered_df = filtered_line_df[filtered_line_df['Kategori'] == selected_kategori]
 		with filter_R:
+
 			# Mendapatkan daftar semua kolom yang tersedia
 			kolom_tersedia = df3.columns.tolist()
 
 			# Menghapus kolom 'Kategori' dan 'Line' dari daftar kolom yang tersedia
 			kolom_tersedia.remove('Kategori')
 			kolom_tersedia.remove('Line')
-			kolom_tersedia.remove('% NG')
 
 			# Membuat multiselect untuk memilih kolom yang akan ditampilkan 
-			default_columns = ['PartName','NG_%']
-			kolom_tersedia_for_multiselect = [col for col in kolom_tersedia if col not in default_columns] 
+			default_columns = ['PartName', 'NG_%']
+			kolom_tersedia_for_multiselect = [col for col in kolom_tersedia if col not in default_columns]
 			selected_columns = st.multiselect("Pilih Kolom untuk Ditampilkan:", kolom_tersedia, default=default_columns)
 
-			# Menampilkan tabel berdasarkan filter kategori dan kolom yang dipilih
-			filtered_df = filtered_df[selected_columns]
+			# Menentukan fungsi agregasi untuk setiap kolom 
+			agg_dict = {col: 'sum' for col in selected_columns}
+			if 'NG_%' in selected_columns:
+				agg_dict['NG_%'] = 'mean'
 
-		st.write("Data hasil filtering:")
-		st.write(filtered_df)
-		
-		# Menentukan fungsi agregasi untuk setiap kolom 
-		agg_dict = {col: 'sum' for col in selected_columns} # Default fungsi agregasi adalah 'sum'
-		for col in ['NG_%']: 
-			if col in selected_columns: agg_dict[col] = 'mean' # Fungsi agregasi untuk 'NG_%' adalah 'mean'
+			# Menampilkan alert jika belum ada kolom yang dipilih untuk groupby 
+			if len(selected_columns) == 0: 
+				st.warning("Menunggu kolom nilai dipilih")
+			else:
+				# Menampilkan tabel berdasarkan filter kategori dan kolom yang dipilih
+				filtered_df = df3[selected_columns + ['PartName']] # Tambahkan 'PartName' untuk keperluan groupby
 
-		# Menampilkan alert jika belum ada kolom yang dipilih untuk groupby 
-		if len(selected_columns) == 0: 
-			st.warning("Menunggu kolom nilai dipilih") 
-			return
-		else: 
-		# Membuat groupby berdasarkan PartName dan kolom yang dipilih oleh user
-			# grouped_df = filtered_df.groupby('PartName').mean() # Atau bisa diganti dengan fungsi agregasi yang lain 
-			grouped_df = filtered_df.groupby('PartName').agg_dict # Atau bisa diganti dengan fungsi agregasi yang lain 
+				st.write("Data hasil filtering:")
+				st.write(filtered_df)
 
-		st.write("Data hasil grouping:") 
-		st.write(grouped_df)
+				# Membuat groupby berdasarkan PartName dan kolom yang dipilih oleh user
+				grouped_df = filtered_df.groupby('PartName').agg(agg_dict).reset_index()
+
+				st.write("Data hasil grouping:")
+				st.write(grouped_df)
+
 
 	else:
 		st.write("File tidak ditemukan")

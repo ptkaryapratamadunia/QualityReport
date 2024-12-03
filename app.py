@@ -36,15 +36,24 @@ kolkir,kolnan=st.columns((2,1))	#artinya kolom sebelahkiri lebih lebar 2x dari k
 with kolkir:
 	st.markdown("""<h2 style="color:green;margin-top:-10px;margin-bottom:0px;"> 🧹 DATA CLEANING </h2>""", unsafe_allow_html=True)
 	st.write("Tools Pengolahan Data")
-	st.write("Beberapa data output dari aplikasi AUTOCON-KPD belum siap pakai,\
+	st.markdown("""<p style="margin-top:-10px;margin-bottom:0px;font-size:14px">Beberapa data output dari aplikasi AUTOCON-KPD belum siap pakai,\
 			 oleh karena itu perlu dilakukan proses cleaning, seperti mengkonversi data TEXT menjadi angka,\
 			 konversi type NG ABCDSEFGIJKLMN menjadi definisi type NG, mengekstrasi data Nomer Jig\
-		  	 menjadi Nomer Mesin SMallpart, menghapus kolom yang tidak perlu\
-			 dan menambah kolom yang diperlukan,dll. Tanpa buang waktu sudah disediakan juga\
-		  	 summary report berupa Table dan Grafik yang siap digunakan untuk analisa dan pengambilan keputusan.\
-		  	 Disclaimer: Tools ini dapat dijalankan hanya jika sumber file nya adalah hasil ekspor dari program\
-		     Autocon QC yang lengkap belum difilter berdasarkan line atau lainnya dan file original belum diedit\
-				(menghapus dan atau menambah kolom)")
+		  	 menjadi Nomer Mesin Smallpart, menghapus kolom yang tidak perlu\
+			 dan menambah kolom yang diperlukan,dll. <br> Menjadi sangat efisien karena sudah disediakan juga\
+		  	 Summary Report berupa Tabel dan Grafik yang siap digunakan untuk analisa dan pengambilan keputusan.<br>\
+		  	 <span style="color:Yellow">Disclaimer: <span> <br>Tools ini dapat dijalankan hanya jika sumber file nya adalah hasil ekspor dari program\
+		     Autocon QC yang lengkap belum difilter berdasarkan line atau filter lainnya (kecuali filter rentang tanggal) dan file original belum diedit\
+			(menghapus dan atau menambah kolom)</p>""", unsafe_allow_html=True)
+	# st.write("Beberapa data output dari aplikasi AUTOCON-KPD belum siap pakai,\
+	# 		 oleh karena itu perlu dilakukan proses cleaning, seperti mengkonversi data TEXT menjadi angka,\
+	# 		 konversi type NG ABCDSEFGIJKLMN menjadi definisi type NG, mengekstrasi data Nomer Jig\
+	# 	  	 menjadi Nomer Mesin SMallpart, menghapus kolom yang tidak perlu\
+	# 		 dan menambah kolom yang diperlukan,dll. Tanpa buang waktu sudah disediakan juga\
+	# 	  	 summary report berupa Table dan Grafik yang siap digunakan untuk analisa dan pengambilan keputusan.\
+	# 	  	 Disclaimer: Tools ini dapat dijalankan hanya jika sumber file nya adalah hasil ekspor dari program\
+	# 	     Autocon QC yang lengkap belum difilter berdasarkan line atau lainnya dan file original belum diedit\
+	# 			(menghapus dan atau menambah kolom)")
 	
 with kolnan:
 	# Adjust the file path based on the current directory

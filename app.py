@@ -43,7 +43,8 @@ with kolkir:
 			 dan menambah kolom yang diperlukan,dll. Tanpa buang waktu sudah disediakan juga\
 		  	 summary report berupa Table dan Grafik yang siap digunakan untuk analisa dan pengambilan keputusan.\
 		  	 Disclaimer: Tools ini dapat dijalankan hanya jika sumber file nya adalah hasil ekspor dari program\
-		     Autocon QC yang lengkap belum difilter berdasarkan line atau linenya dan file original belum diedit")
+		     Autocon QC yang lengkap belum difilter berdasarkan line atau lainnya dan file original belum diedit\
+				(menghapus dan atau menambah kolom)")
 	
 with kolnan:
 	# Adjust the file path based on the current directory

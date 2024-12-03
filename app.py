@@ -1276,36 +1276,39 @@ def cleaning_process(df):
 			# Menghapus kolom 'Kategori' dan 'Line' dari daftar kolom yang tersedia
 			kolom_tersedia.remove('Kategori')
 			kolom_tersedia.remove('Line')
+			kolom_tersedia.remove('% NG')
 
 			# Membuat multiselect untuk memilih kolom yang akan ditampilkan 
 			default_columns = ['PartName', 'NG_%']
 			kolom_tersedia_for_multiselect = [col for col in kolom_tersedia if col not in default_columns]
 			selected_columns = st.multiselect("Pilih Kolom untuk Ditampilkan:", kolom_tersedia, default=default_columns)
 
-			# Menentukan fungsi agregasi untuk setiap kolom 
-			agg_dict = {col: 'sum' for col in selected_columns}
-			if 'NG_%' in selected_columns:
-				agg_dict['NG_%'] = 'mean'
+		# Menentukan fungsi agregasi untuk setiap kolom 
+		agg_dict = {col: 'sum' for col in selected_columns}
+		if 'NG_%' in selected_columns:
+			agg_dict['NG_%'] = 'mean'
 
-			# Menampilkan alert jika belum ada kolom yang dipilih untuk groupby 
-			if len(selected_columns) == 0: 
-				st.warning("Menunggu kolom nilai dipilih")
-			else:
+		# Menampilkan alert jika belum ada kolom yang dipilih untuk groupby 
+		if len(selected_columns) == 0: 
+			st.warning("Menunggu kolom nilai dipilih")
+		else:
 
-				# Memastikan kolom 'PartName' tidak berisi nilai 'NaN' 
-				df3 = df3.dropna(subset=['PartName'])
-				
-				# Menampilkan tabel berdasarkan filter kategori dan kolom yang dipilih
-				filtered_df = df3[selected_columns + ['PartName']] # Tambahkan 'PartName' untuk keperluan groupby
+			# Memastikan tidak ada nilai 'NaN' dan tidak ada duplikat pada kolom 'PartName' 
+			# df3 = df3.dropna(subset=['PartName']).drop_duplicates(subset=['PartName'])
 
-				st.write("Data hasil filtering:")
-				st.write(filtered_df)
+			# Menampilkan tabel berdasarkan filter kategori dan kolom yang dipilih
+			filtered_df = filtered_df[selected_columns] # Tambahkan 'PartName' untuk keperluan groupby
 
-				# Membuat groupby berdasarkan PartName dan kolom yang dipilih oleh user
-				grouped_df = filtered_df.groupby('PartName').agg(agg_dict).reset_index()
+			st.write("Data hasil filtering:")
+			st.write(filtered_df)
 
-				st.write("Data hasil grouping:")
-				st.write(grouped_df)
+			# Membuat groupby berdasarkan PartName dan kolom yang dipilih oleh user 
+			grouped_df = filtered_df.groupby('PartName').agg(agg_dict)
+			# grouped_df.reset_index()
+			# grouped_df.drop('PartName',inplace=True)
+
+			st.write("Data hasil grouping:") 
+			st.write(grouped_df)
 
 
 	else:

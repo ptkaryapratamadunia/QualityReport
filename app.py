@@ -42,7 +42,7 @@ with kolkir:
 		  	 menjadi Nomer Mesin Smallpart, menghapus kolom yang tidak perlu\
 			 dan menambah kolom yang diperlukan,dll. <br> Menjadi sangat efisien karena sudah disediakan juga\
 		  	 Summary Report berupa Tabel dan Grafik yang siap digunakan untuk analisa dan pengambilan keputusan.<br>\
-		  	 <span style="color:Yellow">Disclaimer: <span> <br>Tools ini dapat dijalankan hanya jika sumber file nya adalah hasil ekspor dari program\
+		  	 <span style="color:Blue">Disclaimer: <span> <br>Tools ini dapat dijalankan hanya jika sumber file nya adalah hasil ekspor dari program\
 		     Autocon QC yang lengkap belum difilter berdasarkan line atau filter lainnya (kecuali filter rentang tanggal) dan file original belum diedit\
 			(menghapus dan atau menambah kolom)</p>""", unsafe_allow_html=True)
 	# st.write("Beberapa data output dari aplikasi AUTOCON-KPD belum siap pakai,\
@@ -195,9 +195,8 @@ def cleaning_process(df):
 
 	df=pd.DataFrame(df2)
 
+	# Cleaning Process
 	if df is not None:
-
-		# Cleaning Process
 
 		# Membersihkan nama kolom dari spasi atau karakter tersembunyi
 		df.columns = df.columns.str.strip()
@@ -750,17 +749,26 @@ def cleaning_process(df):
 			st.plotly_chart(fig)
 
 
-		st.markdown("---")
 
-		#--------- pivot lagi
+		#--------- pivot Qty NG (lot) by Line dan Customer
+		pt_customer_line2=pd.pivot_table(df,values='NG(B/H)',index='Cust.ID',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
+		# Bulatkan nilai-nilai ke angka bulat terdekat
+		pt_customer_line2 = pt_customer_line2.map(format_with_comma)
+
+		st.write('Qty NG (lot) by Line & Customer')
+		pt_customer_line2_tranposed=pt_customer_line2.transpose()
+		st.write(pt_customer_line2_tranposed)
+
+		#--------- pivot Qty Inspected (lot) by Line dan Customer
 		pt_customer_line2=pd.pivot_table(df,values='Insp(B/H)',index='Cust.ID',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
 		# Bulatkan nilai-nilai ke angka bulat terdekat
 		pt_customer_line2 = pt_customer_line2.map(format_with_comma)
 
-		st.write('Quantity (lot) by Line & Customer')
+		st.write('Qty Inspected (lot) by Line & Customer')
 		pt_customer_line2_tranposed=pt_customer_line2.transpose()
 		st.write(pt_customer_line2_tranposed)
 
+		st.markdown("---")
 		# ---------------------------------------
 		# Membuat tabel pivot NG by Kategori and LINE---------------
 

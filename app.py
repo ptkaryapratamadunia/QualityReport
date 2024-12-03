@@ -1299,7 +1299,8 @@ def cleaning_process(df):
 			return
 		else: 
 		# Membuat groupby berdasarkan PartName dan kolom yang dipilih oleh user
-			grouped_df = filtered_df.groupby('PartName').mean() # Atau bisa diganti dengan fungsi agregasi yang lain 
+			# grouped_df = filtered_df.groupby('PartName').mean() # Atau bisa diganti dengan fungsi agregasi yang lain 
+			grouped_df = filtered_df.groupby('PartName').agg_dict # Atau bisa diganti dengan fungsi agregasi yang lain 
 
 		st.write("Data hasil grouping:") 
 		st.write(grouped_df)

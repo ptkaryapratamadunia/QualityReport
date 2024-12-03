@@ -34,7 +34,7 @@ def get_image_as_base64(image_path):
 kolkir,kolnan=st.columns((2,1))	#artinya kolom sebelahkiri lebih lebar 2x dari kanan
 
 with kolkir:
-	st.markdown("""<h2 style="color:green;margin-top:-10px;margin-bottom:0px;"> 🧹CLEANING DATA </h2>""", unsafe_allow_html=True)
+	st.markdown("""<h2 style="color:green;margin-top:-10px;margin-bottom:0px;"> 🧹 DATA CLEANING </h2>""", unsafe_allow_html=True)
 	st.write("Tools Pengolahan Data")
 	st.write("Beberapa data output dari aplikasi AUTOCON-KPD belum siap pakai,\
 			 oleh karena itu perlu dilakukan proses cleaning, seperti mengkonversi data TEXT menjadi angka,\
@@ -43,7 +43,7 @@ with kolkir:
 			 dan menambah kolom yang diperlukan,dll. Tanpa buang waktu sudah disediakan juga\
 		  	 summary report berupa Table dan Grafik yang siap digunakan untuk analisa dan pengambilan keputusan.\
 		  	 Disclaimer: Tools ini dapat dijalankan hanya jika sumber file nya adalah hasil ekspor dari program\
-		     Autocon QC dan hanya diperuntukkan untuk internal KPD")
+		     Autocon QC yang lengkap belum difilter berdasarkan line atau linenya dan file original belum diedit")
 	
 with kolnan:
 	# Adjust the file path based on the current directory

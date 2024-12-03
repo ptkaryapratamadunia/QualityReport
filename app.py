@@ -1291,17 +1291,21 @@ def cleaning_process(df):
 			if len(selected_columns) == 0: 
 				st.warning("Menunggu kolom nilai dipilih")
 			else:
+
+				# Memastikan kolom 'PartName' tidak berisi nilai 'NaN' 
+				df3 = df3.dropna(subset=['PartName'])
+				
 				# Menampilkan tabel berdasarkan filter kategori dan kolom yang dipilih
 				filtered_df = df3[selected_columns + ['PartName']] # Tambahkan 'PartName' untuk keperluan groupby
 
 				st.write("Data hasil filtering:")
 				st.write(filtered_df)
 
-				# # Membuat groupby berdasarkan PartName dan kolom yang dipilih oleh user
-				# grouped_df = filtered_df.groupby('PartName').agg(agg_dict).reset_index()
+				# Membuat groupby berdasarkan PartName dan kolom yang dipilih oleh user
+				grouped_df = filtered_df.groupby('PartName').agg(agg_dict).reset_index()
 
-				# st.write("Data hasil grouping:")
-				# st.write(grouped_df)
+				st.write("Data hasil grouping:")
+				st.write(grouped_df)
 
 
 	else:

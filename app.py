@@ -1292,7 +1292,7 @@ def cleaning_process(df):
 				st.warning("Menunggu kolom nilai dipilih")
 			else:
 				# Menampilkan tabel berdasarkan filter kategori dan kolom yang dipilih
-				filtered_df = df3[selected_columns + ['PartName']] # Tambahkan 'PartName' untuk keperluan groupby
+				filtered_df = df3[selected_columns] # Tambahkan 'PartName' untuk keperluan groupby
 
 				st.write("Data hasil filtering:")
 				st.write(filtered_df)

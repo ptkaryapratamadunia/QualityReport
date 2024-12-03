@@ -996,6 +996,8 @@ def cleaning_process(df):
 		#Grafik NG% by Cust.ID Blue
 		with sinan:
 			df_byLineR1=df[df['Line']=='Rack 1']
+			df_byLineR1=df[df['NG(B/H)']>0]
+
 			NG_by_Cust=(
 					df_byLineR1[["Cust.ID","NG(B/H)"]]
 					.groupby(by="Cust.ID")
@@ -1162,7 +1164,7 @@ def cleaning_process(df):
 			.reset_index()
 			)
 			# Filter nilai yang lebih besar dari 0 
-			NG_by_part = NG_by_part[NG_by_part['NG_%'] > 0]
+			NG_by_part = NG_by_part[NG_by_part['NG_%'] > 0.5]
 
 			# Buat grafik batang dengan Plotly
 			fig = px.bar(NG_by_part, x='NG_%', y='PartName', color='NG_%',barmode="relative")
@@ -1190,7 +1192,7 @@ def cleaning_process(df):
 			.reset_index()
 			)
 			# Filter nilai yang lebih besar dari 0 
-			NGpersenR1_by_part = NGpersenR1_by_part[NGpersenR1_by_part['NG_%'] > 0]
+			NGpersenR1_by_part = NGpersenR1_by_part[NGpersenR1_by_part['NG_%'] > 2]
 
 			# Buat grafik batang dengan Plotly
 			fig = px.bar(NGpersenR1_by_part, x="NG_%", y='PartName', color="NG_%",barmode="group")

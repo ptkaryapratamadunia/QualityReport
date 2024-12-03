@@ -1297,11 +1297,11 @@ def cleaning_process(df):
 				st.write("Data hasil filtering:")
 				st.write(filtered_df)
 
-				# Membuat groupby berdasarkan PartName dan kolom yang dipilih oleh user
-				grouped_df = filtered_df.groupby('PartName').agg(agg_dict).reset_index()
+				# # Membuat groupby berdasarkan PartName dan kolom yang dipilih oleh user
+				# grouped_df = filtered_df.groupby('PartName').agg(agg_dict).reset_index()
 
-				st.write("Data hasil grouping:")
-				st.write(grouped_df)
+				# st.write("Data hasil grouping:")
+				# st.write(grouped_df)
 
 
 	else:

@@ -894,7 +894,8 @@ def cleaning_process(df):
 			arahkan mouse ke tabel pada bagian atas kanan tabel. Akan ditemukan menu: Download, Search dan Full Screen.\
 				Isi tabel tidak bisa diubah. Lebar kolom bisa diatur lebarnya dengan cara meletakkan cursor mouse di antara batas\
 			antar tabel lalu geser kanan atau kiri. Bila ada tabel yang menampilkan banyak kolom yang tidak terlihat di bagian kanan tabel\
-			untuk melihatnya, arahkan mouse ke bagian bawah tabel sampai muncul 'scroll-bar' lalu tahan dengan mouse dan geser kanan kiri.")
+			untuk melihatnya, arahkan mouse ke bagian bawah tabel sampai muncul 'scroll-bar' lalu tahan dengan mouse dan geser kanan kiri.\
+				Selain itu, jika ingin mensort data, klik saja bagian header toko.")
 
 			st.write("***")
 			st.markdown("""<h6 style="color:green;margin-top:-10px;margin-bottom:0px;"> GRAFIK </h6>""", unsafe_allow_html=True)
@@ -971,7 +972,8 @@ def cleaning_process(df):
 		
 		with sikir:
 		
-			df_byLine=df[df['Line']=='Barrel 4']		
+			df_byLine=df[df['Line']=='Barrel 4']	
+			df_byLine=df[df['NG(B/H)']>0]			#menampilkan hanya yg ada nilainya 03Dec2024
 
 			NG_by_custid=(
 			df_byLine[["Cust.ID","NG(B/H)"]]

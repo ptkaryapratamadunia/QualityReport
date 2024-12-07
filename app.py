@@ -977,11 +977,11 @@ def cleaning_process(df):
 		#groupby dataframe	---------------
 
 		sikir,sinan=st.columns(2)
-		
+		#Grafik kolom Qty NG(lot) B4 by Cust.ID Yellow
 		with sikir:
 		
 			df_byLine=df[df['Line']=='Barrel 4']	
-			df_byLine=df[df['NG(B/H)']>0]			#menampilkan hanya yg ada nilainya 03Dec2024
+			df_byLine=df_byLine[df_byLine['NG(B/H)']>0]			#menampilkan hanya yg ada nilainya 03Dec2024
 
 			NG_by_custid=(
 			df_byLine[["Cust.ID","NG(B/H)"]]
@@ -1001,10 +1001,10 @@ def cleaning_process(df):
 							yaxis_title='NG(B/H)')
 
 			st.plotly_chart(fig)
-		#Grafik NG% by Cust.ID Blue
+		#Grafik NG(lot) by Cust.ID Blue
 		with sinan:
 			df_byLineR1=df[df['Line']=='Rack 1']
-			df_byLineR1=df[df['NG(B/H)']>0]
+			df_byLineR1=df_byLineR1[df_byLineR1['NG(B/H)']>0]
 
 			NG_by_Cust=(
 					df_byLineR1[["Cust.ID","NG(B/H)"]]
@@ -1058,24 +1058,23 @@ def cleaning_process(df):
 		total_row=total_row.map(format_with_comma)
 		# total_row = total_row.applymap(format_with_comma)		#pengganti format diatas, meskipun unit nya lot krn actualnya ada yg kecil di bawah 1 lot
 		st.write("Tabel Jenis NG (lot) - Line Rack 1")
-
 		st.write(total_row)	
 
 		#tampilkan grafik batangnya -- 14Nov2024
 		barisB4, barisR1=st.columns(2)
-		#baris kiri Grafik Vertical Bar B4 Hijau		
+		#baris kiri Grafik Vertical Bar B4 Blue		
 		with barisB4:
 			# Convert the total_row to a DataFrame for plotting 
-			total_row_df = total_rowB4.transpose().reset_index() 
-			total_row_df.columns = ['Defect Type', 'Total NG (lot)'] 
+			total_row_df_B4 = total_rowB4.transpose().reset_index() 
+			total_row_df_B4.columns = ['Defect Type', 'Total NG (lot)'] 
 			# Convert 'Total NG (lot)' to numeric, forcing errors to NaN 
-			total_row_df['Total NG (lot)'] = pd.to_numeric(total_row_df['Total NG (lot)'], errors='coerce')
+			total_row_df_B4['Total NG (lot)'] = pd.to_numeric(total_row_df_B4['Total NG (lot)'], errors='coerce')
 			# Filter out rows where 'Total NG (lot)' is zero 
-			total_row_df_filtered = total_row_df[total_row_df['Total NG (lot)'] > 0 ] 
+			total_row_df_B4_filtered = total_row_df_B4[total_row_df_B4['Total NG (lot)'] > 0 ] 
 			#Sort values from largest to smallest 
-			total_row_df_sorted = total_row_df_filtered.sort_values(by='Total NG (lot)', ascending=True)
+			total_row_df_B4_sorted = total_row_df_B4_filtered.sort_values(by='Total NG (lot)', ascending=True)
 			# Plot using plotly for interactivity 
-			fig = px.bar(total_row_df_sorted, y='Defect Type', x='Total NG (lot)', title='Defect Types - Line Barrel 4', labels={'Defect Type': 'Defect Type', 'Total NG (lot)': 'Total NG (lot)'}, color_discrete_sequence=['blue']) 
+			fig = px.bar(total_row_df_B4_sorted, y='Defect Type', x='Total NG (lot)', title='Defect Types - Line Barrel 4', labels={'Defect Type': 'Defect Type', 'Total NG (lot)': 'Total NG (lot)'}, color_discrete_sequence=['blue']) 
 			fig.update_layout( yaxis_title="Defect Type", xaxis_title="Total NG (lot)", yaxis_tickangle=0)
 			st.plotly_chart(fig)
 		#baris kanan Grafik Vertical Bar R1 Hijau

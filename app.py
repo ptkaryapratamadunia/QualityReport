@@ -695,58 +695,61 @@ def cleaning_process(df):
 
 		dew1, dew2=st.columns(2)
 		with dew1:
-			# Extract 'Barrel 4' line and exclude 'Total' column
-			barrel4_data = pt_customer_line['Barrel 4'].drop('Total').reset_index()
+			# Check if 'Barrel 4' column exists in the dataframe
+			if 'Barrel 4' in pt_customer_line.columns:
+				# Extract 'Barrel 4' line and exclude 'Total' column
+				barrel4_data = pt_customer_line['Barrel 4'].drop('Total').reset_index()
 
-			# Filter out rows where 'Barrel 4' is zero 
-			barrel4_data_filtered = barrel4_data[barrel4_data['Barrel 4'] > 0]
+				# Filter out rows where 'Barrel 4' is zero 
+				barrel4_data_filtered = barrel4_data[barrel4_data['Barrel 4'] > 0]
 
-			# Sort the data by NG_% in descending order
-			barrel4_data_sorted = barrel4_data_filtered.sort_values(by='Barrel 4', ascending=False)
+				# Sort the data by NG_% in descending order
+				barrel4_data_sorted = barrel4_data_filtered.sort_values(by='Barrel 4', ascending=False)
 
-			# Create the bar chart
-			fig = px.bar(barrel4_data_sorted, x='Cust.ID', y='Barrel 4', title='NG (%) for Barrel 4 by Customer',
-						labels={'Barrel 4': 'NG (%)', 'Cust.ID': 'Customer'},
-						color='Cust.ID',  # Different color for each customer
-						color_discrete_sequence=px.colors.qualitative.Plotly)
+				# Create the bar chart
+				fig = px.bar(barrel4_data_sorted, x='Cust.ID', y='Barrel 4', title='NG (%) for Barrel 4 by Customer',
+							labels={'Barrel 4': 'NG (%)', 'Cust.ID': 'Customer'},
+							color='Cust.ID',  # Different color for each customer
+							color_discrete_sequence=px.colors.qualitative.Plotly)
 
-			# Customize the layout
-			fig.update_layout(
-				xaxis_title="Customer",
-				yaxis_title="NG (%)",
-				xaxis_tickangle=0
-			)
+				# Customize the layout
+				fig.update_layout(
+					xaxis_title="Customer",
+					yaxis_title="NG (%)",
+					xaxis_tickangle=0
+				)
 
-			# Display the plot in Streamlit
-			st.plotly_chart(fig)
+				# Display the plot in Streamlit
+				st.plotly_chart(fig)
 
 		with dew2:
-			# Pivot table creation for R1
+		
+			# Check if 'Barrel 4' column exists in the dataframe
+			if 'Rack 1' in pt_customer_line.columns:
+				# Extract 'Barrel 4' line and exclude 'Total' column
+				R1_data = pt_customer_line['Rack 1'].drop('Total').reset_index()
 
-			# Extract 'Barrel 4' line and exclude 'Total' column
-			R1_data = pt_customer_line['Rack 1'].drop('Total').reset_index()
+				# Filter out rows where 'Barrel 4' is zero 
+				R1_data_filtered = R1_data[R1_data['Rack 1'] > 0]
 
-			# Filter out rows where 'Barrel 4' is zero 
-			R1_data_filtered = R1_data[R1_data['Rack 1'] > 0]
+				# Sort the data by NG_% in descending order
+				R1_data_sorted = R1_data_filtered.sort_values(by='Rack 1', ascending=False)
 
-			# Sort the data by NG_% in descending order
-			R1_data_sorted = R1_data_filtered.sort_values(by='Rack 1', ascending=False)
+				# Create the bar chart
+				fig = px.bar(R1_data_sorted, x='Cust.ID', y='Rack 1', title='NG (%) for Rack 1 by Customer',
+							labels={'Rack 1': 'NG (%)', 'Cust.ID': 'Customer'},
+							color='Cust.ID',  # Different color for each customer
+							color_discrete_sequence=px.colors.qualitative.Plotly)
 
-			# Create the bar chart
-			fig = px.bar(R1_data_sorted, x='Cust.ID', y='Rack 1', title='NG (%) for Rack 1 by Customer',
-						labels={'Rack 1': 'NG (%)', 'Cust.ID': 'Customer'},
-						color='Cust.ID',  # Different color for each customer
-						color_discrete_sequence=px.colors.qualitative.Plotly)
+				# Customize the layout
+				fig.update_layout(
+					xaxis_title="Customer",
+					yaxis_title="NG (%)",
+					xaxis_tickangle=0
+				)
 
-			# Customize the layout
-			fig.update_layout(
-				xaxis_title="Customer",
-				yaxis_title="NG (%)",
-				xaxis_tickangle=0
-			)
-
-			# Display the plot in Streamlit
-			st.plotly_chart(fig)
+				# Display the plot in Streamlit
+				st.plotly_chart(fig)
 
 
 

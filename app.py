@@ -910,7 +910,7 @@ def cleaning_process(df):
 
 			st.write("***")
 			st.markdown("""<h6 style="color:green;margin-top:-10px;margin-bottom:0px;"> GRAFIK </h6>""", unsafe_allow_html=True)
-			st.markdown("""<h6 style="color:white;margin-top:-10px;margin-bottom:0px;"> 
+			st.markdown("""<h6 style="color:brown;margin-top:-10px;margin-bottom:0px;"> 
 			   ✔️ Tidak bisa di-edit <br>
 			   ✔️ Bisa di-download sebagai gambar .png <br>
 			   ✔️ Bisa di Zoom-IN dan Zoom-OUT <br>

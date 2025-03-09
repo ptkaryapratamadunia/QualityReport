@@ -206,9 +206,9 @@ def cleaning_process(df):
 		df.rename(columns={'DocDate': 'Date'}, inplace=True)                        #'DocDate' menjadi 'Date'
 		df['Cust.ID'] = df['Cust.ID'].str.strip().str.upper()						#cust id huruf besar semua
 		
-		df.rename(columns={'ItemCode': 'Part.ID'}, inplace=True)              		# Mengganti nama kolom 'Keterangan' menjadi 'Kategori'
-		df.rename(columns={'Description': 'PartName'}, inplace=True)     			# Mengganti nama kolom 'Keterangan' menjadi 'Kategori'
-		#df.rename(columns={'OK(B/H)': 'OK(Lot)'}, inplace=True)     				# Mengganti nama kolom 'Keterangan' menjadi 'Kategori'
+		df.rename(columns={'ItemCode': 'Part.ID'}, inplace=True)              		# Mengganti nama kolom 'ItemCode' menjadi 'Part.ID'
+		df.rename(columns={'Description': 'PartName'}, inplace=True)     			# Mengganti nama kolom 'Description' menjadi 'PartName'
+		#df.rename(columns={'OK(B/H)': 'OK(Lot)'}, inplace=True)     				# Mengganti nama kolom 
 		df.rename(columns={'Keterangan': 'Kategori'}, inplace=True)                 # Mengganti nama kolom 'Keterangan' menjadi 'Kategori'
 		
 		df["NG(pcs)"]=(df['Qty(NG)']- df['Y'])										#menambah kolom NG(pcs) krn ada permintaan menggunakan satuan pcs start 06Nov2024

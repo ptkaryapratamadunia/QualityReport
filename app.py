@@ -225,7 +225,6 @@ def cleaning_process(df):
 		## Fungsi untuk menghapus nilai yang mengandung awalan 'CU', ' CU', dan 'CU '
 		df['Kategori'] = df['Kategori'].astype(str)       # Mengonversi semua nilai dalam kolom ini menjadi string
 		df['Shift'] = df['Shift'].astype(str)       # Mengonversi semua nilai dalam kolom ini menjadi string
-		df['M/C No.'] = df['M/C No.'].astype(str)       # Mengonversi semua nilai dalam kolom ini menjadi string
 		df['NoCard'] = df['NoCard'].astype(str)       # Mengonversi semua nilai dalam kolom ini menjadi string
 
 
@@ -379,6 +378,8 @@ def cleaning_process(df):
 		# Mengubah tipe data kolom 'SHift ' menjadi string
 		df['Shift'] = df['Shift'].astype(str)
 		df['NoBarrelHanger']=df['NoBarrelHanger'].astype(str)
+		df['M/C No.'] = df['M/C No.'].astype(str)       # Mengonversi semua nilai dalam kolom ini menjadi string
+
 
 		# Menghilangkan baris duplicate - added 10March2025
 		df.drop_duplicates(inplace=True)

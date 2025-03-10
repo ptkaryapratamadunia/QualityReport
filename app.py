@@ -379,6 +379,9 @@ def cleaning_process(df):
 		# Mengubah tipe data kolom 'SHift ' menjadi string
 		df['Shift'] = df['Shift'].astype(str)
 		df['NoBarrelHanger']=df['NoBarrelHanger'].astype(str)
+
+		# Menghilangkan baris duplicate - added 10March2025
+		df.drop_duplicates(inplace=True)
 		
 		# st.write('Preview Data setelah dirapihkan (cleaning):')
 		#dataframe - script ini untuk filtering model tree

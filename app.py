@@ -376,7 +376,11 @@ def cleaning_process(df):
 		df['M/C No.'] = df['NoJig'].apply(get_mc_no)
 
 		# Mengubah tipe data kolom 'SHift ' menjadi string
-		df['Shift'] = df['Shift'].astype(str)
+		# df['Shift'] = df['Shift'].astype(str)
+
+		# Manambahkan string 'Shift' pada kolom 'Shift' - added 10March2025 because of Looker Studio detected as number
+		df['Shift'] = 'Shift ' + df['Shift']
+
 		df['NoBarrelHanger']=df['NoBarrelHanger'].astype(str)
 		df['M/C No.'] = df['M/C No.'].astype(str)       # Mengonversi semua nilai dalam kolom ini menjadi string
 		

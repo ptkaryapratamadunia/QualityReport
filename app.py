@@ -379,7 +379,10 @@ def cleaning_process(df):
 		df['Shift'] = df['Shift'].astype(str)
 		df['NoBarrelHanger']=df['NoBarrelHanger'].astype(str)
 		df['M/C No.'] = df['M/C No.'].astype(str)       # Mengonversi semua nilai dalam kolom ini menjadi string
-
+		
+		# Menghapus whitespace pada kolom Part.ID dan PartName - added 10March2025
+		df['Part.ID'] = df['Part.ID'].str.strip()
+		df['PartName'] = df['PartName'].str.strip()
 
 		# Menghilangkan baris duplicate - added 10March2025
 		df.drop_duplicates(inplace=True)

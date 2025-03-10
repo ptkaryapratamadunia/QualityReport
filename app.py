@@ -222,6 +222,13 @@ def cleaning_process(df):
 		df.drop(columns=['Qty(NG)'], inplace=True)									#kolom ini dihapus krn nilainya belum dikurangin NGM atau kolom Y, diganti mjd kolom NG(pcs)
 		df.rename(columns={'NG(pcs)': 'Qty(NG)'}, inplace=True)						#agar tdk report menghapus hingga ke bawah, kolom asli Qty(NG) dikembalikan dengan nilai baru
 		
+		## Fungsi untuk menghapus nilai yang mengandung awalan 'CU', ' CU', dan 'CU '
+		df['Kategori'] = df['Kategori'].astype(str)       # Mengonversi semua nilai dalam kolom ini menjadi string
+		df['Shift'] = df['Shift'].astype(str)       # Mengonversi semua nilai dalam kolom ini menjadi string
+		df['M/C No.'] = df['M/C No.'].astype(str)       # Mengonversi semua nilai dalam kolom ini menjadi string
+		df['NoCard'] = df['NoCard'].astype(str)       # Mengonversi semua nilai dalam kolom ini menjadi string
+
+
 		pd.set_option('display.max_columns', None)                     				 # Mengatur pandas untuk menampilkan semua kolom
 		
 		# Mengganti nama kolom jenis NG ke nama Aslinya
@@ -327,8 +334,6 @@ def cleaning_process(df):
 		# Mengganti nilai kosong (string kosong) dengan 0
 		df['NG_%'] = df['NG_%'].replace('', 0)
 
-		## Fungsi untuk menghapus nilai yang mengandung awalan 'CU', ' CU', dan 'CU '
-		df['Kategori'] = df['Kategori'].astype(str)       # Mengonversi semua nilai dalam kolom NoJig menjadi string
 		# def remove_cu_prefix(kategori):
 		# 	if kategori.strip().startswith('CU'):
 		# 		return "RACK 1"  # atau "" jika ingin menggantinya dengan string kosong

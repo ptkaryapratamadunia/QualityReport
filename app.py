@@ -1362,17 +1362,45 @@ def main():
 	st.info(f"Jika sumber file yang diinginkan berada di folder Google Drive, unduh/download lewat link berikut ini: [Link Folder](https://drive.google.com/drive/folders/1ToK13k_w0MMLi-S9fopsgC9YrfLPGJVp?usp=sharing)")
 	st.info("Silakan unduh/download file Excel (.xls, .xlsx) atau CSV dari folder tersebut ke perangkat Anda, lalu unggah/upload file lewat menu Browse di bawah ini:")
 
-	uploaded_file = st.file_uploader("Pilih file Excel (.xls, .xlsx, csv):")
-	if uploaded_file is not None:
-		# 	# Read the file
-		if uploaded_file.name.endswith('.xls'):
-			df = pd.read_excel(uploaded_file, engine='xlrd')
-		elif uploaded_file.name.endswith('.xlsx'):
-			df = pd.read_excel(uploaded_file, engine='openpyxl')
-		elif uploaded_file.name.endswith('.csv'):
-			df = pd.read_csv(uploaded_file)
-		else:
-			raise ValueError("File harus memiliki ekstensi .xls, .xlsx, atau .csv")
+	uploaded_files = st.file_uploader("Pilih file Excel (.xls, .xlsx, csv):",type=["xls", "xlsx", "csv"], accept_multiple_files=True)
+
+	if uploaded_files:
+		dfs = []
+		for uploaded_file in uploaded_files:
+			try:
+				file_extension = uploaded_file.name.split('.')[-1].lower()
+				if file_extension in ["xls", "xlsx"]:
+					df_ori = pd.read_excel(uploaded_file)
+					st.success(f"File Excel {uploaded_file.name} berhasil diunggah!")
+				elif file_extension == "csv":
+					df_ori = pd.read_csv(uploaded_file)
+					st.success(f"File CSV {uploaded_file.name} berhasil diunggah!")
+				else:
+					st.error(f"Format file {uploaded_file.name} tidak didukung. Harap unggah file dengan ekstensi .xls, .xlsx, atau .csv")
+					df_ori = None
+
+				if dfs is not None:
+					dfs.append(df_ori)
+
+			except Exception as e:
+				st.error(f"Terjadi kesalahan saat memproses file {uploaded_file.name}: {e}")
+
+		if dfs:
+			df = pd.concat(dfs, ignore_index=True)
+			# st.subheader("Data yang Terunggah dan Digabungkan:")
+			# st.dataframe(df)
+
+	#yg tdk aktif ini single file yg diupload: dan sudah dihapus 18Mar2025 diganti kode di atas untuk multi file
+	# if uploaded_file is not None:
+	# 	# 	# Read the file
+	# 	if uploaded_file.name.endswith('.xls'):
+	# 		df = pd.read_excel(uploaded_file, engine='xlrd')
+	# 	elif uploaded_file.name.endswith('.xlsx'):
+	# 		df = pd.read_excel(uploaded_file, engine='openpyxl')
+	# 	elif uploaded_file.name.endswith('.csv'):
+	# 		df = pd.read_csv(uploaded_file)
+	# 	else:
+	# 		raise ValueError("File harus memiliki ekstensi .xls, .xlsx, atau .csv")
 
 	
 		#------- simpan arsip file #sistem simpan baru, dicoba ken simpan model di atas tsb tidak efektif

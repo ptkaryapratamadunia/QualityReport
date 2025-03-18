@@ -1360,7 +1360,7 @@ def main():
 
 	#Added 18Mar2025 to make this apps more user friendly and globally accessible
 	st.info(f"Jika sumber file yang diinginkan berada di folder Google Drive, unduh/download lewat link berikut ini: [Link Folder](https://drive.google.com/drive/folders/1ToK13k_w0MMLi-S9fopsgC9YrfLPGJVp?usp=sharing) | Download file Excel (.xls, .xlsx) atau CSV dari folder tersebut ke perangkat Anda, lalu unggah/upload file lewat menu Browse di bawah ini:")
-	st.info("Silakan unduh/download file Excel (.xls, .xlsx) atau CSV dari folder tersebut ke perangkat Anda, lalu unggah/upload file lewat menu Browse di bawah ini:")
+	
 
 	uploaded_files = st.file_uploader("Pilih file Excel (.xls, .xlsx, csv):",type=["xls", "xlsx", "csv"], accept_multiple_files=True)
 
@@ -1371,10 +1371,10 @@ def main():
 				file_extension = uploaded_file.name.split('.')[-1].lower()
 				if file_extension in ["xls", "xlsx"]:
 					df_ori = pd.read_excel(uploaded_file)
-					st.success(f"File Excel {uploaded_file.name} berhasil diunggah!")
+					# st.success(f"File Excel {uploaded_file.name} berhasil diunggah!")
 				elif file_extension == "csv":
 					df_ori = pd.read_csv(uploaded_file)
-					st.success(f"File CSV {uploaded_file.name} berhasil diunggah!")
+					# st.success(f"File CSV {uploaded_file.name} berhasil diunggah!")
 				else:
 					st.error(f"Format file {uploaded_file.name} tidak didukung. Harap unggah file dengan ekstensi .xls, .xlsx, atau .csv")
 					df_ori = None

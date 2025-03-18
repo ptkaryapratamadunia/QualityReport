@@ -502,17 +502,17 @@ def cleaning_process(df):
 		with kiri:
 			st.write('Table NG (%) by Line & Month')
 			pivot_df_bulan_line = pivot_df_bulan_line.round(2)
-			pivot_df_bulan_line = pivot_df_bulan_line.sort_index(key=lambda x: pd.to_datetime(x, format='%b-%Y'))
+			pivot_df_bulan_line = pivot_df_bulan_line.reset_index().sort_values(by='Date', key=lambda x: pd.to_datetime(x, format='%b-%Y')).set_index('Date')
 			st.write(pivot_df_bulan_line)
 		with tengah:
 			st.write('Table Qty NG (lot) by Line & Month')
 			pivot_df_bulan_line2 = pivot_df_bulan_line2.map(format_with_comma)
-			pivot_df_bulan_line2 = pivot_df_bulan_line2.sort_index(key=lambda x: pd.to_datetime(x, format='%b-%Y'))
+			pivot_df_bulan_line2 = pivot_df_bulan_line2.reset_index().sort_values(by='Date', key=lambda x: pd.to_datetime(x, format='%b-%Y')).set_index('Date')
 			st.write(pivot_df_bulan_line2)
 		with kanan:
 			st.write('Table Qty Inspected (lot) by Line & Month')
 			pivot_df_bulan_line3 = pivot_df_bulan_line3.round(0)
-			pivot_df_bulan_line3 = pivot_df_bulan_line3.sort_index(key=lambda x: pd.to_datetime(x, format='%b-%Y'))
+			pivot_df_bulan_line3 = pivot_df_bulan_line3.reset_index().sort_values(by='Date', key=lambda x: pd.to_datetime(x, format='%b-%Y')).set_index('Date')
 			st.write(pivot_df_bulan_line3)
 
 		#3 kolom buat tabel by Line and Shift - 26Nov2024

@@ -1374,7 +1374,7 @@ def main():
 	# File uploader
 
 	#Added 18Mar2025 to make this apps more user friendly and globally accessible
-	st.info(f"Jika sumber file yang ingin dibersihkan berada di folder Google Drive, unduh/download lewat link berikut ini: [Link Folder](https://drive.google.com/drive/folders/1ToK13k_w0MMLi-S9fopsgC9YrfLPGJVp?usp=sharing) | Download file Excel (.xls, .xlsx) atau CSV dari folder tersebut ke perangkat Anda, lalu unggah/upload file lewat menu Browse di bawah ini:")
+	st.info(f"Jika sumber file yang ingin dibersihkan berada di folder Google Drive, unduh/download lewat link berikut ini: [Link Folder](https://drive.google.com/drive/folders/1motad9bizxGZdiODetAo6K7_38dbXxxG?usp=sharing)  |  Download file Excel (.xls, .xlsx atau .csv) dari folder tersebut ke perangkat Anda, lalu unggah/upload file lewat menu Browse di bawah ini:")
 
 	uploaded_files = st.file_uploader("Pilih file Excel (.xls, .xlsx, csv):",type=["xls", "xlsx", "csv"], accept_multiple_files=True)
 

@@ -570,9 +570,15 @@ def cleaning_process(df):
 		with grafik_kiri:
 			# Menggambar grafik batang
 			data_grafik=pivot_df_bulan_line_grafik.reset_index()
-			data_grafik=data_grafik.sort_index(ascending=True)
+			data_grafik['Date'] = pd.to_datetime(data_grafik['Date'], format='%b-%Y')
+			data_grafik = data_grafik.sort_values(by='Date')
+			data_grafik['Date'] = data_grafik['Date'].dt.strftime('%b-%Y')
+
 			data_grafik2=pivot_df_bulan_line3_grafik.reset_index()
-			data_grafik2=data_grafik2.sort_index(ascending=True)
+			data_grafik2['Date'] = pd.to_datetime(data_grafik2['Date'], format='%b-%Y')
+			data_grafik2 = data_grafik2.sort_values(by='Date')
+			data_grafik2['Date'] = data_grafik2['Date'].dt.strftime('%b-%Y')
+
 			# Create a figure with one subplot
 			fig = go.Figure()
 
@@ -1360,7 +1366,6 @@ def main():
 
 	#Added 18Mar2025 to make this apps more user friendly and globally accessible
 	st.info(f"Jika sumber file yang diinginkan berada di folder Google Drive, unduh/download lewat link berikut ini: [Link Folder](https://drive.google.com/drive/folders/1ToK13k_w0MMLi-S9fopsgC9YrfLPGJVp?usp=sharing) | Download file Excel (.xls, .xlsx) atau CSV dari folder tersebut ke perangkat Anda, lalu unggah/upload file lewat menu Browse di bawah ini:")
-	
 
 	uploaded_files = st.file_uploader("Pilih file Excel (.xls, .xlsx, csv):",type=["xls", "xlsx", "csv"], accept_multiple_files=True)
 

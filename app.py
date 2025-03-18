@@ -1357,8 +1357,10 @@ def main():
 			os.remove(file)
 
 	# File uploader
-	st.info(f"Jika sumber file yang diinginkan berada di folder Google Drive ini: [Link Folder](https://drive.google.com/drive/folders/1ToK13k_w0MMLi-S9fopsgC9YrfLPGJVp?usp=sharing)")
-	st.info("Silakan unduh file Excel (.xls, .xlsx) atau CSV dari folder tersebut ke perangkat Anda, lalu unggah di sini.")
+
+	#Added 18Mar2025 to make this apps more user friendly and globally accessible
+	st.info(f"Jika sumber file yang diinginkan berada di folder Google Drive, unduh lewat sini: [Link Folder](https://drive.google.com/drive/folders/1ToK13k_w0MMLi-S9fopsgC9YrfLPGJVp?usp=sharing)")
+	st.info("Silakan unduh file Excel (.xls, .xlsx) atau CSV dari folder tersebut ke perangkat Anda, lalu unggah di bawah sini.")
 
 	uploaded_file = st.file_uploader("Pilih file Excel (.xls, .xlsx, csv):")
 	if uploaded_file is not None:

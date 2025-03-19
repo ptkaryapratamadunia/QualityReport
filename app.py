@@ -670,9 +670,8 @@ def cleaning_process(df):
 
 		st.markdown("---")
 
-		chart_kiri,chart_kanan=st.columns(2)
+		chart_kiri,chart_kanan=st.columns(2)	#added 19March2025 08.59PM @home 
 		with chart_kiri:
-			st.write('Chart Qty(lot) Vs NG (%) by Month - Barrel 4')
 			# Filter data for Line 'Barrel 4'
 			df_barrel4 = df[df['Line'] == 'Barrel 4']
 
@@ -732,8 +731,62 @@ def cleaning_process(df):
 
 
 		with chart_kanan:
-			st.write('Chart Qty NG (lot) by Line & Month - Barrel 4')	
+			# Filter data for Line 'Rack 1'
+			df_rack1 = df[df['Line'] == 'Rack 1']
 
+			# Menggambar grafik batang
+			data_grafik = pd.pivot_table(df_rack1, values='NG_%', index='Date', aggfunc='mean').reset_index()
+			data_grafik['Date'] = pd.to_datetime(data_grafik['Date'], format='%b-%Y')
+			data_grafik = data_grafik.sort_values(by='Date')
+			data_grafik['Date'] = data_grafik['Date'].dt.strftime('%b-%Y')
+
+			data_grafik2 = pd.pivot_table(df_rack1, values='Insp(B/H)', index='Date', aggfunc='sum').reset_index()
+			data_grafik2['Date'] = pd.to_datetime(data_grafik2['Date'], format='%b-%Y')
+			data_grafik2 = data_grafik2.sort_values(by='Date')
+			data_grafik2['Date'] = data_grafik2['Date'].dt.strftime('%b-%Y')
+
+			# Create a figure with one subplot
+			fig = go.Figure()
+
+			# Add NG_% bar trace
+			fig.add_trace(go.Scatter(
+				x=data_grafik['Date'],
+				y=data_grafik['NG_%'],
+				name='NG_%',
+				mode='lines+markers',  # Combine line and markers
+				marker_color='blue',
+				line_color='blue',   # Set line color explicitly
+				yaxis='y2'
+			))
+
+			# Add Insp(B/H) line trace (overlay on same y-axis)
+			fig.add_trace(go.Bar(  # Use Scatter for line chart
+				x=data_grafik2['Date'],
+				y=data_grafik2['Insp(B/H)'],
+				name='Insp(B/H)',
+				marker_color='orange',
+			))
+
+			# Customize layout
+			fig.update_layout(
+				
+			title='Grafik NG% & Qty Inspected by Month - Rack 1',
+			xaxis=dict(title='Month', type='category'),
+			yaxis=dict(title='Qty Inspected (pcs)', titlefont=dict(color='green'), tickfont=dict(color='green')),
+			yaxis2=dict(title='NG%', titlefont=dict(color='blue'), tickfont=dict(color='blue'), overlaying='y', side='right', anchor='x'),
+				paper_bgcolor='rgba(0,0,0,0)',      # Warna background keseluruhan
+				plot_bgcolor='rgba(0,0,0,0)',       # Warna background area plot
+				legend=dict(
+					yanchor="top",
+					y=-0.2,  # Posisi vertikal di bawah sumbu X
+					xanchor="center",
+					x=0.5   # Posisi horizontal di tengah
+				),
+				legend_title_text='Metric'
+			
+			)
+			# Display the plot
+			st.plotly_chart(fig)
 
 		#grafik PIE ----------------------
 

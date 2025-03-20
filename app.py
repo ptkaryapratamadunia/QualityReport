@@ -661,7 +661,6 @@ def cleaning_process(df):
 		
 			# Create a pie chart
 			fig = go.Figure(data=go.Pie(labels=LotInsp_by_Line['Line'], values=LotInsp_by_Line['Insp(B/H)'], marker=dict(colors=['green', 'yellow', 'red', 'blue'])))
-
 			fig.update_layout(title='Porsion Tot. Inspected(lot) by Line',
 							xaxis_title='Line',
 							yaxis_title='Qty (lot)')
@@ -1002,7 +1001,7 @@ def cleaning_process(df):
 				
 				# Buat grafik batang interaktif
 				fig = go.Figure(data=go.Bar(x=NG_by_Line['Line'], y=NG_by_Line['NG_%'],
-										marker_color='green'))  # Sesuaikan warna jika ingin
+										marker_color='grey'))  # Sesuaikan warna jika ingin
 
 				fig.update_layout(title='Rata-rata NG_% by Line',
 								xaxis_title='Line',

@@ -705,7 +705,7 @@ def cleaning_process(df):
 				x=data_grafik2['Date'],
 				y=data_grafik2['Insp(B/H)'],
 				name='Insp(B/H)',
-				marker_color='Orange',
+				marker_color='Yellow',
 			))
 
 			# Customize layout

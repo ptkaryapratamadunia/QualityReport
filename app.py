@@ -1052,8 +1052,8 @@ def cleaning_process(df):
 
 		#Grafik model double axis:kiri %NG kanan Qty Inspected - 27Nov2024 @home before PILKADA
 		ibnu,zahra=st.columns([3,1])
-		#Grafik NG% by Line& Kategori
-		with ibnu:
+		
+		with ibnu:	#Grafik NG% by Line& Kategori
 			# Hitung agregasi untuk setiap kategori
 			NG_by_kategori = df.groupby('Kategori').agg({'NG_%': 'mean', 'Insp(B/H)': 'sum'}).reset_index()
 
@@ -1113,8 +1113,8 @@ def cleaning_process(df):
 		st.markdown("---")
 		#buat kolom	untuk grafik dan tabel BUSI
 		colkir,colteng,colnan=st.columns(3)
-		#kolom kiri untuk tempat PETUNJUK SINGKAT
-		with colkir:
+		
+		with colkir: #kolom kiri untuk tempat PETUNJUK SINGKAT
 
 			st.markdown("""<h5 style="color:blue;margin-top:-10px;margin-bottom:0px;"> PETUNJUK SINGKAT </h5>""", unsafe_allow_html=True)
 			st.markdown("---")
@@ -1187,16 +1187,15 @@ def cleaning_process(df):
 			# 				xaxis_title='-',
 			# 				yaxis_title='(pcs)')
 			# st.plotly_chart(fig)
-
-		#Tabel Data Qty NG (lot) by Line & Kategori
-		with colteng:
+	
+		with colteng:	#Tabel Data Qty NG (lot) by Line & Kategori
 			st.write('Data Qty NG (lot) by Line & Kategori')
 			st.write(pt_kategori_line3)
 			st.write('Data Qty NG (pcs) by Line & Kategori')
 			pt_kategori_line_NGpcs = pt_kategori_line_NGpcs.round(0)
 			st.write(pt_kategori_line_NGpcs)
-		#Tabel Quantity Inspected (lot) by Line & Kategori
-		with colnan:
+		
+		with colnan: #Tabel Quantity Inspected (lot) by Line & Kategori
 			st.write('Quantity Inspected (lot) by Line & Kategori')
 			pt_kategori_line2 = pt_kategori_line2.map(format_with_comma)
 			st.write(pt_kategori_line2)
@@ -1247,7 +1246,7 @@ def cleaning_process(df):
 		#tampilkan grafik batangnya -- 14Nov2024
 		barisB4, barisR1=st.columns(2)
 		#baris kiri Grafik Vertical Bar B4 Blue		
-		with barisB4:
+		with barisB4: #Grafik Vertical Bar B4 Yellow
 			# Convert the total_row to a DataFrame for plotting 
 			total_row_df_B4 = total_rowB4.transpose().reset_index() 
 			total_row_df_B4.columns = ['Defect Type', 'Total NG (lot)'] 
@@ -1258,11 +1257,11 @@ def cleaning_process(df):
 			#Sort values from largest to smallest 
 			total_row_df_B4_sorted = total_row_df_B4_filtered.sort_values(by='Total NG (lot)', ascending=True)
 			# Plot using plotly for interactivity 
-			fig = px.bar(total_row_df_B4_sorted, y='Defect Type', x='Total NG (lot)', title='Defect Types - Line Barrel 4', labels={'Defect Type': 'Defect Type', 'Total NG (lot)': 'Total NG (lot)'}, color_discrete_sequence=['blue']) 
+			fig = px.bar(total_row_df_B4_sorted, y='Defect Type', x='Total NG (lot)', title='Defect Types - Line Barrel 4', labels={'Defect Type': 'Defect Type', 'Total NG (lot)': 'Total NG (lot)'}, color_discrete_sequence=['yellow']) 
 			fig.update_layout( yaxis_title="Defect Type", xaxis_title="Total NG (lot)", yaxis_tickangle=0)
 			st.plotly_chart(fig)
-		#baris kanan Grafik Vertical Bar R1 Hijau
-		with barisR1:
+		
+		with barisR1:	#baris kanan Grafik Vertical Bar R1 Blue
 			#tampilkan grafik batangnya -- 14Nov2024
 			# Convert the total_row to a DataFrame for plotting 
 			total_row_df = total_row.transpose().reset_index() 
@@ -1274,7 +1273,7 @@ def cleaning_process(df):
 			#Sort values from largest to smallest 
 			total_row_df_sorted = total_row_df_filtered.sort_values(by='Total NG (lot)', ascending=True)
 			# Plot using plotly for interactivity 
-			fig = px.bar(total_row_df_sorted, y='Defect Type', x='Total NG (lot)', title='Defect Types - Line Rack 1', labels={'Defect Type': 'Defect Type', 'Total NG (lot)': 'Total NG (lot)'}, color_discrete_sequence=['green']) 
+			fig = px.bar(total_row_df_sorted, y='Defect Type', x='Total NG (lot)', title='Defect Types - Line Rack 1', labels={'Defect Type': 'Defect Type', 'Total NG (lot)': 'Total NG (lot)'}, color_discrete_sequence=['blue']) 
 			fig.update_layout( yaxis_title="Defect Type", xaxis_title="Total NG (lot)", yaxis_tickangle=0)
 			st.plotly_chart(fig)
 

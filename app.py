@@ -195,7 +195,7 @@ def cleaning_process(df):
 
 	df=pd.DataFrame(df2)
 
-	# Cleaning Process
+	#region Cleaning Process
 	if df is not None:
 
 		# Membersihkan nama kolom dari spasi atau karakter tersembunyi
@@ -343,6 +343,7 @@ def cleaning_process(df):
 		# Mengganti nilai 'CU' dengan 'RACK 1' - improve 13Nov2024
 		df['Kategori'] = df['Kategori'].str.strip()       # menghilangkan white space seperti: ' CU', dan 'CU '
 		df['Kategori'] = df['Kategori'].replace('CU', 'RACK 1')
+		df['Kategori'] = df['Kategori'].replace('RC', 'Barrel 4') #added 20March2025
 		
 		# Membersihkan nama kolom dari spasi atau karakter tersembunyi
 		df.columns = df.columns.str.strip()
@@ -390,7 +391,10 @@ def cleaning_process(df):
 
 		# Menghilangkan baris duplicate - added 10March2025
 		df.drop_duplicates(inplace=True)
-		
+
+	#endregion
+	#------------
+			
 		# st.write('Preview Data setelah dirapihkan (cleaning):')
 		#dataframe - script ini untuk filtering model tree
 		with st.expander("Preview Data setelah dirapihkan (cleaning)"):
@@ -615,7 +619,7 @@ def cleaning_process(df):
 				
 			title='Grafik NG% & Qty Inspected by Month',
 			xaxis=dict(title='Month',type='category'),
-			yaxis=dict(title='Qty Inspected (pcs)', titlefont=dict(color='green'), tickfont=dict(color='green')),
+			yaxis=dict(title='Qty Inspected (pcs)', titlefont=dict(color='grey'), tickfont=dict(color='grey')),
 			yaxis2=dict(title='NG%', titlefont=dict(color='blue'), tickfont=dict(color='blue'), overlaying='y', side='right', anchor='x'),
 				paper_bgcolor='rgba(0,0,0,0)',      # Warna background keseluruhan
 				plot_bgcolor='rgba(0,0,0,0)',       # Warna background area plot
@@ -712,7 +716,7 @@ def cleaning_process(df):
 				
 			title='Grafik NG% & Qty Inspected by Month - Barrel 4',
 			xaxis=dict(title='Month', type='category'),
-			yaxis=dict(title='Qty Inspected (pcs)', titlefont=dict(color='green'), tickfont=dict(color='green')),
+			yaxis=dict(title='Qty Inspected (pcs)', titlefont=dict(color='yellow'), tickfont=dict(color='yellow')),
 			yaxis2=dict(title='NG%', titlefont=dict(color='blue'), tickfont=dict(color='blue'), overlaying='y', side='right', anchor='x'),
 				paper_bgcolor='rgba(0,0,0,0)',      # Warna background keseluruhan
 				plot_bgcolor='rgba(0,0,0,0)',       # Warna background area plot
@@ -770,8 +774,8 @@ def cleaning_process(df):
 				
 			title='Grafik NG% & Qty Inspected by Month - Rack 1',
 			xaxis=dict(title='Month', type='category'),
-			yaxis=dict(title='Qty Inspected (pcs)', titlefont=dict(color='green'), tickfont=dict(color='green')),
-			yaxis2=dict(title='NG%', titlefont=dict(color='blue'), tickfont=dict(color='blue'), overlaying='y', side='right', anchor='x'),
+			yaxis=dict(title='Qty Inspected (pcs)', titlefont=dict(color='blue'), tickfont=dict(color='blue')),
+			yaxis2=dict(title='NG%', titlefont=dict(color='green'), tickfont=dict(color='green'), overlaying='y', side='right', anchor='x'),
 				paper_bgcolor='rgba(0,0,0,0)',      # Warna background keseluruhan
 				plot_bgcolor='rgba(0,0,0,0)',       # Warna background area plot
 				legend=dict(

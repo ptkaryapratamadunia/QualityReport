@@ -1457,7 +1457,7 @@ def cleaning_process(df):
 		# Customize layout
 		fig.update_layout(
 			title='Grafik NG (%) Vs Insp (B/H) per M/C No.',
-			xaxis=dict(title='M/C No.'),
+			xaxis=dict(title='M/C No.', tickmode='linear'),
 			yaxis=dict(title='Qty Inspected (B/H)', titlefont=dict(color='green'), tickfont=dict(color='green')),
 			yaxis2=dict(title='NG (%)', titlefont=dict(color='red'), tickfont=dict(color='red'), overlaying='y', side='right'),
 			paper_bgcolor='rgba(0,0,0,0)',  # Warna background keseluruhan
@@ -1468,7 +1468,7 @@ def cleaning_process(df):
 				xanchor="center",
 				x=0.5   # Posisi horizontal di tengah
 			),
-			legend_title_text='Metric'
+			legend_title_text='by e-WeYe'
 		)
 
 		# Display the plot

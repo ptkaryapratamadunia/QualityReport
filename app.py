@@ -468,7 +468,7 @@ def cleaning_process(df):
 			
 			st.markdown("""<h6 style="color:blue;" > METRIC SUMMARY  ➡️ </h6>""", unsafe_allow_html=True)
 
-		with bt2:
+		with bt2: #Total Inspected (lot)
 			# container3=st.container(border=True)
 			tot_Qty_lot=df['Insp(B/H)'].sum()
 			# container3.write(f"Total Inspected (lot)	:{tot_Qty_lot:.0f}")
@@ -477,7 +477,7 @@ def cleaning_process(df):
 			st.markdown(container_html, unsafe_allow_html=True)
 			# bt2.metric("Total Inspected (lot)",f"{tot_Qty_lot:,.0f}")
 
-		with bt3:
+		with bt3: #Total Inspected (lot)
 			# container=st.container(border=True)
 			tot_NG_lot=df['Tot_NG'].sum()
 			# container.write(f"Tot. NG (lot)  :  {tot_NG_lot:.0f}")
@@ -499,21 +499,21 @@ def cleaning_process(df):
 		#SUMMARY DATA
 		st.subheader('Summary Data')
 		kiri,tengah,kanan=st.columns(3)
-		with kiri:
+		with kiri:	#Table NG (%) by Line & Month
 			st.write('Table NG (%) by Line & Month')
 			pivot_df_bulan_line = pivot_df_bulan_line.round(2)
 			pivot_df_bulan_line = pivot_df_bulan_line.reset_index()
 			pivot_df_bulan_line = pivot_df_bulan_line[pivot_df_bulan_line['Date'] != 'Total']
 			pivot_df_bulan_line = pivot_df_bulan_line.sort_values(by='Date', key=lambda x: pd.to_datetime(x, format='%b-%Y')).set_index('Date')
 			st.write(pivot_df_bulan_line)
-		with tengah:
+		with tengah:	#Table Qty NG (lot) by Line & Month
 			st.write('Table Qty NG (lot) by Line & Month')
 			pivot_df_bulan_line2 = pivot_df_bulan_line2.map(format_with_comma)
 			pivot_df_bulan_line2 = pivot_df_bulan_line2.reset_index()
 			pivot_df_bulan_line2 = pivot_df_bulan_line2[pivot_df_bulan_line2['Date'] != 'Total']
 			pivot_df_bulan_line2 = pivot_df_bulan_line2.sort_values(by='Date', key=lambda x: pd.to_datetime(x, format='%b-%Y')).set_index('Date')
 			st.write(pivot_df_bulan_line2)
-		with kanan:
+		with kanan:	#Table Qty Inspected (lot) by Line & Month
 			st.write('Table Qty Inspected (lot) by Line & Month')
 			pivot_df_bulan_line3 = pivot_df_bulan_line3.round(0)
 			pivot_df_bulan_line3 = pivot_df_bulan_line3.reset_index()
@@ -607,7 +607,7 @@ def cleaning_process(df):
 				x=data_grafik2['Date'],
 				y=data_grafik2['Insp(B/H)'],
 				name='Insp(B/H)',
-				marker_color='orange',
+				marker_color='grey',
 			))
 
 			# Customize layout
@@ -670,7 +670,7 @@ def cleaning_process(df):
 		st.markdown("---")
 
 		chart_kiri,chart_kanan=st.columns(2)	#added 19March2025 08.59PM @home 
-		with chart_kiri:
+		with chart_kiri: #Grafik NG% & Qty Inspected by Month - Barrel 4
 			# Filter data for Line 'Barrel 4'
 			df_barrel4 = df[df['Line'] == 'Barrel 4']
 
@@ -728,8 +728,7 @@ def cleaning_process(df):
 			# Display the plot
 			st.plotly_chart(fig)
 
-
-		with chart_kanan:
+		with chart_kanan: #Grafik NG% & Qty Inspected by Month - Rack 1
 			# Filter data for Line 'Rack 1'
 			df_rack1 = df[df['Line'] == 'Rack 1']
 

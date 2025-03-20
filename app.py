@@ -843,7 +843,7 @@ def cleaning_process(df):
 		st.write(pt_customer_line_transposed)
 
 		dew1, dew2=st.columns(2)
-		with dew1:
+		with dew1: #NG (%) for Barrel 4 by Customer
 			# Check if 'Barrel 4' column exists in the dataframe
 			if 'Barrel 4' in pt_customer_line.columns:
 				# Extract 'Barrel 4' line and exclude 'Total' column
@@ -871,7 +871,7 @@ def cleaning_process(df):
 				# Display the plot in Streamlit
 				st.plotly_chart(fig)
 
-		with dew2:
+		with dew2: #NG (%) for Rack 1 by Customer
 		
 			# Check if 'Barrel 4' column exists in the dataframe
 			if 'Rack 1' in pt_customer_line.columns:
@@ -910,6 +910,58 @@ def cleaning_process(df):
 		st.write('Qty NG (lot) by Line & Customer')
 		pt_customer_line2_tranposed=pt_customer_line2.transpose()
 		st.write(pt_customer_line2_tranposed)
+
+		st.markdown("---")
+		
+		sikir,sinan=st.columns(2)
+		#Grafik kolom Qty NG(lot) B4 by Cust.ID Yellow
+		with sikir:
+		
+			df_byLine=df[df['Line']=='Barrel 4']	
+			df_byLine=df_byLine[df_byLine['NG(B/H)']>0]			#menampilkan hanya yg ada nilainya 03Dec2024
+
+			NG_by_custid=(
+			df_byLine[["Cust.ID","NG(B/H)"]]
+			.groupby(by="Cust.ID")
+			.sum()
+			.sort_values(by="NG(B/H)",ascending=False)
+			.reset_index()
+			)
+			# st.write(NG_by_kategori)
+			
+			# Buat grafik batang interaktif
+			fig = go.Figure(data=go.Bar(x=NG_by_custid['Cust.ID'], y=NG_by_custid['NG(B/H)'],
+									marker_color='yellow'))  # Sesuaikan warna jika ingin
+
+			fig.update_layout(title='Grafik Qty NG(lot) by Cust.ID - Barrel 4',
+							xaxis_title='Cust.ID',
+							yaxis_title='NG(B/H)')
+
+			st.plotly_chart(fig)
+		#Grafik NG(lot) by Cust.ID Blue Rack 1
+		with sinan:
+			df_byLineR1=df[df['Line']=='Rack 1']
+			df_byLineR1=df_byLineR1[df_byLineR1['NG(B/H)']>0]
+
+			NG_by_Cust=(
+					df_byLineR1[["Cust.ID","NG(B/H)"]]
+					.groupby(by="Cust.ID")
+					.sum()
+					.sort_values(by="NG(B/H)",ascending=False)
+					.reset_index()
+			)
+			
+			# Buat grafik batang interaktif
+			fig = go.Figure(data=go.Bar(x=NG_by_Cust['Cust.ID'], y=NG_by_Cust['NG(B/H)'],
+									marker_color='blue'))  # Sesuaikan warna jika ingin
+
+			fig.update_layout(title="Grafik Qty NG(lot) by Cust.ID - Rack 1",
+							xaxis_title='Cust.ID',
+							yaxis_title='NG(B/H)')
+
+			st.plotly_chart(fig)
+
+		st.markdown("---")
 
 		#--------- pivot Qty Inspected (lot) by Line dan Customer
 		pt_customer_line2=pd.pivot_table(df,values='Insp(B/H)',index='Cust.ID',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
@@ -1108,6 +1160,7 @@ def cleaning_process(df):
 			# 				xaxis_title='-',
 			# 				yaxis_title='(pcs)')
 			# st.plotly_chart(fig)
+
 		#Tabel Data Qty NG (lot) by Line & Kategori
 		with colteng:
 			st.write('Data Qty NG (lot) by Line & Kategori')
@@ -1128,55 +1181,7 @@ def cleaning_process(df):
 		st.markdown("---")
 		#groupby dataframe	---------------
 
-		sikir,sinan=st.columns(2)
-		#Grafik kolom Qty NG(lot) B4 by Cust.ID Yellow
-		with sikir:
-		
-			df_byLine=df[df['Line']=='Barrel 4']	
-			df_byLine=df_byLine[df_byLine['NG(B/H)']>0]			#menampilkan hanya yg ada nilainya 03Dec2024
 
-			NG_by_custid=(
-			df_byLine[["Cust.ID","NG(B/H)"]]
-			.groupby(by="Cust.ID")
-			.sum()
-			.sort_values(by="NG(B/H)",ascending=False)
-			.reset_index()
-			)
-			# st.write(NG_by_kategori)
-			
-			# Buat grafik batang interaktif
-			fig = go.Figure(data=go.Bar(x=NG_by_custid['Cust.ID'], y=NG_by_custid['NG(B/H)'],
-									marker_color='yellow'))  # Sesuaikan warna jika ingin
-
-			fig.update_layout(title='Grafik Qty NG(lot) by Cust.ID - Barrel 4',
-							xaxis_title='Cust.ID',
-							yaxis_title='NG(B/H)')
-
-			st.plotly_chart(fig)
-		#Grafik NG(lot) by Cust.ID Blue
-		with sinan:
-			df_byLineR1=df[df['Line']=='Rack 1']
-			df_byLineR1=df_byLineR1[df_byLineR1['NG(B/H)']>0]
-
-			NG_by_Cust=(
-					df_byLineR1[["Cust.ID","NG(B/H)"]]
-					.groupby(by="Cust.ID")
-					.sum()
-					.sort_values(by="NG(B/H)",ascending=False)
-					.reset_index()
-			)
-			
-			# Buat grafik batang interaktif
-			fig = go.Figure(data=go.Bar(x=NG_by_Cust['Cust.ID'], y=NG_by_Cust['NG(B/H)'],
-									marker_color='blue'))  # Sesuaikan warna jika ingin
-
-			fig.update_layout(title="Grafik Qty NG(lot) by Cust.ID - Rack 1",
-							xaxis_title='Cust.ID',
-							yaxis_title='NG(B/H)')
-
-			st.plotly_chart(fig)
-
-		st.markdown("---")
 		#----------------- JUMLAH KOLOM TYPE NG ----------------
 		# Daftar kolom Jenis NG yang ingin dijumlahkan
 		new_columns = [

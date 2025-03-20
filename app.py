@@ -524,8 +524,8 @@ def cleaning_process(df):
 		#3 kolom buat tabel by Line and Shift - 26Nov2024
 		col1,col2,col3,=st.columns(3)
 			
-		with col1:
-			#NG % by Line and Shift - 26Nov2024
+		with col1: #NG % by Line and Shift - 26Nov2024
+			
 			pt_NGpersen_line_by_shift=pd.pivot_table(df,values='NG_%',index='Line',columns='Shift',aggfunc='mean',margins=True,margins_name='Total')
 			# Bulatkan nilai-nilai ke angka bulat terdekat
 			pt_NGpersen_line_by_shift = pt_NGpersen_line_by_shift.round(2)
@@ -533,8 +533,8 @@ def cleaning_process(df):
 			st.write('NG (%) by Line & Shift')
 			st.write(pt_NGpersen_line_by_shift_transposed)
 			
-		with col2:	
-			#Qty NG Lot by Line and Shift - 26Nov2024
+		with col2:	#Qty NG Lot by Line and Shift - 26Nov2024
+			
 			pt_NGLot_line_by_shift=pd.pivot_table(df,values='NG(B/H)',index='Line',columns='Shift',aggfunc='sum',margins=True,margins_name='Total')
 			# Bulatkan nilai-nilai ke angka bulat terdekat
 			pt_NGLot_line_by_shift = pt_NGLot_line_by_shift.map(format_with_comma)
@@ -543,8 +543,8 @@ def cleaning_process(df):
 			st.write('Qty NG(lot) by Line-Shift')
 			st.write(pt_NGLot_line_by_shift_transposed)
 
-		with col3:	
-			#Qty Inspected Lot by Line and Shift - 26Nov2024
+		with col3:	#Qty Inspected Lot by Line and Shift - 26Nov2024
+			
 			pt_InspLot_line_by_shift=pd.pivot_table(df,values='Insp(B/H)',index='Line',columns='Shift',aggfunc='sum',margins=True,margins_name='Total')
 			# Bulatkan nilai-nilai ke angka bulat terdekat
 			pt_InspLot_line_by_shift = pt_InspLot_line_by_shift.round(0)
@@ -576,7 +576,7 @@ def cleaning_process(df):
 		#Grafik area
 		grafik_kiri,grafik_kanan=st.columns(2)
 
-		with grafik_kiri:
+		with grafik_kiri: #Grafik NG% & Qty Inspected by Month - 26Nov2024
 			# Menggambar grafik batang
 			data_grafik=pivot_df_bulan_line_grafik.reset_index()
 			data_grafik['Date'] = pd.to_datetime(data_grafik['Date'], format='%b-%Y')
@@ -649,7 +649,7 @@ def cleaning_process(df):
 			# # Display the plot
 			# st.plotly_chart(fig)
 			
-		with grafik_kanan:
+		with grafik_kanan: #Pie Chart - 26Nov2024 Portion of Qty Inspected by Line
 			# Pie Chart
 			LotInsp_by_Line=(
 				df[["Line","Insp(B/H)"]]
@@ -705,7 +705,7 @@ def cleaning_process(df):
 				x=data_grafik2['Date'],
 				y=data_grafik2['Insp(B/H)'],
 				name='Insp(B/H)',
-				marker_color='orange',
+				marker_color='Orange',
 			))
 
 			# Customize layout
@@ -754,8 +754,8 @@ def cleaning_process(df):
 				y=data_grafik['NG_%'],
 				name='NG_%',
 				mode='lines+markers',  # Combine line and markers
-				marker_color='blue',
-				line_color='blue',   # Set line color explicitly
+				marker_color='green',
+				line_color='green',   # Set line color explicitly
 				yaxis='y2'
 			))
 
@@ -764,7 +764,7 @@ def cleaning_process(df):
 				x=data_grafik2['Date'],
 				y=data_grafik2['Insp(B/H)'],
 				name='Insp(B/H)',
-				marker_color='orange',
+				marker_color='blue',
 			))
 
 			# Customize layout

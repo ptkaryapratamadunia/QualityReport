@@ -1055,28 +1055,52 @@ def cleaning_process(df):
 		#Grafik NG% by Line& Kategori
 		with ibnu:
 			# Hitung agregasi untuk setiap kategori
-			NG_by_kategori_ng = df.groupby('Kategori').agg({'NG_%': 'mean'}).reset_index()
-			NG_by_kategori_insp = df.groupby('Kategori').agg({'Insp(B/H)': 'sum'}).reset_index()
+			NG_by_kategori = df.groupby('Kategori').agg({'NG_%': 'mean', 'Insp(B/H)': 'sum'}).reset_index()
 
-			# Create a figure with a 1x2 subplot grid (1 row, 2 columns)
-			fig = make_subplots(rows=1, cols=2)
+			# Create a figure with one subplot
+			fig = go.Figure()
 
-			# Add traces to the subplots
-			fig.add_trace(go.Bar(x=NG_by_kategori_ng['Kategori'], y=NG_by_kategori_ng['NG_%'], name='NG_%', marker_color='grey'), row=1, col=1)
-			fig.add_trace(go.Bar(x=NG_by_kategori_insp['Kategori'], y=NG_by_kategori_insp['Insp(B/H)'], name='Insp(B/H)', marker_color='green'), row=1, col=2)
+			# Add Insp(B/H) bar trace
+			fig.add_trace(go.Bar(
+				x=NG_by_kategori['Kategori'],
+				y=NG_by_kategori['Insp(B/H)'],
+				name='Insp(B/H)',
+				marker_color='grey',
+				yaxis='y1'
+			))
 
-			# Update layout for secondary y-axis (optional)
+			# Add NG_% line trace
+			fig.add_trace(go.Scatter(
+				x=NG_by_kategori['Kategori'],
+				y=NG_by_kategori['NG_%'],
+				name='NG_%',
+				mode='lines+markers',
+				marker_color='green',
+				line_color='green',
+				yaxis='y2'
+			))
+
+			# Customize layout
 			fig.update_layout(
-				title='Grafik NG (% ) Vs Insp (lot) per Kategori',
-				xaxis_title='Kategori',
-				yaxis=dict(title='Average NG (%)'),
-				yaxis2=dict(title='Qty Inspected (lot)', overlaying='y', side='right')  # If needed for overlay
+				title='Grafik NG (%) Vs Insp (lot) per Kategori',
+				xaxis=dict(title='Kategori'),
+				yaxis=dict(title='Qty Inspected (lot)', titlefont=dict(color='grey'), tickfont=dict(color='grey')),
+				yaxis2=dict(title='NG (%)', titlefont=dict(color='green'), tickfont=dict(color='green'), overlaying='y', side='right'),
+				paper_bgcolor='rgba(0,0,0,0)',  # Warna background keseluruhan
+				plot_bgcolor='rgba(0,0,0,0)',   # Warna background area plot
+				legend=dict(
+					yanchor="top",
+					y=-0.2,  # Posisi vertikal di bawah sumbu X
+					xanchor="center",
+					x=0.5   # Posisi horizontal di tengah
+				),
+				legend_title_text='Metric'
 			)
 
 			# Display the plot
 			st.plotly_chart(fig)
-		#Tabel NG% by Line& Kategori
-		with zahra:
+		
+		with zahra:	#Tabel NG% by Line& Kategori
 			st.write('NG (%) by Line & Kategori')
 			st.write(pt_kategori_line)
 		

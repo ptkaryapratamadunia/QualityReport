@@ -989,8 +989,8 @@ def cleaning_process(df):
 
 		#Grafik NG by Line % & Lot	04NOv2024
 		chart_kiri, chart_tengah,chart_kanan=st.columns(3)	
-		#Grafik batang Qty NG(%) by Line Green
-		with chart_kiri:
+		
+		with chart_kiri:	#Grafik batang Qty NG(%) by Line Grey
 				NG_by_Line=(
 						df[["Line","NG_%"]]
 						.groupby(by="Line")
@@ -1008,8 +1008,8 @@ def cleaning_process(df):
 								yaxis_title='NG_%')
 
 				st.plotly_chart(fig)
-		#Grafik batang Qty NG(Lot) by Line Blue	
-		with chart_tengah:
+			
+		with chart_tengah:	#Grafik batang Qty NG(Lot) by Line Grey
 			NGLot_by_Line=(
 					df[["Line","NG(B/H)"]]
 					.groupby(by="Line")
@@ -1020,15 +1020,15 @@ def cleaning_process(df):
 			
 			# Buat grafik batang interaktif
 			fig = go.Figure(data=go.Bar(x=NGLot_by_Line['Line'], y=NGLot_by_Line['NG(B/H)'],
-									marker_color='blue'))  # Sesuaikan warna jika ingin
+									marker_color='grey'))  # Sesuaikan warna jika ingin
 
 			fig.update_layout(title='Qty NG (lot) by Line',
 							xaxis_title='Line',
 							yaxis_title='Qty NG (lot)')
 
 			st.plotly_chart(fig)		
-		#Grafik batang Qty Inspected Lot by Line Orange
-		with chart_kanan:
+		
+		with chart_kanan: #Grafik batang Qty Inspected Lot by Line Grey
 				InspLot_by_Line=(
 						df[["Line","Insp(B/H)"]]
 						.groupby(by="Line")
@@ -1039,7 +1039,7 @@ def cleaning_process(df):
 				
 				# Buat grafik batang interaktif
 				fig = go.Figure(data=go.Bar(x=InspLot_by_Line['Line'], y=InspLot_by_Line['Insp(B/H)'],
-										marker_color='orange'))  # Sesuaikan warna jika ingin
+										marker_color='grey'))  # Sesuaikan warna jika ingin
 
 				fig.update_layout(title='Qty Inspected (lot) by Line',
 								xaxis_title='Line',

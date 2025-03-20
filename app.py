@@ -1262,7 +1262,7 @@ def cleaning_process(df):
 			st.plotly_chart(fig)
 		
 		with barisR1:	#baris kanan Grafik Vertical Bar R1 Blue
-			#tampilkan grafik batangnya -- 14Nov2024
+		
 			# Convert the total_row to a DataFrame for plotting 
 			total_row_df = total_row.transpose().reset_index() 
 			total_row_df.columns = ['Defect Type', 'Total NG (lot)'] 
@@ -1338,6 +1338,7 @@ def cleaning_process(df):
 			List_Qty_R1 = List_Qty_R1.map(format_with_comma)
 			st.write("Tabel Qty (pcs) by Part Name Line Rack 1")
 			st.write(List_Qty_R1)
+
 		#kolom lagi untuk grafik NG by Part Name B4 dan R1 only
 		sikir2,sinan2=st.columns(2)
 
@@ -1412,18 +1413,70 @@ def cleaning_process(df):
 		# Apply filter to exclude rows where 'M/C No.' is null, empty, or '00'
 		df_filtered = df[(df['M/C No.'].notnull()) & (df['M/C No.'] != '') & (df['M/C No.'] != '00')]	
 		pt_MesinNo = pd.pivot_table(df_filtered, 
-                            values=['NG_%', 'Insp(B/H)'], 
-                            index='M/C No.', 
-                            aggfunc={'NG_%': 'mean', 'Insp(B/H)': 'sum'}, 
-                            margins=True, 
-                            margins_name='Total')
+							values=['NG_%', 'Insp(B/H)'], 
+							index='M/C No.', 
+							aggfunc={'NG_%': 'mean', 'Insp(B/H)': 'sum'}, 
+							margins=True, 
+							margins_name='Total')
 		# Transpose the pivot table
 		st.write('NG (%) by M/C No. Stamping')
 		pt_MesinNo_transposed = pt_MesinNo.transpose()
 		pt_MesinNo_transposed=pt_MesinNo_transposed.round(2)
 		st.write(pt_MesinNo_transposed)
 
+		# Plotting the graph
+		pt_MesinNo = pt_MesinNo.reset_index()
+		pt_MesinNo = pt_MesinNo[pt_MesinNo['M/C No.'] != 'Total']
+
+		fig = go.Figure()
+
+		# Add Insp(B/H) bar trace
+		fig.add_trace(go.Bar(
+			x=pt_MesinNo['M/C No.'],
+			y=pt_MesinNo['Insp(B/H)'],
+			name='Insp(B/H)',
+			marker_color='green',
+			text=pt_MesinNo['Insp(B/H)'].apply(lambda x: f'{x:,.0f}'),
+			textposition='outside'
+		))
+
+		# Add NG_% line trace
+		fig.add_trace(go.Scatter(
+			x=pt_MesinNo['M/C No.'],
+			y=pt_MesinNo['NG_%'],
+			name='NG_%',
+			mode='lines+markers+text',
+			marker_color='red',
+			line_color='red',
+			yaxis='y2',
+			text=pt_MesinNo['NG_%'].apply(lambda x: f'{x:.2f}'),
+			textposition='top center',
+			hoverinfo='text'
+		))
+
+		# Customize layout
+		fig.update_layout(
+			title='Grafik NG (%) Vs Insp (B/H) per M/C No.',
+			xaxis=dict(title='M/C No.'),
+			yaxis=dict(title='Qty Inspected (B/H)', titlefont=dict(color='green'), tickfont=dict(color='green')),
+			yaxis2=dict(title='NG (%)', titlefont=dict(color='red'), tickfont=dict(color='red'), overlaying='y', side='right'),
+			paper_bgcolor='rgba(0,0,0,0)',  # Warna background keseluruhan
+			plot_bgcolor='rgba(0,0,0,0)',   # Warna background area plot
+			legend=dict(
+				yanchor="top",
+				y=-0.2,  # Posisi vertikal di bawah sumbu X
+				xanchor="center",
+				x=0.5   # Posisi horizontal di tengah
+			),
+			legend_title_text='Metric'
+		)
+
+		# Display the plot
+		st.plotly_chart(fig)
+
 		st.markdown("---")
+
+
 
 		st.markdown("""<h3 style="color:Brown">DEFINISI</h3>""", unsafe_allow_html=True)
 		st.markdown("""<p style="margin-top:-10px;margin-bottom:0px;font-size:14px">Definisi satuan dalam aplikasi ini:<br><br>

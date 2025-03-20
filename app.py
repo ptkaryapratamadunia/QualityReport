@@ -25,7 +25,7 @@ import subprocess
 
 st.set_page_config(page_title="Quality Report", page_icon=":bar_chart:", layout="wide")
 
-# Apply dark theme to the entire app
+# Apply dark theme to the entire app start 20March2025
 dark_theme_css = """
 	<style>
 	body {

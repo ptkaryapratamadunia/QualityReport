@@ -1067,7 +1067,7 @@ def cleaning_process(df):
 				name='Insp(B/H)',
 				marker_color='grey',
 				yaxis='y1',
-				text=NG_by_kategori['Insp(B/H)'],
+				text=NG_by_kategori['Insp(B/H)'].apply(lambda x: f'{x:,.0f}'),
 				textposition='outside'  # Position text outside the bars
 			))
 
@@ -1080,7 +1080,7 @@ def cleaning_process(df):
 				marker_color='red',
 				line_color='red',
 				yaxis='y2',
-				text=NG_by_kategori['NG_%'],
+				text=NG_by_kategori['NG_%'].apply(lambda x: f'{x:.2f}'),
 				textposition='top center'  # Position text at the top center of the markers
 			))
 

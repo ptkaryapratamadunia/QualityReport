@@ -1080,7 +1080,7 @@ def cleaning_process(df):
 				marker_color='red',
 				line_color='red',
 				yaxis='y2',
-				text=NG_by_kategori['NG_%'].apply(lambda x: f'<span style="color:red;background-color:yellow;">{x:.2f}</span>'),
+				text=NG_by_kategori['NG_%'].apply(lambda x: f'<span style="color:red;background-color:white;">{x:.2f}</span>'),
 				textposition='top center',
 				hoverinfo='text'
 			))

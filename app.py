@@ -1399,9 +1399,11 @@ def cleaning_process(df):
 
 		st.markdown("---")
 
+		
 		#--------------------------------------
 		#      NG Plating Smallpart by M/C NO.
 		#--------------------------------------
+		#region
 		df.columns = df.columns.str.strip()
 		# Ensure the 'M/C No.' column is of string type
 		df['M/C No.'] = df['M/C No.'].astype(str)
@@ -1464,7 +1466,7 @@ def cleaning_process(df):
 			legend_title_text='by e-WeYe'
 		)
 		st.plotly_chart(fig) # Display the plot
-
+		#endregion
 		#--------------------------------------
 
 		st.markdown("---")

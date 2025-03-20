@@ -1062,7 +1062,7 @@ def cleaning_process(df):
 			fig = make_subplots(rows=1, cols=2)
 
 			# Add traces to the subplots
-			fig.add_trace(go.Bar(x=NG_by_kategori_ng['Kategori'], y=NG_by_kategori_ng['NG_%'], name='NG_%', marker_color='blue'), row=1, col=1)
+			fig.add_trace(go.Bar(x=NG_by_kategori_ng['Kategori'], y=NG_by_kategori_ng['NG_%'], name='NG_%', marker_color='grey'), row=1, col=1)
 			fig.add_trace(go.Bar(x=NG_by_kategori_insp['Kategori'], y=NG_by_kategori_insp['Insp(B/H)'], name='Insp(B/H)', marker_color='green'), row=1, col=2)
 
 			# Update layout for secondary y-axis (optional)

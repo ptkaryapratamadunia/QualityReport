@@ -1094,7 +1094,7 @@ def cleaning_process(df):
 				title='Grafik NG (%) Vs Insp (lot) per Kategori',
 				xaxis=dict(title='Kategori'),
 				yaxis=dict(title='Qty Inspected (lot)', titlefont=dict(color='grey'), tickfont=dict(color='grey')),
-				yaxis2=dict(title='NG (%)', titlefont=dict(color='green'), tickfont=dict(color='green'), overlaying='y', side='right'),
+				yaxis2=dict(title='NG (%)', titlefont=dict(color='red'), tickfont=dict(color='red'), overlaying='y', side='right'),
 				paper_bgcolor='rgba(0,0,0,0)',  # Warna background keseluruhan
 				plot_bgcolor='rgba(0,0,0,0)',   # Warna background area plot
 				legend=dict(

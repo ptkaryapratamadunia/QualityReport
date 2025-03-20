@@ -1397,7 +1397,6 @@ def cleaning_process(df):
 
 		#-------------------------------------------------------
 
-
 		st.markdown("---")
 
 		#--------------------------------------
@@ -1465,6 +1464,8 @@ def cleaning_process(df):
 			legend_title_text='by e-WeYe'
 		)
 		st.plotly_chart(fig) # Display the plot
+
+		#--------------------------------------
 
 		st.markdown("---")
 		

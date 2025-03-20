@@ -1341,9 +1341,8 @@ def cleaning_process(df):
 
 		#kolom lagi untuk grafik NG by Part Name B4 dan R1 only
 		sikir2,sinan2=st.columns(2)
-
-		#sisi kiri Grafik Batang Vertikal by PartName B4
-		with sikir2:
+		
+		with sikir2:	#sisi kiri Grafik Batang Vertikal by PartName B4
 
 			df_byLine=df[df['Line']=='Barrel 4']
 
@@ -1368,9 +1367,8 @@ def cleaning_process(df):
 
 			NG_by_part = NG_by_part.map(format_with_comma)
 			st.write(NG_by_part)
-
-		#sisi kanan Grafik Batang Vertikal by PartName R1	
-		with sinan2:
+			
+		with sinan2:	#sisi kanan Grafik Batang Vertikal by PartName R1
 		
 			#filter df hanya yg tampil sesuai Line yg dipilih
 			df_byLine=df[df['Line']=='Rack 1']
@@ -1406,34 +1404,26 @@ def cleaning_process(df):
 		#      NG Plating Smallpart by M/C NO.
 		#--------------------------------------
 		df.columns = df.columns.str.strip()
-
 		# Ensure the 'M/C No.' column is of string type
 		df['M/C No.'] = df['M/C No.'].astype(str)
-
 		# Apply filter to exclude rows where 'M/C No.' is null, empty, or '00'
 		df_filtered = df[(df['M/C No.'].notnull()) & (df['M/C No.'] != '') & (df['M/C No.'] != '00')]
-
 		# Filter out rows where 'Insp(B/H)' or 'NG_%' is 0
 		df_filtered = df_filtered[(df_filtered['Insp(B/H)'] > 0) & (df_filtered['NG_%'] > 0)]
-
 		pt_MesinNo = pd.pivot_table(df_filtered, 
 							values=['NG_%', 'Insp(B/H)'], 
 							index='M/C No.', 
 							aggfunc={'NG_%': 'mean', 'Insp(B/H)': 'sum'}, 
 							margins=True, 
 							margins_name='Total')
-		# Transpose the pivot table
 		st.write('NG (%) by M/C No. Stamping')
-		pt_MesinNo_transposed = pt_MesinNo.transpose()
+		pt_MesinNo_transposed = pt_MesinNo.transpose() # Transpose the pivot table
 		pt_MesinNo_transposed = pt_MesinNo_transposed.round(2)
 		st.write(pt_MesinNo_transposed)
-
 		# Plotting the graph
 		pt_MesinNo = pt_MesinNo.reset_index()
 		pt_MesinNo = pt_MesinNo[pt_MesinNo['M/C No.'] != 'Total']
-
 		fig = go.Figure()
-
 		# Add Insp(B/H) bar trace
 		fig.add_trace(go.Bar(
 			x=pt_MesinNo['M/C No.'],
@@ -1474,9 +1464,7 @@ def cleaning_process(df):
 			),
 			legend_title_text='by e-WeYe'
 		)
-
-		# Display the plot
-		st.plotly_chart(fig)
+		st.plotly_chart(fig) # Display the plot
 
 		st.markdown("---")
 		

@@ -1453,7 +1453,7 @@ def cleaning_process(df):
 			marker_color='red',
 			line_color='red',
 			yaxis='y2',
-			text=pt_MesinNo['NG_%'].apply(lambda x: f'{x:.2f}'),
+			text=pt_MesinNo['NG_%'].apply(lambda x: f'<span style="color:red;">{x:.2f}</span>'),
 			textposition='top center',
 			hoverinfo='text'
 		))

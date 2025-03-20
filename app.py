@@ -1411,20 +1411,24 @@ def cleaning_process(df):
 		df['M/C No.'] = df['M/C No.'].astype(str)
 
 		# Apply filter to exclude rows where 'M/C No.' is null, empty, or '00'
-		df_filtered = df[(df['M/C No.'].notnull()) & (df['M/C No.'] != '') & (df['M/C No.'] != '00')]	
+		df_filtered = df[(df['M/C No.'].notnull()) & (df['M/C No.'] != '') & (df['M/C No.'] != '00')]
+
+		# Filter out rows where 'Insp(B/H)' or 'NG_%' is 0
+		df_filtered = df_filtered[(df_filtered['Insp(B/H)'] > 0) & (df_filtered['NG_%'] > 0)]
+
 		pt_MesinNo = pd.pivot_table(df_filtered, 
-                            values=['NG_%', 'Insp(B/H)'], 
-                            index='M/C No.', 
-                            aggfunc={'NG_%': 'mean', 'Insp(B/H)': 'sum'}, 
-                            margins=True, 
-                            margins_name='Total')
+							values=['NG_%', 'Insp(B/H)'], 
+							index='M/C No.', 
+							aggfunc={'NG_%': 'mean', 'Insp(B/H)': 'sum'}, 
+							margins=True, 
+							margins_name='Total')
 		# Transpose the pivot table
 		st.write('NG (%) by M/C No. Stamping')
 		pt_MesinNo_transposed = pt_MesinNo.transpose()
-		pt_MesinNo_transposed=pt_MesinNo_transposed.round(2)
+		pt_MesinNo_transposed = pt_MesinNo_transposed.round(2)
 		st.write(pt_MesinNo_transposed)
 
-				# Plotting the graph
+		# Plotting the graph
 		pt_MesinNo = pt_MesinNo.reset_index()
 		pt_MesinNo = pt_MesinNo[pt_MesinNo['M/C No.'] != 'Total']
 
@@ -1457,7 +1461,7 @@ def cleaning_process(df):
 		# Customize layout
 		fig.update_layout(
 			title='Grafik NG (%) Vs Insp (B/H) per M/C No.',
-			xaxis=dict(title='M/C No.', tickmode='linear'),
+			xaxis=dict(title='M/C No.', tickmode='linear', type='category'),
 			yaxis=dict(title='Qty Inspected (B/H)', titlefont=dict(color='green'), tickfont=dict(color='green')),
 			yaxis2=dict(title='NG (%)', titlefont=dict(color='red'), tickfont=dict(color='red'), overlaying='y', side='right'),
 			paper_bgcolor='rgba(0,0,0,0)',  # Warna background keseluruhan

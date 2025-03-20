@@ -1066,7 +1066,9 @@ def cleaning_process(df):
 				y=NG_by_kategori['Insp(B/H)'],
 				name='Insp(B/H)',
 				marker_color='grey',
-				yaxis='y1'
+				yaxis='y1',
+				text=NG_by_kategori['Insp(B/H)'],
+				textposition='outside'  # Position text outside the bars
 			))
 
 			# Add NG_% line trace
@@ -1074,10 +1076,12 @@ def cleaning_process(df):
 				x=NG_by_kategori['Kategori'],
 				y=NG_by_kategori['NG_%'],
 				name='NG_%',
-				mode='lines+markers',
-				marker_color='green',
-				line_color='green',
-				yaxis='y2'
+				mode='lines+markers+text',
+				marker_color='red',
+				line_color='red',
+				yaxis='y2',
+				text=NG_by_kategori['NG_%'],
+				textposition='top center'  # Position text at the top center of the markers
 			))
 
 			# Customize layout

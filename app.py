@@ -1413,18 +1413,18 @@ def cleaning_process(df):
 		# Apply filter to exclude rows where 'M/C No.' is null, empty, or '00'
 		df_filtered = df[(df['M/C No.'].notnull()) & (df['M/C No.'] != '') & (df['M/C No.'] != '00')]	
 		pt_MesinNo = pd.pivot_table(df_filtered, 
-							values=['NG_%', 'Insp(B/H)'], 
-							index='M/C No.', 
-							aggfunc={'NG_%': 'mean', 'Insp(B/H)': 'sum'}, 
-							margins=True, 
-							margins_name='Total')
+                            values=['NG_%', 'Insp(B/H)'], 
+                            index='M/C No.', 
+                            aggfunc={'NG_%': 'mean', 'Insp(B/H)': 'sum'}, 
+                            margins=True, 
+                            margins_name='Total')
 		# Transpose the pivot table
 		st.write('NG (%) by M/C No. Stamping')
 		pt_MesinNo_transposed = pt_MesinNo.transpose()
 		pt_MesinNo_transposed=pt_MesinNo_transposed.round(2)
 		st.write(pt_MesinNo_transposed)
 
-		# Plotting the graph
+				# Plotting the graph
 		pt_MesinNo = pt_MesinNo.reset_index()
 		pt_MesinNo = pt_MesinNo[pt_MesinNo['M/C No.'] != 'Total']
 
@@ -1475,8 +1475,7 @@ def cleaning_process(df):
 		st.plotly_chart(fig)
 
 		st.markdown("---")
-
-
+		
 
 		st.markdown("""<h3 style="color:Brown">DEFINISI</h3>""", unsafe_allow_html=True)
 		st.markdown("""<p style="margin-top:-10px;margin-bottom:0px;font-size:14px">Definisi satuan dalam aplikasi ini:<br><br>

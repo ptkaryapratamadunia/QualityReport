@@ -1462,61 +1462,65 @@ def cleaning_process(df):
 		df_filtered = df[(df['M/C No.'].notnull()) & (df['M/C No.'] != '') & (df['M/C No.'] != '00')]
 		# Filter out rows where 'Insp(B/H)' or 'NG_%' is 0
 		df_filtered = df_filtered[(df_filtered['Insp(B/H)'] > 0) & (df_filtered['NG_%'] > 0)]
-		pt_MesinNo = pd.pivot_table(df_filtered, 
-							values=['NG_%', 'Insp(B/H)'], 
-							index='M/C No.', 
-							aggfunc={'NG_%': 'mean', 'Insp(B/H)': 'sum'}, 
-							margins=True, 
-							margins_name='Total')
-		st.write('NG (%) by M/C No. Stamping')
-		pt_MesinNo_transposed = pt_MesinNo.transpose() # Transpose the pivot table
-		pt_MesinNo_transposed = pt_MesinNo_transposed.round(2)
-		st.write(pt_MesinNo_transposed)
-		# Plotting the graph
-		pt_MesinNo = pt_MesinNo.reset_index()
-		pt_MesinNo = pt_MesinNo[pt_MesinNo['M/C No.'] != 'Total']
-		fig = go.Figure()
-		# Add Insp(B/H) bar trace
-		fig.add_trace(go.Bar(
-			x=pt_MesinNo['M/C No.'],
-			y=pt_MesinNo['Insp(B/H)'],
-			name='Insp(B/H)',
-			marker_color='green',
-			text=pt_MesinNo['Insp(B/H)'].apply(lambda x: f'{x:,.0f}'),
-			textposition='outside'
-		))
+		
+		if df_filtered.empty:
+			st.warning('Data M/C No. tidak tersedia')
+		else:
+			pt_MesinNo = pd.pivot_table(df_filtered, 
+								values=['NG_%', 'Insp(B/H)'], 
+								index='M/C No.', 
+								aggfunc={'NG_%': 'mean', 'Insp(B/H)': 'sum'}, 
+								margins=True, 
+								margins_name='Total')
+			st.write('NG (%) by M/C No. Stamping')
+			pt_MesinNo_transposed = pt_MesinNo.transpose() # Transpose the pivot table
+			pt_MesinNo_transposed = pt_MesinNo_transposed.round(2)
+			st.write(pt_MesinNo_transposed)
+			# Plotting the graph
+			pt_MesinNo = pt_MesinNo.reset_index()
+			pt_MesinNo = pt_MesinNo[pt_MesinNo['M/C No.'] != 'Total']
+			fig = go.Figure()
+			# Add Insp(B/H) bar trace
+			fig.add_trace(go.Bar(
+				x=pt_MesinNo['M/C No.'],
+				y=pt_MesinNo['Insp(B/H)'],
+				name='Insp(B/H)',
+				marker_color='green',
+				text=pt_MesinNo['Insp(B/H)'].apply(lambda x: f'{x:,.0f}'),
+				textposition='outside'
+			))
 
-		# Add NG_% line trace
-		fig.add_trace(go.Scatter(
-			x=pt_MesinNo['M/C No.'],
-			y=pt_MesinNo['NG_%'],
-			name='NG_%',
-			mode='lines+markers+text',
-			marker_color='red',
-			line_color='red',
-			yaxis='y2',
-			text=pt_MesinNo['NG_%'].apply(lambda x: f'<span style="color:red;">{x:.2f}</span>'),
-			textposition='top center',
-			hoverinfo='text'
-		))
+			# Add NG_% line trace
+			fig.add_trace(go.Scatter(
+				x=pt_MesinNo['M/C No.'],
+				y=pt_MesinNo['NG_%'],
+				name='NG_%',
+				mode='lines+markers+text',
+				marker_color='red',
+				line_color='red',
+				yaxis='y2',
+				text=pt_MesinNo['NG_%'].apply(lambda x: f'<span style="color:red;">{x:.2f}</span>'),
+				textposition='top center',
+				hoverinfo='text'
+			))
 
-		# Customize layout
-		fig.update_layout(
-			title='Grafik NG (%) Vs Insp (B/H) per M/C No.',
-			xaxis=dict(title='M/C No.', tickmode='linear', type='category'),
-			yaxis=dict(title='Qty Inspected (B/H)', titlefont=dict(color='green'), tickfont=dict(color='green')),
-			yaxis2=dict(title='NG (%)', titlefont=dict(color='red'), tickfont=dict(color='red'), overlaying='y', side='right'),
-			paper_bgcolor='rgba(0,0,0,0)',  # Warna background keseluruhan
-			plot_bgcolor='rgba(0,0,0,0)',   # Warna background area plot
-			legend=dict(
-				yanchor="top",
-				y=-0.2,  # Posisi vertikal di bawah sumbu X
-				xanchor="center",
-				x=0.5   # Posisi horizontal di tengah
-			),
-			legend_title_text='by e-WeYe'
-		)
-		st.plotly_chart(fig) # Display the plot
+			# Customize layout
+			fig.update_layout(
+				title='Grafik NG (%) Vs Insp (B/H) per M/C No.',
+				xaxis=dict(title='M/C No.', tickmode='linear', type='category'),
+				yaxis=dict(title='Qty Inspected (B/H)', titlefont=dict(color='green'), tickfont=dict(color='green')),
+				yaxis2=dict(title='NG (%)', titlefont=dict(color='red'), tickfont=dict(color='red'), overlaying='y', side='right'),
+				paper_bgcolor='rgba(0,0,0,0)',  # Warna background keseluruhan
+				plot_bgcolor='rgba(0,0,0,0)',   # Warna background area plot
+				legend=dict(
+					yanchor="top",
+					y=-0.2,  # Posisi vertikal di bawah sumbu X
+					xanchor="center",
+					x=0.5   # Posisi horizontal di tengah
+				),
+				legend_title_text='by e-WeYe'
+			)
+			st.plotly_chart(fig) # Display the plot
 		#endregion
 		#--------------------------------------
 

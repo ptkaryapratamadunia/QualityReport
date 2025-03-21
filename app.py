@@ -26,44 +26,44 @@ import subprocess
 st.set_page_config(page_title="Quality Report", page_icon=":bar_chart:", layout="wide")
 
 # Apply dark theme to the entire app start 20March2025
-dark_theme_css = """
-	<style>
-	body {
-		background-color: #121212;
-		color: #e0e0e0;
-	}
-	.stApp {
-		background-color: #121212;
-		color: #e0e0e0;
-	}
-	.stButton button {
-		background-color: #333;
-		color: #e0e0e0;
-	}
-	.stTextInput input {
-		background-color: #333;
-		color: #e0e0e0;
-	}
-	.stSelectbox select {
-		background-color: #333;
-		color: #e0e0e0;
-	}
-	.stDataFrame {
-		background-color: #333;
-		color: #e0e0e0;
-	}
-	.stMarkdown {
-		color: #e0e0e0;
-	}
-	.stMetric {
-		color: #e0e0e0;
-	}
-	.stPlotlyChart {
-		background-color: #121212;
-	}
-	</style>
-"""
-st.markdown(dark_theme_css, unsafe_allow_html=True)
+# dark_theme_css = """
+# 	<style>
+# 	body {
+# 		background-color: #121212;
+# 		color: #e0e0e0;
+# 	}
+# 	.stApp {
+# 		background-color: #121212;
+# 		color: #e0e0e0;
+# 	}
+# 	.stButton button {
+# 		background-color: #333;
+# 		color: #e0e0e0;
+# 	}
+# 	.stTextInput input {
+# 		background-color: #333;
+# 		color: #e0e0e0;
+# 	}
+# 	.stSelectbox select {
+# 		background-color: #333;
+# 		color: #e0e0e0;
+# 	}
+# 	.stDataFrame {
+# 		background-color: #333;
+# 		color: #e0e0e0;
+# 	}
+# 	.stMarkdown {
+# 		color: #e0e0e0;
+# 	}
+# 	.stMetric {
+# 		color: #e0e0e0;
+# 	}
+# 	.stPlotlyChart {
+# 		background-color: #121212;
+# 	}
+# 	</style>
+# """
+# st.markdown(dark_theme_css, unsafe_allow_html=True)
 
 # Fungsi untuk mengubah gambar menjadi base64
 def get_image_as_base64(image_path):
@@ -1663,7 +1663,8 @@ def main():
 		# Gabungkan dengan nama file
 		file_path = os.path.join(current_dir, "file_arsip.csv")
 		# Simpan file
-		df.to_csv(file_path, index=False)
+		#if 'df' in locals():
+			#df.to_csv(file_path, index=False)
 		# with open(file_path, 'w+') as f:
 		# 	f.write()
 		# st.success("File_arsip.csv berhasil disimpan!")

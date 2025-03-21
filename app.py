@@ -1648,27 +1648,12 @@ def main():
 
 		if dfs:
 			df = pd.concat(dfs, ignore_index=True)
-			# st.subheader("Data yang Terunggah dan Digabungkan:")
-			# st.dataframe(df)
-
-	#yg tdk aktif ini single file yg diupload: dan sudah dihapus 18Mar2025 diganti kode di atas untuk multi file
-	# if uploaded_file is not None:
-	# 	# 	# Read the file
-	# 	if uploaded_file.name.endswith('.xls'):
-	# 		df = pd.read_excel(uploaded_file, engine='xlrd')
-	# 	elif uploaded_file.name.endswith('.xlsx'):
-	# 		df = pd.read_excel(uploaded_file, engine='openpyxl')
-	# 	elif uploaded_file.name.endswith('.csv'):
-	# 		df = pd.read_csv(uploaded_file)
-	# 	else:
-	# 		raise ValueError("File harus memiliki ekstensi .xls, .xlsx, atau .csv")
-
-	
+			
 		#------- simpan arsip file #sistem simpan baru, dicoba ken simpan model di atas tsb tidak efektif
 		# Dapatkan direktori tempat file Python ini berada, improved 13Nov2024
-		current_dir = os.path.dirname(os.path.abspath(__file__))
+		# current_dir = os.path.dirname(os.path.abspath(__file__))
 		# Gabungkan dengan nama file
-		file_path = os.path.join(current_dir, "file_arsip.csv")
+		# file_path = os.path.join(current_dir, "file_arsip.csv")
 		# Simpan file
 		#if 'df' in locals():
 			#df.to_csv(file_path, index=False)
@@ -1678,7 +1663,7 @@ def main():
 		
 		st.success("File berhasil di-upload dan langsung diproses Cleaning.")
 
-		df = pd.read_csv(file_path)
+		# df = pd.read_csv(file_path)
 
 		df=data_tanggal(df)
 

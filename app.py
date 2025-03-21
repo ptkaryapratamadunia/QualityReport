@@ -716,119 +716,126 @@ def cleaning_process(df):
 		chart_kiri,chart_kanan=st.columns(2)	#added 19March2025 08.59PM @home 
 		with chart_kiri: #Grafik NG% & Qty Inspected by Month - Barrel 4
 			# Filter data for Line 'Barrel 4'
-			df_barrel4 = df[df['Line'] == 'Barrel 4']
+			if 'Barrel 4' in df['Line'].unique():
+				df_barrel4 = df[df['Line'] == 'Barrel 4']
 
-			# Menggambar grafik batang
-			data_grafik = pd.pivot_table(df_barrel4, values='NG_%', index='Date', aggfunc='mean').reset_index()
-			data_grafik['Date'] = pd.to_datetime(data_grafik['Date'], format='%b-%Y')
-			data_grafik = data_grafik.sort_values(by='Date')
-			data_grafik['Date'] = data_grafik['Date'].dt.strftime('%b-%Y')
+				# Menggambar grafik batang
+				data_grafik = pd.pivot_table(df_barrel4, values='NG_%', index='Date', aggfunc='mean').reset_index()
+				data_grafik['Date'] = pd.to_datetime(data_grafik['Date'], format='%b-%Y')
+				data_grafik = data_grafik.sort_values(by='Date')
+				data_grafik['Date'] = data_grafik['Date'].dt.strftime('%b-%Y')
 
-			data_grafik2 = pd.pivot_table(df_barrel4, values='Insp(B/H)', index='Date', aggfunc='sum').reset_index()
-			data_grafik2['Date'] = pd.to_datetime(data_grafik2['Date'], format='%b-%Y')
-			data_grafik2 = data_grafik2.sort_values(by='Date')
-			data_grafik2['Date'] = data_grafik2['Date'].dt.strftime('%b-%Y')
+				data_grafik2 = pd.pivot_table(df_barrel4, values='Insp(B/H)', index='Date', aggfunc='sum').reset_index()
+				data_grafik2['Date'] = pd.to_datetime(data_grafik2['Date'], format='%b-%Y')
+				data_grafik2 = data_grafik2.sort_values(by='Date')
+				data_grafik2['Date'] = data_grafik2['Date'].dt.strftime('%b-%Y')
 
-			# Create a figure with one subplot
-			fig = go.Figure()
+				# Create a figure with one subplot
+				fig = go.Figure()
 
-			# Add NG_% bar trace
-			fig.add_trace(go.Scatter(
-				x=data_grafik['Date'],
-				y=data_grafik['NG_%'],
-				name='NG_%',
-				mode='lines+markers',  # Combine line and markers
-				marker_color='blue',
-				line_color='blue',   # Set line color explicitly
-				yaxis='y2'
-			))
+				# Add NG_% bar trace
+				fig.add_trace(go.Scatter(
+					x=data_grafik['Date'],
+					y=data_grafik['NG_%'],
+					name='NG_%',
+					mode='lines+markers',  # Combine line and markers
+					marker_color='blue',
+					line_color='blue',   # Set line color explicitly
+					yaxis='y2'
+				))
 
-			# Add Insp(B/H) line trace (overlay on same y-axis)
-			fig.add_trace(go.Bar(  # Use Scatter for line chart
-				x=data_grafik2['Date'],
-				y=data_grafik2['Insp(B/H)'],
-				name='Insp(B/H)',
-				marker_color='Yellow',
-			))
+				# Add Insp(B/H) line trace (overlay on same y-axis)
+				fig.add_trace(go.Bar(  # Use Scatter for line chart
+					x=data_grafik2['Date'],
+					y=data_grafik2['Insp(B/H)'],
+					name='Insp(B/H)',
+					marker_color='Yellow',
+				))
 
-			# Customize layout
-			fig.update_layout(
+				# Customize layout
+				fig.update_layout(
+					
+				title='Grafik NG% & Qty Inspected by Month - Barrel 4',
+				xaxis=dict(title='Month', type='category'),
+				yaxis=dict(title='Qty Inspected (pcs)', titlefont=dict(color='yellow'), tickfont=dict(color='yellow')),
+				yaxis2=dict(title='NG%', titlefont=dict(color='blue'), tickfont=dict(color='blue'), overlaying='y', side='right', anchor='x'),
+					paper_bgcolor='rgba(0,0,0,0)',      # Warna background keseluruhan
+					plot_bgcolor='rgba(0,0,0,0)',       # Warna background area plot
+					legend=dict(
+						yanchor="top",
+						y=-0.2,  # Posisi vertikal di bawah sumbu X
+						xanchor="center",
+						x=0.5   # Posisi horizontal di tengah
+					),
+					legend_title_text='Metric'
 				
-			title='Grafik NG% & Qty Inspected by Month - Barrel 4',
-			xaxis=dict(title='Month', type='category'),
-			yaxis=dict(title='Qty Inspected (pcs)', titlefont=dict(color='yellow'), tickfont=dict(color='yellow')),
-			yaxis2=dict(title='NG%', titlefont=dict(color='blue'), tickfont=dict(color='blue'), overlaying='y', side='right', anchor='x'),
-				paper_bgcolor='rgba(0,0,0,0)',      # Warna background keseluruhan
-				plot_bgcolor='rgba(0,0,0,0)',       # Warna background area plot
-				legend=dict(
-					yanchor="top",
-					y=-0.2,  # Posisi vertikal di bawah sumbu X
-					xanchor="center",
-					x=0.5   # Posisi horizontal di tengah
-				),
-				legend_title_text='Metric'
-			
-			)
-			# Display the plot
-			st.plotly_chart(fig)
+				)
+				# Display the plot
+				st.plotly_chart(fig)
+			else:
+				st.warning('Data Line Barrel 4 tidak tersedia')
 
 		with chart_kanan: #Grafik NG% & Qty Inspected by Month - Rack 1
-			# Filter data for Line 'Rack 1'
-			df_rack1 = df[df['Line'] == 'Rack 1']
-
-			# Menggambar grafik batang
-			data_grafik = pd.pivot_table(df_rack1, values='NG_%', index='Date', aggfunc='mean').reset_index()
-			data_grafik['Date'] = pd.to_datetime(data_grafik['Date'], format='%b-%Y')
-			data_grafik = data_grafik.sort_values(by='Date')
-			data_grafik['Date'] = data_grafik['Date'].dt.strftime('%b-%Y')
-
-			data_grafik2 = pd.pivot_table(df_rack1, values='Insp(B/H)', index='Date', aggfunc='sum').reset_index()
-			data_grafik2['Date'] = pd.to_datetime(data_grafik2['Date'], format='%b-%Y')
-			data_grafik2 = data_grafik2.sort_values(by='Date')
-			data_grafik2['Date'] = data_grafik2['Date'].dt.strftime('%b-%Y')
-
-			# Create a figure with one subplot
-			fig = go.Figure()
-
-			# Add NG_% bar trace
-			fig.add_trace(go.Scatter(
-				x=data_grafik['Date'],
-				y=data_grafik['NG_%'],
-				name='NG_%',
-				mode='lines+markers',  # Combine line and markers
-				marker_color='green',
-				line_color='green',   # Set line color explicitly
-				yaxis='y2'
-			))
-
-			# Add Insp(B/H) line trace (overlay on same y-axis)
-			fig.add_trace(go.Bar(  # Use Scatter for line chart
-				x=data_grafik2['Date'],
-				y=data_grafik2['Insp(B/H)'],
-				name='Insp(B/H)',
-				marker_color='blue',
-			))
-
-			# Customize layout
-			fig.update_layout(
-				
-			title='Grafik NG% & Qty Inspected by Month - Rack 1',
-			xaxis=dict(title='Month', type='category'),
-			yaxis=dict(title='Qty Inspected (pcs)', titlefont=dict(color='blue'), tickfont=dict(color='blue')),
-			yaxis2=dict(title='NG%', titlefont=dict(color='green'), tickfont=dict(color='green'), overlaying='y', side='right', anchor='x'),
-				paper_bgcolor='rgba(0,0,0,0)',      # Warna background keseluruhan
-				plot_bgcolor='rgba(0,0,0,0)',       # Warna background area plot
-				legend=dict(
-					yanchor="top",
-					y=-0.2,  # Posisi vertikal di bawah sumbu X
-					xanchor="center",
-					x=0.5   # Posisi horizontal di tengah
-				),
-				legend_title_text='Metric'
 			
-			)
-			# Display the plot
-			st.plotly_chart(fig)
+			# Filter data for Line 'Rack 1'
+			if 'Rack 1' in df['Line'].unique():
+				df_rack1 = df[df['Line'] == 'Rack 1']
+
+				# Menggambar grafik batang
+				data_grafik = pd.pivot_table(df_rack1, values='NG_%', index='Date', aggfunc='mean').reset_index()
+				data_grafik['Date'] = pd.to_datetime(data_grafik['Date'], format='%b-%Y')
+				data_grafik = data_grafik.sort_values(by='Date')
+				data_grafik['Date'] = data_grafik['Date'].dt.strftime('%b-%Y')
+
+				data_grafik2 = pd.pivot_table(df_rack1, values='Insp(B/H)', index='Date', aggfunc='sum').reset_index()
+				data_grafik2['Date'] = pd.to_datetime(data_grafik2['Date'], format='%b-%Y')
+				data_grafik2 = data_grafik2.sort_values(by='Date')
+				data_grafik2['Date'] = data_grafik2['Date'].dt.strftime('%b-%Y')
+
+				# Create a figure with one subplot
+				fig = go.Figure()
+
+				# Add NG_% bar trace
+				fig.add_trace(go.Scatter(
+					x=data_grafik['Date'],
+					y=data_grafik['NG_%'],
+					name='NG_%',
+					mode='lines+markers',  # Combine line and markers
+					marker_color='green',
+					line_color='green',   # Set line color explicitly
+					yaxis='y2'
+				))
+
+				# Add Insp(B/H) line trace (overlay on same y-axis)
+				fig.add_trace(go.Bar(  # Use Scatter for line chart
+					x=data_grafik2['Date'],
+					y=data_grafik2['Insp(B/H)'],
+					name='Insp(B/H)',
+					marker_color='blue',
+				))
+
+				# Customize layout
+				fig.update_layout(
+					
+				title='Grafik NG% & Qty Inspected by Month - Rack 1',
+				xaxis=dict(title='Month', type='category'),
+				yaxis=dict(title='Qty Inspected (pcs)', titlefont=dict(color='blue'), tickfont=dict(color='blue')),
+				yaxis2=dict(title='NG%', titlefont=dict(color='green'), tickfont=dict(color='green'), overlaying='y', side='right', anchor='x'),
+					paper_bgcolor='rgba(0,0,0,0)',      # Warna background keseluruhan
+					plot_bgcolor='rgba(0,0,0,0)',       # Warna background area plot
+					legend=dict(
+						yanchor="top",
+						y=-0.2,  # Posisi vertikal di bawah sumbu X
+						xanchor="center",
+						x=0.5   # Posisi horizontal di tengah
+					),
+					legend_title_text='Metric'
+				
+				)
+				# Display the plot
+				st.plotly_chart(fig)
+			else:
+				st.warning('Data Line Rack 1 tidak tersedia')
 
 		#grafik PIE ----------------------
 

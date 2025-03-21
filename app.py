@@ -1464,7 +1464,7 @@ def cleaning_process(df):
 		df_filtered = df_filtered[(df_filtered['Insp(B/H)'] > 0) & (df_filtered['NG_%'] > 0)]
 		
 		if df_filtered.empty:
-			st.warning('Data M/C No. tidak tersedia')
+			st.warning('Data M/C No. tidak tersedia, karena data Barrel 4 juga tidak tersedia.')
 		else:
 			pt_MesinNo = pd.pivot_table(df_filtered, 
 								values=['NG_%', 'Insp(B/H)'], 
@@ -1672,6 +1672,42 @@ def main():
 		df=data_tanggal(df)
 
 		df=cleaning_process(df)
+
+		# Floating button to scroll to the top
+		st.markdown("""
+			<style>
+			#scrollToTopButton {
+				position: fixed;
+				bottom: 50px;
+				right: 50px;
+				background-color: #4CAF50;
+				color: white;
+				border: none;
+				border-radius: 50%;
+				width: 50px;
+				height: 50px;
+				font-size: 24px;
+				cursor: pointer;
+				z-index: 1000;
+			}
+			#scrollToHomeButton {
+				position: fixed;
+				bottom: 110px;
+				right: 50px;
+				background-color: #4CAF50;
+				color: white;
+				border: none;
+				border-radius: 50%;
+				width: 50px;
+				height: 50px;
+				font-size: 24px;
+				cursor: pointer;
+				z-index: 1000;
+			}
+			</style>
+			<button id="scrollToTopButton" onclick="window.scrollTo({top: 0, behavior: 'smooth'});">^</button>
+			<button id="scrollToHomeButton" onclick="window.scrollTo({top: 0, behavior: 'smooth'});">[.]</button>
+			""", unsafe_allow_html=True)
 
 		show_footer()
 

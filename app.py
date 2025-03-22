@@ -191,7 +191,7 @@ def show_footer():
 	with kaki_kanan:
 		st.write("")
 
-def simpan_file(data):
+# def simpan_file(data):
     # Dapatkan direktori tempat file Python ini berada, improved 13Nov2024
     # current_dir = os.path.dirname(os.path.abspath(__file__))
     # Gabungkan dengan nama file
@@ -215,6 +215,7 @@ def data_tanggal(df):
 			sampai Tanggal : {tanggal_termuda}
 			""")
 	return df
+
 
 #---START CLEANING ---------
 

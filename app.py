@@ -80,7 +80,7 @@ with kolkir:
 			 oleh karena itu perlu dilakukan proses cleaning, seperti mengkonversi data TEXT menjadi angka,\
 			 konversi type NG ABCDSEFGIJKLMN menjadi definisi type NG, mengekstrasi data Nomer Jig\
 		  	 menjadi Nomer Mesin Smallpart, menghapus kolom yang tidak perlu\
-			 dan menambah kolom yang diperlukan,dll. <br> Menjadi sangat efisien karena sudah disediakan juga\
+			 dan menambah kolom yang diperlukan,dll. <br> Menjadi sangat efisien karena pada Tools ini sudah disediakan juga\
 		  	 Summary Report berupa Tabel dan Grafik yang siap digunakan untuk analisa dan pengambilan keputusan.<br>\
 		  	 <span style="color:Blue">Disclaimer: <span> <br>Tools ini dapat dijalankan hanya jika sumber file nya adalah hasil ekspor dari program\
 		     Autocon QC yang lengkap dan file original belum diedit\

@@ -1669,9 +1669,11 @@ def main():
 
 		# df = pd.read_csv(file_path)
 
-		df=data_tanggal(df)
+		if 'df' in locals():
+			df = data_tanggal(df)
 
-		df=cleaning_process(df)
+		if 'df' in locals():
+			df=cleaning_process(df)
 
 		# Floating button to scroll to the top
 		st.markdown("""
@@ -1707,6 +1709,14 @@ def main():
 			</style>
 			<button id="scrollToTopButton" onclick="window.scrollTo({top: 0, behavior: 'smooth'});">^</button>
 			<button id="scrollToHomeButton" onclick="window.scrollTo({top: 0, behavior: 'smooth'});">[.]</button>
+			<script>
+				document.getElementById("scrollToTopButton").onclick = function() {
+					window.scrollTo({top: 0, behavior: 'smooth'});
+				};
+				document.getElementById("scrollToHomeButton").onclick = function() {
+					window.scrollTo({top: 0, behavior: 'smooth'});
+				};
+			</script>
 			""", unsafe_allow_html=True)
 
 		show_footer()

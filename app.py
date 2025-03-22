@@ -1712,7 +1712,7 @@ def main():
 			""", unsafe_allow_html=True)
 
 		# Add JavaScript for button functionality
-		st.components.v1.html("""
+		components.html("""
 			<script>
 				document.getElementById("scrollToTopButton").onclick = function() {
 					window.scrollTo({top: 0, behavior: 'smooth'});

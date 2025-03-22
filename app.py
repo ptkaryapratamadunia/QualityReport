@@ -1708,8 +1708,11 @@ def main():
 			}
 			</style>
 			<button id="scrollToTopButton" onclick="window.scrollTo({top: 0, behavior: 'smooth'});">^</button>
-    <button id="scrollToHomeButton" onclick="window.scrollTo({top: 0, behavior: 'smooth'});">[.]</button>
+			<button id="scrollToHomeButton" onclick="window.scrollTo({top: 0, behavior: 'smooth'});">[.]</button>
 		""", unsafe_allow_html=True)
+
+
+
 
 		show_footer()
 
@@ -1736,8 +1739,8 @@ def main():
 	else:
 		st.error("Menunggu file diupload....")
 
-if __name__ == "__main__":
-	main()
+	if __name__ == "__main__":
+		main()
 	
 	# #Nama file yang akan dihapus saat mulai
 	# files_to_delete = ["arsip_file.csv"]
@@ -1791,11 +1794,11 @@ if __name__ == "__main__":
 
 
 # ---- HIDE STREAMLIT STYLE ----
-hide_st_style = """
-            <style>
-            #MainMenu {visibility: hidden;}
-            footer {visibility: hidden;}
-            header {visibility: hidden;}
-            </style>
-            """
-st.markdown(hide_st_style, unsafe_allow_html=True)
+	hide_st_style = """
+	<style>
+	#MainMenu {visibility: hidden;}
+	footer {visibility: hidden;}
+	header {visibility: hidden;}
+	</style>
+	"""
+	st.markdown(hide_st_style, unsafe_allow_html=True)

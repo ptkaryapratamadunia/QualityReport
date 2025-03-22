@@ -1663,8 +1663,9 @@ def main():
 
 		
 		
-		df = data_tanggal(df)
-		df = cleaning_process(df)
+		if 'df' in locals():
+			df = data_tanggal(df)
+			df = cleaning_process(df)
 
 		# Floating button to scroll to the top
 		# st.markdown("""

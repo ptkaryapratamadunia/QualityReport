@@ -86,15 +86,7 @@ with kolkir:
 		  	 <span style="color:Blue">Disclaimer: <span> <br>Tools ini dapat dijalankan hanya jika sumber file nya adalah hasil ekspor dari program\
 		     Autocon QC yang lengkap dan file original belum diedit\
 			(menghapus dan atau menambah kolom)</p>""", unsafe_allow_html=True)
-	# st.write("Beberapa data output dari aplikasi AUTOCON-KPD belum siap pakai,\
-	# 		 oleh karena itu perlu dilakukan proses cleaning, seperti mengkonversi data TEXT menjadi angka,\
-	# 		 konversi type NG ABCDSEFGIJKLMN menjadi definisi type NG, mengekstrasi data Nomer Jig\
-	# 	  	 menjadi Nomer Mesin SMallpart, menghapus kolom yang tidak perlu\
-	# 		 dan menambah kolom yang diperlukan,dll. Tanpa buang waktu sudah disediakan juga\
-	# 	  	 summary report berupa Table dan Grafik yang siap digunakan untuk analisa dan pengambilan keputusan.\
-	# 	  	 Disclaimer: Tools ini dapat dijalankan hanya jika sumber file nya adalah hasil ekspor dari program\
-	# 	     Autocon QC yang lengkap belum difilter berdasarkan line atau lainnya dan file original belum diedit\
-	# 			(menghapus dan atau menambah kolom)")
+	
 	
 with kolnan:
 	# Adjust the file path based on the current directory
@@ -162,9 +154,7 @@ with kolnan:
 	
 st.markdown("---")	#--------------------------batas akhir styling HEADER -----------------
 
-# Fungsi untuk format angka dengan koma
-# def format_with_comma(value):
-# 	return "{:,.2f}".format(value)
+
 def format_with_comma(value):
 	if isinstance(value, (int, float)):
 		return "{:,.2f}".format(value)
@@ -203,13 +193,13 @@ def show_footer():
 
 def simpan_file(data):
     # Dapatkan direktori tempat file Python ini berada, improved 13Nov2024
-    current_dir = os.path.dirname(os.path.abspath(__file__))
+    # current_dir = os.path.dirname(os.path.abspath(__file__))
     # Gabungkan dengan nama file
-    file_path = os.path.join(current_dir, "file_arsip.csv")
+    # file_path = os.path.join(current_dir, "file_arsip.csv")
     # Simpan file
-    with open(file_path, 'w+') as f:
-        f.write(data)
-    st.success("File_arsip.csv berhasil disimpan!")
+    # with open(file_path, 'w+') as f:
+    #     f.write(data)
+    # st.success("File_arsip.csv berhasil disimpan!")
 
 def data_tanggal(df):
 	df['DocDate'] = pd.to_datetime(df['DocDate'])

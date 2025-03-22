@@ -1667,40 +1667,40 @@ def main():
 		df = cleaning_process(df)
 
 		# Floating button to scroll to the top
-		st.markdown("""
-			<style>
-			#scrollToTopButton {
-				position: fixed;
-				bottom: 50px;
-				right: 50px;
-				background-color: #4CAF50;
-				color: white;
-				border: none;
-				border-radius: 50%;
-				width: 50px;
-				height: 50px;
-				font-size: 24px;
-				cursor: pointer;
-				z-index: 1000;
-			}
-			#scrollToHomeButton {
-				position: fixed;
-				bottom: 110px;
-				right: 50px;
-				background-color: #4CAF50;
-				color: white;
-				border: none;
-				border-radius: 50%;
-				width: 50px;
-				height: 50px;
-				font-size: 24px;
-				cursor: pointer;
-				z-index: 1000;
-			}
-			</style>
-			<button id="scrollToTopButton" onclick="window.scrollTo({top: 0, behavior: 'smooth'});">^</button>
-			<button id="scrollToHomeButton" onclick="window.scrollTo({top: 0, behavior: 'smooth'});">[.]</button>
-		""", unsafe_allow_html=True)
+		# st.markdown("""
+		# 	<style>
+		# 	#scrollToTopButton {
+		# 		position: fixed;
+		# 		bottom: 50px;
+		# 		right: 50px;
+		# 		background-color: #4CAF50;
+		# 		color: white;
+		# 		border: none;
+		# 		border-radius: 50%;
+		# 		width: 50px;
+		# 		height: 50px;
+		# 		font-size: 24px;
+		# 		cursor: pointer;
+		# 		z-index: 1000;
+		# 	}
+		# 	#scrollToHomeButton {
+		# 		position: fixed;
+		# 		bottom: 110px;
+		# 		right: 50px;
+		# 		background-color: #4CAF50;
+		# 		color: white;
+		# 		border: none;
+		# 		border-radius: 50%;
+		# 		width: 50px;
+		# 		height: 50px;
+		# 		font-size: 24px;
+		# 		cursor: pointer;
+		# 		z-index: 1000;
+		# 	}
+		# 	</style>
+		# 	<button id="scrollToTopButton" onclick="window.scrollTo({top: 0, behavior: 'smooth'});">^</button>
+		# 	<button id="scrollToHomeButton" onclick="window.scrollTo({top: 0, behavior: 'smooth'});">[.]</button>
+		# """, unsafe_allow_html=True)
 
 
 
@@ -1708,25 +1708,25 @@ def main():
 		show_footer()
 
 
-# #Main - module yg akan pertama dijalankan - improved @home 03-Nov2024
-# 		try:
-# 			#arsip file yg lalu .csv
+			# #Main - module yg akan pertama dijalankan - improved @home 03-Nov2024
+			# 		try:
+			# 			#arsip file yg lalu .csv
 
-# 			# Dapatkan direktori tempat file Python ini berada, improved 13Nov2024
-# 			current_dir = os.path.dirname(os.path.abspath(__file__))
-# 			# Gabungkan dengan nama file
-# 			file_path = os.path.join(current_dir, "file_arsip.csv")
-# 			# arsip_file= "arsip_file.csv"
-# 			df = pd.read_csv(file_path)
+			# 			# Dapatkan direktori tempat file Python ini berada, improved 13Nov2024
+			# 			current_dir = os.path.dirname(os.path.abspath(__file__))
+			# 			# Gabungkan dengan nama file
+			# 			file_path = os.path.join(current_dir, "file_arsip.csv")
+			# 			# arsip_file= "arsip_file.csv"
+			# 			df = pd.read_csv(file_path)
 
-# 			df=data_tanggal(df)
+			# 			df=data_tanggal(df)
 
-# 			df=cleaning_process(df)
+			# 			df=cleaning_process(df)
 
-# 			show_footer()
-# 		except FileNotFoundError:
-# 			st.error("File arsip tidak ditemukan. Silakan unggah file baru.")	
-# 		return
+			# 			show_footer()
+			# 		except FileNotFoundError:
+			# 			st.error("File arsip tidak ditemukan. Silakan unggah file baru.")	
+			# 		return
 	else:
 		st.error("Menunggu file diupload....")
 

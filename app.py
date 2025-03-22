@@ -1656,7 +1656,7 @@ def main():
 		
 		
 		
-		df = data_tanggal(df)
+		df = data_tanggal(df) # type: ignore
 		df = cleaning_process(df)
 
 		# Floating button to scroll to the top

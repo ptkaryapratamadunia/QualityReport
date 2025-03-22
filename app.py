@@ -6,6 +6,7 @@ from re import X
 from unicodedata import category
 from referencing import Anchor
 import streamlit as st
+import streamlit.components.v1 as components
 import pandas as pd
 import numpy as np
 from streamlit_extras.dataframe_explorer import dataframe_explorer

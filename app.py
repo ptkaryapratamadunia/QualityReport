@@ -1707,8 +1707,8 @@ def main():
 				z-index: 1000;
 			}
 			</style>
-			<button id="scrollToTopButton" onclick="window.scrollTo({top: 0, behavior: 'smooth'});">^</button>
-			<button id="scrollToHomeButton" onclick="window.scrollTo({top: 0, behavior: 'smooth'});">[.]</button>
+			<button id="scrollToTopButton">^</button>
+    <button id="scrollToHomeButton">[.]</button>
 			<script>
 				document.getElementById("scrollToTopButton").onclick = function() {
 					window.scrollTo({top: 0, behavior: 'smooth'});

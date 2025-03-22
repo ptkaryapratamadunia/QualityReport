@@ -1708,7 +1708,10 @@ def main():
 			</style>
 			<button id="scrollToTopButton" onclick="window.scrollTo({top: 0, behavior: 'smooth'});">^</button>
 			<button id="scrollToHomeButton" onclick="window.scrollTo({top: 0, behavior: 'smooth'});">[.]</button>
-			  
+			""", unsafe_allow_html=True)
+
+		# Add JavaScript for button functionality
+		st.components.v1.html("""
 			<script>
 				document.getElementById("scrollToTopButton").onclick = function() {
 					window.scrollTo({top: 0, behavior: 'smooth'});
@@ -1717,7 +1720,7 @@ def main():
 					window.scrollTo({top: 0, behavior: 'smooth'});
 				};
 			</script>
-			""", unsafe_allow_html=True)
+		""")
 
 		show_footer()
 

@@ -1616,12 +1616,12 @@ def cleaning_process(df):
 def main():
 #Main - module yg akan pertama dijalankan - improved @home 03-Nov2024 - dirubah lagi ke model uploaded pertama krn error
 
-	#Nama file yang akan dihapus saat mulai
-	files_to_delete = ["arsip_file.csv"]
-	# Loop melalui setiap file dan hapus jika ada
-	for file in files_to_delete:
-		if os.path.exists(file):
-			os.remove(file)
+	# #Nama file yang akan dihapus saat mulai
+	# files_to_delete = ["arsip_file.csv"]
+	# # Loop melalui setiap file dan hapus jika ada
+	# for file in files_to_delete:
+	# 	if os.path.exists(file):
+	# 		os.remove(file)
 
 	# File uploader
 

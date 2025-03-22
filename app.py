@@ -1,5 +1,5 @@
 # Khusus untuk cleaning data keluaran dari autocon untuk ke Excel, Looker, Tableau dll
-# 03 Oct 2024 start build
+# 03 Oct 2024 start build - dedicated to PT. KPD
 # 08 Oct 2024 start deploy : qualityreportkpd.streamlit.app atau s.id/kpdqualitydatacleaner
 
 from re import X

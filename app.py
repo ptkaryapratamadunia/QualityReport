@@ -1671,9 +1671,9 @@ def main():
 		# df = pd.read_csv(file_path)
 
 		
-		if 'df' in locals():
-			df = data_tanggal(df)
-			df = cleaning_process(df)
+		
+		df = data_tanggal(df)
+		df = cleaning_process(df)
 
 		# Floating button to scroll to the top
 		st.markdown("""

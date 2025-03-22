@@ -1676,7 +1676,7 @@ def main():
 			df = cleaning_process(df)
 
 		# Floating button to scroll to the top
-		st.markdown("""
+		components.html("""
 			<style>
 			#scrollToTopButton {
 				position: fixed;
@@ -1709,10 +1709,6 @@ def main():
 			</style>
 			<button id="scrollToTopButton" onclick="window.scrollTo({top: 0, behavior: 'smooth'});">^</button>
 			<button id="scrollToHomeButton" onclick="window.scrollTo({top: 0, behavior: 'smooth'});">[.]</button>
-			""", unsafe_allow_html=True)
-
-		# Add JavaScript for button functionality
-		components.html("""
 			<script>
 				document.getElementById("scrollToTopButton").onclick = function() {
 					window.scrollTo({top: 0, behavior: 'smooth'});

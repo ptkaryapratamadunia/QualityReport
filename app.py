@@ -6,7 +6,6 @@ from re import X
 from unicodedata import category
 from referencing import Anchor
 import streamlit as st
-import streamlit.components.v1 as components
 import pandas as pd
 import numpy as np
 from streamlit_extras.dataframe_explorer import dataframe_explorer
@@ -1607,13 +1606,6 @@ def cleaning_process(df):
 def main():
 #Main - module yg akan pertama dijalankan - improved @home 03-Nov2024 - dirubah lagi ke model uploaded pertama krn error
 
-	# #Nama file yang akan dihapus saat mulai
-	# files_to_delete = ["arsip_file.csv"]
-	# # Loop melalui setiap file dan hapus jika ada
-	# for file in files_to_delete:
-	# 	if os.path.exists(file):
-	# 		os.remove(file)
-
 	# File uploader
 
 	#Added 18Mar2025 to make this apps more user friendly and globally accessible
@@ -1663,9 +1655,9 @@ def main():
 
 		
 		
-		if 'df' in locals():
-			df = data_tanggal(df)
-			df = cleaning_process(df)
+		
+		df = data_tanggal(df)
+		df = cleaning_process(df)
 
 		# Floating button to scroll to the top
 		# st.markdown("""
@@ -1731,8 +1723,8 @@ def main():
 	else:
 		st.error("Menunggu file diupload....")
 
-	if __name__ == "__main__":
-		main()
+if __name__ == "__main__":
+	main()
 	
 	# #Nama file yang akan dihapus saat mulai
 	# files_to_delete = ["arsip_file.csv"]
@@ -1786,11 +1778,11 @@ def main():
 
 
 # ---- HIDE STREAMLIT STYLE ----
-	hide_st_style = """
-	<style>
-	#MainMenu {visibility: hidden;}
-	footer {visibility: hidden;}
-	header {visibility: hidden;}
-	</style>
-	"""
-	st.markdown(hide_st_style, unsafe_allow_html=True)
+hide_st_style = """
+<style>
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
+</style>
+"""
+st.markdown(hide_st_style, unsafe_allow_html=True)

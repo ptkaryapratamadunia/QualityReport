@@ -210,7 +210,7 @@ def data_tanggal(df):
 	tanggal_termuda = df['DocDate'].max().strftime('%d-%b-%Y')
 
 	st.write(f"""
-			Periode dari Tanggal: {tanggal_tertua}
+			Dari data original yang di-upload berisi data dari periode Tanggal: {tanggal_tertua}
 			sampai Tanggal : {tanggal_termuda}
 			""")
 	return df
@@ -533,6 +533,19 @@ def cleaning_process(df):
 		# -------------------------------------
 		#SUMMARY DATA
 		st.subheader('Summary Data')
+		#---------added 24Mar2025 
+		df3['Date'] = pd.to_datetime(df3['Date'])
+
+		# Tanggal tertua
+		start_date = df3['Date'].min().strftime('%d-%b-%Y')
+
+		# Tanggal termuda
+		end_date = df3['Date'].max().strftime('%d-%b-%Y')
+		st.write(f"""
+		Periode dari Tanggal: {start_date}
+		sampai Tanggal : {end_date}
+		""")
+		#---------
 		kiri,tengah,kanan=st.columns(3)
 		with kiri:	#Table NG (%) by Line & Month
 			st.write('Table NG (%) by Line & Month')
@@ -612,6 +625,7 @@ def cleaning_process(df):
 		grafik_kiri,grafik_kanan=st.columns(2)
 
 		with grafik_kiri: #Grafik NG% & Qty Inspected by Month - 26Nov2024
+			
 			# Menggambar grafik batang
 			data_grafik=pivot_df_bulan_line_grafik.reset_index()
 			data_grafik['Date'] = pd.to_datetime(data_grafik['Date'], format='%b-%Y')
@@ -663,6 +677,8 @@ def cleaning_process(df):
 				legend_title_text='Metric'
 			
 			)
+
+			
 			# Display the plot
 			st.plotly_chart(fig)
 
@@ -703,6 +719,20 @@ def cleaning_process(df):
 			st.plotly_chart(fig)
 
 		st.markdown("---")
+		#---------added 24Mar2025
+			
+		df3['Date'] = pd.to_datetime(df3['Date'])
+
+		# Tanggal tertua
+		start_date = df3['Date'].min().strftime('%d-%b-%Y')
+
+		# Tanggal termuda
+		end_date = df3['Date'].max().strftime('%d-%b-%Y')
+		st.write(f"""
+		Periode dari Tanggal: {start_date}
+		sampai Tanggal : {end_date}
+		""")
+		#---------
 
 		chart_kiri,chart_kanan=st.columns(2)	#added 19March2025 08.59PM @home 
 		with chart_kiri: #Grafik NG% & Qty Inspected by Month - Barrel 4
@@ -870,7 +900,20 @@ def cleaning_process(df):
 
 		st.markdown("---")
 		# ---------------------------------------
+		#---------added 24Mar2025
+			
+		df3['Date'] = pd.to_datetime(df3['Date'])
 
+		# Tanggal tertua
+		start_date = df3['Date'].min().strftime('%d-%b-%Y')
+
+		# Tanggal termuda
+		end_date = df3['Date'].max().strftime('%d-%b-%Y')
+		st.write(f"""
+		Periode dari Tanggal: {start_date}
+		sampai Tanggal : {end_date}
+		""")
+		#---------
 		# Membuat tabel pivot NG by Customer and LINE---------------
 
 		# Pivot table creation for B4
@@ -884,6 +927,7 @@ def cleaning_process(df):
 
 		dew1, dew2=st.columns(2)
 		with dew1: #NG (%) for Barrel 4 by Customer
+			
 			# Check if 'Barrel 4' column exists in the dataframe
 			if 'Barrel 4' in pt_customer_line.columns:
 				# Extract 'Barrel 4' line and exclude 'Total' column
@@ -953,6 +997,7 @@ def cleaning_process(df):
 
 		st.markdown("---")
 		
+
 		sikir,sinan=st.columns(2)
 		#Grafik kolom Qty NG(lot) B4 by Cust.ID Yellow
 		with sikir:
@@ -1003,6 +1048,20 @@ def cleaning_process(df):
 
 		st.markdown("---")
 
+		#---------added 24Mar2025
+			
+		df3['Date'] = pd.to_datetime(df3['Date'])
+
+		# Tanggal tertua
+		start_date = df3['Date'].min().strftime('%d-%b-%Y')
+
+		# Tanggal termuda
+		end_date = df3['Date'].max().strftime('%d-%b-%Y')
+		st.write(f"""
+		Periode dari Tanggal: {start_date}
+		sampai Tanggal : {end_date}
+		""")
+		
 		#--------- pivot Qty Inspected (lot) by Line dan Customer
 		pt_customer_line2=pd.pivot_table(df,values='Insp(B/H)',index='Cust.ID',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
 		# Bulatkan nilai-nilai ke angka bulat terdekat
@@ -1032,6 +1091,9 @@ def cleaning_process(df):
 		chart_kiri, chart_tengah,chart_kanan=st.columns(3)	
 		
 		with chart_kiri:	#Grafik batang Qty NG(%) by Line Grey
+				
+				
+
 				NG_by_Line=(
 						df[["Line","NG_%"]]
 						.groupby(by="Line")
@@ -1144,6 +1206,21 @@ def cleaning_process(df):
 				legend_title_text='Metric'
 			)
 
+			#---------added 24Mar2025
+			
+			df3['Date'] = pd.to_datetime(df3['Date'])
+
+			# Tanggal tertua
+			start_date = df3['Date'].min().strftime('%d-%b-%Y')
+
+			# Tanggal termuda
+			end_date = df3['Date'].max().strftime('%d-%b-%Y')
+			st.write(f"""
+			Periode dari Tanggal: {start_date}
+			sampai Tanggal : {end_date}
+			""")
+			#---------
+			
 			# Display the plot
 			st.plotly_chart(fig)
 		
@@ -1441,7 +1518,20 @@ def cleaning_process(df):
 
 		st.markdown("---")
 
-		
+		#---------added 24Mar2025
+			
+		df3['Date'] = pd.to_datetime(df3['Date'])
+
+		# Tanggal tertua
+		start_date = df3['Date'].min().strftime('%d-%b-%Y')
+
+		# Tanggal termuda
+		end_date = df3['Date'].max().strftime('%d-%b-%Y')
+		st.write(f"""
+		Periode dari Tanggal: {start_date}
+		sampai Tanggal : {end_date}
+		""")
+		#---------
 		#--------------------------------------
 		#      NG Plating Smallpart by M/C NO.
 		#--------------------------------------

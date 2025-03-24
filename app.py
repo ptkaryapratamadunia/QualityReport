@@ -1325,7 +1325,20 @@ def cleaning_process(df):
 
 		st.markdown("---")
 		#groupby dataframe	---------------
+		#---------added 24Mar2025
+			
+		df3['Date'] = pd.to_datetime(df3['Date'])
 
+		# Tanggal tertua
+		start_date = df3['Date'].min().strftime('%d-%b-%Y')
+
+		# Tanggal termuda
+		end_date = df3['Date'].max().strftime('%d-%b-%Y')
+		st.write(f"""
+		Periode dari Tanggal: {start_date}
+		sampai Tanggal : {end_date}
+		""")
+		#---------
 
 		#----------------- JUMLAH KOLOM TYPE NG ----------------
 		# Daftar kolom Jenis NG yang ingin dijumlahkan

@@ -71,11 +71,7 @@ import streamlit as st
 st.markdown(
     """
     <style>
-        body {
-            background-color: #1e1e1e;
-            color: #f0f0f0;
-            position: relative;
-        }
+       
         .floating-button-container {
             position: fixed;
             bottom: 20px;

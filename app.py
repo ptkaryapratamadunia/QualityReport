@@ -65,100 +65,74 @@ st.set_page_config(page_title="Quality Report", page_icon=":bar_chart:", layout=
 # """
 # st.markdown(dark_theme_css, unsafe_allow_html=True)
 
-import streamlit as st
 
-# --- Styling for Dark Background and Floating Buttons ---
-st.markdown(
-    """
-    <style>
-       
-        .floating-button-container {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            z-index: 1000;
-        }
-        .scroll-button {
-            background-color: #333;
-            color: #f0f0f0;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 18px;
-            text-align: center;
-            line-height: 1;
-        }
-        .scroll-button:hover {
-            background-color: #555;
-        }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
+# # --- Floating Buttons ---
+# st.markdown(
+# 	"""
+# 	<style>
+# 		.floating-button-container {
+# 			position: fixed;
+# 			bottom: 20px;
+# 			right: 20px;
+# 			display: flex;
+# 			flex-direction: column;
+# 			gap: 10px;
+# 			z-index: 1000;
+# 		}
+# 		.scroll-button {
+# 			background-color: #333;
+# 			color: #f0f0f0;
+# 			border: none;
+# 			padding: 10px 15px;
+# 			border-radius: 5px;
+# 			cursor: pointer;
+# 			font-size: 18px;
+# 			text-align: center;
+# 			line-height: 1;
+# 		}
+# 		.scroll-button:hover {
+# 			background-color: #555;
+# 		}
+# 	</style>
+# 	<script>
+# 		function scrollUp() {
+# 			window.scrollBy({
+# 				top: -window.innerHeight,
+# 				left: 0,
+# 				behavior: 'smooth'
+# 			});
+# 		}
 
-# --- JavaScript for Scrolling ---
-scroll_script = """
-<script>
-    function scrollUp() {
-        window.scrollBy({
-            top: -window.innerHeight,
-            left: 0,
-            behavior: 'smooth'
-        });
-    }
+# 		function scrollDown() {
+# 			window.scrollBy({
+# 				top: window.innerHeight,
+# 				left: 0,
+# 				behavior: 'smooth'
+# 			});
+# 		}
 
-    function scrollDown() {
-        window.scrollBy({
-            top: window.innerHeight,
-            left: 0,
-            behavior: 'smooth'
-        });
-    }
+# 		function scrollToTop() {
+# 			window.scrollTo({
+# 				top: 0,
+# 				left: 0,
+# 				behavior: 'smooth'
+# 			});
+# 		}
+# 	</script>
+# 	<div class="floating-button-container">
+# 		<button class="scroll-button" onclick="scrollUp()">&#9650;</button>
+# 		<button class="scroll-button" onclick="scrollDown()">&#9660;</button>
+# 		<button class="scroll-button" onclick="scrollToTop()">⬆️</button>
+# 	</div>
+# 	""",
+# 	unsafe_allow_html=True,
+# )
 
-    function scrollToTop() {
-        window.scrollTo({
-            top: 0,
-            left: 0,
-            behavior: 'smooth'
-        });
-    }
-</script>
-"""
-st.markdown(scroll_script, unsafe_allow_html=True)
-
-# --- Floating Buttons ---
-floating_button_container = """
-<div class="floating-button-container">
-    <button class="scroll-button" onclick="scrollUp()">&#9650;</button>
-    <button class="scroll-button" onclick="scrollDown()">&#9660;</button>
-    <button class="scroll-button" onclick="scrollToTop()">[H]</button>
-</div>
-"""
-st.markdown(floating_button_container, unsafe_allow_html=True)
+#Streamlit dan JavaScript : Streamlit secara default tidak mendukung eksekusi JavaScript secara langsung karena alasan keamanan. Oleh karena itu, kita perlu menggunakan parameter unsafe_allow_html=True untuk memungkinkan HTML dan JavaScript dieksekusi. Meskipun demikian, ini hanya akan bekerja jika Streamlit dijalankan di lingkungan lokal atau server yang mendukung rendering JavaScript. Jika Anda menggunakan Streamlit Sharing, Anda tidak akan dapat melihat efek dari kode JavaScript yang dieksekusi.
 
 # --- Your Main Content ---
-st.title("Halaman Utama")
-st.write("Ini adalah bagian atas halaman.")
-st.write("Tambahkan konten halaman pertama Anda di sini.")
-st.divider()
 
-st.header("Bagian Kedua Halaman")
-for i in range(30):
-    st.write(f"Baris konten {i+1} di bagian kedua.")
-st.divider()
 
-st.header("Bagian Ketiga Halaman")
-st.write("Ini adalah bagian akhir halaman.")
-for i in range(15):
-    st.write(f"Konten terakhir baris {i+1}.")
-
-st.info("Ini adalah footer atau bagian bawah halaman.")
-
-# --- End of Floating Buttons ---
 # Fungsi untuk mengubah gambar menjadi base64
 def get_image_as_base64(image_path):
 	with open(image_path, "rb") as img_file:

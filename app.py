@@ -448,7 +448,7 @@ def cleaning_process(df):
 		df.columns = df.columns.str.strip()
 
 		# Daftar nilai yang diizinkan 26.09.2024
-		allowed_values = ['BUSI','SMP','OTH', 'RACK 1', 'NICKEL', 'HDI']
+		allowed_values = ['BUSI','SMP','OTH', 'RACK 1', 'NICKEL', 'HDI','GARMET']
 
 		# Menghapus nilai yang tidak diizinkan
 		df['Kategori'] = df['Kategori'].apply(lambda x: x if x in allowed_values else 'kosong') 
@@ -456,6 +456,7 @@ def cleaning_process(df):
 
 		# Mengisi kolom Kategori yang kosong berdasarkan kondisi
 		df.loc[(df['Line'] == 'Barrel 4') & (df['Cust.ID'] == 'HDI') & (df['Kategori']=='kosong'), 'Kategori'] = 'HDI'
+		df.loc[(df['Line'] == 'Barrel 4') & (df['Cust.ID'] == 'GARMET') & (df['Kategori']=='kosong'), 'Kategori'] = 'GARMET'	#added 11April2025
 		df.loc[(df['Line'] == 'Barrel 4') & (df['Kategori']=='kosong'), 'Kategori'] = 'BUSI'
 		df.loc[(df['Line'] == 'Rack 1') & (df['Kategori']=='kosong'), 'Kategori'] = 'RACK 1'
 		df.loc[(df['Line'] == 'Nickel') & (df['Kategori']=='kosong'), 'Kategori'] = 'NICKEL'

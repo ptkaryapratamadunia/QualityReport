@@ -284,7 +284,7 @@ def data_tanggal(df):
 	return df
 
 
-#---START CLEANING ---------
+#---START CLEANING -------
 
 def cleaning_process(df):
 	#dataframe - script ini untuk filtering model tree

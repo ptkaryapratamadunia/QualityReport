@@ -456,7 +456,7 @@ def cleaning_process(df):
 
 		# Mengisi kolom Kategori yang kosong berdasarkan kondisi
 		df.loc[(df['Line'] == 'Barrel 4') & (df['Cust.ID'] == 'HDI') & (df['Kategori']=='kosong'), 'Kategori'] = 'HDI'
-		df.loc[(df['Line'] == 'Barrel 4') & (df['Cust.ID'] == 'GARMET') & (df['Kategori']=='OTH'), 'Kategori'] = 'GARMET'	#added 11April2025
+		df.loc[(df['Line'] == 'Barrel 4') & (df['Cust.ID'] == 'GARMET') & ((df['Kategori'] == 'OTH') | (df['Kategori'] == 'kosong')), 'Kategori'] = 'GARMET'	#updated condition
 		df.loc[(df['Line'] == 'Barrel 4') & (df['Kategori']=='kosong'), 'Kategori'] = 'BUSI'
 		df.loc[(df['Line'] == 'Rack 1') & (df['Kategori']=='kosong'), 'Kategori'] = 'RACK 1'
 		df.loc[(df['Line'] == 'Nickel') & (df['Kategori']=='kosong'), 'Kategori'] = 'NICKEL'

@@ -211,7 +211,7 @@ with kolnan:
 	with kolkir2:
 		st.write("")
 	with kolnan2:
-		st.markdown('<div style="color:brown;text-align: right;"> Quality Dept. - 2024', unsafe_allow_html=True)
+		st.markdown('<div style="color:brown;text-align: right;"> Quality Dept.', unsafe_allow_html=True)
 		st.markdown("---")
 		link_url_looker='https://lookerstudio.google.com/reporting/c9e60f2f-eacd-4f3e-9126-243e568b98fd'
 		st.link_button('Summary Report',link_url_looker,icon='📊')

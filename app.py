@@ -131,95 +131,168 @@ st.set_page_config(page_title="Quality Report", page_icon=":bar_chart:", layout=
 #Streamlit dan JavaScript : Streamlit secara default tidak mendukung eksekusi JavaScript secara langsung karena alasan keamanan. Oleh karena itu, kita perlu menggunakan parameter unsafe_allow_html=True untuk memungkinkan HTML dan JavaScript dieksekusi. Meskipun demikian, ini hanya akan bekerja jika Streamlit dijalankan di lingkungan lokal atau server yang mendukung rendering JavaScript. Jika Anda menggunakan Streamlit Sharing, Anda tidak akan dapat melihat efek dari kode JavaScript yang dieksekusi.
 
 # --- Your Main Content ---
+# Login Page
+def login_page():
+	st.markdown(
+		"""
+		<style>
+		body {
+			background-color: #2c2c2c;
+		}
+		# .login-container {
+		# 	display: flex;
+		# 	justify-content: center;
+		# 	align-items: center;
+		# 	height: 100vh;
+		# }
+		# .login-form {
+		# 	background-color: #3c3c3c;
+		# 	padding: 20px;
+		# 	border: 1px solid white;
+		# 	border-radius: 8px;
+		# 	width: 300px;
+		# 	height: 300px;
+		# 	box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+		# 	display: flex;
+		# 	flex-direction: column;
+		# 	justify-content: center;
+		# 	align-items: center;
+		# }
+		.login-form label {
+			font-size: 14px;
+			color: white;
+			margin-bottom: 5px;
+		}
+		.login-form input {
+			width: 90%;
+			padding: 8px;
+			margin-bottom: 15px;
+			border: 1px solid #ccc;
+			border-radius: 4px;
+		}
+		.login-form button {
+			width: 90%;
+			padding: 10px;
+			border: none;
+			border-radius: 4px;
+			background-color: white;
+			color: black;
+			cursor: pointer;
+			font-size: 14px;
+		}
+		.login-form button:hover {
+			background-color: #add8e6;
+		}
+		</style>
+		""",
+		unsafe_allow_html=True,
+	)
 
+	# Form login
+	st.markdown('<div class="login-container"><div class="login-form">', unsafe_allow_html=True)
+	username = st.text_input("Username", key="username")
+	password = st.text_input("Password", type="password", key="password")
+	if st.button("Login"):
+		if username == "kpd" and password == "kpd080808":
+			st.session_state["logged_in"] = True
+			# Reload halaman dengan mengatur ulang parameter URL
+			st.query_params.clear()
+		else:
+			st.error("Invalid username or password!")
+
+		st.markdown('</div></div>', unsafe_allow_html=True)
 
 # Fungsi untuk mengubah gambar menjadi base64
 def get_image_as_base64(image_path):
 	with open(image_path, "rb") as img_file:
 		return base64.b64encode(img_file.read()).decode()
+	
+# # Call login page
+# login_page()
+
+def header():	
+	# heading
+	kolkir,kolnan=st.columns((2,1))	#artinya kolom sebelahkiri lebih lebar 2x dari kanan
+
+	with kolkir:
+		st.markdown("""<h2 style="color:green;margin-top:-10px;margin-bottom:0px;"> 🧹 DATA CLEANING </h2>""", unsafe_allow_html=True)
+		st.write("Tools Pengolahan Data")
+		st.markdown("""<p style="margin-top:-10px;margin-bottom:0px;font-size:14px">Beberapa data output dari aplikasi AUTOCON-KPD belum siap pakai,\
+				oleh karena itu perlu dilakukan proses cleaning, seperti mengkonversi data TEXT menjadi angka,\
+				konversi type NG ABCDSEFGIJKLMN menjadi definisi type NG, mengekstrasi data Nomer Jig\
+				menjadi Nomer Mesin Smallpart, menghapus kolom yang tidak perlu\
+				dan menambah kolom yang diperlukan,dll. <br> Menjadi sangat efisien karena pada Tools ini sudah disediakan juga\
+				Summary Report berupa Tabel dan Grafik yang siap digunakan untuk analisa dan pengambilan keputusan.<br>\
+				<span style="color:Blue">Disclaimer: <span> <br>Tools ini dapat dijalankan hanya jika sumber file nya adalah hasil ekspor dari program\
+				Autocon QC yang lengkap dan file original belum diedit\
+				(menghapus dan atau menambah kolom)</p>""", unsafe_allow_html=True)
 		
-# heading
-kolkir,kolnan=st.columns((2,1))	#artinya kolom sebelahkiri lebih lebar 2x dari kanan
+		
+	with kolnan:
+		# Adjust the file path based on the current directory
+		current_dir = os.path.dirname(os.path.abspath(__file__))
+		logo_KPD = os.path.join(current_dir, 'logoKPD.png')
+		# Memuat gambar dan mengubahnya menjadi base64
+		# logo_KPD ='logoKPD.png'
+		image_base64 = get_image_as_base64(logo_KPD)
+		
+		# Menampilkan gambar dan teks di kolom kanan dengan posisi berdampingan
+		st.markdown(
+			f"""
+			<style>
+			.container {{
+				display: flex;
+				align-items:center;
+				justify-content: flex-end;
+				flex-wrap: wrap;
+			}}
+			.container img {{
+				width: 50px;
+				margin-top: -20px;
+			}}
+			.container h2 {{
+				color: grey;
+				font-size: 20px;
+				margin-top: -20px;
+				margin-right: 10px;
+				margin-bottom: 0px;
+			}}
+			@media (min-width: 600px) {{
+				.container {{
+					justify-content: center;
+				}}
+				.container img {{
+					margin-top: 0;
+				}}
+				.container h2 {{
+					margin-top: 0;
+					text-align: center;
+				}}
+			}}
+			</style>
+			<div class="container">
+				<h2 style="color:blue;">PT. KARYAPRATAMA DUNIA</h2>
+				<img src='data:image/png;base64,{image_base64}'/>
+			</div>
+			""",
+			unsafe_allow_html=True
+		)
 
-with kolkir:
-	st.markdown("""<h2 style="color:green;margin-top:-10px;margin-bottom:0px;"> 🧹 DATA CLEANING </h2>""", unsafe_allow_html=True)
-	st.write("Tools Pengolahan Data")
-	st.markdown("""<p style="margin-top:-10px;margin-bottom:0px;font-size:14px">Beberapa data output dari aplikasi AUTOCON-KPD belum siap pakai,\
-			 oleh karena itu perlu dilakukan proses cleaning, seperti mengkonversi data TEXT menjadi angka,\
-			 konversi type NG ABCDSEFGIJKLMN menjadi definisi type NG, mengekstrasi data Nomer Jig\
-		  	 menjadi Nomer Mesin Smallpart, menghapus kolom yang tidak perlu\
-			 dan menambah kolom yang diperlukan,dll. <br> Menjadi sangat efisien karena pada Tools ini sudah disediakan juga\
-		  	 Summary Report berupa Tabel dan Grafik yang siap digunakan untuk analisa dan pengambilan keputusan.<br>\
-		  	 <span style="color:Blue">Disclaimer: <span> <br>Tools ini dapat dijalankan hanya jika sumber file nya adalah hasil ekspor dari program\
-		     Autocon QC yang lengkap dan file original belum diedit\
-			(menghapus dan atau menambah kolom)</p>""", unsafe_allow_html=True)
-	
-	
-with kolnan:
-	# Adjust the file path based on the current directory
-	current_dir = os.path.dirname(os.path.abspath(__file__))
-	logo_KPD = os.path.join(current_dir, 'logoKPD.png')
-	# Memuat gambar dan mengubahnya menjadi base64
-	# logo_KPD ='logoKPD.png'
-	image_base64 = get_image_as_base64(logo_KPD)
-	
-    # Menampilkan gambar dan teks di kolom kanan dengan posisi berdampingan
-	st.markdown(
-        f"""
-        <style>
-        .container {{
-            display: flex;
-            align-items:center;
-            justify-content: flex-end;
-            flex-wrap: wrap;
-        }}
-        .container img {{
-            width: 50px;
-            margin-top: -20px;
-        }}
-        .container h2 {{
-            color: grey;
-            font-size: 20px;
-            margin-top: -20px;
-            margin-right: 10px;
-            margin-bottom: 0px;
-        }}
-        @media (min-width: 600px) {{
-            .container {{
-                justify-content: center;
-            }}
-            .container img {{
-                margin-top: 0;
-            }}
-            .container h2 {{
-                margin-top: 0;
-                text-align: center;
-            }}
-        }}
-        </style>
-        <div class="container">
-            <h2 style="color:blue;">PT. KARYAPRATAMA DUNIA</h2>
-            <img src='data:image/png;base64,{image_base64}'/>
-        </div>
-        """,
-        unsafe_allow_html=True
-	)
-
-	st.markdown("---")
-
-	kolkir2,kolnan2=st.columns(2)
-	with kolkir2:
-		st.write("")
-	with kolnan2:
-		st.markdown('<div style="color:brown;text-align: right;"> Quality Dept.', unsafe_allow_html=True)
 		st.markdown("---")
-		link_url_looker='https://lookerstudio.google.com/reporting/c9e60f2f-eacd-4f3e-9126-243e568b98fd'
-		st.link_button('Summary Report',link_url_looker,icon='📊')
-		# if st.button('Summary Web Report'):
-		# 			webbrowser.open_new_tab('https://lookerstudio.google.com/reporting/e4a5c3f7-bf91-44e0-9ced-2b7a01eafa3d/page/FsgzD?s=qyZPms8Wytc') 
-		st.markdown('</div>', unsafe_allow_html=True)
-	
-st.markdown("---")	#--------------------------batas akhir styling HEADER -----------------
+
+		kolkir2,kolnan2=st.columns(2)
+		with kolkir2:
+			st.write("")
+		with kolnan2:
+			st.markdown('<div style="color:brown;text-align: right;"> Quality Dept.', unsafe_allow_html=True)
+			st.markdown("---")
+			link_url_looker='https://lookerstudio.google.com/reporting/c9e60f2f-eacd-4f3e-9126-243e568b98fd'
+			st.link_button('Summary Report',link_url_looker,icon='📊')
+			# if st.button('Summary Web Report'):
+			# 			webbrowser.open_new_tab('https://lookerstudio.google.com/reporting/e4a5c3f7-bf91-44e0-9ced-2b7a01eafa3d/page/FsgzD?s=qyZPms8Wytc') 
+			st.markdown('</div>', unsafe_allow_html=True)
+		
+	st.markdown("---")	#--------------------------batas akhir styling HEADER -----------------
 
 
 def format_with_comma(value):
@@ -321,11 +394,10 @@ def cleaning_process(df):
 		df.drop(columns=['Qty(NG)'], inplace=True)									#kolom ini dihapus krn nilainya belum dikurangin NGM atau kolom Y, diganti mjd kolom NG(pcs)
 		df.rename(columns={'NG(pcs)': 'Qty(NG)'}, inplace=True)						#agar tdk report menghapus hingga ke bawah, kolom asli Qty(NG) dikembalikan dengan nilai baru
 		
-		## Fungsi untuk menghapus nilai yang mengandung awalan 'CU', ' CU', dan 'CU '
+		
 		df['Kategori'] = df['Kategori'].astype(str)       # Mengonversi semua nilai dalam kolom ini menjadi string
 		df['Shift'] = df['Shift'].astype(str)       # Mengonversi semua nilai dalam kolom ini menjadi string
 		df['NoCard'] = df['NoCard'].astype(str)       # Mengonversi semua nilai dalam kolom ini menjadi string
-
 
 		pd.set_option('display.max_columns', None)                     				 # Mengatur pandas untuk menampilkan semua kolom
 		
@@ -359,6 +431,8 @@ def cleaning_process(df):
 				}
 
 		df.rename(columns=new_columns, inplace=True)
+
+		#region PERTHITUNGAN
 		
 		# mengkonversi isi kolom NG dari pcs ke Lot dgn membagi dgn Stdr Loading
 		kolom_untuk_dibagi=['Warna',
@@ -432,12 +506,8 @@ def cleaning_process(df):
 		# Mengganti nilai kosong (string kosong) dengan 0
 		df['NG_%'] = df['NG_%'].replace('', 0)
 
-		# def remove_cu_prefix(kategori):
-		# 	if kategori.strip().startswith('CU'):
-		# 		return "RACK 1"  # atau "" jika ingin menggantinya dengan string kosong
-		# 	else:
-		# 		return kategori   
-		# df['Kategori'] = df['Kategori'].apply(remove_cu_prefix)         # Menggunakan apply untuk menerapkan fungsi pada kolom Kategori
+		#endregion PERTHITUNGAN
+
 
 		# Mengganti nilai 'CU' dengan 'RACK 1' - improve 13Nov2024
 		df['Kategori'] = df['Kategori'].str.strip()       # menghilangkan white space seperti: ' CU', dan 'CU '
@@ -492,12 +562,26 @@ def cleaning_process(df):
 		# Menghilangkan baris duplicate - added 10March2025
 		df.drop_duplicates(inplace=True)
 
+		#Filter data yang kolom NoCard-nya mengandung kata "TRIAL"
+		# Pisahkan data berdasarkan kolom NoCard yang mengandung kata "TRIAL"
+		dataframe1 = df[~df['NoCard'].str.contains("TRIAL", case=False, na=False)]  # Data tanpa "TRIAL"
+		dataframe2 = df[df['NoCard'].str.contains("TRIAL", case=False, na=False)]   # Data dengan "TRIAL"
+
+		# Tampilkan preview DataFrame1 (tanpa "TRIAL")
+		with st.expander("Preview Data setelah dirapihkan (tanpa 'TRIAL')"):
+			st.dataframe(dataframe1, use_container_width=True)
+
+		# Tampilkan preview DataFrame2 (hanya baris dengan "TRIAL")
+		with st.expander("Preview Data 'TRIAL'"):
+			st.dataframe(dataframe2, use_container_width=True)
+
 	#endregion
 	#------------
-			
+		df = dataframe1
+
 		# st.write('Preview Data setelah dirapihkan (cleaning):')
 		#dataframe - script ini untuk filtering model tree
-		with st.expander("Preview Data setelah dirapihkan (cleaning)"):
+		with st.expander("Preview Data setelah dirapihkan (Full - include 'TRIAL')"):
 			df3 = dataframe_explorer(df, case=False)
 			st.dataframe(df3, use_container_width=True)
 
@@ -1791,8 +1875,20 @@ def cleaning_process(df):
 #MAIN module --------------------
 def main():
 #Main - module yg akan pertama dijalankan - improved @home 03-Nov2024 - dirubah lagi ke model uploaded pertama krn error
+# Periksa apakah pengguna sudah login
+	if "logged_in" not in st.session_state or not st.session_state["logged_in"]:
+		# st.warning("You are not logged in. Please log in to access the application.")
+		login_page()
+	# Jika pengguna belum login, tampilkan halaman login
 
-	# File uploader
+		st.stop()
+	
+
+	# Jika sudah login, tampilkan konten utama
+	# st.title("Selamat Datang di Aplikasi Data Cleaning")
+	# st.write("Ini adalah halaman utama aplikasi setelah login berhasil.")	
+	
+	header()
 
 	#Added 18Mar2025 to make this apps more user friendly and globally accessible
 	st.info(f"Jika sumber file yang ingin dibersihkan berada di folder Google Drive, unduh/download lewat link berikut ini: [Link Folder](https://drive.google.com/drive/folders/1motad9bizxGZdiODetAo6K7_38dbXxxG?usp=sharing)  |  Download file Excel (.xls, .xlsx atau .csv) dari folder tersebut ke perangkat Anda, lalu unggah/upload file lewat menu Browse di bawah ini:")

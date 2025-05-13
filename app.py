@@ -25,6 +25,16 @@ import subprocess
 
 st.set_page_config(page_title="Quality Report", page_icon=":bar_chart:", layout="wide")
 
+# ---- HIDE STREAMLIT STYLE ----
+hide_st_style = """
+<style>
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
+</style>
+"""
+st.markdown(hide_st_style, unsafe_allow_html=True)
+
 # Apply dark theme to the entire app start 20March2025
 # dark_theme_css = """
 # 	<style>
@@ -131,7 +141,7 @@ st.set_page_config(page_title="Quality Report", page_icon=":bar_chart:", layout=
 #Streamlit dan JavaScript : Streamlit secara default tidak mendukung eksekusi JavaScript secara langsung karena alasan keamanan. Oleh karena itu, kita perlu menggunakan parameter unsafe_allow_html=True untuk memungkinkan HTML dan JavaScript dieksekusi. Meskipun demikian, ini hanya akan bekerja jika Streamlit dijalankan di lingkungan lokal atau server yang mendukung rendering JavaScript. Jika Anda menggunakan Streamlit Sharing, Anda tidak akan dapat melihat efek dari kode JavaScript yang dieksekusi.
 
 # --- Your Main Content ---
-# Login Page
+# Login Page added 12May2025 20.08 WIb @home
 def login_page():
 	st.markdown(
 		"""

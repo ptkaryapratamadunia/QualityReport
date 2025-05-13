@@ -333,7 +333,7 @@ def show_footer():
 		# Memuat gambar dan mengubahnya menjadi base64
 		# logo_KPD ='logoKPD.png'
 		image_base64 = get_image_as_base64(e_WeYe)
-		st.image(e_WeYe,"Web Developer - eWeYe ©️2024",use_column_width="always")
+		st.image(e_WeYe,"Copyright ©️ 2024 - e-WeYe, All Rights Reserved",use_column_width="always")
 
 	with kaki_kanan2:
 		st.write("")

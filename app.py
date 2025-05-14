@@ -198,19 +198,32 @@ def login_page():
 		unsafe_allow_html=True,
 	)
 
-	# Form login
-	st.markdown('<div class="login-container"><div class="login-form">', unsafe_allow_html=True)
-	username = st.text_input("Username", key="username")
-	password = st.text_input("Password", type="password", key="password")
-	if st.button("Login"):
-		if username == "kpd" and password == "kpd080808":
-			st.session_state["logged_in"] = True
-			# Reload halaman dengan mengatur ulang parameter URL
-			st.query_params.clear()
-		else:
-			st.error("Invalid username or password!")
+	kol1, kol2,kol3,kol4,kol5 = st.columns((1,1,1,1,1))
+
+	with kol1:
+		st.write("")
+	with kol2:
+		st.write("")
+	with kol3:
+		# Form login
+		st.warning("You are not logged in. Please log in to access the application.")
+		st.markdown('<div class="login-container"><div class="login-form">', unsafe_allow_html=True)
+		username = st.text_input("Username", key="username")
+		password = st.text_input("Password", type="password", key="password")
+		if st.button("Login"):
+			if username == "kpd" and password == "kpd080808":
+				st.session_state["logged_in"] = True
+				# Reload halaman dengan mengatur ulang parameter URL
+				st.query_params.clear()
+			else:
+				st.error("Invalid username or password!")
 
 		st.markdown('</div></div>', unsafe_allow_html=True)
+	with kol4:
+		st.write("")
+	with kol5:
+		st.write("")
+	
 
 # Fungsi untuk mengubah gambar menjadi base64
 def get_image_as_base64(image_path):

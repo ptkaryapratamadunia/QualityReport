@@ -35,110 +35,6 @@ header {visibility: hidden;}
 """
 st.markdown(hide_st_style, unsafe_allow_html=True)
 
-# Apply dark theme to the entire app start 20March2025
-# dark_theme_css = """
-# 	<style>
-# 	body {
-# 		background-color: #121212;
-# 		color: #e0e0e0;
-# 	}
-# 	.stApp {
-# 		background-color: #121212;
-# 		color: #e0e0e0;
-# 	}
-# 	.stButton button {
-# 		background-color: #333;
-# 		color: #e0e0e0;
-# 	}
-# 	.stTextInput input {
-# 		background-color: #333;
-# 		color: #e0e0e0;
-# 	}
-# 	.stSelectbox select {
-# 		background-color: #333;
-# 		color: #e0e0e0;
-# 	}
-# 	.stDataFrame {
-# 		background-color: #333;
-# 		color: #e0e0e0;
-# 	}
-# 	.stMarkdown {
-# 		color: #e0e0e0;
-# 	}
-# 	.stMetric {
-# 		color: #e0e0e0;
-# 	}
-# 	.stPlotlyChart {
-# 		background-color: #121212;
-# 	}
-# 	</style>
-# """
-# st.markdown(dark_theme_css, unsafe_allow_html=True)
-
-
-# # --- Floating Buttons ---
-# st.markdown(
-# 	"""
-# 	<style>
-# 		.floating-button-container {
-# 			position: fixed;
-# 			bottom: 20px;
-# 			right: 20px;
-# 			display: flex;
-# 			flex-direction: column;
-# 			gap: 10px;
-# 			z-index: 1000;
-# 		}
-# 		.scroll-button {
-# 			background-color: #333;
-# 			color: #f0f0f0;
-# 			border: none;
-# 			padding: 10px 15px;
-# 			border-radius: 5px;
-# 			cursor: pointer;
-# 			font-size: 18px;
-# 			text-align: center;
-# 			line-height: 1;
-# 		}
-# 		.scroll-button:hover {
-# 			background-color: #555;
-# 		}
-# 	</style>
-# 	<script>
-# 		function scrollUp() {
-# 			window.scrollBy({
-# 				top: -window.innerHeight,
-# 				left: 0,
-# 				behavior: 'smooth'
-# 			});
-# 		}
-
-# 		function scrollDown() {
-# 			window.scrollBy({
-# 				top: window.innerHeight,
-# 				left: 0,
-# 				behavior: 'smooth'
-# 			});
-# 		}
-
-# 		function scrollToTop() {
-# 			window.scrollTo({
-# 				top: 0,
-# 				left: 0,
-# 				behavior: 'smooth'
-# 			});
-# 		}
-# 	</script>
-# 	<div class="floating-button-container">
-# 		<button class="scroll-button" onclick="scrollUp()">&#9650;</button>
-# 		<button class="scroll-button" onclick="scrollDown()">&#9660;</button>
-# 		<button class="scroll-button" onclick="scrollToTop()">⬆️</button>
-# 	</div>
-# 	""",
-# 	unsafe_allow_html=True,
-# )
-
-#Streamlit dan JavaScript : Streamlit secara default tidak mendukung eksekusi JavaScript secara langsung karena alasan keamanan. Oleh karena itu, kita perlu menggunakan parameter unsafe_allow_html=True untuk memungkinkan HTML dan JavaScript dieksekusi. Meskipun demikian, ini hanya akan bekerja jika Streamlit dijalankan di lingkungan lokal atau server yang mendukung rendering JavaScript. Jika Anda menggunakan Streamlit Sharing, Anda tidak akan dapat melihat efek dari kode JavaScript yang dieksekusi.
 
 # --- Your Main Content ---
 # Login Page added 12May2025 20.08 WIb @home
@@ -230,8 +126,6 @@ def get_image_as_base64(image_path):
 	with open(image_path, "rb") as img_file:
 		return base64.b64encode(img_file.read()).decode()
 	
-# # Call login page
-# login_page()
 
 def header():	
 	# heading
@@ -585,6 +479,12 @@ def cleaning_process(df):
 		# Menghilangkan baris duplicate - added 10March2025
 		df.drop_duplicates(inplace=True)
 
+		# st.write('Preview Data setelah dirapihkan (cleaning):')
+		#dataframe - script ini untuk filtering model tree
+		with st.expander("Preview Data setelah dirapihkan (Full - include 'TRIAL')"):
+			df3 = dataframe_explorer(df, case=False)
+			st.dataframe(df3, use_container_width=True)
+
 		#Filter data yang kolom NoCard-nya mengandung kata "TRIAL"
 		# Pisahkan data berdasarkan kolom NoCard yang mengandung kata "TRIAL"
 		dataframe1 = df[~df['NoCard'].str.contains("TRIAL", case=False, na=False)]  # Data tanpa "TRIAL"
@@ -602,11 +502,7 @@ def cleaning_process(df):
 	#------------
 		df = dataframe1
 
-		# st.write('Preview Data setelah dirapihkan (cleaning):')
-		#dataframe - script ini untuk filtering model tree
-		with st.expander("Preview Data setelah dirapihkan (Full - include 'TRIAL')"):
-			df3 = dataframe_explorer(df, case=False)
-			st.dataframe(df3, use_container_width=True)
+		
 
 		#------------- merapihkan kolom sama dengan target looker 21Oct2024
 		# Menghapus kolom tambahan 19Nov2024 kolom berisi jenis NG satuan pcs
@@ -1964,67 +1860,12 @@ def main():
 		df = data_tanggal(df) # type: ignore
 		df = cleaning_process(df)
 
-		# Floating button to scroll to the top
-		# st.markdown("""
-		# 	<style>
-		# 	#scrollToTopButton {
-		# 		position: fixed;
-		# 		bottom: 50px;
-		# 		right: 50px;
-		# 		background-color: #4CAF50;
-		# 		color: white;
-		# 		border: none;
-		# 		border-radius: 50%;
-		# 		width: 50px;
-		# 		height: 50px;
-		# 		font-size: 24px;
-		# 		cursor: pointer;
-		# 		z-index: 1000;
-		# 	}
-		# 	#scrollToHomeButton {
-		# 		position: fixed;
-		# 		bottom: 110px;
-		# 		right: 50px;
-		# 		background-color: #4CAF50;
-		# 		color: white;
-		# 		border: none;
-		# 		border-radius: 50%;
-		# 		width: 50px;
-		# 		height: 50px;
-		# 		font-size: 24px;
-		# 		cursor: pointer;
-		# 		z-index: 1000;
-		# 	}
-		# 	</style>
-		# 	<button id="scrollToTopButton" onclick="window.scrollTo({top: 0, behavior: 'smooth'});">^</button>
-		# 	<button id="scrollToHomeButton" onclick="window.scrollTo({top: 0, behavior: 'smooth'});">[.]</button>
-		# """, unsafe_allow_html=True)
-
-
-
-
+		
 		show_footer()
 
 
 			# #Main - module yg akan pertama dijalankan - improved @home 03-Nov2024
-			# 		try:
-			# 			#arsip file yg lalu .csv
-
-			# 			# Dapatkan direktori tempat file Python ini berada, improved 13Nov2024
-			# 			current_dir = os.path.dirname(os.path.abspath(__file__))
-			# 			# Gabungkan dengan nama file
-			# 			file_path = os.path.join(current_dir, "file_arsip.csv")
-			# 			# arsip_file= "arsip_file.csv"
-			# 			df = pd.read_csv(file_path)
-
-			# 			df=data_tanggal(df)
-
-			# 			df=cleaning_process(df)
-
-			# 			show_footer()
-			# 		except FileNotFoundError:
-			# 			st.error("File arsip tidak ditemukan. Silakan unggah file baru.")	
-			# 		return
+			
 	else:
 		st.error("Menunggu file diupload....")
 

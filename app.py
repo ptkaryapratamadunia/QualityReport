@@ -22,8 +22,10 @@ from plotly.subplots import make_subplots
 import sys
 import subprocess
 
-
 st.set_page_config(page_title="Quality Report", page_icon=":bar_chart:", layout="wide")
+
+# Jangan pernah lagi berfikiran untuk merubah tampilan streamlit menjadi Dark MOode, hanya akan membuang waktumu saja!!!! 20May2025
+
 
 # ---- HIDE STREAMLIT STYLE ----
 hide_st_style = """
@@ -39,70 +41,64 @@ st.markdown(hide_st_style, unsafe_allow_html=True)
 # --- Your Main Content ---
 # Login Page added 12May2025 20.08 WIb @home
 def login_page():
-	st.markdown(
-		"""
-		<style>
-		body {
-			background-color: #2c2c2c;
-		}
-		# .login-container {
-		# 	display: flex;
-		# 	justify-content: center;
-		# 	align-items: center;
-		# 	height: 100vh;
-		# }
-		# .login-form {
-		# 	background-color: #3c3c3c;
-		# 	padding: 20px;
-		# 	border: 1px solid white;
-		# 	border-radius: 8px;
-		# 	width: 300px;
-		# 	height: 300px;
-		# 	box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-		# 	display: flex;
-		# 	flex-direction: column;
-		# 	justify-content: center;
-		# 	align-items: center;
-		# }
-		.login-form label {
-			font-size: 14px;
-			color: white;
-			margin-bottom: 5px;
-		}
-		.login-form input {
-			width: 90%;
-			padding: 8px;
-			margin-bottom: 15px;
-			border: 1px solid #ccc;
-			border-radius: 4px;
-		}
-		.login-form button {
-			width: 90%;
-			padding: 10px;
-			border: none;
-			border-radius: 4px;
-			background-color: white;
-			color: black;
-			cursor: pointer;
-			font-size: 14px;
-		}
-		.login-form button:hover {
-			background-color: #add8e6;
-		}
-		</style>
-		""",
-		unsafe_allow_html=True,
-	)
+	
 
-	kol1, kol2,kol3,kol4,kol5 = st.columns((1,1,1,1,1))
+	kol1 ,kol3,kol5 = st.columns((1,1,1))
 
 	with kol1:
-		st.write("")
-	with kol2:
-		st.write("")
+		# Adjust the file path based on the current directory
+		current_dir = os.path.dirname(os.path.abspath(__file__))
+		logo_KPD = os.path.join(current_dir, 'logoKPD.png')
+		# Memuat gambar dan mengubahnya menjadi base64
+		# logo_KPD ='logoKPD.png'
+		image_base64 = get_image_as_base64(logo_KPD)
+		
+		# Menampilkan gambar dan teks di kolom kanan dengan posisi berdampingan
+		st.markdown(
+			f"""
+			<style>
+			.container {{
+				display: flex;
+				align-items:center;
+				justify-content: flex-end;
+				flex-wrap: wrap;
+			}}
+			.container img {{
+				width: 50px;
+				margin-top: -20px;
+			}}
+			.container h2 {{
+				color: grey;
+				font-size: 20px;
+				margin-top: -20px;
+				margin-right: 10px;
+				margin-bottom: 0px;
+			}}
+			@media (min-width: 600px) {{
+				.container {{
+					justify-content: center;
+				}}
+				.container img {{
+					margin-top: 0;
+				}}
+				.container h2 {{
+					margin-top: 0;
+					text-align: center;
+				}}
+			}}
+			</style>
+			<div class="container">
+				<img src='data:image/png;base64,{image_base64}'/>
+				<h2 style="color:blue;">PT. KARYAPRATAMA DUNIA</h2>
+			</div>
+			""",
+			unsafe_allow_html=True
+		)
+		st.markdown("<div style='text-align: center; font-weight: bold;color:orange;'>QUALITY DEPARTMENT</div>", unsafe_allow_html=True)
 	with kol3:
 		# Form login
-		st.warning("You are not logged in. Please log in to access the application.")
+		st.info("Please log in to access the application.")
+		st.markdown('---')
 		st.markdown('<div class="login-container"><div class="login-form">', unsafe_allow_html=True)
 		username = st.text_input("Username", key="username")
 		password = st.text_input("Password", type="password", key="password")
@@ -115,10 +111,11 @@ def login_page():
 				st.error("Invalid username or password!")
 
 		st.markdown('</div></div>', unsafe_allow_html=True)
-	with kol4:
-		st.write("")
+		st.markdown('---')
 	with kol5:
-		st.write("")
+		st.markdown("""<h2 style="color:green;margin-top:-10px;margin-bottom:0px;"> 🧹 DATA CLEANING </h2>""", unsafe_allow_html=True)
+		
+		st.markdown("<div style='text-align: center; font-weight: bold;color:blue;'>Tools Pengolahan Data</div>", unsafe_allow_html=True)
 	
 
 # Fungsi untuk mengubah gambar menjadi base64
@@ -140,7 +137,7 @@ def header():
 				menjadi Nomer Mesin Smallpart, menghapus kolom yang tidak perlu\
 				dan menambah kolom yang diperlukan,dll. <br> Menjadi sangat efisien karena pada Tools ini sudah disediakan juga\
 				Summary Report berupa Tabel dan Grafik yang siap digunakan untuk analisa dan pengambilan keputusan.<br>\
-				<span style="color:Blue">Disclaimer: <span> <br>Tools ini dapat dijalankan hanya jika sumber file nya adalah hasil ekspor dari program\
+				<span style="color:Orange">Disclaimer: <span> <br>Tools ini dapat dijalankan hanya jika sumber file nya adalah hasil ekspor dari program\
 				Autocon QC yang lengkap dan file original belum diedit\
 				(menghapus dan atau menambah kolom)</p>""", unsafe_allow_html=True)
 		
@@ -201,7 +198,7 @@ def header():
 		with kolkir2:
 			st.write("")
 		with kolnan2:
-			st.markdown('<div style="color:brown;text-align: right;"> Quality Dept.', unsafe_allow_html=True)
+			st.markdown('<div style="color:Orange;text-align: right;"> Quality Dept.', unsafe_allow_html=True)
 			st.markdown("---")
 			link_url_looker='https://lookerstudio.google.com/reporting/c9e60f2f-eacd-4f3e-9126-243e568b98fd'
 			st.link_button('Summary Report',link_url_looker,icon='📊')
@@ -240,7 +237,7 @@ def show_footer():
 		# Memuat gambar dan mengubahnya menjadi base64
 		# logo_KPD ='logoKPD.png'
 		image_base64 = get_image_as_base64(e_WeYe)
-		st.image(e_WeYe,"Copyright ©️ 2024 - e-WeYe, All Rights Reserved",use_column_width="always")
+		st.image(e_WeYe,"Copyright ©️ 2024 - e-WeYe, All Rights Reserved",use_container_width=True)
 
 	with kaki_kanan2:
 		st.write("")
@@ -272,6 +269,7 @@ def data_tanggal(df):
 			sampai Tanggal : {tanggal_termuda}
 			""")
 	return df
+
 
 
 #---START CLEANING -------
@@ -580,7 +578,7 @@ def cleaning_process(df):
 			tot_Qty_lot=df['Insp(B/H)'].sum()
 			# container3.write(f"Total Inspected (lot)	:{tot_Qty_lot:.0f}")
 			# Create a styled container with a border 
-			container_html = f""" <div style='border: 2px solid #4CAF50; padding: 2px; border-radius: 5px; text-align: center;'> <h4 style='font-size:12px; margin:0;color:green;'>Total Inspected (lot)</h4> <p style='font-size:46px; margin:0;'>{tot_Qty_lot:,.0f}</p> </div> """
+			container_html = f""" <div style='border: 2px solid #4CAF50; padding: 2px; border-radius: 5px; text-align: center;'> <h4 style='font-size:12px; margin:0;color:orange;'>Total Inspected (lot)</h4> <p style='font-size:46px; margin:0;'>{tot_Qty_lot:,.0f}</p> </div> """
 			st.markdown(container_html, unsafe_allow_html=True)
 			# bt2.metric("Total Inspected (lot)",f"{tot_Qty_lot:,.0f}")
 
@@ -588,7 +586,7 @@ def cleaning_process(df):
 			# container=st.container(border=True)
 			tot_NG_lot=df['Tot_NG'].sum()
 			# container.write(f"Tot. NG (lot)  :  {tot_NG_lot:.0f}")
-			container_html = f""" <div style='border: 2px solid #4CAF50; padding: 2px; border-radius: 5px; text-align: center;'> <h4 style='font-size:12px; margin:0;color:green;'>Total NG (lot)</h4> <p style='font-size:46px; margin:0;'>{tot_NG_lot:,.2f}</p> </div> """
+			container_html = f""" <div style='border: 2px solid #4CAF50; padding: 2px; border-radius: 5px; text-align: center;'> <h4 style='font-size:12px; margin:0;color:orange;'>Total NG (lot)</h4> <p style='font-size:46px; margin:0;'>{tot_NG_lot:,.2f}</p> </div> """
 			st.markdown(container_html, unsafe_allow_html=True)
 			# bt3.metric("Total NG (lot):",f"{tot_NG_lot:.2f}")
 
@@ -596,7 +594,7 @@ def cleaning_process(df):
 			# container2=st.container(border=True)
 			tot_NG_persen=df['NG_%'].mean()
 			# container2.write(f"Tot. NG (%)	: {tot_NG_persen:.2f}")
-			container_html = f""" <div style='border: 2px solid #4CAF50; padding: 2px; border-radius: 5px; text-align: center;'> <h4 style='font-size:12px; margin:0;color:green;'>Total NG (%)</h4> <p style='font-size:46px; margin:0;'>{tot_NG_persen:,.2f}</p> </div> """
+			container_html = f""" <div style='border: 2px solid #4CAF50; padding: 2px; border-radius: 5px; text-align: center;'> <h4 style='font-size:12px; margin:0;color:orange;'>Total NG (%)</h4> <p style='font-size:46px; margin:0;'>{tot_NG_persen:,.2f}</p> </div> """
 			st.markdown(container_html, unsafe_allow_html=True)			
 			# bariskanan.metric("Total NG (%)",f"{tot_NG_persen:.2f}")
 
@@ -606,18 +604,18 @@ def cleaning_process(df):
 		#SUMMARY DATA
 		st.subheader('Summary Data')
 		#---------added 24Mar2025 
-		df3['Date'] = pd.to_datetime(df3['Date'])
-
-		# Tanggal tertua
-		start_date = df3['Date'].min().strftime('%d-%b-%Y')
-
-		# Tanggal termuda
-		end_date = df3['Date'].max().strftime('%d-%b-%Y')
-		st.write(f"""
-		Periode dari Tanggal: {start_date}
-		sampai Tanggal : {end_date}
-		""")
-		#---------
+		#Change to def 20May 2025
+		def DateRange(df3):
+			df3['Date'] = pd.to_datetime(df3['Date'])
+			start_date = df3['Date'].min().strftime('%d-%b-%Y')
+			end_date = df3['Date'].max().strftime('%d-%b-%Y')
+			st.write(f"""
+			Periode dari Tanggal: {start_date}
+			sampai Tanggal : {end_date}
+			""")
+		
+		DateRange(df3)
+	
 		kiri,tengah,kanan=st.columns(3)
 		with kiri:	#Table NG (%) by Line & Month
 			st.write('Table NG (%) by Line & Month')
@@ -792,18 +790,7 @@ def cleaning_process(df):
 
 		st.markdown("---")
 		#---------added 24Mar2025
-			
-		df3['Date'] = pd.to_datetime(df3['Date'])
-
-		# Tanggal tertua
-		start_date = df3['Date'].min().strftime('%d-%b-%Y')
-
-		# Tanggal termuda
-		end_date = df3['Date'].max().strftime('%d-%b-%Y')
-		st.write(f"""
-		Periode dari Tanggal: {start_date}
-		sampai Tanggal : {end_date}
-		""")
+		DateRange(df3)	
 		#---------
 
 		chart_kiri,chart_kanan=st.columns(2)	#added 19March2025 08.59PM @home 
@@ -973,18 +960,8 @@ def cleaning_process(df):
 		st.markdown("---")
 		# ---------------------------------------
 		#---------added 24Mar2025
-			
-		df3['Date'] = pd.to_datetime(df3['Date'])
-
-		# Tanggal tertua
-		start_date = df3['Date'].min().strftime('%d-%b-%Y')
-
-		# Tanggal termuda
-		end_date = df3['Date'].max().strftime('%d-%b-%Y')
-		st.write(f"""
-		Periode dari Tanggal: {start_date}
-		sampai Tanggal : {end_date}
-		""")
+		DateRange(df3)
+		
 		#---------
 		# Membuat tabel pivot NG by Customer and LINE---------------
 
@@ -1120,19 +1097,7 @@ def cleaning_process(df):
 
 		st.markdown("---")
 
-		#---------added 24Mar2025
-			
-		df3['Date'] = pd.to_datetime(df3['Date'])
-
-		# Tanggal tertua
-		start_date = df3['Date'].min().strftime('%d-%b-%Y')
-
-		# Tanggal termuda
-		end_date = df3['Date'].max().strftime('%d-%b-%Y')
-		st.write(f"""
-		Periode dari Tanggal: {start_date}
-		sampai Tanggal : {end_date}
-		""")
+		DateRange(df3)
 		
 		#--------- pivot Qty Inspected (lot) by Line dan Customer
 		pt_customer_line2=pd.pivot_table(df,values='Insp(B/H)',index='Cust.ID',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
@@ -1398,18 +1363,7 @@ def cleaning_process(df):
 		st.markdown("---")
 		#groupby dataframe	---------------
 		#---------added 24Mar2025
-			
-		df3['Date'] = pd.to_datetime(df3['Date'])
-
-		# Tanggal tertua
-		start_date = df3['Date'].min().strftime('%d-%b-%Y')
-
-		# Tanggal termuda
-		end_date = df3['Date'].max().strftime('%d-%b-%Y')
-		st.write(f"""
-		Periode dari Tanggal: {start_date}
-		sampai Tanggal : {end_date}
-		""")
+		DateRange(df3)	
 		#---------
 
 		#----------------- JUMLAH KOLOM TYPE NG ----------------
@@ -1484,18 +1438,7 @@ def cleaning_process(df):
 		st.markdown("---")
 		#-------------------------------------------------------
 		#---------added 24Mar2025
-			
-		df3['Date'] = pd.to_datetime(df3['Date'])
-
-		# Tanggal tertua
-		start_date = df3['Date'].min().strftime('%d-%b-%Y')
-
-		# Tanggal termuda
-		end_date = df3['Date'].max().strftime('%d-%b-%Y')
-		st.write(f"""
-		Periode dari Tanggal: {start_date}
-		sampai Tanggal : {end_date}
-		""")
+		DateRange(df3)
 		#---------
 		#kolom lagi untuk Tabel Qty OK NG (pcs) by PartName
 		kolomkiri,kolomkanan=st.columns(2)
@@ -1618,18 +1561,8 @@ def cleaning_process(df):
 		st.markdown("---")
 
 		#---------added 24Mar2025
-			
-		df3['Date'] = pd.to_datetime(df3['Date'])
-
-		# Tanggal tertua
-		start_date = df3['Date'].min().strftime('%d-%b-%Y')
-
-		# Tanggal termuda
-		end_date = df3['Date'].max().strftime('%d-%b-%Y')
-		st.write(f"""
-		Periode dari Tanggal: {start_date}
-		sampai Tanggal : {end_date}
-		""")
+		DateRange(df3)	
+		
 		#---------
 		#--------------------------------------
 		#      NG Plating Smallpart by M/C NO.
@@ -1810,9 +1743,10 @@ def main():
 	header()
 
 	#Added 18Mar2025 to make this apps more user friendly and globally accessible
-	st.info(f"Jika sumber file yang ingin dibersihkan berada di folder Google Drive, unduh/download lewat link berikut ini: [Link Folder](https://drive.google.com/drive/folders/1motad9bizxGZdiODetAo6K7_38dbXxxG?usp=sharing)  |  Download file Excel (.xls, .xlsx atau .csv) dari folder tersebut ke perangkat Anda, lalu unggah/upload file lewat menu Browse di bawah ini:")
+	st.warning(f"Jika sumber file yang ingin dibersihkan berada di folder Google Drive, unduh/download lewat link berikut ini: [Link Folder](https://drive.google.com/drive/folders/1motad9bizxGZdiODetAo6K7_38dbXxxG?usp=sharing)  |  Download file Excel (.xls, .xlsx atau .csv) dari folder tersebut ke perangkat Anda, lalu unggah/upload file lewat menu Browse di bawah ini:")
 
-	uploaded_files = st.file_uploader("Pilih file Excel (.xls, .xlsx, csv):",type=["xls", "xlsx", "csv"], accept_multiple_files=True)
+	st.write("Silakan pilih file Excel (.xls, .xlsx, .csv) yang ingin dibersihkan:")
+	uploaded_files = st.file_uploader("",type=["xls", "xlsx", "csv"], accept_multiple_files=True)
 
 	if uploaded_files:
 		dfs = []

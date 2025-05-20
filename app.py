@@ -1652,70 +1652,154 @@ def cleaning_process(df):
 		st.markdown("---")
 		#menampilkan tabel berdasarkan filter - 19Nov2024
 		#----------
-		st.subheader("Tools Filtering Data")
+		Filter_tab1,Filter_tab2=st.tabs(["Filter Mode #1","Filter Mode #2"])
 
-		filter_L, filter_mid, filter_R=st.columns([1,1,3])
+		with Filter_tab1:
+			st.write("Filter Mode #1")
+			with st.expander("Preview Data setelah dirapihkan (Full - include 'TRIAL')"):
+				df3 = dataframe_explorer(df, case=False)
+				st.dataframe(df3, use_container_width=True)
 
-		with filter_L:
-			# Mendapatkan unique values dari kolom 'Line'
-			filter_line = df3['Line'].unique()
+			#buatkan filter untuk menampilkan data sesuai dengan PartName
+			# Mendapatkan unique values dari kolom 'PartName'
+			filter_partname = df3['PartName'].unique()
+			# Membuat selectbox untuk memilih PartName
+			selected_partname = st.multiselect("Pilih PartName:", filter_partname)
+			# Menampilkan tabel berdasarkan filter PartName
+			filtered_partname_df = df3[df3['PartName'].isin(selected_partname)]
 
-			# Membuat selectbox untuk memilih Line
-			selected_Line = st.selectbox("Pilih Line:", filter_line)
+			with st.expander("Preview Data hasil Filtering by PartName"):
+				
+				st.write(filtered_partname_df)
 
-			# Menampilkan tabel berdasarkan filter Line
-			filtered_line_df = df3[df3['Line'] == selected_Line]
+			# Summary grafik batang: X = Jenis NG, Y = Avg NG_%
+			if not filtered_partname_df.empty:
+				# Daftar kolom jenis NG (pastikan sesuai dengan kolom di df3)
+				jenis_ng_columns = [
+					'Warna', 'Buram', 'Berbayang', 'Kotor', 'Tdk Terplating', 'Rontok/ Blister',
+					'Tipis/ EE No Plating', 'Flek Kuning', 'Terbakar', 'Watermark', 'Jig Mark/ Renggang',
+					'Lecet/ Scratch', 'Seret', 'Flek Hitam', 'Flek Tangan', 'Belang/ Dempet', 'Bintik',
+					'Kilap', 'Tebal', 'Flek Putih', 'Spark', 'Kotor H/ Oval', 'Terkikis/ Crack',
+					'Dimensi/ Penyok'
+				]
 
-		with filter_mid:
-			# Mendapatkan unique values dari kolom 'Kategori'
-			filter_kategori = filtered_line_df['Kategori'].unique()
+				#Tampilkan dalam 2 kolom
+				kol_filter1,kol_filter2=st.columns(2)
+				with kol_filter1:
+					# Hitung rata-rata NG_% untuk setiap jenis NG
+					avg_ng = {}
+					for col in jenis_ng_columns:
+						if col in filtered_partname_df.columns and 'Insp(B/H)' in filtered_partname_df.columns:
+							# Rata-rata NG_% per jenis NG = (jumlah NG jenis itu / jumlah Insp(B/H)) * 100
+							total_ng = filtered_partname_df[col].sum()
+							total_insp = filtered_partname_df['Insp(B/H)'].sum()
+							avg_ng[col] = (total_ng / total_insp * 100) if total_insp > 0 else 0
+					# Buat DataFrame untuk plot
+					
+					ng_df = pd.DataFrame(list(avg_ng.items()), columns=['Jenis NG', 'Avg NG_%'])
+					ng_df = ng_df[ng_df['Avg NG_%'] > 0]  # tampilkan hanya yang > 0
+					ng_df = ng_df.sort_values(by='Avg NG_%', ascending=False)  # urutkan dari besar ke kecil
+					fig = px.bar(
+						ng_df,
+						x='Jenis NG',
+						y='Avg NG_%',
+						title='Avg NG_% per Jenis NG',
+						color='Avg NG_%',
+						text=ng_df['Avg NG_%'].apply(lambda x: f"{x:.2f}")
+					)
+					fig.update_traces(textposition='outside')
+					fig.update_layout(xaxis_title='Jenis NG', yaxis_title='Avg NG_%')
+					st.plotly_chart(fig)
 
-			# Membuat selectbox untuk memilih kategori
-			selected_kategori = st.selectbox("Pilih Kategori:", filter_kategori)
+				with kol_filter2:
+					# grafik batang untuk Qty NG (lot) per Jenis NG
+					ng_lot = {}
+					for col in jenis_ng_columns:
+						if col in filtered_partname_df.columns:
+							ng_lot[col] = filtered_partname_df[col].sum()
+					ng_lot_df = pd.DataFrame(list(ng_lot.items()), columns=['Jenis NG', 'Qty NG (lot)'])
+					ng_lot_df = ng_lot_df[ng_lot_df['Qty NG (lot)'] > 0]
+					ng_lot_df = ng_lot_df.sort_values(by='Qty NG (lot)', ascending=False)
+					fig2 = px.bar(
+						ng_lot_df,
+						x='Jenis NG',
+						y='Qty NG (lot)',
+						title='Qty NG (lot) per Jenis NG',
+						color='Qty NG (lot)',
+						text=ng_lot_df['Qty NG (lot)'].apply(lambda x: f"{x:.2f}")
+					)
+					fig2.update_traces(textposition='outside')
+					fig2.update_layout(xaxis_title='Jenis NG', yaxis_title='Qty NG (lot)')
+					st.plotly_chart(fig2)
+					
 
-			# Menampilkan tabel berdasarkan filter Kategori
-			filtered_df = filtered_line_df[filtered_line_df['Kategori'] == selected_kategori]
-		with filter_R:
 
-			# Mendapatkan daftar semua kolom yang tersedia
-			kolom_tersedia = df3.columns.tolist()
+		
+		with Filter_tab2:
+			st.subheader("Multi Filtering Data")
 
-			# Menghapus kolom 'Kategori' dan 'Line' dari daftar kolom yang tersedia
-			kolom_tersedia.remove('Kategori')
-			kolom_tersedia.remove('Line')
-			kolom_tersedia.remove('% NG')
+			filter_L, filter_mid, filter_R=st.columns([1,1,3])
 
-			# Membuat multiselect untuk memilih kolom yang akan ditampilkan 
-			default_columns = ['PartName', 'NG_%']
-			kolom_tersedia_for_multiselect = [col for col in kolom_tersedia if col not in default_columns]
-			selected_columns = st.multiselect("Pilih Kolom untuk Ditampilkan:", kolom_tersedia, default=default_columns)
+			with filter_L:
+				# Mendapatkan unique values dari kolom 'Line'
+				filter_line = df3['Line'].unique()
 
-		# Menentukan fungsi agregasi untuk setiap kolom 
-		agg_dict = {col: 'sum' for col in selected_columns}
-		if 'NG_%' in selected_columns:
-			agg_dict['NG_%'] = 'mean'
+				# Membuat selectbox untuk memilih Line
+				selected_Line = st.selectbox("Pilih Line:", filter_line)
 
-		# Menampilkan alert jika belum ada kolom yang dipilih untuk groupby 
-		if len(selected_columns) == 0: 
-			st.warning("Menunggu kolom nilai dipilih")
-		else:
+				# Menampilkan tabel berdasarkan filter Line
+				filtered_line_df = df3[df3['Line'] == selected_Line]
 
-			# Memastikan tidak ada nilai 'NaN' dan tidak ada duplikat pada kolom 'PartName' 
-			# df3 = df3.dropna(subset=['PartName']).drop_duplicates(subset=['PartName'])
+			with filter_mid:
+				# Mendapatkan unique values dari kolom 'Kategori'
+				filter_kategori = filtered_line_df['Kategori'].unique()
 
-			# Menampilkan tabel berdasarkan filter kategori dan kolom yang dipilih
-			filtered_df = filtered_df[selected_columns] # Tambahkan 'PartName' untuk keperluan groupby
+				# Membuat selectbox untuk memilih kategori
+				selected_kategori = st.selectbox("Pilih Kategori:", filter_kategori)
 
-			st.write("Data hasil filtering:")
-			st.write(filtered_df)
+				# Menampilkan tabel berdasarkan filter Kategori
+				filtered_df = filtered_line_df[filtered_line_df['Kategori'] == selected_kategori]
+			with filter_R:
 
-			# Membuat groupby berdasarkan PartName dan kolom yang dipilih oleh user 
-			grouped_df = filtered_df.groupby('PartName').agg(agg_dict)
-			# grouped_df.reset_index()
-			# grouped_df.drop('PartName',inplace=True)
+				# Mendapatkan daftar semua kolom yang tersedia
+				kolom_tersedia = df3.columns.tolist()
 
-			st.write("Data hasil grouping:") 
-			st.write(grouped_df)
+				# Menghapus kolom 'Kategori' dan 'Line' dari daftar kolom yang tersedia
+				kolom_tersedia.remove('Kategori')
+				kolom_tersedia.remove('Line')
+				kolom_tersedia.remove('% NG')
+
+				# Membuat multiselect untuk memilih kolom yang akan ditampilkan 
+				default_columns = ['PartName', 'NG_%']
+				kolom_tersedia_for_multiselect = [col for col in kolom_tersedia if col not in default_columns]
+				selected_columns = st.multiselect("Pilih Kolom untuk Ditampilkan:", kolom_tersedia, default=default_columns)
+
+			# Menentukan fungsi agregasi untuk setiap kolom 
+			agg_dict = {col: 'sum' for col in selected_columns}
+			if 'NG_%' in selected_columns:
+				agg_dict['NG_%'] = 'mean'
+
+			# Menampilkan alert jika belum ada kolom yang dipilih untuk groupby 
+			if len(selected_columns) == 0: 
+				st.warning("Menunggu kolom nilai dipilih")
+			else:
+
+				# Memastikan tidak ada nilai 'NaN' dan tidak ada duplikat pada kolom 'PartName' 
+				# df3 = df3.dropna(subset=['PartName']).drop_duplicates(subset=['PartName'])
+
+				# Menampilkan tabel berdasarkan filter kategori dan kolom yang dipilih
+				filtered_df = filtered_df[selected_columns] # Tambahkan 'PartName' untuk keperluan groupby
+
+				st.write("Data hasil filtering:")
+				st.write(filtered_df)
+
+				# Membuat groupby berdasarkan PartName dan kolom yang dipilih oleh user 
+				grouped_df = filtered_df.groupby('PartName').agg(agg_dict)
+				# grouped_df.reset_index()
+				# grouped_df.drop('PartName',inplace=True)
+
+				st.write("Data hasil grouping:") 
+				st.write(grouped_df)
 
 
 	else:
@@ -1745,8 +1829,8 @@ def main():
 	#Added 18Mar2025 to make this apps more user friendly and globally accessible
 	st.warning(f"Jika sumber file yang ingin dibersihkan berada di folder Google Drive, unduh/download lewat link berikut ini: [Link Folder](https://drive.google.com/drive/folders/1motad9bizxGZdiODetAo6K7_38dbXxxG?usp=sharing)  |  Download file Excel (.xls, .xlsx atau .csv) dari folder tersebut ke perangkat Anda, lalu unggah/upload file lewat menu Browse di bawah ini:")
 
-	st.write("Silakan pilih file Excel (.xls, .xlsx, .csv) yang ingin dibersihkan:")
-	uploaded_files = st.file_uploader("",type=["xls", "xlsx", "csv"], accept_multiple_files=True)
+	# File uploader
+	uploaded_files = st.file_uploader("Silakan pilih file Excel (.xls, .xlsx, .csv) yang ingin dibersihkan:",type=["xls", "xlsx", "csv"], accept_multiple_files=True)
 
 	if uploaded_files:
 		dfs = []

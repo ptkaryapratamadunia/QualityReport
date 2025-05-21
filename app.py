@@ -477,24 +477,30 @@ def cleaning_process(df):
 		# Menghilangkan baris duplicate - added 10March2025
 		df.drop_duplicates(inplace=True)
 
+		tabel_expander_kiri, tabel_expander_kanan=st.columns((1,1))
+
+			
 		# st.write('Preview Data setelah dirapihkan (cleaning):')
 		#dataframe - script ini untuk filtering model tree
 		with st.expander("Preview Data setelah dirapihkan (Full - include 'TRIAL')"):
 			df3 = dataframe_explorer(df, case=False)
 			st.dataframe(df3, use_container_width=True)
 
-		#Filter data yang kolom NoCard-nya mengandung kata "TRIAL"
-		# Pisahkan data berdasarkan kolom NoCard yang mengandung kata "TRIAL"
-		dataframe1 = df[~df['NoCard'].str.contains("TRIAL", case=False, na=False)]  # Data tanpa "TRIAL"
-		dataframe2 = df[df['NoCard'].str.contains("TRIAL", case=False, na=False)]   # Data dengan "TRIAL"
+			#Filter data yang kolom NoCard-nya mengandung kata "TRIAL"
+			# Pisahkan data berdasarkan kolom NoCard yang mengandung kata "TRIAL"
+			dataframe1 = df[~df['NoCard'].str.contains("TRIAL", case=False, na=False)]  # Data tanpa "TRIAL"
+			dataframe2 = df[df['NoCard'].str.contains("TRIAL", case=False, na=False)]   # Data dengan "TRIAL"
+		
+		with tabel_expander_kiri:
+			# Tampilkan preview DataFrame1 (tanpa "TRIAL")
+			with st.expander("Preview Data setelah dirapihkan (tanpa 'TRIAL')"):
+				st.dataframe(dataframe1, use_container_width=True)
 
-		# Tampilkan preview DataFrame1 (tanpa "TRIAL")
-		with st.expander("Preview Data setelah dirapihkan (tanpa 'TRIAL')"):
-			st.dataframe(dataframe1, use_container_width=True)
+		with tabel_expander_kanan:
 
-		# Tampilkan preview DataFrame2 (hanya baris dengan "TRIAL")
-		with st.expander("Preview Data 'TRIAL'"):
-			st.dataframe(dataframe2, use_container_width=True)
+			# Tampilkan preview DataFrame2 (hanya baris dengan "TRIAL")
+			with st.expander("Preview Data 'TRIAL'"):
+				st.dataframe(dataframe2, use_container_width=True)
 
 	#endregion
 	#------------

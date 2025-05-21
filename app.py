@@ -1756,19 +1756,19 @@ def cleaning_process(df):
 					for col in jenis_ng_columns:
 						if col in filtered_partname_df.columns:
 							ng_lot[col] = filtered_partname_df[col].sum()
-					ng_lot_df = pd.DataFrame(list(ng_lot.items()), columns=['Jenis NG', 'Qty NG (lot)'])
-					ng_lot_df = ng_lot_df[ng_lot_df['Qty NG (lot)'] > 0]
-					ng_lot_df = ng_lot_df.sort_values(by='Qty NG (lot)', ascending=False)
+					ng_lot_df = pd.DataFrame(list(ng_lot.items()), columns=['Jenis NG', 'Qty NG (pcs)'])
+					ng_lot_df = ng_lot_df[ng_lot_df['Qty NG (pcs)'] > 0]
+					ng_lot_df = ng_lot_df.sort_values(by='Qty NG (pcs)', ascending=False)
 					fig2 = px.bar(
 						ng_lot_df,
 						x='Jenis NG',
-						y='Qty NG (lot)',
-						title='Qty NG (lot) per Jenis NG',
-						color='Qty NG (lot)',
-						text=ng_lot_df['Qty NG (lot)'].apply(lambda x: f"{x:.2f}")
+						y='Qty NG (pcs)',
+						title='Qty NG (pcs) per Jenis NG',
+						color='Qty NG (pcs)',
+						text=ng_lot_df['Qty NG (pcs)'].apply(lambda x: f"{x:.0f}")
 					)
 					fig2.update_traces(textposition='outside')
-					fig2.update_layout(xaxis_title='Jenis NG', yaxis_title='Qty NG (lot)')
+					fig2.update_layout(xaxis_title='Jenis NG', yaxis_title='Qty NG (pcs)')
 					st.plotly_chart(fig2)
 					
 

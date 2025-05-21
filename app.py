@@ -1652,10 +1652,10 @@ def cleaning_process(df):
 		st.markdown("---")
 		#menampilkan tabel berdasarkan filter - 19Nov2024
 		#----------
-		Filter_tab1,Filter_tab2=st.tabs(["Filter Mode #1","Filter Mode #2"])
+		Filter_tab1,Filter_tab2=st.tabs(["Filter by PartName","Filter Mode #2"])
 
-		with Filter_tab1:
-			st.write("Filter Mode #1")
+		with Filter_tab1:# Filter data berdasarkan PartName
+			st.write("Filtering Data by PartName")		
 			with st.expander("Preview Data setelah dirapihkan (Full - include 'TRIAL')"):
 				df3 = dataframe_explorer(df, case=False)
 				st.dataframe(df3, use_container_width=True)
@@ -1682,6 +1682,23 @@ def cleaning_process(df):
 					'Kilap', 'Tebal', 'Flek Putih', 'Spark', 'Kotor H/ Oval', 'Terkikis/ Crack',
 					'Dimensi/ Penyok'
 				]
+				#Tabel NG% by Jenis NG & PartName
+				# Buat pivot table untuk menghitung rata-rata NG_% per Jenis NG
+				pt_ng = pd.pivot_table(filtered_partname_df, 
+										values='NG_%', 
+										index='PartName', 
+										columns=jenis_ng_columns, 
+										aggfunc='mean', 
+										margins=True, 
+										margins_name='Total')
+				pt_ng = pt_ng.round(2)
+				pt_ng = pt_ng.reset_index()
+				pt_ng = pt_ng.rename_axis(None, axis=1)  # Menghapus nama kolom
+				pt_ng = pt_ng.fillna(0)  # Mengisi nilai NaN dengan 0
+				pt_ng = pt_ng[pt_ng['Total'] > 0]  # Tampilkan hanya yang Total > 0
+				pt_ng = pt_ng.sort_values(by='Total', ascending=False)  # Urutkan berdasarkan Total
+				# Tampilkan tabel
+				st.write(pt_ng)
 
 				#Tampilkan dalam 2 kolom
 				kol_filter1,kol_filter2=st.columns(2)
@@ -1735,7 +1752,7 @@ def cleaning_process(df):
 
 
 		
-		with Filter_tab2:
+		with Filter_tab2:# Filter data berdasarkan Line dan Kategori
 			st.subheader("Multi Filtering Data")
 
 			filter_L, filter_mid, filter_R=st.columns([1,1,3])

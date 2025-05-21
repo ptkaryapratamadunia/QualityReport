@@ -1711,7 +1711,7 @@ def cleaning_process(df):
 				else:
 					filtered_parts_df = filtered_partname_df
 
-				pt_ng = filtered_partname_df.groupby('PartName')[jenis_ng_columns].mean().round(0)
+				pt_ng = filtered_partname_df.groupby('PartName')[jenis_ng_columns].sum().round(0)
 				pt_ng = pt_ng.reset_index()
 				# Hanya tampilkan part yang punya nilai NG > 0 pada salah satu jenis NG
 				pt_ng = pt_ng.loc[pt_ng[jenis_ng_columns].sum(axis=1) > 0]

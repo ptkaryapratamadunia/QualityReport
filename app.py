@@ -1658,6 +1658,7 @@ def cleaning_process(df):
 		st.markdown("---")
 		#menampilkan tabel berdasarkan filter - 19Nov2024
 		#----------
+		st.subheader("Filtering Data")
 		Filter_tab1,Filter_tab2=st.tabs(["Filter by PartName","Filter Mode #2"])
 
 		with Filter_tab1:# Filter data berdasarkan PartName
@@ -1763,8 +1764,8 @@ def cleaning_process(df):
 
 		
 		with Filter_tab2:# Filter data berdasarkan Line dan Kategori
-			st.subheader("Multi Filtering Data")
-
+			
+			st.write("Multi Filtering Data")
 			filter_L, filter_mid, filter_R=st.columns([1,1,3])
 
 			with filter_L:

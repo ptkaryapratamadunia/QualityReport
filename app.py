@@ -1690,43 +1690,47 @@ def cleaning_process(df):
 				else:
 					filtered_parts_df = filtered_partname_df
 
-				pt_ng = filtered_parts_df.groupby('PartName')[jenis_ng_columns].mean().round(2)
+				pt_ng = filtered_partname_df.groupby('PartName')[jenis_ng_columns].mean().round(2)
 				pt_ng = pt_ng.reset_index()
 				# Hanya tampilkan part yang punya nilai NG > 0 pada salah satu jenis NG
 				pt_ng = pt_ng.loc[pt_ng[jenis_ng_columns].sum(axis=1) > 0]
 				# Urutkan berdasarkan total NG (dari besar ke kecil)
 				pt_ng['Total'] = pt_ng[jenis_ng_columns].sum(axis=1)
 				pt_ng = pt_ng.sort_values(by='Total', ascending=False)
-				pt_ng = pt_ng.drop(columns=['Total'])
+				# Tambahkan baris TOTAL untuk setiap kolom jenis NG
+				total_row = pt_ng[jenis_ng_columns].sum().to_frame().T
+				total_row['PartName'] = 'TOTAL'
+				total_row['Total'] = total_row[jenis_ng_columns].sum(axis=1)
+				pt_ng = pd.concat([pt_ng, total_row], ignore_index=True)
 				st.write(pt_ng)
 
 				#Tampilkan dalam 2 kolom
 				kol_filter1,kol_filter2=st.columns(2)
 				with kol_filter1:
-					# Hitung rata-rata NG_% untuk setiap jenis NG
-					avg_ng = {}
-					for col in jenis_ng_columns:
-						if col in filtered_partname_df.columns and 'Insp(B/H)' in filtered_partname_df.columns:
-							# Rata-rata NG_% per jenis NG = (jumlah NG jenis itu / jumlah Insp(B/H)) * 100
-							total_ng = filtered_partname_df[col].sum()
-							total_insp = filtered_partname_df['Insp(B/H)'].sum()
-							avg_ng[col] = (total_ng / total_insp * 100) if total_insp > 0 else 0
-					# Buat DataFrame untuk plot
-					
-					ng_df = pd.DataFrame(list(avg_ng.items()), columns=['Jenis NG', 'Avg NG_%'])
-					ng_df = ng_df[ng_df['Avg NG_%'] > 0]  # tampilkan hanya yang > 0
-					ng_df = ng_df.sort_values(by='Avg NG_%', ascending=False)  # urutkan dari besar ke kecil
-					fig = px.bar(
-						ng_df,
-						x='Jenis NG',
-						y='Avg NG_%',
-						title='Avg NG_% per Jenis NG',
-						color='Avg NG_%',
-						text=ng_df['Avg NG_%'].apply(lambda x: f"{x:.2f}")
-					)
-					fig.update_traces(textposition='outside')
-					fig.update_layout(xaxis_title='Jenis NG', yaxis_title='Avg NG_%')
-					st.plotly_chart(fig)
+					# Tampilkan grafik untuk setiap PartName pada pt_ng (kecuali TOTAL)
+					for idx, row in pt_ng.iterrows():
+						if row['PartName'] == 'TOTAL':
+							continue
+						jenis_ng_vals = row[jenis_ng_columns]
+						# Hanya tampilkan jika ada nilai > 0
+						if jenis_ng_vals.sum() > 0:
+							ng_df = pd.DataFrame({
+								'Jenis NG': jenis_ng_columns,
+								'Avg NG_%': jenis_ng_vals.values
+							})
+							ng_df = ng_df[ng_df['Avg NG_%'] > 0]
+							ng_df = ng_df.sort_values(by='Avg NG_%', ascending=False)
+							fig = px.bar(
+								ng_df,
+								x='Jenis NG',
+								y='Avg NG_%',
+								title=f"Avg NG_% per Jenis NG untuk {row['PartName']}",
+								color='Avg NG_%',
+								text=ng_df['Avg NG_%'].apply(lambda x: f"{x:.2f}")
+							)
+							fig.update_traces(textposition='outside')
+							fig.update_layout(xaxis_title='Jenis NG', yaxis_title='Avg NG_%')
+							st.plotly_chart(fig)
 
 				with kol_filter2:
 					# grafik batang untuk Qty NG (lot) per Jenis NG

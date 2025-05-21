@@ -1684,7 +1684,13 @@ def cleaning_process(df):
 				]
 				#Tabel NG% by Jenis NG & PartName
 				# Buat pivot table untuk menghitung rata-rata NG_% per Jenis NG per PartName
-				pt_ng = filtered_partname_df.groupby('PartName')[jenis_ng_columns].mean().round(2)
+				# Filter hanya PartName yang dipilih
+				if selected_partname:
+					filtered_parts_df = filtered_partname_df[filtered_partname_df['PartName'].isin(selected_partname)]
+				else:
+					filtered_parts_df = filtered_partname_df
+
+				pt_ng = filtered_parts_df.groupby('PartName')[jenis_ng_columns].mean().round(2)
 				pt_ng = pt_ng.reset_index()
 				# Hanya tampilkan part yang punya nilai NG > 0 pada salah satu jenis NG
 				pt_ng = pt_ng.loc[pt_ng[jenis_ng_columns].sum(axis=1) > 0]

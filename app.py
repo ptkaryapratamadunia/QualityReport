@@ -1683,21 +1683,15 @@ def cleaning_process(df):
 					'Dimensi/ Penyok'
 				]
 				#Tabel NG% by Jenis NG & PartName
-				# Buat pivot table untuk menghitung rata-rata NG_% per Jenis NG
-				pt_ng = pd.pivot_table(filtered_partname_df, 
-										values='NG_%', 
-										index='PartName', 
-										columns=jenis_ng_columns, 
-										aggfunc='mean', 
-										margins=True, 
-										margins_name='Total')
-				pt_ng = pt_ng.round(2)
+				# Buat pivot table untuk menghitung rata-rata NG_% per Jenis NG per PartName
+				pt_ng = filtered_partname_df.groupby('PartName')[jenis_ng_columns].mean().round(2)
 				pt_ng = pt_ng.reset_index()
-				# pt_ng = pt_ng.rename_axis(None, axis=1)  # Menghapus nama kolom
-				pt_ng = pt_ng.fillna(0)  # Mengisi nilai NaN dengan 0
-				pt_ng = pt_ng[pt_ng['Total'] > 0]  # Tampilkan hanya yang Total > 0
-				pt_ng = pt_ng.sort_values(by='Total', ascending=False)  # Urutkan berdasarkan Total
-				# Tampilkan tabel
+				# Hanya tampilkan part yang punya nilai NG > 0 pada salah satu jenis NG
+				pt_ng = pt_ng.loc[pt_ng[jenis_ng_columns].sum(axis=1) > 0]
+				# Urutkan berdasarkan total NG (dari besar ke kecil)
+				pt_ng['Total'] = pt_ng[jenis_ng_columns].sum(axis=1)
+				pt_ng = pt_ng.sort_values(by='Total', ascending=False)
+				pt_ng = pt_ng.drop(columns=['Total'])
 				st.write(pt_ng)
 
 				#Tampilkan dalam 2 kolom

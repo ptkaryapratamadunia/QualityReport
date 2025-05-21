@@ -1728,27 +1728,56 @@ def cleaning_process(df):
 				#Tampilkan dalam 2 kolom
 				kol_filter1,kol_filter2=st.columns(2)
 				with kol_filter1:
+
+					#tabel PArtname vs NG_% (rata-rata untuk part yang dipilih), Total QTyInspec, Total NG pcs, Total OK pcs
+					# Buat pivot table untuk menghitung rata-rata NG_% per Jenis NG per PartName
+					# Filter hanya PartName yang dipilih
+					if selected_partname:
+						filtered_parts_df = filtered_partname_df[filtered_partname_df['PartName'].isin(selected_partname)]
+					else:
+						filtered_parts_df = filtered_partname_df
+
+					# Buat tabel PartName vs NG_% (mean), Total QInspec (sum), Total NG pcs (sum), Total OK pcs (sum)
+					tabel_summary = filtered_parts_df.groupby('PartName').agg({
+						'NG_%': 'mean',
+						'QInspec': 'sum',
+						'Qty(NG)': 'sum'
+					}).reset_index()
+					tabel_summary['Qty(OK)'] = tabel_summary['QInspec'] - tabel_summary['Qty(NG)']
+
+					# Baris TOTAL: NG_% = mean, lainnya SUM
+					total_row = {
+						'PartName': 'TOTAL',
+						'NG_%': tabel_summary['NG_%'].mean(),
+						'QInspec': tabel_summary['QInspec'].sum(),
+						'Qty(NG)': tabel_summary['Qty(NG)'].sum(),
+						'Qty(OK)': tabel_summary['Qty(OK)'].sum()
+					}
+					tabel_summary = pd.concat([tabel_summary, pd.DataFrame([total_row])], ignore_index=True)
+
+					st.write(tabel_summary)
+					# Hanya tampilkan part yang punya nilai NG > 0 pada salah satu jenis NG
 					
 					# grafik batang untuk Qty NG (lot) per Jenis NG
 					# Grafik batang untuk NG_% per Jenis NG (rata-rata untuk part yang dipilih)
-					ng_percent = {}
-					for col in jenis_ng_columns:
-						if col in filtered_partname_df.columns:
-							ng_percent[col] = filtered_partname_df[col].mean()
-					ng_percent_df = pd.DataFrame(list(ng_percent.items()), columns=['Jenis NG', 'NG_%'])
-					ng_percent_df = ng_percent_df[ng_percent_df['NG_%'] > 0]
-					ng_percent_df = ng_percent_df.sort_values(by='NG_%', ascending=False)
-					fig1 = px.bar(
-						ng_percent_df,
-						x='Jenis NG',
-						y='NG_%',
-						title='Rata-rata NG (%) per Jenis NG (Part Terpilih)',
-						color='NG_%',
-						text=ng_percent_df['NG_%'].apply(lambda x: f"{x:.2f}")
-					)
-					fig1.update_traces(textposition='outside')
-					fig1.update_layout(xaxis_title='Jenis NG', yaxis_title='NG (%)')
-					st.plotly_chart(fig1)
+					# ng_percent = {}
+					# for col in jenis_ng_columns:
+					# 	if col in filtered_partname_df.columns:
+					# 		ng_percent[col] = filtered_partname_df[col].mean()
+					# ng_percent_df = pd.DataFrame(list(ng_percent.items()), columns=['Jenis NG', 'NG_%'])
+					# ng_percent_df = ng_percent_df[ng_percent_df['NG_%'] > 0]
+					# ng_percent_df = ng_percent_df.sort_values(by='NG_%', ascending=False)
+					# fig1 = px.bar(
+					# 	ng_percent_df,
+					# 	x='Jenis NG',
+					# 	y='NG_%',
+					# 	title='Rata-rata NG (%) per Jenis NG (Part Terpilih)',
+					# 	color='NG_%',
+					# 	text=ng_percent_df['NG_%'].apply(lambda x: f"{x:.2f}")
+					# )
+					# fig1.update_traces(textposition='outside')
+					# fig1.update_layout(xaxis_title='Jenis NG', yaxis_title='NG (%)')
+					# st.plotly_chart(fig1)
 
 				with kol_filter2:
 					# grafik batang untuk Qty NG (lot) per Jenis NG

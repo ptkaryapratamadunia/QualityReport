@@ -237,7 +237,7 @@ def show_footer():
 		# Memuat gambar dan mengubahnya menjadi base64
 		# logo_KPD ='logoKPD.png'
 		image_base64 = get_image_as_base64(e_WeYe)
-		st.image(e_WeYe,"Copyright ©️ 2024 - e-WeYe, All Rights Reserved", use_column_width=True)
+		st.image(e_WeYe,"Copyright ©️ 2024 - e-WeYe, All Rights Reserved")
 
 	with kaki_kanan2:
 		st.write("")
@@ -1847,11 +1847,15 @@ def main():
 	
 	header()
 
-	#Added 18Mar2025 to make this apps more user friendly and globally accessible
-	st.warning(f"Jika sumber file yang ingin dibersihkan berada di folder Google Drive, unduh/download lewat link berikut ini: [Link Folder](https://drive.google.com/drive/folders/1motad9bizxGZdiODetAo6K7_38dbXxxG?usp=sharing)  |  Download file Excel (.xls, .xlsx atau .csv) dari folder tersebut ke perangkat Anda, lalu unggah/upload file lewat menu Browse di bawah ini:")
+	upload_kol1, upload_kol2 = st.columns([1, 1])
+	with upload_kol1:
 
-	# File uploader
-	uploaded_files = st.file_uploader("Silakan pilih file Excel (.xls, .xlsx, .csv) yang ingin dibersihkan:",type=["xls", "xlsx", "csv"], accept_multiple_files=True)
+		#Added 18Mar2025 to make this apps more user friendly and globally accessible
+		st.warning(f"Jika sumber file yang ingin dibersihkan berada di folder Google Drive, unduh/download lewat link berikut ini: [Link Folder](https://drive.google.com/drive/folders/1motad9bizxGZdiODetAo6K7_38dbXxxG?usp=sharing)  |  Download file Excel (.xls, .xlsx atau .csv) dari folder tersebut ke perangkat Anda, lalu unggah/upload file lewat menu Browse di sebelah kanan ➡️:")
+
+	with upload_kol2:
+		# File uploader
+		uploaded_files = st.file_uploader("Silakan pilih file Excel (.xls, .xlsx, .csv) yang ingin dibersihkan:",type=["xls", "xlsx", "csv"], accept_multiple_files=True)
 
 	if uploaded_files:
 		dfs = []
@@ -1888,7 +1892,7 @@ def main():
 		# with open(file_path, 'w+') as f:
 		# 	f.write()
 		# st.success("File_arsip.csv berhasil disimpan!")
-		
+	
 		st.success("File berhasil di-upload dan langsung diproses Cleaning.")
 
 		# df = pd.read_csv(file_path)

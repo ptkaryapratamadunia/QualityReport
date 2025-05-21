@@ -1693,7 +1693,7 @@ def cleaning_process(df):
 										margins_name='Total')
 				pt_ng = pt_ng.round(2)
 				pt_ng = pt_ng.reset_index()
-				pt_ng = pt_ng.rename_axis(None, axis=1)  # Menghapus nama kolom
+				# pt_ng = pt_ng.rename_axis(None, axis=1)  # Menghapus nama kolom
 				pt_ng = pt_ng.fillna(0)  # Mengisi nilai NaN dengan 0
 				pt_ng = pt_ng[pt_ng['Total'] > 0]  # Tampilkan hanya yang Total > 0
 				pt_ng = pt_ng.sort_values(by='Total', ascending=False)  # Urutkan berdasarkan Total

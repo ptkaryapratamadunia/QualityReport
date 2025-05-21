@@ -1659,6 +1659,17 @@ def cleaning_process(df):
 		#menampilkan tabel berdasarkan filter - 19Nov2024
 		#----------
 		st.subheader("Filtering Data")
+		DateRange(df3)
+
+		# Daftar kolom jenis NG (pastikan sesuai dengan kolom di df3)
+		jenis_ng_columns = [
+			'Warna', 'Buram', 'Berbayang', 'Kotor', 'Tdk Terplating', 'Rontok/ Blister',
+			'Tipis/ EE No Plating', 'Flek Kuning', 'Terbakar', 'Watermark', 'Jig Mark/ Renggang',
+			'Lecet/ Scratch', 'Seret', 'Flek Hitam', 'Flek Tangan', 'Belang/ Dempet', 'Bintik',
+			'Kilap', 'Tebal', 'Flek Putih', 'Spark', 'Kotor H/ Oval', 'Terkikis/ Crack',
+			'Dimensi/ Penyok'
+		]
+
 		Filter_tab1,Filter_tab2=st.tabs(["Filter by PartName","Filter Mode #2"])
 
 		with Filter_tab1:# Filter data berdasarkan PartName
@@ -1667,13 +1678,23 @@ def cleaning_process(df):
 				df3 = dataframe_explorer(df, case=False)
 				st.dataframe(df3, use_container_width=True)
 
+			with st.expander("Preview Data setelah dirapihkan (Full - include 'TRIAL') PCS"):
+				# Buat salinan df3 untuk menampilkan satuan PCS pada kolom Jenis NG
+				df3_pcs = df3.copy()
+				
+				# Kalikan setiap kolom Jenis NG (lot) dengan Std Load untuk mendapatkan PCS
+				for col in jenis_ng_columns:
+					if col in df3_pcs.columns and 'Std Load' in df3_pcs.columns:
+						df3_pcs[col] = df3_pcs[col] * df3_pcs['Std Load']
+				st.dataframe(df3_pcs, use_container_width=True)
+
 			#buatkan filter untuk menampilkan data sesuai dengan PartName
 			# Mendapatkan unique values dari kolom 'PartName'
-			filter_partname = df3['PartName'].unique()
+			filter_partname = df3_pcs['PartName'].unique()
 			# Membuat selectbox untuk memilih PartName
 			selected_partname = st.multiselect("Pilih PartName:", filter_partname)
 			# Menampilkan tabel berdasarkan filter PartName
-			filtered_partname_df = df3[df3['PartName'].isin(selected_partname)]
+			filtered_partname_df = df3_pcs[df3_pcs['PartName'].isin(selected_partname)]
 
 			with st.expander("Preview Data hasil Filtering by PartName"):
 				
@@ -1681,14 +1702,7 @@ def cleaning_process(df):
 
 			# Summary grafik batang: X = Jenis NG, Y = Avg NG_%
 			if not filtered_partname_df.empty:
-				# Daftar kolom jenis NG (pastikan sesuai dengan kolom di df3)
-				jenis_ng_columns = [
-					'Warna', 'Buram', 'Berbayang', 'Kotor', 'Tdk Terplating', 'Rontok/ Blister',
-					'Tipis/ EE No Plating', 'Flek Kuning', 'Terbakar', 'Watermark', 'Jig Mark/ Renggang',
-					'Lecet/ Scratch', 'Seret', 'Flek Hitam', 'Flek Tangan', 'Belang/ Dempet', 'Bintik',
-					'Kilap', 'Tebal', 'Flek Putih', 'Spark', 'Kotor H/ Oval', 'Terkikis/ Crack',
-					'Dimensi/ Penyok'
-				]
+				
 				#Tabel NG% by Jenis NG & PartName
 				# Buat pivot table untuk menghitung rata-rata NG_% per Jenis NG per PartName
 				# Filter hanya PartName yang dipilih
@@ -1697,7 +1711,7 @@ def cleaning_process(df):
 				else:
 					filtered_parts_df = filtered_partname_df
 
-				pt_ng = filtered_partname_df.groupby('PartName')[jenis_ng_columns].mean().round(2)
+				pt_ng = filtered_partname_df.groupby('PartName')[jenis_ng_columns].mean().round(0)
 				pt_ng = pt_ng.reset_index()
 				# Hanya tampilkan part yang punya nilai NG > 0 pada salah satu jenis NG
 				pt_ng = pt_ng.loc[pt_ng[jenis_ng_columns].sum(axis=1) > 0]
@@ -1714,30 +1728,27 @@ def cleaning_process(df):
 				#Tampilkan dalam 2 kolom
 				kol_filter1,kol_filter2=st.columns(2)
 				with kol_filter1:
-					# Tampilkan grafik untuk setiap PartName pada pt_ng (kecuali TOTAL)
-					for idx, row in pt_ng.iterrows():
-						if row['PartName'] == 'TOTAL':
-							continue
-						jenis_ng_vals = row[jenis_ng_columns]
-						# Hanya tampilkan jika ada nilai > 0
-						if jenis_ng_vals.sum() > 0:
-							ng_df = pd.DataFrame({
-								'Jenis NG': jenis_ng_columns,
-								'Avg NG_%': jenis_ng_vals.values
-							})
-							ng_df = ng_df[ng_df['Avg NG_%'] > 0]
-							ng_df = ng_df.sort_values(by='Avg NG_%', ascending=False)
-							fig = px.bar(
-								ng_df,
-								x='Jenis NG',
-								y='Avg NG_%',
-								title=f"Avg NG_% per Jenis NG untuk {row['PartName']}",
-								color='Avg NG_%',
-								text=ng_df['Avg NG_%'].apply(lambda x: f"{x:.2f}")
-							)
-							fig.update_traces(textposition='outside')
-							fig.update_layout(xaxis_title='Jenis NG', yaxis_title='Avg NG_%')
-							st.plotly_chart(fig)
+					
+					# grafik batang untuk Qty NG (lot) per Jenis NG
+					# Grafik batang untuk NG_% per Jenis NG (rata-rata untuk part yang dipilih)
+					ng_percent = {}
+					for col in jenis_ng_columns:
+						if col in filtered_partname_df.columns:
+							ng_percent[col] = filtered_partname_df[col].mean()
+					ng_percent_df = pd.DataFrame(list(ng_percent.items()), columns=['Jenis NG', 'NG_%'])
+					ng_percent_df = ng_percent_df[ng_percent_df['NG_%'] > 0]
+					ng_percent_df = ng_percent_df.sort_values(by='NG_%', ascending=False)
+					fig1 = px.bar(
+						ng_percent_df,
+						x='Jenis NG',
+						y='NG_%',
+						title='Rata-rata NG (%) per Jenis NG (Part Terpilih)',
+						color='NG_%',
+						text=ng_percent_df['NG_%'].apply(lambda x: f"{x:.2f}")
+					)
+					fig1.update_traces(textposition='outside')
+					fig1.update_layout(xaxis_title='Jenis NG', yaxis_title='NG (%)')
+					st.plotly_chart(fig1)
 
 				with kol_filter2:
 					# grafik batang untuk Qty NG (lot) per Jenis NG

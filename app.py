@@ -1667,8 +1667,8 @@ def cleaning_process(df):
 						width=800,	
 						height=500,
 						margin=dict(l=0, r=0, t=50, b=0),
-						paper_bgcolor='rgba(0,0,0,0)',  # Warna background keseluruhan
-						plot_bgcolor='rgba(0,0,0,0)',   # Warna background area plot												
+						# paper_bgcolor='rgba(0,0,0,0)',  # Warna background keseluruhan
+						# plot_bgcolor='rgba(0,0,0,0)',   # Warna background area plot												
 						font=dict(color='black')  # Warna teks pada grafik																
 					)
 					st.plotly_chart(fig, use_container_width=True)

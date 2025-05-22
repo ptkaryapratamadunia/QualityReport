@@ -3,6 +3,7 @@
 # 08 Oct 2024 start deploy : qualityreportkpd.streamlit.app atau s.id/kpdqualitydatacleaner
 
 from re import X
+from typing import Text
 from unicodedata import category
 from referencing import Anchor
 import streamlit as st
@@ -1663,13 +1664,13 @@ def cleaning_process(df):
 				'Dimensi/ Penyok'
 			]
 
-			Filter_tab1,Filter_tab2=st.tabs(["Filter by PartName","Filter Mode #2"])
+			Filter_tab1,Filter_tab2=st.tabs(["Filter by PartName","Multi Filtering Data"])
 
 			with Filter_tab1:# Filter data berdasarkan PartName
 				st.write("Filtering Data by PartName")		
-				with st.expander("Preview Data setelah dirapihkan (Full - include 'TRIAL')"):
-					df3 = dataframe_explorer(df, case=False)
-					st.dataframe(df3, use_container_width=True)
+				# with st.expander("Preview Data setelah dirapihkan (Full - include 'TRIAL')"):
+				# 	df3_2 = dataframe_explorer(df, case=False)
+				# 	st.dataframe(df3_2, use_container_width=True)
 
 				with st.expander("Preview Data setelah dirapihkan (Full - include 'TRIAL') PCS"):
 					# Buat salinan df3 untuk menampilkan satuan PCS pada kolom Jenis NG
@@ -1716,6 +1717,7 @@ def cleaning_process(df):
 					total_row['PartName'] = 'TOTAL'
 					total_row['Total'] = total_row[jenis_ng_columns].sum(axis=1)
 					pt_ng = pd.concat([pt_ng, total_row], ignore_index=True)
+					st.write("Tabel NG (PCS) by Jenis NG & PartName")
 					st.write(pt_ng)
 
 					#Tampilkan dalam 2 kolom
@@ -1742,12 +1744,23 @@ def cleaning_process(df):
 						total_row = {
 							'PartName': 'TOTAL',
 							'NG_%': tabel_summary['NG_%'].mean(),
-							'QInspec': tabel_summary['QInspec'].sum(),
-							'Qty(NG)': tabel_summary['Qty(NG)'].sum(),
-							'Qty(OK)': tabel_summary['Qty(OK)'].sum()
+							'QInspec': int(tabel_summary['QInspec'].sum()),
+							'Qty(NG)': int(tabel_summary['Qty(NG)'].sum()),
+							'Qty(OK)': int(tabel_summary['Qty(OK)'].sum()),
 						}
-						tabel_summary = pd.concat([tabel_summary, pd.DataFrame([total_row])], ignore_index=True)
+						# Format angka dengan titik sebagai pemisah ribuan
+						def format_id_number(x):
+							return f"{x:,}".replace(",", ".") if isinstance(x, int) else x
 
+						tabel_summary['QInspec'] = tabel_summary['QInspec'].apply(lambda x: format_id_number(int(x)))
+						tabel_summary['Qty(NG)'] = tabel_summary['Qty(NG)'].apply(lambda x: format_id_number(int(x)))
+						tabel_summary['Qty(OK)'] = tabel_summary['Qty(OK)'].apply(lambda x: format_id_number(int(x)))
+						# Format juga untuk total_row
+						total_row['QInspec'] = format_id_number(total_row['QInspec'])
+						total_row['Qty(NG)'] = format_id_number(total_row['Qty(NG)'])
+						total_row['Qty(OK)'] = format_id_number(total_row['Qty(OK)'])
+						tabel_summary = pd.concat([tabel_summary, pd.DataFrame([total_row])], ignore_index=True)
+						st.write("Tabel Summary PartName vs NG (%), Qty Inspected (PCS), Qty NG (PCS), Qty OK (PCS)")
 						st.write(tabel_summary)
 						# Hanya tampilkan part yang punya nilai NG > 0 pada salah satu jenis NG
 						

@@ -1668,23 +1668,32 @@ def cleaning_process(df):
 
 				with trial_kanan:
 					st.write("Grafik Summary Trial")
+					# Sort summary_trial by 'Qty OK (pcs)' + 'Qty NG (pcs)' descending, so largest total is at top
+					summary_trial_sorted = summary_trial.copy()
+					if 'TOTAL' in summary_trial_sorted['PartName'].values:
+						summary_trial_sorted = summary_trial_sorted[summary_trial_sorted['PartName'] != 'TOTAL']
+					summary_trial_sorted = summary_trial_sorted.sort_values(
+						by=['Qty OK (pcs)', 'Qty NG (pcs)'], 
+						ascending=[True, True]
+					)
+
 					fig = go.Figure()
 					fig.add_trace(go.Bar(
-						y=summary_trial['PartName'],
-						x=summary_trial['Qty OK (pcs)'],
+						y=summary_trial_sorted['PartName'],
+						x=summary_trial_sorted['Qty OK (pcs)'],
 						name='Qty OK (pcs)',
 						marker_color='green',
-						text=summary_trial['Qty OK (pcs)'].apply(lambda x: f'{x:,.0f}'),
+						text=summary_trial_sorted['Qty OK (pcs)'].apply(lambda x: f'{x:,.0f}'),
 						textposition='outside',
 						hovertemplate='Qty OK (pcs): %{text}',
 						orientation='h'  # horizontal bars
 					))
 					fig.add_trace(go.Bar(
-						y=summary_trial['PartName'],
-						x=summary_trial['Qty NG (pcs)'],
+						y=summary_trial_sorted['PartName'],
+						x=summary_trial_sorted['Qty NG (pcs)'],
 						name='Qty NG (pcs)',
 						marker_color='red',
-						text=summary_trial['Qty NG (pcs)'].apply(lambda x: f'{x:,.0f}'),
+						text=summary_trial_sorted['Qty NG (pcs)'].apply(lambda x: f'{x:,.0f}'),
 						textposition='outside',
 						hovertemplate='Qty NG (pcs): %{text}',
 						orientation='h'  # horizontal bars

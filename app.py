@@ -1806,9 +1806,6 @@ def cleaning_process(df):
 						fig2.update_layout(xaxis_title='Jenis NG', yaxis_title='Qty NG (pcs)')
 						st.plotly_chart(fig2)
 						
-
-
-			
 			with Filter_tab2:# Filter data berdasarkan Line dan Kategori
 				
 				st.write("Multi Filtering Data")
@@ -1864,16 +1861,15 @@ def cleaning_process(df):
 					# Menampilkan tabel berdasarkan filter kategori dan kolom yang dipilih
 					filtered_df = filtered_df[selected_columns] # Tambahkan 'PartName' untuk keperluan groupby
 
-					st.write("Data hasil filtering:")
-					st.write(filtered_df)
+					with st.expander("Preview Data hasil Filtering"):
+						st.write(filtered_df)
 
 					# Membuat groupby berdasarkan PartName dan kolom yang dipilih oleh user 
 					grouped_df = filtered_df.groupby('PartName').agg(agg_dict)
 					# grouped_df.reset_index()
 					# grouped_df.drop('PartName',inplace=True)
-
-					st.write("Data hasil grouping:") 
-					st.write(grouped_df)
+					with st.expander("Preview Data hasil Grouping"):
+						st.write(grouped_df)
 
 
 	else:

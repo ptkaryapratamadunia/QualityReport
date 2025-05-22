@@ -1618,42 +1618,81 @@ def cleaning_process(df):
 				}
 				summary_trial = pd.concat([summary_trial, pd.DataFrame([total_row])], ignore_index=True)
 				
+				st.write("Summary Trial Table")
+				st.dataframe(summary_trial, use_container_width=True)
 
 				trial_kiri, trial_kanan = st.columns(2)
-				with trial_kiri:
-					st.write("Summary Trial Table")
-					st.dataframe(summary_trial, use_container_width=True)
 
+				with trial_kiri:
 				# Summary Trial Graph
-				
+					#grafik summary jenis NG (sumbu Y) vs Qty NG (sumbu X)			
+					# Daftar kolom Jenis NG (pastikan sesuai dengan kolom di dataframe2)
+					jenis_ng_columns = [
+						'Warna(pcs)', 'Buram(pcs)', 'Berbayang(pcs)', 'Kotor(pcs)', 'Tdk Terplating(pcs)', 'Rontok/ Blister(pcs)',
+						'Tipis/ EE No Plating(pcs)', 'Flek Kuning(pcs)', 'Terbakar(pcs)', 'Watermark(pcs)', 'Jig Mark/ Renggang(pcs)',
+						'Lecet/ Scratch(pcs)', 'Seret(pcs)', 'Flek Hitam(pcs)', 'Flek Tangan(pcs)', 'Belang/ Dempet(pcs)', 'Bintik(pcs)',
+						'Kilap(pcs)', 'Tebal(pcs)', 'Flek Putih(pcs)', 'Spark(pcs)', 'Kotor H/ Oval(pcs)', 'Terkikis/ Crack(pcs)',
+						'Dimensi/ Penyok(pcs)'
+					]
+					# Hitung total Qty NG (pcs) untuk setiap Jenis NG
+					ng_summary = {}
+					for col in jenis_ng_columns:
+						if col in dataframe2.columns:
+							ng_summary[col] = dataframe2[col].sum()
+					# Buat DataFrame dari hasil summary
+					ng_summary_df = pd.DataFrame(list(ng_summary.items()), columns=['Jenis NG', 'Qty NG (pcs)'])
+					# Filter hanya yang Qty NG > 0
+					ng_summary_df = ng_summary_df[ng_summary_df['Qty NG (pcs)'] > 0]
+					# Urutkan dari besar ke kecil
+					ng_summary_df = ng_summary_df.sort_values(by='Qty NG (pcs)', ascending=False)
+					# Plot grafik batang vertikal dengan nilai di ujung grafik
+					fig = px.bar(
+						ng_summary_df,
+						x='Qty NG (pcs)',
+						y='Jenis NG',
+						orientation='h',
+						title='Summary Jenis NG (TRIAL) - Qty NG (pcs) per Jenis NG',
+						color_discrete_sequence=['grey'],
+						text='Qty NG (pcs)'  # Menampilkan nilai di ujung grafik
+					)
+					fig.update_traces(
+						textposition='outside',
+						textfont=dict(color='grey', size=14, family='Arial', weight='bold')
+					)
+					fig.update_layout(
+						xaxis_title='Qty NG (pcs)',
+						yaxis_title='Jenis NG',
+						yaxis=dict(categoryorder='total ascending')
+					)
+					st.plotly_chart(fig)
 
 				with trial_kanan:
 					st.write("Grafik Summary Trial")
 					fig = go.Figure()
 					fig.add_trace(go.Bar(
-						x=summary_trial['PartName'],
-						y=summary_trial['Qty OK (pcs)'],
+						y=summary_trial['PartName'],
+						x=summary_trial['Qty OK (pcs)'],
 						name='Qty OK (pcs)',
 						marker_color='green',
 						text=summary_trial['Qty OK (pcs)'].apply(lambda x: f'{x:,.0f}'),
 						textposition='outside',
 						hovertemplate='Qty OK (pcs): %{text}',
-						orientation='v'  # vertical bars
+						orientation='h'  # horizontal bars
 					))
 					fig.add_trace(go.Bar(
-						x=summary_trial['PartName'],
-						y=summary_trial['Qty NG (pcs)'],
+						y=summary_trial['PartName'],
+						x=summary_trial['Qty NG (pcs)'],
 						name='Qty NG (pcs)',
 						marker_color='red',
 						text=summary_trial['Qty NG (pcs)'].apply(lambda x: f'{x:,.0f}'),
 						textposition='outside',
 						hovertemplate='Qty NG (pcs): %{text}',
-						orientation='v'  # vertical bars
+						orientation='h'  # horizontal bars
 					))
 					fig.update_layout(
 						title='',
-						xaxis_title='PartName',
-						yaxis_title='Qty (pcs)',
+						yaxis_title='PartName',
+						xaxis_title='Qty (pcs)',
 						barmode='stack',
 						legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
 						autosize=True,
@@ -1664,46 +1703,7 @@ def cleaning_process(df):
 					)
 					st.plotly_chart(fig, use_container_width=True)
 					
-				#grafik summary jenis NG (sumbu Y) vs Qty NG (sumbu X)			
-				# Daftar kolom Jenis NG (pastikan sesuai dengan kolom di dataframe2)
-				jenis_ng_columns = [
-					'Warna(pcs)', 'Buram(pcs)', 'Berbayang(pcs)', 'Kotor(pcs)', 'Tdk Terplating(pcs)', 'Rontok/ Blister(pcs)',
-					'Tipis/ EE No Plating(pcs)', 'Flek Kuning(pcs)', 'Terbakar(pcs)', 'Watermark(pcs)', 'Jig Mark/ Renggang(pcs)',
-					'Lecet/ Scratch(pcs)', 'Seret(pcs)', 'Flek Hitam(pcs)', 'Flek Tangan(pcs)', 'Belang/ Dempet(pcs)', 'Bintik(pcs)',
-					'Kilap(pcs)', 'Tebal(pcs)', 'Flek Putih(pcs)', 'Spark(pcs)', 'Kotor H/ Oval(pcs)', 'Terkikis/ Crack(pcs)',
-					'Dimensi/ Penyok(pcs)'
-				]
-				# Hitung total Qty NG (pcs) untuk setiap Jenis NG
-				ng_summary = {}
-				for col in jenis_ng_columns:
-					if col in dataframe2.columns:
-						ng_summary[col] = dataframe2[col].sum()
-				# Buat DataFrame dari hasil summary
-				ng_summary_df = pd.DataFrame(list(ng_summary.items()), columns=['Jenis NG', 'Qty NG (pcs)'])
-				# Filter hanya yang Qty NG > 0
-				ng_summary_df = ng_summary_df[ng_summary_df['Qty NG (pcs)'] > 0]
-				# Urutkan dari besar ke kecil
-				ng_summary_df = ng_summary_df.sort_values(by='Qty NG (pcs)', ascending=False)
-				# Plot grafik batang vertikal dengan nilai di ujung grafik
-				fig = px.bar(
-					ng_summary_df,
-					x='Qty NG (pcs)',
-					y='Jenis NG',
-					orientation='h',
-					title='Summary Jenis NG (TRIAL) - Qty NG (pcs) per Jenis NG',
-					color_discrete_sequence=['grey'],
-					text='Qty NG (pcs)'  # Menampilkan nilai di ujung grafik
-				)
-				fig.update_traces(
-					textposition='outside',
-					textfont=dict(color='grey', size=14, family='Arial', weight='bold')
-				)
-				fig.update_layout(
-					xaxis_title='Qty NG (pcs)',
-					yaxis_title='Jenis NG',
-					yaxis=dict(categoryorder='total ascending')
-				)
-				st.plotly_chart(fig)
+				
 					
 				
 			else:

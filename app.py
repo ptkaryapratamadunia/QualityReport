@@ -238,7 +238,7 @@ def show_footer():
 		# Memuat gambar dan mengubahnya menjadi base64
 		# logo_KPD ='logoKPD.png'
 		image_base64 = get_image_as_base64(e_WeYe)
-		st.image(e_WeYe,"Copyright ©️ 2024 - e-WeYe, All Rights Reserved")
+		st.image(e_WeYe,"©️ 2024 - e-WeYe, All Rights Reserved")
 
 	with kaki_kanan2:
 		st.write("")
@@ -481,7 +481,7 @@ def cleaning_process(df):
 		tabel_expander_kiri, tabel_expander_kanan=st.columns((1,1))
 
 			
-		# st.write('Preview Data setelah dirapihkan (cleaning):')
+		#Data setelah dirapihkan (cleaning)
 		#dataframe - script ini untuk filtering model tree
 		with st.expander("Preview Data setelah dirapihkan (Full - include 'TRIAL')"):
 			df3 = dataframe_explorer(df, case=False)
@@ -745,23 +745,6 @@ def cleaning_process(df):
 				# Display the plot
 				st.plotly_chart(fig)
 
-				# # Create a figure with a 1x2 subplot grid (1 row, 2 columns)
-				# fig = make_subplots(rows=1, cols=2)
-
-				# # Add traces to the subplots
-				# fig.add_trace(go.Bar(x=data_grafik['Date'], y=data_grafik['NG_%'], name='NG_%', marker_color='blue'), row=1, col=1)
-				# fig.add_trace(go.Bar(x=data_grafik2['Date'], y=data_grafik2['Insp(B/H)'], name='Insp(B/H)', marker_color='orange'), row=1, col=2)
-
-				# # Update layout for secondary y-axis (optional)
-				# fig.update_layout(
-				# 	title='Grafik NG% & Qty Inspeted (lot) by Month',
-				# 	xaxis_title='Month',
-				# 	yaxis=dict(title='NG_%'),
-				# 	yaxis2=dict(title='Qty Inspected (lot)', overlaying='y', side='right')  # If needed for overlay
-				# )
-
-				# # Display the plot
-				# st.plotly_chart(fig)
 				
 			with grafik_kanan: #Pie Chart - 26Nov2024 Portion of Qty Inspected by Line
 				# Pie Chart
@@ -1293,47 +1276,7 @@ def cleaning_process(df):
 				✔️ Bisa di-auto scale </h6>""", unsafe_allow_html=True)
 
 
-				# # Hitung agregasi untuk setiap kategori
-				# NG_by_kategori_ng = df.groupby('Kategori').agg({'NG_%': 'mean'}).reset_index()
-				# NG_by_kategori_insp = df.groupby('Kategori').agg({'Insp(B/H)': 'sum'}).reset_index()
-
-				# # Create a figure with a 1x2 subplot grid (1 row, 2 columns)
-				# fig = make_subplots(rows=1, cols=2)
-
-				# # Add traces to the subplots
-				# fig.add_trace(go.Bar(x=NG_by_kategori_ng['Kategori'], y=NG_by_kategori_ng['NG_%'], name='NG_%', marker_color='blue'), row=1, col=1)
-				# fig.add_trace(go.Bar(x=NG_by_kategori_insp['Kategori'], y=NG_by_kategori_insp['Insp(B/H)'], name='Insp(B/H)', marker_color='orange'), row=1, col=2)
-
-				# # Update layout for secondary y-axis (optional)
-				# fig.update_layout(
-				# 	title='Grafik NG (% ) Vs Insp (lot) per Kategori',
-				# 	xaxis_title='Kategori',
-				# 	yaxis=dict(title='Average NG (%)'),
-				# 	yaxis2=dict(title='Qty Inspected (lot)', overlaying='y', side='right')  # If needed for overlay
-				# )
-
-				# # Display the plot
-				# st.plotly_chart(fig)
-				# st.write('NG (%) by Line & Kategori')
-				# st.write(pt_kategori_line)
-
-				# #grafik pcs hanya untuk busi
-				# pt_kategori_line_NGpcs_grafikBUSI=pt_kategori_line_NGpcs_grafik.loc['BUSI']
-				# pt_kategori_line_InspPcs_grafikBUSI=pt_kategori_line_InspPcs_grafik.loc['BUSI']
-
-				# #gabung data
-				# combined_data=pd.concat([pt_kategori_line_InspPcs_grafikBUSI,pt_kategori_line_NGpcs_grafikBUSI],ignore_index=True)
-				# df_grup_grafik=pd.DataFrame(combined_data)
-				# #nambah kolom satuan
-				# grup=['Qty Inspected (pcs)','Qty NG (pcs)']
-				# df_grup_grafik['Satuan']=grup
-
-				# # Buat grafik batang dengan Plotly
-				# fig = px.bar(df_grup_grafik, x='Satuan', y='BUSI', color='Satuan', barmode='group')
-				# fig.update_layout(title='Grafik Qty Insp dan Qty NG untuk BUSI (pcs)',
-				# 				xaxis_title='-',
-				# 				yaxis_title='(pcs)')
-				# st.plotly_chart(fig)
+				
 		
 			with colteng:	#Tabel Data Qty NG (lot) by Line & Kategori
 				st.write('Data Qty NG (lot) by Line & Kategori')
@@ -1643,8 +1586,81 @@ def cleaning_process(df):
 			st.markdown("---")
 
 
-		with sum_tab2: # Summary Report #2
-			st.subheader("Summary Report")
+		with sum_tab2: # Summary Trial 
+			st.subheader("Summary Trial")
+			# dataframe2 = df[df['NoCard'].str.contains("TRIAL", case=False, na=False)]   # Data dengan "TRIAL"
+
+			# Summary Trial Table
+			if not dataframe2.empty:
+				summary_trial = dataframe2.groupby(['PartName', 'Line']).agg({
+					'NG_%': 'mean',
+					'QInspec': 'sum',
+					'Qty(NG)': 'sum'
+				}).reset_index()
+				summary_trial['Qty OK (pcs)'] = summary_trial['QInspec'] - summary_trial['Qty(NG)']
+				summary_trial = summary_trial.rename(columns={
+					'NG_%': 'NG (%)',
+					'QInspec': 'Qty Inspected (pcs)',
+					'Qty(NG)': 'Qty NG (pcs)'
+				})
+
+				# Tambahkan baris TOTAL
+				total_row = {
+					'PartName': 'TOTAL',
+					'Line': '',
+					'NG (%)': summary_trial['NG (%)'].mean(),
+					'Qty Inspected (pcs)': summary_trial['Qty Inspected (pcs)'].sum(),
+					'Qty NG (pcs)': summary_trial['Qty NG (pcs)'].sum(),
+					'Qty OK (pcs)': summary_trial['Qty OK (pcs)'].sum()
+				}
+				summary_trial = pd.concat([summary_trial, pd.DataFrame([total_row])], ignore_index=True)
+				st.write("Summary Trial (TRIAL) Table")
+				st.dataframe(summary_trial, use_container_width=True)
+
+				# Summary Trial Graph
+				# Grafik batang vertikal: Y = Jenis NG, X = NG (%), warna berbeda untuk setiap jenis NG
+				# Grafik batang vertikal: Y = Jenis NG, X = NG_%, tampilkan nilai di ujung grafik
+				# Daftar kolom jenis NG
+				jenis_ng_columns = [
+					'Warna', 'Buram', 'Berbayang', 'Kotor', 'Tdk Terplating', 'Rontok/ Blister',
+					'Tipis/ EE No Plating', 'Flek Kuning', 'Terbakar', 'Watermark', 'Jig Mark/ Renggang',
+					'Lecet/ Scratch', 'Seret', 'Flek Hitam', 'Flek Tangan', 'Belang/ Dempet', 'Bintik',
+					'Kilap', 'Tebal', 'Flek Putih', 'Spark', 'Kotor H/ Oval', 'Terkikis/ Crack',
+					'Dimensi/ Penyok'
+				]
+				# Hitung rata-rata NG_% untuk setiap jenis NG pada dataframe2
+				ng_percent = {}
+				for col in jenis_ng_columns:
+					if col in dataframe2.columns and 'QInspec' in dataframe2.columns:
+						# NG_% per jenis NG = total NG (pcs) / total QInspec * 100
+						total_ng = dataframe2[col].sum()
+						total_qinspec = dataframe2['QInspec'].sum()
+						ng_percent[col] = (total_ng / total_qinspec * 100) if total_qinspec > 0 else 0
+				ng_percent_df = pd.DataFrame(list(ng_percent.items()), columns=['Jenis NG', 'NG_%'])
+				ng_percent_df = ng_percent_df[ng_percent_df['NG_%'] > 0]
+				ng_percent_df = ng_percent_df.sort_values(by='NG_%', ascending=True)
+				fig = px.bar(
+					ng_percent_df,
+					x='NG_%',
+					y='Jenis NG',
+					orientation='h',
+					text=ng_percent_df['NG_%'].apply(lambda x: f"{x:.2f}%"),
+					title='NG (%) per Jenis NG (TRIAL)'
+				)
+				fig.update_traces(textposition='outside')
+				fig.update_layout(
+					xaxis_title='NG (%)',
+					yaxis_title='Jenis NG',
+					paper_bgcolor='rgba(0,0,0,0)',
+					plot_bgcolor='rgba(0,0,0,0)'
+				)
+				st.plotly_chart(fig)
+				
+					
+				
+			else:
+				st.info("Tidak ada data TRIAL untuk ditampilkan.")
+
 		
 		
 		#----------------------Batas Tab Filtering Data

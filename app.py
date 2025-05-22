@@ -1588,7 +1588,10 @@ def cleaning_process(df):
 
 		with sum_tab2: # Summary Trial 
 			st.subheader("Summary Trial")
+			DateRange(df3)
 			# dataframe2 = df[df['NoCard'].str.contains("TRIAL", case=False, na=False)]   # Data dengan "TRIAL"
+			with st.expander("Data TRIAL", expanded=False):
+				st.dataframe(dataframe2, use_container_width=True)
 
 			# Summary Trial Table
 			if not dataframe2.empty:
@@ -1614,48 +1617,63 @@ def cleaning_process(df):
 					'Qty OK (pcs)': summary_trial['Qty OK (pcs)'].sum()
 				}
 				summary_trial = pd.concat([summary_trial, pd.DataFrame([total_row])], ignore_index=True)
-				st.write("Summary Trial (TRIAL) Table")
-				st.dataframe(summary_trial, use_container_width=True)
+				
+
+				trial_kiri, trial_kanan = st.columns(2)
+				with trial_kiri:
+					st.write("Summary Trial Table")
+					st.dataframe(summary_trial, use_container_width=True)
 
 				# Summary Trial Graph
-				# Grafik batang vertikal: Y = Jenis NG, X = NG (%), warna berbeda untuk setiap jenis NG
-				# Grafik batang vertikal: Y = Jenis NG, X = NG_%, tampilkan nilai di ujung grafik
-				# Daftar kolom jenis NG
-				jenis_ng_columns = [
-					'Warna', 'Buram', 'Berbayang', 'Kotor', 'Tdk Terplating', 'Rontok/ Blister',
-					'Tipis/ EE No Plating', 'Flek Kuning', 'Terbakar', 'Watermark', 'Jig Mark/ Renggang',
-					'Lecet/ Scratch', 'Seret', 'Flek Hitam', 'Flek Tangan', 'Belang/ Dempet', 'Bintik',
-					'Kilap', 'Tebal', 'Flek Putih', 'Spark', 'Kotor H/ Oval', 'Terkikis/ Crack',
-					'Dimensi/ Penyok'
-				]
-				# Hitung rata-rata NG_% untuk setiap jenis NG pada dataframe2
-				ng_percent = {}
-				for col in jenis_ng_columns:
-					if col in dataframe2.columns and 'QInspec' in dataframe2.columns:
-						# NG_% per jenis NG = total NG (pcs) / total QInspec * 100
-						total_ng = dataframe2[col].sum()
-						total_qinspec = dataframe2['QInspec'].sum()
-						ng_percent[col] = (total_ng / total_qinspec * 100) if total_qinspec > 0 else 0
-				ng_percent_df = pd.DataFrame(list(ng_percent.items()), columns=['Jenis NG', 'NG_%'])
-				ng_percent_df = ng_percent_df[ng_percent_df['NG_%'] > 0]
-				ng_percent_df = ng_percent_df.sort_values(by='NG_%', ascending=True)
-				fig = px.bar(
-					ng_percent_df,
-					x='NG_%',
-					y='Jenis NG',
-					orientation='h',
-					text=ng_percent_df['NG_%'].apply(lambda x: f"{x:.2f}%"),
-					title='NG (%) per Jenis NG (TRIAL)'
-				)
-				fig.update_traces(textposition='outside')
-				fig.update_layout(
-					xaxis_title='NG (%)',
-					yaxis_title='Jenis NG',
-					paper_bgcolor='rgba(0,0,0,0)',
-					plot_bgcolor='rgba(0,0,0,0)'
-				)
-				st.plotly_chart(fig)
 				
+
+				with trial_kanan:
+					st.write("Grafik Summary Trial")
+					fig = go.Figure()
+					# fig.add_trace(go.Bar(
+					# 	x=summary_trial['PartName'],
+					# 	y=summary_trial['Qty Inspected (pcs)'],
+					# 	name='Qty Inspected (pcs)',
+					# 	marker_color='blue',
+					# 	text=summary_trial['Qty Inspected (pcs)'].apply(lambda x: f'{x:,.0f}'),
+					# 	textposition='outside',
+					# 	hovertemplate='Qty Inspected (pcs): %{text}'
+					# ))	
+					fig.add_trace(go.Bar(
+						x=summary_trial['PartName'],
+						y=summary_trial['Qty OK (pcs)'],						
+						name='Qty OK (pcs)',
+						marker_color='green',
+						text=summary_trial['Qty OK (pcs)'].apply(lambda x: f'{x:,.0f}'),						
+						textposition='outside',
+						hovertemplate='Qty OK (pcs): %{text}'
+					))	
+					fig.add_trace(go.Bar(
+						x=summary_trial['PartName'],
+						y=summary_trial['Qty NG (pcs)'],
+						name='Qty NG (pcs)',					
+						marker_color='red',										
+						text=summary_trial['Qty NG (pcs)'].apply(lambda x: f'{x:,.0f}'),
+						textposition='outside',
+						hovertemplate='Qty NG (pcs): %{text}'
+					))	
+					fig.update_layout(
+						title='',
+						xaxis_title='PartName',
+						yaxis_title='Qty (pcs)',
+						barmode='stack',
+						legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+						autosize=True,
+						width=800,	
+						height=500,
+						margin=dict(l=0, r=0, t=50, b=0),
+						paper_bgcolor='rgba(0,0,0,0)',  # Warna background keseluruhan
+						plot_bgcolor='rgba(0,0,0,0)',   # Warna background area plot												
+						font=dict(color='black')  # Warna teks pada grafik																
+					)
+					st.plotly_chart(fig, use_container_width=True)
+					
+					
 					
 				
 			else:
@@ -1684,27 +1702,27 @@ def cleaning_process(df):
 
 			with Filter_tab1:# Filter data berdasarkan PartName
 				st.write("Filtering Data by PartName")		
-				# with st.expander("Preview Data setelah dirapihkan (Full - include 'TRIAL')"):
-				# 	df3_2 = dataframe_explorer(df, case=False)
-				# 	st.dataframe(df3_2, use_container_width=True)
+				with st.expander("Preview Data setelah dirapihkan (Full - include 'TRIAL')"):
+					df3 = dataframe_explorer(df, case=False)
+					st.dataframe(df3, use_container_width=True)
 
-				with st.expander("Preview Data setelah dirapihkan (Full - include 'TRIAL') PCS"):
+				# with st.expander("Preview Data setelah dirapihkan (Full - include 'TRIAL') PCS"):
 					# Buat salinan df3 untuk menampilkan satuan PCS pada kolom Jenis NG
-					df3_pcs = df3.copy()
+					# df3_pcs = df3.copy()
 					
 					# Kalikan setiap kolom Jenis NG (lot) dengan Std Load untuk mendapatkan PCS
-					for col in jenis_ng_columns:
-						if col in df3_pcs.columns and 'Std Load' in df3_pcs.columns:
-							df3_pcs[col] = df3_pcs[col] * df3_pcs['Std Load']
-					st.dataframe(df3_pcs, use_container_width=True)
+					# for col in jenis_ng_columns:
+					# 	if col in df3_pcs.columns and 'Std Load' in df3_pcs.columns:
+					# 		df3_pcs[col] = df3_pcs[col] * df3_pcs['Std Load']
+					# st.dataframe(df3_pcs, use_container_width=True)
 
 				#buatkan filter untuk menampilkan data sesuai dengan PartName
 				# Mendapatkan unique values dari kolom 'PartName'
-				filter_partname = df3_pcs['PartName'].unique()
+				filter_partname = df3['PartName'].unique()
 				# Membuat selectbox untuk memilih PartName
 				selected_partname = st.multiselect("Pilih PartName:", filter_partname)
 				# Menampilkan tabel berdasarkan filter PartName
-				filtered_partname_df = df3_pcs[df3_pcs['PartName'].isin(selected_partname)]
+				filtered_partname_df = df3[df3['PartName'].isin(selected_partname)]
 
 				with st.expander("Preview Data hasil Filtering by PartName"):
 					

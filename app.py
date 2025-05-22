@@ -1809,6 +1809,8 @@ def cleaning_process(df):
 			with Filter_tab2:# Filter data berdasarkan Line dan Kategori
 				
 				st.write("Multi Filtering Data")
+				DateRange(df3)
+				
 				filter_L, filter_mid, filter_R=st.columns([1,1,3])
 
 				with filter_L:

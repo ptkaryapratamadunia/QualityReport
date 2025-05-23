@@ -1583,7 +1583,7 @@ def cleaning_process(df):
 			st.markdown("---")
 
 			# --- Grafik Garis Rata-rata NG (%) Harian berdasarkan Line ---
-			st.markdown("### Grafik Garis Rata-rata NG (%) Harian berdasarkan Line")
+			st.markdown("### Trend NG by Line")
 			DateRange(df3)
 			
 			# st.write(df3)
@@ -1593,7 +1593,7 @@ def cleaning_process(df):
 			date_max = df3['Date'].max()
 
 			line_options = df3['Line'].dropna().unique().tolist()
-			selected_line = st.selectbox("Pilih Line untuk Grafik Harian:", line_options)
+			selected_line = st.selectbox("Pilih Line:", line_options)
 
 			# Filter df berdasarkan Line yang dipilih
 			df_daily = df3[df3['Line'] == selected_line].copy()
@@ -1608,8 +1608,8 @@ def cleaning_process(df):
 			daily_ng = pd.merge(all_dates_df, daily_ng, how='left', on='Date')
 			daily_ng['NG_%'] = daily_ng['NG_%'].fillna(0)  # Isi 0 jika tidak ada data
 
-			st.write("Tabel Rata-rata NG (%) Harian")
-			st.dataframe(daily_ng, use_container_width=True)
+			# st.write("Tabel Rata-rata NG (%) Harian")
+			# st.dataframe(daily_ng, use_container_width=True)
 
 			fig = px.line(
 				daily_ng,

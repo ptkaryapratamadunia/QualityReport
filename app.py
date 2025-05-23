@@ -1585,7 +1585,60 @@ def cleaning_process(df):
 
 			st.markdown("---")
 
+			# --- Grafik Garis Rata-rata NG (%) Harian berdasarkan Line ---
+			st.markdown("### Trend NG by Line")
+			DateRange(df3)
 			
+			# st.write(df3)
+			# Pilihan Line untuk filter
+			df3['Date'] = pd.to_datetime(df3['Date'], errors='coerce').dt.date  # pastikan hanya tanggal (tanpa waktu)
+			date_min = df3['Date'].min()
+			date_max = df3['Date'].max()
+
+			line_options = df3['Line'].dropna().unique().tolist()
+			selected_line = st.selectbox("Pilih Line yang ingin ditampilkan:", line_options)
+
+			# Filter df berdasarkan Line yang dipilih
+			df_daily = df3[df3['Line'] == selected_line].copy()
+
+			# Buat range tanggal lengkap
+			all_dates = pd.date_range(start=date_min, end=date_max, freq='D').date
+			# st.write(f"Periode dari Tanggal: {date_min} sampai Tanggal : {date_max}")
+
+			# Group by Date (tanpa waktu), hitung rata-rata NG_%
+			daily_ng = df_daily.groupby('Date', as_index=False)['NG_%'].mean()
+			all_dates_df = pd.DataFrame({'Date': all_dates})
+			daily_ng = pd.merge(all_dates_df, daily_ng, how='left', on='Date')
+			daily_ng['NG_%'] = daily_ng['NG_%'].fillna(0)  # Isi 0 jika tidak ada data
+
+			# st.write("Tabel Rata-rata NG (%) Harian")
+			# st.dataframe(daily_ng, use_container_width=True)
+
+			fig = px.line(
+				daily_ng,
+				x='Date',
+				y='NG_%',
+				title=f'Rata-rata NG (%) Harian - {selected_line}',
+				labels={'Date': 'Tanggal', 'NG_%': 'Rata-rata NG (%)'},
+				markers=True,
+				text=daily_ng['NG_%'].round(2)  # Tampilkan nilai di atas grafik
+			)
+			fig.update_traces(
+				textposition='top center',
+				textfont=dict(color='black', size=12)
+			)
+			fig.update_layout(
+				xaxis_title='Tanggal',
+				yaxis_title='Rata-rata NG (%)',
+				xaxis=dict(
+					type='category',
+					tickformat='%d-%b-%Y',
+					tickangle=45,
+					tickmode='auto',
+					dtick=1  # Tampilkan setiap hari
+				),
+			)
+			st.plotly_chart(fig, use_container_width=True)
 
 			
 		with sum_tab2: # Summary Trial 
@@ -1951,59 +2004,60 @@ def cleaning_process(df):
 			with Filter_tab3:# Filter data berdasarkan Line untuk grafik harian
 				# --- Grafik Garis Rata-rata NG (%) Harian berdasarkan Line ---
 				st.markdown("### Trend NG by Line")
-				DateRange(df3)
-				with st.expander("Preview Data :"):
-					df3 = dataframe_explorer(df, case=False)	
-					st.dataframe(df3, use_container_width=True)
-				# Pilihan Line untuk filter
-				df3['Date'] = pd.to_datetime(df3['Date'], errors='coerce').dt.date  # pastikan hanya tanggal (tanpa waktu)
-				date_min = df3['Date'].min()
-				date_max = df3['Date'].max()
+				# DateRange(df3)
+				# df3_4daily = df3.copy()
+				# # with st.expander("Preview Data :"):
+				# # 	df3_4daily = dataframe_explorer(df3, case=False)	
+				# # 	st.dataframe(df3_4daily, use_container_width=True)
+				# # Pilihan Line untuk filter
+				# df3_4daily['Date'] = pd.to_datetime(df3_4daily['Date'], errors='coerce').dt.date  # pastikan hanya tanggal (tanpa waktu)
+				# date_min = df3_4daily['Date'].min()
+				# date_max = df3_4daily['Date'].max()
 
-				line_options = df3['Line'].dropna().unique().tolist()
-				selected_line = st.selectbox("Pilih Line yang ingin ditampilkan:", line_options)
+				# line_options = df3_4daily['Line'].dropna().unique().tolist()
+				# selected_line = st.selectbox("Pilih Line yang ingin ditampilkan:", line_options)
 
-				# Filter df berdasarkan Line yang dipilih
-				df_daily = df3[df3['Line'] == selected_line].copy()
+				# # Filter df berdasarkan Line yang dipilih
+				# df_daily = df3_4daily[df3_4daily['Line'] == selected_line].copy()
 
-				# Buat range tanggal lengkap
-				all_dates = pd.date_range(start=date_min, end=date_max, freq='D').date
-				# st.write(f"Periode dari Tanggal: {date_min} sampai Tanggal : {date_max}")
+				# # Buat range tanggal lengkap
+				# all_dates = pd.date_range(start=date_min, end=date_max, freq='D').date
+				# # st.write(f"Periode dari Tanggal: {date_min} sampai Tanggal : {date_max}")
 
-				# Group by Date (tanpa waktu), hitung rata-rata NG_%
-				daily_ng = df_daily.groupby('Date', as_index=False)['NG_%'].mean()
-				all_dates_df = pd.DataFrame({'Date': all_dates})
-				daily_ng = pd.merge(all_dates_df, daily_ng, how='left', on='Date')
-				daily_ng['NG_%'] = daily_ng['NG_%'].fillna(0)  # Isi 0 jika tidak ada data
+				# # Group by Date (tanpa waktu), hitung rata-rata NG_%
+				# daily_ng = df_daily.groupby('Date', as_index=False)['NG_%'].mean()
+				# all_dates_df = pd.DataFrame({'Date': all_dates})
+				# daily_ng = pd.merge(all_dates_df, daily_ng, how='left', on='Date')
+				# daily_ng['NG_%'] = daily_ng['NG_%'].fillna(0)  # Isi 0 jika tidak ada data
 
-				# st.write("Tabel Rata-rata NG (%) Harian")
-				# st.dataframe(daily_ng, use_container_width=True)
+				# # st.write("Tabel Rata-rata NG (%) Harian")
+				# # st.dataframe(daily_ng, use_container_width=True)
 
-				fig = px.line(
-					daily_ng,
-					x='Date',
-					y='NG_%',
-					title=f'Rata-rata NG (%) Harian - {selected_line}',
-					labels={'Date': 'Tanggal', 'NG_%': 'Rata-rata NG (%)'},
-					markers=True,
-					text=daily_ng['NG_%'].round(2)  # Tampilkan nilai di atas grafik
-				)
-				fig.update_traces(
-					textposition='top center',
-					textfont=dict(color='black', size=12)
-				)
-				fig.update_layout(
-					xaxis_title='Tanggal',
-					yaxis_title='Rata-rata NG (%)',
-					xaxis=dict(
-						type='category',
-						tickformat='%d-%b-%Y',
-						tickangle=45,
-						tickmode='auto',
-						dtick=1  # Tampilkan setiap hari
-					),
-				)
-				st.plotly_chart(fig, use_container_width=True)
+				# fig = px.line(
+				# 	daily_ng,
+				# 	x='Date',
+				# 	y='NG_%',
+				# 	title=f'Rata-rata NG (%) Harian - {selected_line}',
+				# 	labels={'Date': 'Tanggal', 'NG_%': 'Rata-rata NG (%)'},
+				# 	markers=True,
+				# 	text=daily_ng['NG_%'].round(2)  # Tampilkan nilai di atas grafik
+				# )
+				# fig.update_traces(
+				# 	textposition='top center',
+				# 	textfont=dict(color='black', size=12)
+				# )
+				# fig.update_layout(
+				# 	xaxis_title='Tanggal',
+				# 	yaxis_title='Rata-rata NG (%)',
+				# 	xaxis=dict(
+				# 		type='category',
+				# 		tickformat='%d-%b-%Y',
+				# 		tickangle=45,
+				# 		tickmode='auto',
+				# 		dtick=1  # Tampilkan setiap hari
+				# 	),
+				# )
+				# st.plotly_chart(fig, use_container_width=True)
 	else:
 		st.write("File tidak ditemukan")
 	return df

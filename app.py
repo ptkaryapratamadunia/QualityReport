@@ -24,7 +24,6 @@ from plotly.subplots import make_subplots
 import sys
 import subprocess
 
-from uritemplate import expand
 
 st.set_page_config(page_title="Quality Report", page_icon=":bar_chart:", layout="wide")
 

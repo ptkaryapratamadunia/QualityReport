@@ -2,6 +2,7 @@
 # 03 Oct 2024 start build - dedicated to PT. KPD
 # 08 Oct 2024 start deploy : qualityreportkpd.streamlit.app atau s.id/kpdqualitydatacleaner
 
+from math import exp
 from re import X
 from typing import Text
 from unicodedata import category
@@ -22,6 +23,8 @@ import plotly.graph_objects as go       #cara 2 agar data terlihat saat mouse ov
 from plotly.subplots import make_subplots
 import sys
 import subprocess
+
+from uritemplate import expand
 
 st.set_page_config(page_title="Quality Report", page_icon=":bar_chart:", layout="wide")
 
@@ -1949,8 +1952,8 @@ def cleaning_process(df):
 				# --- Grafik Garis Rata-rata NG (%) Harian berdasarkan Line ---
 				st.markdown("### Trend NG by Line")
 				DateRange(df3)
-				with st.expander("Preview Data setelah dirapihkan (Include 'TRIAL')"):
-					df3 = dataframe_explorer(df, case=False)
+				with st.expander("Preview Data :"):
+					df3 = dataframe_explorer(df, case=False)	
 					st.dataframe(df3, use_container_width=True)
 				# Pilihan Line untuk filter
 				df3['Date'] = pd.to_datetime(df3['Date'], errors='coerce').dt.date  # pastikan hanya tanggal (tanpa waktu)

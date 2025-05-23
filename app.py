@@ -1949,7 +1949,7 @@ def cleaning_process(df):
 				# --- Grafik Garis Rata-rata NG (%) Harian berdasarkan Line ---
 				st.markdown("### Trend NG by Line")
 				DateRange(df3)
-				with st.expander("Preview Data setelah dirapihkan (Full - include 'TRIAL')"):
+				with st.expander("Preview Data setelah dirapihkan (Include 'TRIAL')"):
 					df3 = dataframe_explorer(df, case=False)
 					st.dataframe(df3, use_container_width=True)
 				# Pilihan Line untuk filter

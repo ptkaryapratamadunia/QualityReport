@@ -482,7 +482,7 @@ def cleaning_process(df):
 
 			
 		#Data setelah dirapihkan (cleaning)
-		#dataframe - script ini untuk filtering model tree
+		#dataframe awal
 		with st.expander("Preview Data setelah dirapihkan (Full - include 'TRIAL')"):
 			df3 = dataframe_explorer(df, case=False)
 			st.dataframe(df3, use_container_width=True)
@@ -1273,10 +1273,7 @@ def cleaning_process(df):
 				✔️ Bisa di-download sebagai gambar .png <br>
 				✔️ Bisa di Zoom-IN dan Zoom-OUT <br>
 				✔️ Bisa di-pan / geser kanan kiri <br>
-				✔️ Bisa di-auto scale </h6>""", unsafe_allow_html=True)
-
-
-				
+				✔️ Bisa di-auto scale </h6>""", unsafe_allow_html=True)	
 		
 			with colteng:	#Tabel Data Qty NG (lot) by Line & Kategori
 				st.write('Data Qty NG (lot) by Line & Kategori')
@@ -1588,54 +1585,54 @@ def cleaning_process(df):
 			# --- Grafik Garis Rata-rata NG (%) Harian berdasarkan Line ---
 			st.markdown("### Grafik Garis Rata-rata NG (%) Harian berdasarkan Line")
 			DateRange(df3)
-
+			
+			st.write(df3)
 			# Pilihan Line untuk filter
-			date_min = pd.to_datetime(df['Date'], errors='coerce').min()
-			date_max = pd.to_datetime(df['Date'], errors='coerce').max()
+			df3['Date'] = pd.to_datetime(df3['Date'], errors='coerce').dt.date  # pastikan hanya tanggal (tanpa waktu)
+			date_min = df3['Date'].min()
+			date_max = df3['Date'].max()
 
-			line_options = df['Line'].dropna().unique().tolist()
+			line_options = df3['Line'].dropna().unique().tolist()
 			selected_line = st.selectbox("Pilih Line untuk Grafik Harian:", line_options)
 
 			# Filter df berdasarkan Line yang dipilih
-			df_daily = df[df['Line'] == selected_line].copy()
-			df_daily['Date'] = pd.to_datetime(df_daily['Date'], errors='coerce')
+			df_daily = df3[df3['Line'] == selected_line].copy()
 
 			# Buat range tanggal lengkap
-			all_dates = pd.date_range(start=date_min, end=date_max, freq='D')
+			all_dates = pd.date_range(start=date_min, end=date_max, freq='D').date
+			st.write(f"Periode dari Tanggal: {date_min} sampai Tanggal : {date_max}")
 
-			# Group by Date, hitung rata-rata NG_%
-			daily_ng = df_daily.groupby('Date', as_index=True)['NG_%'].mean()
-			daily_ng = daily_ng.reindex(all_dates)  # Pastikan semua tanggal ada
-			daily_ng = daily_ng.reset_index()
-			daily_ng.columns = ['Date', 'NG_%']
+			# Group by Date (tanpa waktu), hitung rata-rata NG_%
+			daily_ng = df_daily.groupby('Date', as_index=False)['NG_%'].mean()
+			all_dates_df = pd.DataFrame({'Date': all_dates})
+			daily_ng = pd.merge(all_dates_df, daily_ng, how='left', on='Date')
+			daily_ng['NG_%'] = daily_ng['NG_%'].fillna(0)  # Isi 0 jika tidak ada data
 
-			# Jika ingin tampil 0 untuk tanggal tanpa data, isi NaN dengan 0:
-			# daily_ng['NG_%'] = daily_ng['NG_%'].fillna(0)
+			st.write("Tabel Rata-rata NG (%) Harian")
+			st.dataframe(daily_ng, use_container_width=True)
 
-			fig = px.line(
-				daily_ng,
-				x='Date',
-				y='NG_%',
-				title=f'Rata-rata NG (%) Harian - {selected_line}',
-				labels={'Date': 'Tanggal', 'NG_%': 'Rata-rata NG (%)'},
-				markers=True
-			)
-			fig.update_layout(
-				xaxis_title='Tanggal',
-				yaxis_title='Rata-rata NG (%)',
-				xaxis=dict(
-					type='date',
-					tickformat='%d-%b-%Y',
-					tickangle=45,
-					tickmode='auto',
-					dtick="M1"  # Tampilkan setiap bulan, bisa diubah ke 'D1' untuk harian
-				),
-				plot_bgcolor='rgba(0,0,0,0)',
-				paper_bgcolor='rgba(0,0,0,0)'
-			)
-			st.plotly_chart(fig, use_container_width=True)
+			# fig = px.line(
+			# 	daily_ng,
+			# 	x='Date',
+			# 	y='NG_%',
+			# 	title=f'Rata-rata NG (%) Harian - {selected_line}',
+			# 	labels={'Date': 'Tanggal', 'NG_%': 'Rata-rata NG (%)'},
+			# 	markers=True
+			# )
+			# fig.update_layout(
+			# 	xaxis_title='Tanggal',
+			# 	yaxis_title='Rata-rata NG (%)',
+			# 	xaxis=dict(
+			# 		type='category',
+			# 		tickformat='%d-%b-%Y',
+			# 		tickangle=45,
+			# 		tickmode='auto',
+			# 		dtick=1  # Tampilkan setiap hari
+			# 	),
+			# )
+			# st.plotly_chart(fig, use_container_width=True)
 
-			st.markdown("---")
+			
 		with sum_tab2: # Summary Trial 
 			st.subheader("Summary Trial")
 			DateRange(df3)

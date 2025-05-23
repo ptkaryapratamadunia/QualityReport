@@ -1586,7 +1586,7 @@ def cleaning_process(df):
 			st.markdown("### Grafik Garis Rata-rata NG (%) Harian berdasarkan Line")
 			DateRange(df3)
 			
-			st.write(df3)
+			# st.write(df3)
 			# Pilihan Line untuk filter
 			df3['Date'] = pd.to_datetime(df3['Date'], errors='coerce').dt.date  # pastikan hanya tanggal (tanpa waktu)
 			date_min = df3['Date'].min()
@@ -1600,7 +1600,7 @@ def cleaning_process(df):
 
 			# Buat range tanggal lengkap
 			all_dates = pd.date_range(start=date_min, end=date_max, freq='D').date
-			st.write(f"Periode dari Tanggal: {date_min} sampai Tanggal : {date_max}")
+			# st.write(f"Periode dari Tanggal: {date_min} sampai Tanggal : {date_max}")
 
 			# Group by Date (tanpa waktu), hitung rata-rata NG_%
 			daily_ng = df_daily.groupby('Date', as_index=False)['NG_%'].mean()

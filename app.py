@@ -1593,7 +1593,7 @@ def cleaning_process(df):
 			date_max = df3['Date'].max()
 
 			line_options = df3['Line'].dropna().unique().tolist()
-			selected_line = st.selectbox("Pilih Line:", line_options)
+			selected_line = st.selectbox("Pilih Line yang ingin ditampilkan:", line_options)
 
 			# Filter df berdasarkan Line yang dipilih
 			df_daily = df3[df3['Line'] == selected_line].copy()

@@ -1611,26 +1611,31 @@ def cleaning_process(df):
 			st.write("Tabel Rata-rata NG (%) Harian")
 			st.dataframe(daily_ng, use_container_width=True)
 
-			# fig = px.line(
-			# 	daily_ng,
-			# 	x='Date',
-			# 	y='NG_%',
-			# 	title=f'Rata-rata NG (%) Harian - {selected_line}',
-			# 	labels={'Date': 'Tanggal', 'NG_%': 'Rata-rata NG (%)'},
-			# 	markers=True
-			# )
-			# fig.update_layout(
-			# 	xaxis_title='Tanggal',
-			# 	yaxis_title='Rata-rata NG (%)',
-			# 	xaxis=dict(
-			# 		type='category',
-			# 		tickformat='%d-%b-%Y',
-			# 		tickangle=45,
-			# 		tickmode='auto',
-			# 		dtick=1  # Tampilkan setiap hari
-			# 	),
-			# )
-			# st.plotly_chart(fig, use_container_width=True)
+			fig = px.line(
+				daily_ng,
+				x='Date',
+				y='NG_%',
+				title=f'Rata-rata NG (%) Harian - {selected_line}',
+				labels={'Date': 'Tanggal', 'NG_%': 'Rata-rata NG (%)'},
+				markers=True,
+				text=daily_ng['NG_%'].round(2)  # Tampilkan nilai di atas grafik
+			)
+			fig.update_traces(
+				textposition='top center',
+				textfont=dict(color='black', size=12)
+			)
+			fig.update_layout(
+				xaxis_title='Tanggal',
+				yaxis_title='Rata-rata NG (%)',
+				xaxis=dict(
+					type='category',
+					tickformat='%d-%b-%Y',
+					tickangle=45,
+					tickmode='auto',
+					dtick=1  # Tampilkan setiap hari
+				),
+			)
+			st.plotly_chart(fig, use_container_width=True)
 
 			
 		with sum_tab2: # Summary Trial 

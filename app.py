@@ -1950,7 +1950,7 @@ def cleaning_process(df):
 				st.markdown("### Trend NG by Line")
 				DateRange(df3)
 				
-				# st.write(df3)
+				st.write(df3)
 				# Pilihan Line untuk filter
 				df3['Date'] = pd.to_datetime(df3['Date'], errors='coerce').dt.date  # pastikan hanya tanggal (tanpa waktu)
 				date_min = df3['Date'].min()

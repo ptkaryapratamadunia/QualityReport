@@ -116,9 +116,9 @@ def login_page():
 		st.markdown('</div></div>', unsafe_allow_html=True)
 		st.markdown('---')
 	with kol5:
-		st.markdown("""<h2 style="color:green;margin-top:-10px;margin-bottom:0px;"> 🧹 DATA CLEANING </h2>""", unsafe_allow_html=True)
+		st.markdown("""<h2 style="color:green;margin-top:-10px;margin-bottom:0px;"> 📊 QUALITY DASHBOARD </h2>""", unsafe_allow_html=True)
 		
-		st.markdown("<div style='text-align: center; font-weight: bold;color:blue;'>Tools Pengolahan Data</div>", unsafe_allow_html=True)
+		st.markdown("<div style='text-align: center; font-weight: bold;color:blue;'>Quality Performance Plating Line</div>", unsafe_allow_html=True)
 	
 
 # Fungsi untuk mengubah gambar menjadi base64
@@ -126,15 +126,17 @@ def get_image_as_base64(image_path):
 	with open(image_path, "rb") as img_file:
 		return base64.b64encode(img_file.read()).decode()
 	
-
-def header():	
-	# heading
-	kolkir,kolnan=st.columns((2,1))	#artinya kolom sebelahkiri lebih lebar 2x dari kanan
-
-	with kolkir:
-		st.markdown("""<h2 style="color:green;margin-top:-10px;margin-bottom:0px;"> 🧹 DATA CLEANING </h2>""", unsafe_allow_html=True)
-		st.write("Tools Pengolahan Data")
-		st.markdown("""<p style="margin-top:-10px;margin-bottom:0px;font-size:14px">Beberapa data output dari aplikasi AUTOCON-KPD belum siap pakai,\
+def About():
+	# About Page
+	st.markdown("<h2 style='text-align: center;'>About This Application</h2>", unsafe_allow_html=True)
+	# st.markdown("""
+	# 	<p style='text-align: center;'>
+	# 		This application is designed to help the Quality Department of PT. Karyaprama Dunia (KPD) in cleaning and processing data from Autocon QC.
+	# 		It provides tools for data cleaning, including converting text to numbers, extracting machine numbers, and generating summary reports.
+	# 		The application is built using Streamlit and integrates with various data visualization libraries.
+	# 	</p>
+	# """, unsafe_allow_html=True)
+	st.markdown("""<p style="margin-top:-10px;margin-bottom:0px;font-size:14px">Beberapa data output dari aplikasi AUTOCON-KPD belum siap pakai,\
 				oleh karena itu perlu dilakukan proses cleaning, seperti mengkonversi data TEXT menjadi angka,\
 				konversi type NG ABCDSEFGIJKLMN menjadi definisi type NG, mengekstrasi data Nomer Jig\
 				menjadi Nomer Mesin Smallpart, menghapus kolom yang tidak perlu\
@@ -143,6 +145,13 @@ def header():
 				<span style="color:Orange">Disclaimer: <span> <br>Tools ini dapat dijalankan hanya jika sumber file nya adalah hasil ekspor dari program\
 				Autocon QC yang lengkap dan file original belum diedit\
 				(menghapus dan atau menambah kolom)</p>""", unsafe_allow_html=True)
+def header():	
+	# heading
+	kolkir,kolnan=st.columns((2,1))	#artinya kolom sebelahkiri lebih lebar 2x dari kanan
+
+	with kolkir:
+		st.markdown("""<h2 style="color:green;margin-top:-10px;margin-bottom:0px;"> 📊 QUALITY DASHBOARD </h2>""", unsafe_allow_html=True)
+		st.write("Quality Performance Plating Line")
 		
 		
 	with kolnan:
@@ -195,21 +204,22 @@ def header():
 			unsafe_allow_html=True
 		)
 
-		st.markdown("---")
+		# st.markdown("---")
 
-		kolkir2,kolnan2=st.columns(2)
-		with kolkir2:
-			st.write("")
-		with kolnan2:
-			st.markdown('<div style="color:Orange;text-align: right;"> Quality Dept.', unsafe_allow_html=True)
-			st.markdown("---")
-			link_url_looker='https://lookerstudio.google.com/reporting/c9e60f2f-eacd-4f3e-9126-243e568b98fd'
-			st.link_button('Summary Report',link_url_looker,icon='📊')
-			# if st.button('Summary Web Report'):
-			# 			webbrowser.open_new_tab('https://lookerstudio.google.com/reporting/e4a5c3f7-bf91-44e0-9ced-2b7a01eafa3d/page/FsgzD?s=qyZPms8Wytc') 
-			st.markdown('</div>', unsafe_allow_html=True)
+		# kolkir2,kolnan2=st.columns(2)
+		# with kolkir2:
+		# 	st.write("")
+		# with kolnan2:
+		# 	st.markdown('<div style="color:Orange;text-align: right;"> Quality Dept.', unsafe_allow_html=True)
+		# 	st.markdown("---")
+		# 	link_url_looker='https://lookerstudio.google.com/reporting/c9e60f2f-eacd-4f3e-9126-243e568b98fd'
+		# 	st.link_button('Summary Report',link_url_looker,icon='📊')
+		# 	# if st.button('Summary Web Report'):
+		# 	# 			webbrowser.open_new_tab('https://lookerstudio.google.com/reporting/e4a5c3f7-bf91-44e0-9ced-2b7a01eafa3d/page/FsgzD?s=qyZPms8Wytc') 
+		# 	st.markdown('</div>', unsafe_allow_html=True)
 		
-	st.markdown("---")	#--------------------------batas akhir styling HEADER -----------------
+	# st.markdown("---")	
+	#--------------------------batas akhir styling HEADER -----------------
 
 
 def format_with_comma(value):
@@ -2079,72 +2089,83 @@ def main():
 	# st.title("Selamat Datang di Aplikasi Data Cleaning")
 	# st.write("Ini adalah halaman utama aplikasi setelah login berhasil.")	
 	
+	
 	header()
 
-	upload_kol1, upload_kol2 = st.columns([1, 1])
-	with upload_kol1:
+	tab_top1, tab_top2 = st.tabs(["Home", "About"])
+	with tab_top1:
 
-		#Added 18Mar2025 to make this apps more user friendly and globally accessible
-		st.warning(f"Jika sumber file yang ingin dibersihkan berada di folder Google Drive, unduh/download lewat link berikut ini: [Link Folder](https://drive.google.com/drive/folders/1motad9bizxGZdiODetAo6K7_38dbXxxG?usp=sharing)  |  Download file Excel (.xls, .xlsx atau .csv) dari folder tersebut ke perangkat Anda, lalu unggah/upload file lewat menu Browse di sebelah kanan ➡️:")
+		upload_kol1, upload_kol2 = st.columns([1, 1])
+		with upload_kol1:
 
-	with upload_kol2:
-		# File uploader
-		uploaded_files = st.file_uploader("Silakan pilih file Excel (.xls, .xlsx, .csv) yang ingin dibersihkan:",type=["xls", "xlsx", "csv"], accept_multiple_files=True)
+			#Added 18Mar2025 to make this apps more user friendly and globally accessible
+			st.warning(f"Jika sumber file yang ingin dibersihkan berada di folder Google Drive, unduh/download lewat link berikut ini: [Link Folder](https://drive.google.com/drive/folders/1motad9bizxGZdiODetAo6K7_38dbXxxG?usp=sharing)  |  Download file Excel (.xls, .xlsx atau .csv) dari folder tersebut ke perangkat Anda, lalu unggah/upload file lewat menu Browse di sebelah kanan ➡️:")
 
-	if uploaded_files:
-		dfs = []
-		for uploaded_file in uploaded_files:
-			try:
-				file_extension = uploaded_file.name.split('.')[-1].lower()
-				if file_extension in ["xls", "xlsx"]:
-					df_ori = pd.read_excel(uploaded_file)
-					# st.success(f"File Excel {uploaded_file.name} berhasil diunggah!")
-				elif file_extension == "csv":
-					df_ori = pd.read_csv(uploaded_file)
-					# st.success(f"File CSV {uploaded_file.name} berhasil diunggah!")
-				else:
-					st.error(f"Format file {uploaded_file.name} tidak didukung. Harap unggah file dengan ekstensi .xls, .xlsx, atau .csv")
-					df_ori = None
+		with upload_kol2:
+			# File uploader
+			uploaded_files = st.file_uploader("Silakan pilih file Excel (.xls, .xlsx, .csv) yang ingin dibersihkan:",type=["xls", "xlsx", "csv"], accept_multiple_files=True)
 
-				if dfs is not None:
-					dfs.append(df_ori)
+		if uploaded_files:
+			dfs = []
+			for uploaded_file in uploaded_files:
+				try:
+					file_extension = uploaded_file.name.split('.')[-1].lower()
+					if file_extension in ["xls", "xlsx"]:
+						df_ori = pd.read_excel(uploaded_file)
+						# st.success(f"File Excel {uploaded_file.name} berhasil diunggah!")
+					elif file_extension == "csv":
+						df_ori = pd.read_csv(uploaded_file)
+						# st.success(f"File CSV {uploaded_file.name} berhasil diunggah!")
+					else:
+						st.error(f"Format file {uploaded_file.name} tidak didukung. Harap unggah file dengan ekstensi .xls, .xlsx, atau .csv")
+						df_ori = None
 
-			except Exception as e:
-				st.error(f"Terjadi kesalahan saat memproses file {uploaded_file.name}: {e}")
+					if dfs is not None:
+						dfs.append(df_ori)
 
-		if dfs:
-			df = pd.concat(dfs, ignore_index=True)
+				except Exception as e:
+					st.error(f"Terjadi kesalahan saat memproses file {uploaded_file.name}: {e}")
+
+			if dfs:
+				df = pd.concat(dfs, ignore_index=True)
+				
+			#------- simpan arsip file #sistem simpan baru, dicoba ken simpan model di atas tsb tidak efektif
+			# Dapatkan direktori tempat file Python ini berada, improved 13Nov2024
+			# current_dir = os.path.dirname(os.path.abspath(__file__))
+			# Gabungkan dengan nama file
+			# file_path = os.path.join(current_dir, "file_arsip.csv")
+			# Simpan file
+			#if 'df' in locals():
+				#df.to_csv(file_path, index=False)
+			# with open(file_path, 'w+') as f:
+			# 	f.write()
+			# st.success("File_arsip.csv berhasil disimpan!")
+		
+			st.success("File berhasil di-upload dan langsung diproses Cleaning.")
+
+			# df = pd.read_csv(file_path)
+
 			
-		#------- simpan arsip file #sistem simpan baru, dicoba ken simpan model di atas tsb tidak efektif
-		# Dapatkan direktori tempat file Python ini berada, improved 13Nov2024
-		# current_dir = os.path.dirname(os.path.abspath(__file__))
-		# Gabungkan dengan nama file
-		# file_path = os.path.join(current_dir, "file_arsip.csv")
-		# Simpan file
-		#if 'df' in locals():
-			#df.to_csv(file_path, index=False)
-		# with open(file_path, 'w+') as f:
-		# 	f.write()
-		# st.success("File_arsip.csv berhasil disimpan!")
+			
+			
+			df = data_tanggal(df) # type: ignore
+			df = cleaning_process(df)
+		
+
+
 	
-		st.success("File berhasil di-upload dan langsung diproses Cleaning.")
-
-		# df = pd.read_csv(file_path)
-
+	
 		
-		
-		
-		df = data_tanggal(df) # type: ignore
-		df = cleaning_process(df)
-
-		
-		show_footer()
+			show_footer()
 
 
-			# #Main - module yg akan pertama dijalankan - improved @home 03-Nov2024
-			
-	else:
-		st.error("Menunggu file diupload....")
+				# #Main - module yg akan pertama dijalankan - improved @home 03-Nov2024
+				
+		else:
+			st.error("Menunggu file diupload....")
+	
+	with tab_top2:
+		About()
 
 if __name__ == "__main__":
 	main()

@@ -166,39 +166,26 @@ def header():
 		st.markdown(
 			f"""
 			<style>
-			.container {{
-				display: flex;
-				align-items:center;
-				justify-content: flex-end;
-				flex-wrap: wrap;
+			.logo-row {{
+			display: flex;
+			justify-content: flex-end;
+			align-items: center;
+			gap: 8px;
 			}}
-			.container img {{
-				width: 50px;
-				margin-top: -20px;
+			.logo-row img {{
+			width: 50px;
+			margin: 0;
 			}}
-			.container h2 {{
-				color: grey;
-				font-size: 20px;
-				margin-top: -20px;
-				margin-right: 10px;
-				margin-bottom: 0px;
-			}}
-			@media (min-width: 600px) {{
-				.container {{
-					justify-content: center;
-				}}
-				.container img {{
-					margin-top: 0;
-				}}
-				.container h2 {{
-					margin-top: 0;
-					text-align: center;
-				}}
+			.logo-row span {{
+			color: blue;
+			font-size: 20px;
+			font-weight: bold;
+			margin: 0;
 			}}
 			</style>
-			<div class="container">
-				<h2 style="color:blue;">PT. KARYAPRATAMA DUNIA</h2>
-				<img src='data:image/png;base64,{image_base64}'/>
+			<div class="logo-row">
+			<span>PT. KARYAPRATAMA DUNIA</span>
+			<img src='data:image/png;base64,{image_base64}'/>
 			</div>
 			""",
 			unsafe_allow_html=True
@@ -2096,12 +2083,12 @@ def main():
 	with tab_top1:
 
 		upload_kol1, upload_kol2 = st.columns([1, 1])
-		with upload_kol1:
+		with upload_kol1:#link google drive
 
 			#Added 18Mar2025 to make this apps more user friendly and globally accessible
 			st.warning(f"Jika sumber file yang ingin dibersihkan berada di folder Google Drive, unduh/download lewat link berikut ini: [Link Folder](https://drive.google.com/drive/folders/1motad9bizxGZdiODetAo6K7_38dbXxxG?usp=sharing)  |  Download file Excel (.xls, .xlsx atau .csv) dari folder tersebut ke perangkat Anda, lalu unggah/upload file lewat menu Browse di sebelah kanan ➡️:")
 
-		with upload_kol2:
+		with upload_kol2:#file uploader
 			# File uploader
 			uploaded_files = st.file_uploader("Silakan pilih file Excel (.xls, .xlsx, .csv) yang ingin dibersihkan:",type=["xls", "xlsx", "csv"], accept_multiple_files=True)
 

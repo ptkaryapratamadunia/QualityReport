@@ -149,12 +149,12 @@ def header():
 	# heading
 	kolkir,kolnan=st.columns((2,1))	#artinya kolom sebelahkiri lebih lebar 2x dari kanan
 
-	with kolkir:
+	with kolkir:#Judul halaman
 		st.markdown("""<h2 style="color:green;margin-top:-10px;margin-bottom:0px;"> 📊 QUALITY DASHBOARD </h2>""", unsafe_allow_html=True)
 		st.write("Quality Performance Plating Line")
 		
 		
-	with kolnan:
+	with kolnan:#logo KPD
 		# Adjust the file path based on the current directory
 		current_dir = os.path.dirname(os.path.abspath(__file__))
 		logo_KPD = os.path.join(current_dir, 'logoKPD.png')

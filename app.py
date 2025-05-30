@@ -48,7 +48,7 @@ def login_page():
 
 	kol1 ,kol3,kol5 = st.columns((1,1,1))
 
-	with kol1:
+	with kol1:#logo KPD
 		# Adjust the file path based on the current directory
 		current_dir = os.path.dirname(os.path.abspath(__file__))
 		logo_KPD = os.path.join(current_dir, 'logoKPD.png')
@@ -98,7 +98,7 @@ def login_page():
 			unsafe_allow_html=True
 		)
 		st.markdown("<div style='text-align: center; font-weight: bold;color:orange;'>QUALITY DEPARTMENT</div>", unsafe_allow_html=True)
-	with kol3:
+	with kol3:#form login
 		# Form login
 		st.info("Please log in to access the application.")
 		st.markdown('---')
@@ -115,7 +115,7 @@ def login_page():
 
 		st.markdown('</div></div>', unsafe_allow_html=True)
 		st.markdown('---')
-	with kol5:
+	with kol5:#judul Apps
 		st.markdown("""<h2 style="color:green;margin-top:-10px;margin-bottom:0px;"> 📊 QUALITY DASHBOARD </h2>""", unsafe_allow_html=True)
 		
 		st.markdown("<div style='text-align: center; font-weight: bold;color:blue;'>Quality Performance Plating Line</div>", unsafe_allow_html=True)
@@ -2086,7 +2086,7 @@ def main():
 		with upload_kol1:#link google drive
 
 			#Added 18Mar2025 to make this apps more user friendly and globally accessible
-			st.warning(f"Jika sumber file yang ingin dibersihkan berada di folder Google Drive, unduh/download lewat link berikut ini: [Link Folder](https://drive.google.com/drive/folders/1motad9bizxGZdiODetAo6K7_38dbXxxG?usp=sharing)  |  Download file Excel (.xls, .xlsx atau .csv) dari folder tersebut ke perangkat Anda, lalu unggah/upload file lewat menu Browse di sebelah kanan ➡️:")
+			st.info(f"Jika Anda belum mempunyai File, silahkan unduh di link Folder yang tersedia berikut ini: 📂 [Link Folder](https://drive.google.com/drive/folders/1motad9bizxGZdiODetAo6K7_38dbXxxG?usp=sharing)  |  Download/Unduh file Excel (.xls, .xlsx atau .csv) dari folder tersebut ke perangkat Anda, lalu unggah/upload file lewat menu Browse Files yang tersedia:")
 
 		with upload_kol2:#file uploader
 			# File uploader

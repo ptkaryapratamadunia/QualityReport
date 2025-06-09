@@ -150,7 +150,7 @@ def header():
 	kolkir,kolnan=st.columns((2,1))	#artinya kolom sebelahkiri lebih lebar 2x dari kanan
 
 	with kolkir:#Judul halaman
-		st.markdown("""<h2 style="color:green;margin-top:-10px;margin-bottom:0px;"> 📊 QUALITY DASHBOARD </h2>""", unsafe_allow_html=True)
+		st.markdown("""<h2 style="color:green;margin-top:-10px;margin-bottom:0px; font-weight: bold;"> 📊 QUALITY DASHBOARD </h2>""", unsafe_allow_html=True)
 		st.write("Quality Performance Plating Line")
 		
 		
@@ -588,7 +588,7 @@ def cleaning_process(df):
 			st.markdown(container_html, unsafe_allow_html=True)
 			# bt2.metric("Total Inspected (lot)",f"{tot_Qty_lot:,.0f}")
 
-		with bt3: #Total Inspected (lot)
+		with bt3: #Total NG (lot)
 			# container=st.container(border=True)
 			tot_NG_lot=df['Tot_NG'].sum()
 			# container.write(f"Tot. NG (lot)  :  {tot_NG_lot:.0f}")
@@ -596,7 +596,7 @@ def cleaning_process(df):
 			st.markdown(container_html, unsafe_allow_html=True)
 			# bt3.metric("Total NG (lot):",f"{tot_NG_lot:.2f}")
 
-		with bariskanan:
+		with bariskanan:#Total NG (%)
 			# container2=st.container(border=True)
 			tot_NG_persen=df['NG_%'].mean()
 			# container2.write(f"Tot. NG (%)	: {tot_NG_persen:.2f}")
@@ -689,12 +689,12 @@ def cleaning_process(df):
 			with grafik_kiri: #Grafik NG% & Qty Inspected by Month - 26Nov2024
 				
 				# Menggambar grafik batang
-				data_grafik=pivot_df_bulan_line_grafik.reset_index()
+				data_grafik = pivot_df_bulan_line_grafik.reset_index()
 				data_grafik['Date'] = pd.to_datetime(data_grafik['Date'], format='%b-%Y')
 				data_grafik = data_grafik.sort_values(by='Date')
 				data_grafik['Date'] = data_grafik['Date'].dt.strftime('%b-%Y')
 
-				data_grafik2=pivot_df_bulan_line3_grafik.reset_index()
+				data_grafik2 = pivot_df_bulan_line3_grafik.reset_index()
 				data_grafik2['Date'] = pd.to_datetime(data_grafik2['Date'], format='%b-%Y')
 				data_grafik2 = data_grafik2.sort_values(by='Date')
 				data_grafik2['Date'] = data_grafik2['Date'].dt.strftime('%b-%Y')
@@ -702,45 +702,46 @@ def cleaning_process(df):
 				# Create a figure with one subplot
 				fig = go.Figure()
 
-				# Add NG_% bar trace
+				# Add NG_% line trace with value labels
 				fig.add_trace(go.Scatter(
 					x=data_grafik['Date'],
 					y=data_grafik['NG_%'],
 					name='NG_%',
-					mode='lines+markers',  # Combine line and markers
+					mode='lines+markers+text',  # Add text for value labels
 					marker_color='blue',
-					line_color='blue',   # Set line color explicitly
-					yaxis='y2'
+					line_color='blue',
+					yaxis='y2',
+					text=data_grafik['NG_%'].round(2).astype(str),  # Show value labels
+					textposition='top center'
 				))
 
-				# Add Insp(B/H) line trace (overlay on same y-axis)
-				fig.add_trace(go.Bar(  # Use Scatter for line chart
+				# Add Insp(B/H) bar trace with value labels
+				fig.add_trace(go.Bar(
 					x=data_grafik2['Date'],
 					y=data_grafik2['Insp(B/H)'],
 					name='Insp(B/H)',
 					marker_color='grey',
+					text=data_grafik2['Insp(B/H)'].round(0).astype(int).astype(str),  # Show value labels
+					textposition='outside'
 				))
 
 				# Customize layout
 				fig.update_layout(
-					
-				title='Grafik NG% & Qty Inspected by Month',
-				xaxis=dict(title='Month',type='category'),
-				yaxis=dict(title='Qty Inspected (pcs)', titlefont=dict(color='grey'), tickfont=dict(color='grey')),
-				yaxis2=dict(title='NG%', titlefont=dict(color='blue'), tickfont=dict(color='blue'), overlaying='y', side='right', anchor='x'),
-					paper_bgcolor='rgba(0,0,0,0)',      # Warna background keseluruhan
-					plot_bgcolor='rgba(0,0,0,0)',       # Warna background area plot
+					title='Grafik NG% & Qty Inspected by Month',
+					xaxis=dict(title='Month', type='category'),
+					yaxis=dict(title='Qty Inspected (Lot)', titlefont=dict(color='grey'), tickfont=dict(color='grey')),
+					yaxis2=dict(title='NG%', titlefont=dict(color='blue'), tickfont=dict(color='blue'), overlaying='y', side='right', anchor='x'),
+					paper_bgcolor='rgba(0,0,0,0)',
+					plot_bgcolor='rgba(0,0,0,0)',
 					legend=dict(
 						yanchor="top",
-						y=-0.2,  # Posisi vertikal di bawah sumbu X
+						y=-0.2,
 						xanchor="center",
-						x=0.5   # Posisi horizontal di tengah
+						x=0.5
 					),
-					legend_title_text='Metric'
-				
+					legend_title_text=''
 				)
 
-				
 				# Display the plot
 				st.plotly_chart(fig)
 
@@ -788,23 +789,29 @@ def cleaning_process(df):
 					# Create a figure with one subplot
 					fig = go.Figure()
 
-					# Add NG_% bar trace
+					# Add NG_% line trace with value labels (warna biru, 2 digit di belakang koma)
 					fig.add_trace(go.Scatter(
 						x=data_grafik['Date'],
 						y=data_grafik['NG_%'],
 						name='NG_%',
-						mode='lines+markers',  # Combine line and markers
-						marker_color='blue',
-						line_color='blue',   # Set line color explicitly
-						yaxis='y2'
+						mode='lines+markers+text',  # Add text for value labels
+						marker_color='#F2C078',
+						line_color='#F2C078',   # Set line color explicitly
+						yaxis='y2',
+						text=[f"<span style='color:#F2C078'>{v:.2f}</span>" for v in data_grafik['NG_%']],  # Show value labels in blue, 2 decimals
+						textposition='top center',
+						hoverinfo='text'
 					))
+					
 
 					# Add Insp(B/H) line trace (overlay on same y-axis)
 					fig.add_trace(go.Bar(  # Use Scatter for line chart
 						x=data_grafik2['Date'],
 						y=data_grafik2['Insp(B/H)'],
 						name='Insp(B/H)',
-						marker_color='Yellow',
+						marker_color='#521C0D',
+						text=data_grafik2['Insp(B/H)'].round(0).astype(int).astype(str),  # Show value labels
+						textposition='outside'
 					))
 
 					# Customize layout
@@ -812,8 +819,8 @@ def cleaning_process(df):
 						
 					title='Grafik NG% & Qty Inspected by Month - Barrel 4',
 					xaxis=dict(title='Month', type='category'),
-					yaxis=dict(title='Qty Inspected (pcs)', titlefont=dict(color='yellow'), tickfont=dict(color='yellow')),
-					yaxis2=dict(title='NG%', titlefont=dict(color='blue'), tickfont=dict(color='blue'), overlaying='y', side='right', anchor='x'),
+					yaxis=dict(title='Qty Inspected (Lot)', titlefont=dict(color='#521C0D'), tickfont=dict(color='#521C0D')),
+					yaxis2=dict(title='NG%', titlefont=dict(color='#F2C078'), tickfont=dict(color='#F2C078'), overlaying='y', side='right', anchor='x'),
 						paper_bgcolor='rgba(0,0,0,0)',      # Warna background keseluruhan
 						plot_bgcolor='rgba(0,0,0,0)',       # Warna background area plot
 						legend=dict(
@@ -822,7 +829,7 @@ def cleaning_process(df):
 							xanchor="center",
 							x=0.5   # Posisi horizontal di tengah
 						),
-						legend_title_text='Metric'
+						legend_title_text=''
 					
 					)
 					# Display the plot
@@ -850,15 +857,19 @@ def cleaning_process(df):
 					# Create a figure with one subplot
 					fig = go.Figure()
 
-					# Add NG_% bar trace
+					
+					# Add NG_% line trace with value labels (warna biru, 2 digit di belakang koma)
 					fig.add_trace(go.Scatter(
 						x=data_grafik['Date'],
 						y=data_grafik['NG_%'],
 						name='NG_%',
-						mode='lines+markers',  # Combine line and markers
-						marker_color='green',
-						line_color='green',   # Set line color explicitly
-						yaxis='y2'
+						mode='lines+markers+text',  # Add text for value labels
+						marker_color='#D5451B',
+						line_color='#D5451B',   # Set line color explicitly
+						yaxis='y2',
+						text=[f"<span style='color: #D5451B'>{v:.2f}</span>" for v in data_grafik['NG_%']],  # Show value labels in blue, 2 decimals
+						textposition='top center',
+						hoverinfo='text'
 					))
 
 					# Add Insp(B/H) line trace (overlay on same y-axis)
@@ -866,7 +877,9 @@ def cleaning_process(df):
 						x=data_grafik2['Date'],
 						y=data_grafik2['Insp(B/H)'],
 						name='Insp(B/H)',
-						marker_color='blue',
+						marker_color='#F2C078',
+						text=data_grafik2['Insp(B/H)'].round(0).astype(int).astype(str),  # Show value labels
+						textposition='outside'
 					))
 
 					# Customize layout
@@ -874,8 +887,8 @@ def cleaning_process(df):
 						
 					title='Grafik NG% & Qty Inspected by Month - Rack 1',
 					xaxis=dict(title='Month', type='category'),
-					yaxis=dict(title='Qty Inspected (pcs)', titlefont=dict(color='blue'), tickfont=dict(color='blue')),
-					yaxis2=dict(title='NG%', titlefont=dict(color='green'), tickfont=dict(color='green'), overlaying='y', side='right', anchor='x'),
+					yaxis=dict(title='Qty Inspected (Lot)', titlefont=dict(color='#F2C078'), tickfont=dict(color='#F2C078')),
+					yaxis2=dict(title='NG%', titlefont=dict(color='#D5451B'), tickfont=dict(color='#D5451B'), overlaying='y', side='right', anchor='x'),
 						paper_bgcolor='rgba(0,0,0,0)',      # Warna background keseluruhan
 						plot_bgcolor='rgba(0,0,0,0)',       # Warna background area plot
 						legend=dict(
@@ -884,7 +897,7 @@ def cleaning_process(df):
 							xanchor="center",
 							x=0.5   # Posisi horizontal di tengah
 						),
-						legend_title_text='Metric'
+						legend_title_text=''
 					
 					)
 					# Display the plot
@@ -964,12 +977,22 @@ def cleaning_process(df):
 					barrel4_data_sorted = barrel4_data_filtered.sort_values(by='Barrel 4', ascending=False)
 
 					# Create the bar chart
-					fig = px.bar(barrel4_data_sorted, x='Cust.ID', y='Barrel 4', title='NG (%) for Barrel 4 by Customer',
-								labels={'Barrel 4': 'NG (%)', 'Cust.ID': 'Customer'},
-								color='Cust.ID',  # Different color for each customer
-								color_discrete_sequence=px.colors.qualitative.Plotly)
+					fig = px.bar(
+						barrel4_data_sorted,
+						x='Cust.ID',
+						y='Barrel 4',
+						title='NG (%) for Barrel 4 by Customer',
+						labels={'Barrel 4': 'NG (%)', 'Cust.ID': 'Customer'},
+						color='Cust.ID',  # Different color for each customer
+						color_discrete_sequence=px.colors.qualitative.Plotly,
+						text=barrel4_data_sorted['Barrel 4'].round(2)  # Show value labels
+					)
 
 					# Customize the layout
+					fig.update_traces(
+						textposition='outside',
+						textfont=dict(color='black', size=12)
+					)
 					fig.update_layout(
 						xaxis_title="Customer",
 						yaxis_title="NG (%)",
@@ -993,12 +1016,22 @@ def cleaning_process(df):
 					R1_data_sorted = R1_data_filtered.sort_values(by='Rack 1', ascending=False)
 
 					# Create the bar chart
-					fig = px.bar(R1_data_sorted, x='Cust.ID', y='Rack 1', title='NG (%) for Rack 1 by Customer',
-								labels={'Rack 1': 'NG (%)', 'Cust.ID': 'Customer'},
-								color='Cust.ID',  # Different color for each customer
-								color_discrete_sequence=px.colors.qualitative.Plotly)
+					fig = px.bar(
+						R1_data_sorted,
+						x='Cust.ID',
+						y='Rack 1',
+						title='NG (%) for Rack 1 by Customer',
+						labels={'Rack 1': 'NG (%)', 'Cust.ID': 'Customer'},
+						color='Cust.ID',  # Different color for each customer
+						color_discrete_sequence=px.colors.qualitative.Plotly,
+						text=R1_data_sorted['Rack 1'].round(2)  # Show value labels
+					)
 
 					# Customize the layout
+					fig.update_traces(
+						textposition='outside',
+						textfont=dict(color='black', size=12)
+					)
 					fig.update_layout(
 						xaxis_title="Customer",
 						yaxis_title="NG (%)",
@@ -1021,7 +1054,7 @@ def cleaning_process(df):
 			
 
 			sikir,sinan=st.columns(2)
-			#Grafik kolom Qty NG(lot) B4 by Cust.ID Yellow
+			#Grafik kolom Qty NG(lot) B4 by Cust.ID Ungu 09Jun25 show value inside bar
 			with sikir:
 			
 				df_byLine=df[df['Line']=='Barrel 4']	
@@ -1036,13 +1069,20 @@ def cleaning_process(df):
 				)
 				# st.write(NG_by_kategori)
 				
-				# Buat grafik batang interaktif
-				fig = go.Figure(data=go.Bar(x=NG_by_custid['Cust.ID'], y=NG_by_custid['NG(B/H)'],
-										marker_color='yellow'))  # Sesuaikan warna jika ingin
+				# Buat grafik batang interaktif dengan nilai di atas grafik
+				fig = go.Figure(data=go.Bar(
+					x=NG_by_custid['Cust.ID'],
+					y=NG_by_custid['NG(B/H)'],
+					marker_color='#725CAD',
+					text=NG_by_custid['NG(B/H)'].round(2).astype(str),  # Tampilkan nilai di atas batang
+					textposition='inside'  # Posisi teks di dalam batang
+				))
 
-				fig.update_layout(title='Grafik Qty NG(lot) by Cust.ID - Barrel 4',
-								xaxis_title='Cust.ID',
-								yaxis_title='NG(B/H)')
+				fig.update_layout(
+					title='Grafik Qty NG(lot) by Cust.ID - Barrel 4',
+					xaxis_title='Cust.ID',
+					yaxis_title='Qty NG (Lot)'
+				)
 
 				st.plotly_chart(fig)
 			#Grafik NG(lot) by Cust.ID Blue Rack 1
@@ -1058,13 +1098,20 @@ def cleaning_process(df):
 						.reset_index()
 				)
 				
-				# Buat grafik batang interaktif
-				fig = go.Figure(data=go.Bar(x=NG_by_Cust['Cust.ID'], y=NG_by_Cust['NG(B/H)'],
-										marker_color='blue'))  # Sesuaikan warna jika ingin
+				# Buat grafik batang interaktif dengan nilai di dalam batang
+				fig = go.Figure(data=go.Bar(
+					x=NG_by_Cust['Cust.ID'],
+					y=NG_by_Cust['NG(B/H)'],
+					marker_color='#0B1D51',
+					text=NG_by_Cust['NG(B/H)'].round(2).astype(str),  # Tampilkan nilai di dalam batang
+					textposition='inside'  # Posisi teks di dalam batang
+				))
 
-				fig.update_layout(title="Grafik Qty NG(lot) by Cust.ID - Rack 1",
-								xaxis_title='Cust.ID',
-								yaxis_title='NG(B/H)')
+				fig.update_layout(
+					title="Grafik Qty NG(lot) by Cust.ID - Rack 1",
+					xaxis_title='Cust.ID',
+					yaxis_title='Qty NG (Lot)'
+				)
 
 				st.plotly_chart(fig)
 
@@ -1112,13 +1159,20 @@ def cleaning_process(df):
 							.reset_index()
 					)
 					
-					# Buat grafik batang interaktif
-					fig = go.Figure(data=go.Bar(x=NG_by_Line['Line'], y=NG_by_Line['NG_%'],
-											marker_color='grey'))  # Sesuaikan warna jika ingin
+					# Buat grafik batang interaktif dengan nilai di dalam batang
+					fig = go.Figure(data=go.Bar(
+						x=NG_by_Line['Line'],
+						y=NG_by_Line['NG_%'],
+						marker_color='#B0DB9C',
+						text=NG_by_Line['NG_%'].round(2).astype(str),  # Tampilkan nilai di dalam batang
+						textposition='inside'  # Posisi teks di dalam batang
+					))
 
-					fig.update_layout(title='Rata-rata NG_% by Line',
-									xaxis_title='Line',
-									yaxis_title='NG_%')
+					fig.update_layout(
+						title='Rata-rata NG_% by Line',
+						xaxis_title='Line',
+						yaxis_title='NG_%'
+					)
 
 					st.plotly_chart(fig)
 				
@@ -1131,15 +1185,22 @@ def cleaning_process(df):
 						.reset_index()
 				)
 				
-				# Buat grafik batang interaktif
-				fig = go.Figure(data=go.Bar(x=NGLot_by_Line['Line'], y=NGLot_by_Line['NG(B/H)'],
-										marker_color='grey'))  # Sesuaikan warna jika ingin
+				# Buat grafik batang interaktif dengan nilai di dalam batang
+				fig = go.Figure(data=go.Bar(
+					x=NGLot_by_Line['Line'],
+					y=NGLot_by_Line['NG(B/H)'],
+					marker_color='#FBDB93',
+					text=NGLot_by_Line['NG(B/H)'].round(2).astype(str),  # Tampilkan nilai di dalam batang
+					textposition='inside'  # Posisi teks di dalam batang
+				))
 
-				fig.update_layout(title='Qty NG (lot) by Line',
-								xaxis_title='Line',
-								yaxis_title='Qty NG (lot)')
+				fig.update_layout(
+					title='Qty NG (lot) by Line',
+					xaxis_title='Line',
+					yaxis_title='Qty NG (lot)'
+				)
 
-				st.plotly_chart(fig)		
+				st.plotly_chart(fig)
 			
 			with chart_kanan: #Grafik batang Qty Inspected Lot by Line Grey
 					InspLot_by_Line=(
@@ -1150,13 +1211,20 @@ def cleaning_process(df):
 							.reset_index()
 					)
 					
-					# Buat grafik batang interaktif
-					fig = go.Figure(data=go.Bar(x=InspLot_by_Line['Line'], y=InspLot_by_Line['Insp(B/H)'],
-											marker_color='grey'))  # Sesuaikan warna jika ingin
+					# Buat grafik batang interaktif dengan nilai di dalam batang
+					fig = go.Figure(data=go.Bar(
+						x=InspLot_by_Line['Line'],
+						y=InspLot_by_Line['Insp(B/H)'],
+						marker_color='#254D70',
+						text=InspLot_by_Line['Insp(B/H)'].round(2).astype(str),  # Tampilkan nilai di dalam batang
+						textposition='inside'  # Posisi teks di dalam batang
+					))
 
-					fig.update_layout(title='Qty Inspected (lot) by Line',
-									xaxis_title='Line',
-									yaxis_title='Qty (lot)')
+					fig.update_layout(
+						title='Qty Inspected (lot) by Line',
+						xaxis_title='Line',
+						yaxis_title='Qty Inspected (lot)'
+					)
 
 					st.plotly_chart(fig)
 
@@ -1174,18 +1242,18 @@ def cleaning_process(df):
 				# Create a figure with one subplot
 				fig = go.Figure()
 
-				# Add Insp(B/H) bar trace
+				# Add Insp(B/H) bar trace with value labels inside the bars
 				fig.add_trace(go.Bar(
 					x=NG_by_kategori['Kategori'],
 					y=NG_by_kategori['Insp(B/H)'],
 					name='Insp(B/H)',
-					marker_color='grey',
+					marker_color='#077A7D',
 					yaxis='y1',
 					text=NG_by_kategori['Insp(B/H)'].apply(lambda x: f'{x:,.0f}'),
-					textposition='outside'  # Position text outside the bars
+					textposition='inside'  # Position text inside the bars
 				))
 
-				# Add NG_% line trace
+				# Add NG_% line trace with value labels above the markers (colored RED)
 				fig.add_trace(go.Scatter(
 					x=NG_by_kategori['Kategori'],
 					y=NG_by_kategori['NG_%'],
@@ -1194,7 +1262,7 @@ def cleaning_process(df):
 					marker_color='red',
 					line_color='red',
 					yaxis='y2',
-					text=NG_by_kategori['NG_%'].apply(lambda x: f'<span style="color:red;background-color:white;">{x:.2f}</span>'),
+					text=[f"<span style='color:red'>{v:.2f}</span>" for v in NG_by_kategori['NG_%']],
 					textposition='top center',
 					hoverinfo='text'
 				))
@@ -1203,7 +1271,7 @@ def cleaning_process(df):
 				fig.update_layout(
 					title='Grafik NG (%) Vs Insp (lot) per Kategori',
 					xaxis=dict(title='Kategori'),
-					yaxis=dict(title='Qty Inspected (lot)', titlefont=dict(color='grey'), tickfont=dict(color='grey')),
+					yaxis=dict(title='Qty Inspected (lot)', titlefont=dict(color='#077A7D'), tickfont=dict(color='#077A7D')),
 					yaxis2=dict(title='NG (%)', titlefont=dict(color='red'), tickfont=dict(color='red'), overlaying='y', side='right'),
 					paper_bgcolor='rgba(0,0,0,0)',  # Warna background keseluruhan
 					plot_bgcolor='rgba(0,0,0,0)',   # Warna background area plot
@@ -1213,7 +1281,7 @@ def cleaning_process(df):
 						xanchor="center",
 						x=0.5   # Posisi horizontal di tengah
 					),
-					legend_title_text='Metric'
+					legend_title_text=''
 				)
 
 				#---------added 24Mar2025
@@ -1308,28 +1376,32 @@ def cleaning_process(df):
 			]
 
 			#LB4
-			df_LB4=df[df['Line']=='Barrel 4']
-
-			# # Menjumlahkan kolom-kolom yang diinginkan (lot)
+			df_LB4 = df[df['Line'] == 'Barrel 4']
+			# Menjumlahkan kolom-kolom yang diinginkan (lot)
 			total_rowB4 = df_LB4[new_columns].sum().to_frame().T
 			total_rowB4['index'] = 'Total_NG(lot)'
 			total_rowB4.set_index('index', inplace=True)
-
-			total_rowB4=total_rowB4.map(format_with_comma)
+			# Hanya tampilkan kolom dengan nilai > 0
+			total_rowB4 = total_rowB4.loc[:, (total_rowB4 != 0).any(axis=0)]
+			# Tambahkan kolom 'Jumlah Total' yang merupakan jumlah dari semua kolom yang tampil
+			total_rowB4['Jumlah Total'] = total_rowB4.sum(axis=1)
+			total_rowB4 = total_rowB4.map(format_with_comma)
 			st.write("Tabel Jenis NG (Lot) - Line Barrel 4")
 			st.write(total_rowB4)
 
 			#LR1
-			df_LR1=df[df['Line']=='Rack 1']
-			# # Menjumlahkan kolom-kolom yang diinginkan (pcs)
+			df_LR1 = df[df['Line'] == 'Rack 1']
+			# Menjumlahkan kolom-kolom yang diinginkan (lot)
 			total_row = df_LR1[new_columns].sum().to_frame().T
 			total_row['index'] = 'Total_NG(lot)'
 			total_row.set_index('index', inplace=True)
-
-			total_row=total_row.map(format_with_comma)
-			# total_row = total_row.applymap(format_with_comma)		#pengganti format diatas, meskipun unit nya lot krn actualnya ada yg kecil di bawah 1 lot
+			# Hanya tampilkan kolom dengan nilai > 0
+			total_row = total_row.loc[:, (total_row != 0).any(axis=0)]
+			# Tambahkan kolom 'Jumlah Total' yang merupakan jumlah dari semua kolom yang tampil
+			total_row['Jumlah Total'] = total_row.sum(axis=1)
+			total_row = total_row.map(format_with_comma)
 			st.write("Tabel Jenis NG (lot) - Line Rack 1")
-			st.write(total_row)	
+			st.write(total_row)
 
 			#tampilkan grafik batangnya -- 14Nov2024
 			barisB4, barisR1=st.columns(2)
@@ -1338,15 +1410,26 @@ def cleaning_process(df):
 				# Convert the total_row to a DataFrame for plotting 
 				total_row_df_B4 = total_rowB4.transpose().reset_index() 
 				total_row_df_B4.columns = ['Defect Type', 'Total NG (lot)'] 
+				# Exclude 'Jumlah Total' from the plot
+				total_row_df_B4 = total_row_df_B4[total_row_df_B4['Defect Type'] != 'Jumlah Total']
 				# Convert 'Total NG (lot)' to numeric, forcing errors to NaN 
 				total_row_df_B4['Total NG (lot)'] = pd.to_numeric(total_row_df_B4['Total NG (lot)'], errors='coerce')
 				# Filter out rows where 'Total NG (lot)' is zero 
 				total_row_df_B4_filtered = total_row_df_B4[total_row_df_B4['Total NG (lot)'] > 0 ] 
-				#Sort values from largest to smallest 
+				# Sort values from smallest to largest
 				total_row_df_B4_sorted = total_row_df_B4_filtered.sort_values(by='Total NG (lot)', ascending=True)
-				# Plot using plotly for interactivity 
-				fig = px.bar(total_row_df_B4_sorted, y='Defect Type', x='Total NG (lot)', title='Defect Types - Line Barrel 4', labels={'Defect Type': 'Defect Type', 'Total NG (lot)': 'Total NG (lot)'}, color_discrete_sequence=['yellow']) 
-				fig.update_layout( yaxis_title="Defect Type", xaxis_title="Total NG (lot)", yaxis_tickangle=0)
+				# Plot using plotly for interactivity, show value inside bar
+				fig = px.bar(
+					total_row_df_B4_sorted,
+					y='Defect Type',
+					x='Total NG (lot)',
+					title='Defect Types - Line Barrel 4',
+					labels={'Defect Type': 'Defect Type', 'Total NG (lot)': 'Total NG (lot)'},
+					color_discrete_sequence=['#FEBA17'],
+					text='Total NG (lot)'
+				)
+				fig.update_traces(textposition='inside')
+				fig.update_layout(yaxis_title="Defect Type", xaxis_title="Total NG (lot)", yaxis_tickangle=0)
 				st.plotly_chart(fig)
 			
 			with barisR1:	#baris kanan Grafik Vertical Bar R1 Blue
@@ -1354,15 +1437,26 @@ def cleaning_process(df):
 				# Convert the total_row to a DataFrame for plotting 
 				total_row_df = total_row.transpose().reset_index() 
 				total_row_df.columns = ['Defect Type', 'Total NG (lot)'] 
+				# Exclude 'Jumlah Total' from the plot
+				total_row_df = total_row_df[total_row_df['Defect Type'] != 'Jumlah Total']
 				# Convert 'Total NG (lot)' to numeric, forcing errors to NaN 
 				total_row_df['Total NG (lot)'] = pd.to_numeric(total_row_df['Total NG (lot)'], errors='coerce')
 				# Filter out rows where 'Total NG (lot)' is zero 
 				total_row_df_filtered = total_row_df[total_row_df['Total NG (lot)'] > 0] 
-				#Sort values from largest to smallest 
+				# Sort values from smallest to largest
 				total_row_df_sorted = total_row_df_filtered.sort_values(by='Total NG (lot)', ascending=True)
-				# Plot using plotly for interactivity 
-				fig = px.bar(total_row_df_sorted, y='Defect Type', x='Total NG (lot)', title='Defect Types - Line Rack 1', labels={'Defect Type': 'Defect Type', 'Total NG (lot)': 'Total NG (lot)'}, color_discrete_sequence=['blue']) 
-				fig.update_layout( yaxis_title="Defect Type", xaxis_title="Total NG (lot)", yaxis_tickangle=0)
+				# Plot using plotly for interactivity, show value inside bar
+				fig = px.bar(
+					total_row_df_sorted,
+					y='Defect Type',
+					x='Total NG (lot)',
+					title='Defect Types - Line Rack 1',
+					labels={'Defect Type': 'Defect Type', 'Total NG (lot)': 'Total NG (lot)'},
+					color_discrete_sequence=['#8E1616'],
+					text='Total NG (lot)'
+				)
+				fig.update_traces(textposition='inside')
+				fig.update_layout(yaxis_title="Defect Type", xaxis_title="Total NG (lot)", yaxis_tickangle=0)
 				st.plotly_chart(fig)
 
 			st.markdown("---")
@@ -1447,13 +1541,22 @@ def cleaning_process(df):
 				# Filter nilai yang lebih besar dari 0 
 				NG_by_part = NG_by_part[NG_by_part['NG_%'] > 0.5]
 
-				# Buat grafik batang dengan Plotly
-				fig = px.bar(NG_by_part, x='NG_%', y='PartName', color='NG_%',barmode="relative")
-				fig.update_layout(title='Grafik NG (%) by Part Name - LB4',
-								xaxis_title='NG_%',
-								yaxis_title='PartName',
-								yaxis=dict(categoryorder='total ascending') 	 # Mengatur urutan sumbu y dari terbesar ke terkecil
-					)	
+				# Buat grafik batang dengan Plotly, tampilkan nilai di dalam batang
+				fig = px.bar(
+					NG_by_part,
+					x='NG_%',
+					y='PartName',
+					color='NG_%',
+					barmode="relative",
+					text=NG_by_part['NG_%'].round(2).astype(str)  # Tampilkan nilai di dalam batang
+				)
+				fig.update_traces(textposition='inside')
+				fig.update_layout(
+					title='Grafik NG (%) by Part Name - LB4',
+					xaxis_title='NG_%',
+					yaxis_title='PartName',
+					yaxis=dict(categoryorder='total ascending')  # Mengatur urutan sumbu y dari terbesar ke terkecil
+				)
 				st.plotly_chart(fig)
 
 				NG_by_part = NG_by_part.map(format_with_comma)
@@ -1474,13 +1577,22 @@ def cleaning_process(df):
 				# Filter nilai yang lebih besar dari 0 
 				NGpersenR1_by_part = NGpersenR1_by_part[NGpersenR1_by_part['NG_%'] > 2]
 
-				# Buat grafik batang dengan Plotly
-				fig = px.bar(NGpersenR1_by_part, x="NG_%", y='PartName', color="NG_%",barmode="group")
-				fig.update_layout(title='Grafik NG (%) by Part Name - LR1',
-								xaxis_title='NG (%)',
-								yaxis_title='PartName',
-								yaxis=dict(categoryorder='total ascending') # Mengatur urutan sumbu y dari terbesar ke terkecil
-								)
+				# Buat grafik batang dengan Plotly, tampilkan nilai di dalam batang
+				fig = px.bar(
+					NGpersenR1_by_part,
+					x="NG_%",
+					y='PartName',
+					color="NG_%",
+					barmode="group",
+					text=NGpersenR1_by_part['NG_%'].round(2).astype(str)  # Tampilkan nilai di dalam batang
+				)
+				fig.update_traces(textposition='inside')
+				fig.update_layout(
+					title='Grafik NG (%) by Part Name - LR1',
+					xaxis_title='NG (%)',
+					yaxis_title='PartName',
+					yaxis=dict(categoryorder='total ascending')  # Mengatur urutan sumbu y dari terbesar ke terkecil
+				)
 				st.plotly_chart(fig)
 
 				NGpersenR1_by_part = NGpersenR1_by_part.map(format_with_comma)
@@ -1523,17 +1635,17 @@ def cleaning_process(df):
 				pt_MesinNo = pt_MesinNo.reset_index()
 				pt_MesinNo = pt_MesinNo[pt_MesinNo['M/C No.'] != 'Total']
 				fig = go.Figure()
-				# Add Insp(B/H) bar trace
+				# Add Insp(B/H) bar trace with value inside the bar
 				fig.add_trace(go.Bar(
 					x=pt_MesinNo['M/C No.'],
 					y=pt_MesinNo['Insp(B/H)'],
 					name='Insp(B/H)',
-					marker_color='green',
+					marker_color='#60B5FF',
 					text=pt_MesinNo['Insp(B/H)'].apply(lambda x: f'{x:,.0f}'),
-					textposition='outside'
+					textposition='inside'
 				))
 
-				# Add NG_% line trace
+				# Add NG_% line trace with value above the marker (colored RED)
 				fig.add_trace(go.Scatter(
 					x=pt_MesinNo['M/C No.'],
 					y=pt_MesinNo['NG_%'],
@@ -1542,7 +1654,7 @@ def cleaning_process(df):
 					marker_color='red',
 					line_color='red',
 					yaxis='y2',
-					text=pt_MesinNo['NG_%'].apply(lambda x: f'<span style="color:red;">{x:.2f}</span>'),
+					text=[f"<span style='color:red'>{v:.2f}</span>" for v in pt_MesinNo['NG_%']],
 					textposition='top center',
 					hoverinfo='text'
 				))
@@ -1551,7 +1663,7 @@ def cleaning_process(df):
 				fig.update_layout(
 					title='Grafik NG (%) Vs Insp (B/H) per M/C No.',
 					xaxis=dict(title='M/C No.', tickmode='linear', type='category'),
-					yaxis=dict(title='Qty Inspected (B/H)', titlefont=dict(color='green'), tickfont=dict(color='green')),
+					yaxis=dict(title='Qty Inspected (Lot)', titlefont=dict(color='green'), tickfont=dict(color='green')),
 					yaxis2=dict(title='NG (%)', titlefont=dict(color='red'), tickfont=dict(color='red'), overlaying='y', side='right'),
 					paper_bgcolor='rgba(0,0,0,0)',  # Warna background keseluruhan
 					plot_bgcolor='rgba(0,0,0,0)',   # Warna background area plot

@@ -708,8 +708,8 @@ def cleaning_process(df):
 					y=data_grafik['NG_%'],
 					name='NG_%',
 					mode='lines+markers+text',  # Add text for value labels
-					marker_color='#FCEF91',
-					line_color='#FCEF91',
+					marker_color= 'red',  # Set marker color to red',
+					line_color='red',   # Set line color explicitly
 					yaxis='y2',
 					text=[f"<span style='color:red'>{v:.2f}</span>" for v in data_grafik['NG_%']],  # Show value labels in RED
 					textposition='top center',

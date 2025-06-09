@@ -721,7 +721,7 @@ def cleaning_process(df):
 					x=data_grafik2['Date'],
 					y=data_grafik2['Insp(B/H)'],
 					name='Insp(B/H)',
-					marker_color='#E6521F',
+					marker_color='#8A784E',
 					text=data_grafik2['Insp(B/H)'].round(0).astype(int).astype(str),  # Show value labels
 					textposition='inside'
 				))

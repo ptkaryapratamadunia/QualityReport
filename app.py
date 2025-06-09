@@ -708,8 +708,8 @@ def cleaning_process(df):
 					y=data_grafik['NG_%'],
 					name='NG_%',
 					mode='lines+markers+text',  # Add text for value labels
-					marker_color='blue',
-					line_color='blue',
+					marker_color='#FCEF91',
+					line_color='#FCEF91',
 					yaxis='y2',
 					text=data_grafik['NG_%'].round(2).astype(str),  # Show value labels
 					textposition='top center'
@@ -720,9 +720,9 @@ def cleaning_process(df):
 					x=data_grafik2['Date'],
 					y=data_grafik2['Insp(B/H)'],
 					name='Insp(B/H)',
-					marker_color='grey',
+					marker_color='#E6521F',
 					text=data_grafik2['Insp(B/H)'].round(0).astype(int).astype(str),  # Show value labels
-					textposition='outside'
+					textposition='inside'
 				))
 
 				# Customize layout

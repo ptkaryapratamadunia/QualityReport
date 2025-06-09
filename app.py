@@ -1699,7 +1699,7 @@ def cleaning_process(df):
 			DateRange(df3)
 			
 			# st.write(df3)
-			# Pilihan Line untuk filter
+		#region Pilihan Line untuk filter
 			df3['Date'] = pd.to_datetime(df3['Date'], errors='coerce').dt.date  # pastikan hanya tanggal (tanpa waktu)
 			date_min = df3['Date'].min()
 			date_max = df3['Date'].max()
@@ -1748,7 +1748,7 @@ def cleaning_process(df):
 				),
 			)
 			st.plotly_chart(fig, use_container_width=True)
-
+			#endregion
 			
 		with sum_tab2: # Summary Trial 
 			st.subheader("Summary Trial")
@@ -1816,12 +1816,13 @@ def cleaning_process(df):
 						y='Jenis NG',
 						orientation='h',
 						title='Summary Jenis NG (TRIAL) - Qty NG (pcs) per Jenis NG',
-						color_discrete_sequence=['grey'],
+						color_discrete_sequence=['#CD5656'],
 						text='Qty NG (pcs)'  # Menampilkan nilai di ujung grafik
 					)
 					fig.update_traces(
-						textposition='outside',
-						textfont=dict(color='grey', size=14, family='Arial', weight='bold')
+						textposition='inside',
+						hovertemplate='Qty NG (pcs): %{text}',
+						textfont=dict(color='white', size=14, family='Arial', weight='bold')
 					)
 					fig.update_layout(
 						xaxis_title='Qty NG (pcs)',
@@ -1846,9 +1847,9 @@ def cleaning_process(df):
 						y=summary_trial_sorted['PartName'],
 						x=summary_trial_sorted['Qty OK (pcs)'],
 						name='Qty OK (pcs)',
-						marker_color='green',
+						marker_color='#B0DB9C',
 						text=summary_trial_sorted['Qty OK (pcs)'].apply(lambda x: f'{x:,.0f}'),
-						textposition='outside',
+						textposition='inside',
 						hovertemplate='Qty OK (pcs): %{text}',
 						orientation='h'  # horizontal bars
 					))
@@ -1856,9 +1857,9 @@ def cleaning_process(df):
 						y=summary_trial_sorted['PartName'],
 						x=summary_trial_sorted['Qty NG (pcs)'],
 						name='Qty NG (pcs)',
-						marker_color='red',
+						marker_color='#F564A9',
 						text=summary_trial_sorted['Qty NG (pcs)'].apply(lambda x: f'{x:,.0f}'),
-						textposition='outside',
+						textposition='inside',
 						hovertemplate='Qty NG (pcs): %{text}',
 						orientation='h'  # horizontal bars
 					))

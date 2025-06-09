@@ -702,7 +702,7 @@ def cleaning_process(df):
 				# Create a figure with one subplot
 				fig = go.Figure()
 
-				# Add NG_% line trace with value labels
+				# Add NG_% line trace with value labels in RED
 				fig.add_trace(go.Scatter(
 					x=data_grafik['Date'],
 					y=data_grafik['NG_%'],
@@ -711,8 +711,9 @@ def cleaning_process(df):
 					marker_color='#FCEF91',
 					line_color='#FCEF91',
 					yaxis='y2',
-					text=data_grafik['NG_%'].round(2).astype(str),  # Show value labels
-					textposition='top center'
+					text=[f"<span style='color:red'>{v:.2f}</span>" for v in data_grafik['NG_%']],  # Show value labels in RED
+					textposition='top center',
+					hoverinfo='text'
 				))
 
 				# Add Insp(B/H) bar trace with value labels

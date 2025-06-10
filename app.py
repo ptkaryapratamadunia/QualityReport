@@ -1387,8 +1387,37 @@ def cleaning_process(df):
 			# Tambahkan kolom 'Jumlah Total' yang merupakan jumlah dari semua kolom yang tampil
 			total_rowB4['Jumlah Total'] = total_rowB4.sum(axis=1)
 			total_rowB4 = total_rowB4.map(format_with_comma)
-			st.write("Tabel Jenis NG (Lot) - Line Barrel 4")
+			st.write("Tabel Jenis NG (Lot) - Line Barrel 4 - All Parts")
 			st.write(total_rowB4)
+
+			st.write("Tabel Jenis NG (Lot) - Line Barrel 4 - Parts HDI")
+			# Filter df untuk hanya menampilkan Jenis  yang mengandung 'HDI' pada kolom 'Cust.ID'
+			df_HDI = df_LB4[df_LB4['Cust.ID'].str.contains('HDI', na=False)]
+			# Menjumlahkan kolom-kolom yang diinginkan (lot)
+			total_row_HDI = df_HDI[new_columns].sum().to_frame().T
+			total_row_HDI['index'] = 'Total_NG(lot)'
+			total_row_HDI.set_index('index', inplace=True)
+			# Hanya tampilkan kolom dengan nilai > 0
+			total_row_HDI = total_row_HDI.loc[:, (total_row_HDI != 0).any(axis=0)]
+			# Tambahkan kolom 'Jumlah Total' yang merupakan jumlah dari semua kolom yang tampil
+			total_row_HDI['Jumlah Total'] = total_row_HDI.sum(axis=1)
+			total_row_HDI = total_row_HDI.map(format_with_comma)
+			st.write(total_row_HDI)
+
+			st.write("Tabel Jenis NG (Lot) - Line Barrel 4 - Small Parts")
+			# Filter df untuk hanya menampilkan Jenis  yang mengandung 'SMP' pada kolom 'Kategori' - 10Jun2025
+			df_SMP = df_LB4[df_LB4['Kategori'].str.contains('SMP', na=False)]
+			# Menjumlahkan kolom-kolom yang diinginkan (lot)
+			total_row_SMP = df_SMP[new_columns].sum().to_frame().T
+			total_row_SMP['index'] = 'Total_NG(lot)'
+			total_row_SMP.set_index('index', inplace=True)
+			# Hanya tampilkan kolom dengan nilai > 0
+			total_row_SMP = total_row_SMP.loc[:, (total_row_SMP != 0).any(axis=0)]
+			# Tambahkan kolom 'Jumlah Total' yang merupakan jumlah dari semua kolom yang tampil
+			total_row_SMP['Jumlah Total'] = total_row_SMP.sum(axis=1)
+			total_row_SMP = total_row_SMP.map(format_with_comma)
+			st.write(total_row_SMP)
+			
 
 			#LR1
 			df_LR1 = df[df['Line'] == 'Rack 1']
@@ -1759,6 +1788,7 @@ def cleaning_process(df):
 
 			# Summary Trial Table
 			if not dataframe2.empty:
+			
 				summary_trial = dataframe2.groupby(['PartName', 'Line']).agg({
 					'NG_%': 'mean',
 					'QInspec': 'sum',
@@ -1785,6 +1815,7 @@ def cleaning_process(df):
 				st.write("Summary Trial Table")
 				st.dataframe(summary_trial, use_container_width=True)
 
+
 				trial_kiri, trial_kanan = st.columns(2)
 
 				with trial_kiri:
@@ -1798,41 +1829,100 @@ def cleaning_process(df):
 						'Kilap(pcs)', 'Tebal(pcs)', 'Flek Putih(pcs)', 'Spark(pcs)', 'Kotor H/ Oval(pcs)', 'Terkikis/ Crack(pcs)',
 						'Dimensi/ Penyok(pcs)'
 					]
-					# Hitung total Qty NG (pcs) untuk setiap Jenis NG
+					# Hitung rata-rata NG (%) untuk setiap Jenis NG
 					ng_summary = {}
 					for col in jenis_ng_columns:
-						if col in dataframe2.columns:
-							ng_summary[col] = dataframe2[col].sum()
+						if col in dataframe2.columns and 'NG_%' in dataframe2.columns:
+							# Hitung rata-rata NG_% untuk baris di mana nilai Jenis NG > 0
+							mask = dataframe2[col] > 0
+							if mask.any():
+								ng_summary[col] = dataframe2.loc[mask, 'NG_%'].mean()
+							else:
+								ng_summary[col] = 0
 					# Buat DataFrame dari hasil summary
-					ng_summary_df = pd.DataFrame(list(ng_summary.items()), columns=['Jenis NG', 'Qty NG (pcs)'])
-					# Filter hanya yang Qty NG > 0
-					ng_summary_df = ng_summary_df[ng_summary_df['Qty NG (pcs)'] > 0]
+					ng_summary_df = pd.DataFrame(list(ng_summary.items()), columns=['Jenis NG', 'Mean NG (%)'])
+					# Filter hanya yang Mean NG > 0
+					ng_summary_df = ng_summary_df[ng_summary_df['Mean NG (%)'] > 0]
 					# Urutkan dari besar ke kecil
-					ng_summary_df = ng_summary_df.sort_values(by='Qty NG (pcs)', ascending=False)
+					ng_summary_df = ng_summary_df.sort_values(by='Mean NG (%)', ascending=False)
 					# Plot grafik batang vertikal dengan nilai di ujung grafik
 					fig = px.bar(
 						ng_summary_df,
-						x='Qty NG (pcs)',
+						x='Mean NG (%)',
 						y='Jenis NG',
 						orientation='h',
-						title='Summary Jenis NG (TRIAL) - Qty NG (pcs) per Jenis NG',
+						title='Summary Jenis NG (TRIAL) - Mean NG (%) per Jenis NG',
 						color_discrete_sequence=['#CD5656'],
-						text='Qty NG (pcs)'  # Menampilkan nilai di ujung grafik
+						text=ng_summary_df['Mean NG (%)'].round(2)  # Menampilkan nilai di ujung grafik
 					)
 					fig.update_traces(
 						textposition='inside',
-						hovertemplate='Qty NG (pcs): %{text}',
+						hovertemplate='Mean NG (%): %{text}',
 						textfont=dict(color='white', size=14, family='Arial', weight='bold')
 					)
 					fig.update_layout(
-						xaxis_title='Qty NG (pcs)',
+						xaxis_title='Mean NG (%)',
 						yaxis_title='Jenis NG',
 						yaxis=dict(categoryorder='total ascending')
 					)
 					st.plotly_chart(fig)
 
+					st.markdown("---")
+					# Hitung total Qty NG (pcs) untuk setiap Jenis NG
+					ng_qty = {}
+					for col in jenis_ng_columns:
+						if col in dataframe2.columns:
+							ng_qty[col] = dataframe2[col].sum()
+					# Buat DataFrame dari hasil summary
+					ng_qty_df = pd.DataFrame(list(ng_qty.items()), columns=['Jenis NG', 'Total Qty NG (pcs)'])
+					# Filter hanya yang Total Qty NG > 0
+					ng_qty_df = ng_qty_df[ng_qty_df['Total Qty NG (pcs)'] > 0]
+					# Urutkan dari besar ke kecil
+					ng_qty_df = ng_qty_df.sort_values(by='Total Qty NG (pcs)', ascending=False)
+					# Plot grafik batang vertikal dengan nilai di ujung grafik
+					fig = px.bar(
+						ng_qty_df,
+						x='Total Qty NG (pcs)',
+						y='Jenis NG',
+						orientation='h',
+						title='Summary Jenis NG (TRIAL) - Total Qty NG (pcs) per Jenis NG',
+						color_discrete_sequence=['#CD5656'],
+						text=ng_qty_df['Total Qty NG (pcs)'].round(0)  # Menampilkan nilai di ujung grafik
+					)
+					fig.update_traces(
+						textposition='inside',
+						hovertemplate='Total Qty NG (pcs): %{text}',
+						textfont=dict(color='white', size=14, family='Arial', weight='bold')
+					)
+					fig.update_layout(
+						xaxis_title='Total Qty NG (pcs)',
+						yaxis_title='Jenis NG',
+						yaxis=dict(categoryorder='total ascending')
+					)
+					st.plotly_chart(fig)
 				with trial_kanan:
-					st.write("Grafik Summary Trial")
+					# Grafik Summary Trial: Bar horizontal, Y=PartName, X=NG (%), tanpa baris TOTAL
+					summary_trial_no_total = summary_trial[summary_trial['PartName'] != 'TOTAL']
+					fig = px.bar(
+						summary_trial_no_total,
+						y='PartName',
+						x='NG (%)',
+						orientation='h',
+						title='NG (%) per PartName (TRIAL)',
+						color='NG (%)',
+						text=summary_trial_no_total['NG (%)'].round(2).astype(str)
+					)
+					fig.update_traces(
+						textposition='inside'
+					)
+					fig.update_layout(
+						xaxis_title='NG (%)',
+						yaxis_title='PartName',
+						yaxis=dict(categoryorder='total ascending')
+					)
+					st.plotly_chart(fig)
+					st.markdown("---")
+
 					# Sort summary_trial by 'Qty OK (pcs)' + 'Qty NG (pcs)' descending, so largest total is at top
 					summary_trial_sorted = summary_trial.copy()
 					if 'TOTAL' in summary_trial_sorted['PartName'].values:
@@ -1864,7 +1954,7 @@ def cleaning_process(df):
 						orientation='h'  # horizontal bars
 					))
 					fig.update_layout(
-						title='',
+						title='Grafik Summary Trial - Qty OK & Qty NG (pcs) per PartName',
 						yaxis_title='PartName',
 						xaxis_title='Qty (pcs)',
 						barmode='stack',
@@ -1876,10 +1966,8 @@ def cleaning_process(df):
 						font=dict(color='black')
 					)
 					st.plotly_chart(fig, use_container_width=True)
-					
 				
-					
-				
+				# Jika tidak ada data TRIAL	
 			else:
 				st.info("Tidak ada data TRIAL untuk ditampilkan.")
 

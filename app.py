@@ -1391,7 +1391,7 @@ def cleaning_process(df):
 			st.write(total_rowB4)
 
 			st.write("Tabel Jenis NG (Lot) - Line Barrel 4 - Parts HDI")
-			# Filter df untuk hanya menampilkan Jenis  yang mengandung 'HDI' pada kolom 'Cust.ID'
+			# Filter df untuk hanya menampilkan Jenis  yang mengandung 'HDI' pada kolom 'Cust.ID' - 10Jun2025
 			df_HDI = df_LB4[df_LB4['Cust.ID'].str.contains('HDI', na=False)]
 			# Menjumlahkan kolom-kolom yang diinginkan (lot)
 			total_row_HDI = df_HDI[new_columns].sum().to_frame().T

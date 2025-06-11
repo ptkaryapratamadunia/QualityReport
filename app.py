@@ -1418,6 +1418,20 @@ def cleaning_process(df):
 			total_row_SMP = total_row_SMP.map(format_with_comma)
 			st.write(total_row_SMP)
 			
+			st.write("Tabel Jenis NG (Lot) - Line Barrel 4 - RING Part")
+			# Filter df untuk hanya menampilkan Jenis  yang mengandung 'JK067662-0190, JK067662-0160, JK067662-0112' pada kolom 'PartName' - 11Jun2025
+			df_RingParts = df_LB4[df_LB4['PartName'].str.contains('JK067662-0190|JK067662-0160|JK067662-0112', na=False)]
+			# Menjumlahkan kolom-kolom yang diinginkan (lot)
+			total_row_RingParts = df_RingParts[new_columns].sum().to_frame().T
+			total_row_RingParts['index'] = 'Total_NG(lot)'
+			total_row_RingParts.set_index('index', inplace=True)
+			# Hanya tampilkan kolom dengan nilai > 0
+			total_row_RingParts = total_row_RingParts.loc[:, (total_row_RingParts != 0).any(axis=0)]
+			# Tambahkan kolom 'Jumlah Total' yang merupakan jumlah dari semua kolom yang tampil
+			total_row_RingParts['Jumlah Total'] = total_row_RingParts.sum(axis=1)
+			total_row_RingParts = total_row_RingParts.map(format_with_comma)
+			st.write(total_row_RingParts)
+			
 
 			#LR1
 			df_LR1 = df[df['Line'] == 'Rack 1']

@@ -1461,8 +1461,8 @@ def cleaning_process(df):
 
 			#tampilkan grafik batangnya -- 14Nov2024
 			barisB4, barisR1=st.columns(2)
-			#baris kiri Grafik Vertical Bar B4 Blue		
-			with barisB4: #Grafik Vertical Bar B4 Yellow
+				
+			with barisB4: #Grafik Vertical Bar B4 PARETO
 				# Convert the total_row to a DataFrame for plotting 
 				total_row_df_B4 = total_rowB4.transpose().reset_index() 
 				total_row_df_B4.columns = ['Defect Type', 'Total NG (lot)'] 
@@ -1561,7 +1561,7 @@ def cleaning_process(df):
 
 				st.plotly_chart(fig, use_container_width=True)
 			
-			with barisR1:	#baris kanan Grafik Vertical Bar R1 Blue
+			with barisR1:	#baris kanan Grafik Vertical Bar R1 PARETO
 			
 				# Convert the total_row to a DataFrame for plotting 
 				total_row_df = total_row.transpose().reset_index() 
@@ -1883,7 +1883,18 @@ def cleaning_process(df):
 
 			st.markdown("---")
 			
-
+			st.expander("DEFINISI SATUAN", expanded=True):	
+				# --- Definisi Satuan ---
+				# st.markdown("""<h3 style="color:Brown">DEFINISI SATUAN</h3>""", unsafe_allow_html=True)
+				# st.markdown("""<p style="margin-top:-10px;margin-bottom:0px;font-size:14px">Definisi satuan dalam aplikasi ini:<br><br>
+				# 1. Satuan lot ada 2 definisi :<br><br>
+				# 	<tab> a. Line Barrel ( LB4 dan LNi ), definisi lot adalah satuan yang mewakili jumlah part dalam 1 box atau 1 barrel atau 1 Kanban. Jumlah part dalam 1 box atau 1 barrel atau satu Kanban berbeda-beda untuk setiap part tergantung standar loadingnya.<br><br>
+				# 	b. Line Rack, definisi lot adalah satuan yang mewakili jumlah part dari 1 batch proses atau 1 hanger proses. Setiap 1 hanger berisi jumlah part yang berbeda-beda tergantung dari standar loading setiap part.<br><br>
+				# 2. Satuan pc/pcs adalah satuan yang mewakili satu atau beberapa jumlah part.<br><br>
+				# 3. Prosentase (%) adalah hasil dari perhitungan pembagian antara jumlah total NG (lot) dibagi dengan jumlah total hasil inspeksi (lot) dikalikan 100% <br><br>
+				# <span style="color:Blue">e-WeYe</p>""", unsafe_allow_html=True)
+			# --- Definisi Satuan ---
+			# st.markdown("---")
 			st.markdown("""<h3 style="color:Brown">DEFINISI</h3>""", unsafe_allow_html=True)
 			st.markdown("""<p style="margin-top:-10px;margin-bottom:0px;font-size:14px">Definisi satuan dalam aplikasi ini:<br><br>
 			1. Satuan lot ada 2 definisi :<br><br>

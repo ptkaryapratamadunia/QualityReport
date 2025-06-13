@@ -136,7 +136,7 @@ def About():
 	# 		The application is built using Streamlit and integrates with various data visualization libraries.
 	# 	</p>
 	# """, unsafe_allow_html=True)
-	st.markdown("""<p style="margin-top:-10px;margin-bottom:0px;font-size:14px">Beberapa data output dari aplikasi AUTOCON-KPD belum siap pakai,\
+	st.markdown("""<p style="margin-top:-10px;margin-bottom:0px">Beberapa data output dari aplikasi AUTOCON-KPD belum siap pakai,\
 				oleh karena itu perlu dilakukan proses cleaning, seperti mengkonversi data TEXT menjadi angka,\
 				konversi inisial type NG "A,B, dst" menjadi definisi type NG seperti "Warna, Buram, dst", mengekstrasi data Nomer Jig\
 				menjadi Nomer Mesin Smallpart, menghapus kolom yang tidak perlu\
@@ -163,7 +163,7 @@ def About():
 
 	st.markdown("""<h5 style="color:blue;margin-top:-10px;margin-bottom:0px;"> PETUNJUK SINGKAT </h5><br>""", unsafe_allow_html=True)
 	st.markdown("""<h6 style="color:green;margin-top:-10px;margin-bottom:0px;"> TABEL </h6>""", unsafe_allow_html=True)
-	st.markdown("""<p style="font-size:12px;margin-top:-10px;margin-bottom:0px;">Tampilan tabel terdiri dari beberapa kolom,ada yang menggunakan kolom index (adalah\
+	st.markdown("""<p style="margin-top:-10px;margin-bottom:0px;">Tampilan tabel terdiri dari beberapa kolom,ada yang menggunakan kolom index (adalah\
 							nomer urut yg diawali dengan angka nol) dan ada juga ada yang tidak menggunakan.\
 							Jika ingin melihat menu lainnya terkait tindakan yang akan diperlakukan terhadap tabel tersebut, caranya \
 					arahkan mouse ke tabel pada bagian atas kanan tabel. Akan ditemukan menu: Download, Search dan Full Screen.\
@@ -175,7 +175,7 @@ def About():
 	
 	st.markdown("""<h6 style="color:green;margin-top:-10px;margin-bottom:0px;"> GRAFIK </h6>
 				<br>
-				<h6 style="font-size:12px;margin-top:-10px;margin-bottom:0px;"> 
+				<h6 style="margin-top:-10px;margin-bottom:0px;"> 
 				✔️ Tidak bisa di-edit <br>
 				✔️ Bisa di-download sebagai gambar .png <br>
 				✔️ Bisa di Zoom-IN dan Zoom-OUT <br>
@@ -185,7 +185,7 @@ def About():
 			 """, unsafe_allow_html=True)
 	
 	st.markdown("""<h6 style="color:green;margin-top:-10px;margin-bottom:0px;"> FILTER </h6>""", unsafe_allow_html=True)
-	st.markdown("""<h6 style="font-size:12px;margin-top:-10px;margin-bottom:0px;"> 
+	st.markdown("""<h6 style="margin-top:-10px;margin-bottom:0px;"> 
 				✔️ Filter bisa digunakan untuk memilih data yang akan ditampilkan pada tabel atau grafik <br>
 				✔️ Filter disediakan pada section-section tertentu <br>
 				✔️ Filter berupa menu dropdown (pilihan) <br>

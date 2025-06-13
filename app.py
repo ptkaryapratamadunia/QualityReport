@@ -1777,7 +1777,7 @@ def cleaning_process(df):
 		daily_plot = daily_plot.fillna(0)
 
 		# Filter hanya tanggal yang ada datanya (NG_% > 0 atau Insp(B/H) > 0)
-		daily_plot = daily_plot[(daily_plot['NG_%'] > 0) | (daily_plot['Insp(B/H)'] > 0)]
+		daily_plot = daily_plot[(daily_plot['Insp(B/H)'] > 0)]
 
 		# Urutkan berdasarkan tanggal
 		daily_plot = daily_plot.sort_values('Date')

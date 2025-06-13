@@ -170,8 +170,8 @@ def About():
 						Isi tabel tidak bisa diubah. Lebar kolom bisa diatur lebarnya dengan cara meletakkan cursor mouse di antara batas\
 					antar tabel lalu geser kanan atau kiri. Bila ada tabel yang menampilkan banyak kolom yang tidak terlihat di bagian kanan tabel\
 					untuk melihatnya, arahkan mouse ke bagian bawah tabel sampai muncul 'scroll-bar' lalu tahan dengan mouse dan geser kanan kiri.\
-						Selain itu, jika ingin mensort data, klik saja bagian header kolom.</p>""", unsafe_allow_html=True)
-	
+						Selain itu, jika ingin mensort data, klik saja bagian header kolom.</p><br><br> """, unsafe_allow_html=True)
+					
 	
 	st.markdown("""<h6 style="color:green;margin-top:-10px;margin-bottom:0px;"> GRAFIK </h6>
 				<br>

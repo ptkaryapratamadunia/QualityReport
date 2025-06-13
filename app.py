@@ -161,7 +161,7 @@ def About():
 
 	st.markdown("---")
 
-	st.markdown("""<h5 style="color:blue;margin-top:-10px;margin-bottom:0px;"> PETUNJUK SINGKAT </h5>""", unsafe_allow_html=True)
+	st.markdown("""<h5 style="color:blue;margin-top:-10px;margin-bottom:0px;"> PETUNJUK SINGKAT </h5><br>""", unsafe_allow_html=True)
 	st.markdown("""<h6 style="color:green;margin-top:-10px;margin-bottom:0px;"> TABEL </h6>""", unsafe_allow_html=True)
 	st.markdown("""<p style="font-size:12px;margin-top:-10px;margin-bottom:0px;">Tampilan tabel terdiri dari beberapa kolom,ada yang menggunakan kolom index (adalah\
 							nomer urut yg diawali dengan angka nol) dan ada juga ada yang tidak menggunakan.\
@@ -186,7 +186,11 @@ def About():
 	
 	st.markdown("""<h6 style="color:green;margin-top:-10px;margin-bottom:0px;"> FILTER </h6>""", unsafe_allow_html=True)
 	st.markdown("""<h6 style="font-size:12px;color:brown;margin-top:-10px;margin-bottom:0px;"> 
-				✔️ Tidak bisa di-edit <br>
+				✔️ Filter disediakan pada section-section tertentu <br>
+				✔️ Filter berupa menu dropdown (pilihan) <br>
+			 	✔️ Filter bisa di-reset dengan mengklik tombol reset X di atas item filter <br>	
+
+			 
 			 <br><br> 
 			 <span style="color:Blue">e-WeYe</span>
 			 """, unsafe_allow_html=True)	

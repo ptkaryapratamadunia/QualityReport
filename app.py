@@ -172,15 +172,12 @@ def About():
 					untuk melihatnya, arahkan mouse ke bagian bawah tabel sampai muncul 'scroll-bar' lalu tahan dengan mouse dan geser kanan kiri.\
 						Selain itu, jika ingin mensort data, klik saja bagian header kolom.
 			 
-			 
-			 <br><br> 
-			 <span style="color:Blue">e-WeYe</span>
 			 </p>""", unsafe_allow_html=True)
 	
 	st.markdown("""<h6 style="color:green;margin-top:-10px;margin-bottom:0px;"> GRAFIK </h6>""", unsafe_allow_html=True)
 	st.markdown("""<h6 style="color:green;margin-top:-10px;margin-bottom:0px;"> GRAFIK </h6>
 				<br>
-				<h6 style="font-size:12px;color:brown;margin-top:-10px;margin-bottom:0px;"> 
+				<h6 style="font-size:12px;margin-top:-10px;margin-bottom:0px;"> 
 				✔️ Tidak bisa di-edit <br>
 				✔️ Bisa di-download sebagai gambar .png <br>
 				✔️ Bisa di Zoom-IN dan Zoom-OUT <br>
@@ -192,6 +189,8 @@ def About():
 	st.markdown("""<h6 style="color:green;margin-top:-10px;margin-bottom:0px;"> FILTER </h6>""", unsafe_allow_html=True)
 	st.markdown("""<h6 style="font-size:12px;color:brown;margin-top:-10px;margin-bottom:0px;"> 
 				✔️ Tidak bisa di-edit <br>
+			 <br><br> 
+			 <span style="color:Blue">e-WeYe</span>
 			 """, unsafe_allow_html=True)	
 def header():	
 	# heading

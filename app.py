@@ -128,7 +128,7 @@ def get_image_as_base64(image_path):
 	
 def About():
 	# About Page
-	st.markdown("<h2 style='text-align: center;'>About This Application</h2>", unsafe_allow_html=True)
+	st.markdown("<h2 style='text-align: center;'>About This Application</h2><br><br>", unsafe_allow_html=True)
 	# st.markdown("""
 	# 	<p style='text-align: center;'>
 	# 		This application is designed to help the Quality Department of PT. Karyaprama Dunia (KPD) in cleaning and processing data from Autocon QC.
@@ -162,7 +162,7 @@ def About():
 	st.markdown("---")
 
 	st.markdown("""<h5 style="color:blue;margin-top:-10px;margin-bottom:0px;"> PETUNJUK SINGKAT </h5><br>""", unsafe_allow_html=True)
-	st.markdown("""<h6 style="color:green;margin-top:-10px;margin-bottom:0px;"> TABEL </h6>""", unsafe_allow_html=True)
+	st.markdown("""<h5 style="color:green;margin-top:-10px;margin-bottom:0px;"> TABEL </h5>""", unsafe_allow_html=True)
 	st.markdown("""<p style="margin-top:-10px;margin-bottom:0px;">Tampilan tabel terdiri dari beberapa kolom,ada yang menggunakan kolom index (adalah\
 							nomer urut yg diawali dengan angka nol) dan ada juga ada yang tidak menggunakan.\
 							Jika ingin melihat menu lainnya terkait tindakan yang akan diperlakukan terhadap tabel tersebut, caranya \
@@ -173,7 +173,7 @@ def About():
 						Selain itu, jika ingin mensort data, klik saja bagian header kolom.</p><br><br> """, unsafe_allow_html=True)
 					
 	
-	st.markdown("""<h6 style="color:green;margin-top:-10px;margin-bottom:0px;"> GRAFIK </h6>
+	st.markdown("""<h5 style="color:green;margin-top:-10px;margin-bottom:0px;"> GRAFIK </h5>
 				<br>
 				<h6 style="margin-top:-10px;margin-bottom:0px;"> 
 				✔️ Tidak bisa di-edit <br>
@@ -184,7 +184,7 @@ def About():
 			 <br><br> 
 			 """, unsafe_allow_html=True)
 	
-	st.markdown("""<h6 style="color:green;margin-top:-10px;margin-bottom:0px;"> FILTER </h6>""", unsafe_allow_html=True)
+	st.markdown("""<h5 style="color:green;margin-top:-10px;margin-bottom:0px;"> FILTER </h5>""", unsafe_allow_html=True)
 	st.markdown("""<h6 style="margin-top:-10px;margin-bottom:0px;"> 
 				✔️ Filter bisa digunakan untuk memilih data yang akan ditampilkan pada tabel atau grafik <br>
 				✔️ Filter disediakan pada section-section tertentu <br>

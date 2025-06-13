@@ -186,12 +186,11 @@ def About():
 	
 	st.markdown("""<h6 style="color:green;margin-top:-10px;margin-bottom:0px;"> FILTER </h6>""", unsafe_allow_html=True)
 	st.markdown("""<h6 style="font-size:12px;color:brown;margin-top:-10px;margin-bottom:0px;"> 
+				✔️ Filter bisa digunakan untuk memilih data yang akan ditampilkan pada tabel atau grafik <br>
 				✔️ Filter disediakan pada section-section tertentu <br>
 				✔️ Filter berupa menu dropdown (pilihan) <br>
 			 	✔️ Filter bisa di-reset dengan mengklik tombol reset X di atas item filter <br>	
-
-			 
-			 <br><br> 
+			 </h6><br><br> 
 			 <span style="color:Blue">e-WeYe</span>
 			 """, unsafe_allow_html=True)	
 def header():	

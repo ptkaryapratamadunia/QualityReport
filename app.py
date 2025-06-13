@@ -1489,34 +1489,77 @@ def cleaning_process(df):
 				st.plotly_chart(fig)
 
 				st.markdown("---")
-				# Grafik bar horizontal: sumbu y = Defect Type, sumbu x = NG_% untuk Line = Barrel 4
-				# Hitung rata-rata NG_% per defect type untuk Line Barrel 4
-				ng_percent_by_defect = {}
-				for defect in new_columns:
-					if defect in df_LB4.columns and 'NG_%' in df_LB4.columns:
-						mask = df_LB4[defect] > 0
-						if mask.any():
-							ng_percent_by_defect[defect] = df_LB4.loc[mask, 'NG_%'].mean()
-						else:
-							ng_percent_by_defect[defect] = 0
+				# Grafik Pareto: Bar = jumlah NG (lot) per Defect Type, Line = cumulative %
+				# Data: df_LB4, kolom new_columns
 
-				ng_percent_df = pd.DataFrame(list(ng_percent_by_defect.items()), columns=['Defect Type', 'NG_%'])
-				ng_percent_df = ng_percent_df[ng_percent_df['NG_%'] > 0]
-				ng_percent_df = ng_percent_df.sort_values(by='NG_%', ascending=True)
+				# Hitung total NG (lot) per defect type
+				pareto_df = pd.DataFrame({
+					'Defect Type': new_columns,
+					'Total NG (lot)': [df_LB4[col].sum() if col in df_LB4.columns else 0 for col in new_columns]
+				})
+				pareto_df = pareto_df[pareto_df['Total NG (lot)'] > 0]
+				pareto_df = pareto_df.sort_values(by='Total NG (lot)', ascending=False).reset_index(drop=True)
 
-				fig = px.bar(
-					ng_percent_df,
-					y='Defect Type',
-					x='NG_%',
-					orientation='h',
-					title='Rata-rata NG (%) per Defect Type - Line Barrel 4',
-					labels={'Defect Type': 'Defect Type', 'NG_%': 'NG (%)'},
-					color_discrete_sequence=['#FEBA17'],
-					text=ng_percent_df['NG_%'].round(2)
+				# Hitung cumulative %
+				pareto_df['Cumulative'] = pareto_df['Total NG (lot)'].cumsum()
+				pareto_df['Cumulative %'] = 100 * pareto_df['Cumulative'] / pareto_df['Total NG (lot)'].sum()
+
+				# Buat grafik Pareto
+
+				fig = go.Figure()
+
+				# Bar chart
+				fig.add_trace(go.Bar(
+					x=pareto_df['Defect Type'],
+					y=pareto_df['Total NG (lot)'],
+					name='Total NG (lot)',
+					marker_color='#1f77b4',
+					yaxis='y1',
+					text=pareto_df['Total NG (lot)'].round(0).astype(int),
+					textposition='inside'
+				))
+
+				# Line chart cumulative %
+				fig.add_trace(go.Scatter(
+					x=pareto_df['Defect Type'],
+					y=pareto_df['Cumulative %'],
+					name='Cumulative %',
+					yaxis='y2',
+					mode='lines+markers',
+					marker_color='orange',
+					line=dict(color='orange', width=3),
+					text=pareto_df['Cumulative %'].round(1).astype(str) + '%',
+					textposition='top center'
+				))
+
+				fig.update_layout(
+					title='Pareto Chart: Total NG (lot) per Defect Type - Line Barrel 4',
+					xaxis=dict(title='Defect Type'),
+					yaxis=dict(
+						title='Total NG (lot)',
+						showgrid=True,
+						zeroline=True
+					),
+					yaxis2=dict(
+						title='Cumulative %',
+						overlaying='y',
+						side='right',
+						range=[0, 110],
+						showgrid=False,
+						tickformat='.0f',
+						ticksuffix='%'
+					),
+					legend=dict(
+						orientation="h",
+						yanchor="bottom",
+						y=1.02,
+						xanchor="right",
+						x=1
+					),
+					bargap=0.2
 				)
-				fig.update_traces(textposition='inside')
-				fig.update_layout(yaxis_title="Defect Type", xaxis_title="NG (%)", yaxis_tickangle=0)
-				st.plotly_chart(fig)
+
+				st.plotly_chart(fig, use_container_width=True)
 			
 			with barisR1:	#baris kanan Grafik Vertical Bar R1 Blue
 			

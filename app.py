@@ -1755,41 +1755,42 @@ def cleaning_process(df):
 			
 			# st.write(df3)
 		#region Pilihan Line untuk filter
-			df3['Date'] = pd.to_datetime(df3['Date'], errors='coerce').dt.date  # pastikan hanya tanggal (tanpa waktu)
-			date_min = df3['Date'].min()
-			date_max = df3['Date'].max()
+		df3['Date'] = pd.to_datetime(df3['Date'], errors='coerce').dt.date  # pastikan hanya tanggal (tanpa waktu)
+		date_min = df3['Date'].min()
+		date_max = df3['Date'].max()
 
-			line_options = df3['Line'].dropna().unique().tolist()
-			selected_line = st.selectbox("Pilih Line yang ingin ditampilkan:", line_options)
+		line_options = df3['Line'].dropna().unique().tolist()
+		selected_line = st.selectbox("Pilih Line yang ingin ditampilkan:", line_options)
 
-			# Filter df berdasarkan Line yang dipilih
-			df_daily = df3[df3['Line'] == selected_line].copy()
+		# Filter df berdasarkan Line yang dipilih
+		df_daily = df3[df3['Line'] == selected_line].copy()
 
-			# Buat range tanggal lengkap
-			all_dates = pd.date_range(start=date_min, end=date_max, freq='D').date
-			# st.write(f"Periode dari Tanggal: {date_min} sampai Tanggal : {date_max}")
+		# Buat range tanggal lengkap
+		all_dates = pd.date_range(start=date_min, end=date_max, freq='D').date
 
-			# Group by Date (tanpa waktu), hitung rata-rata NG_%
-			daily_ng = df_daily.groupby('Date', as_index=False)['NG_%'].mean()
-			daily_lot = df_daily.groupby('Date', as_index=False)['Insp(B/H)'].sum()
-			all_dates_df = pd.DataFrame({'Date': all_dates})
-			daily_ng = pd.merge(all_dates_df, daily_ng, how='left', on='Date')
-			daily_ng['NG_%'] = daily_ng['NG_%'].fillna(0)  # Isi 0 jika tidak ada data
-			daily_lot = pd.merge(all_dates_df, daily_lot, how='left', on='Date')
-			daily_lot['Insp(B/H)'] = daily_lot['Insp(B/H)'].fillna(0)
+		# Group by Date (tanpa waktu), hitung rata-rata NG_% dan total Inspected
+		daily_ng = df_daily.groupby('Date', as_index=False)['NG_%'].mean()
+		daily_lot = df_daily.groupby('Date', as_index=False)['Insp(B/H)'].sum()
 
-			# Gabungkan data untuk plotting
-			daily_plot = daily_ng.copy()
-			daily_plot['Insp(B/H)'] = daily_lot['Insp(B/H)']
+		# Gabungkan data ke satu DataFrame
+		daily_plot = pd.merge(daily_ng, daily_lot, on='Date', how='outer')
+		daily_plot = daily_plot.fillna(0)
 
-			# Filter hanya tanggal yang ada datanya (NG_% > 0 atau Insp(B/H) > 0)
-			daily_plot = daily_plot[(daily_plot['NG_%'] > 0) | (daily_plot['Insp(B/H)'] > 0)]
+		# Filter hanya tanggal yang ada datanya (NG_% > 0 atau Insp(B/H) > 0)
+		daily_plot = daily_plot[(daily_plot['NG_%'] > 0) | (daily_plot['Insp(B/H)'] > 0)]
 
+		# Urutkan berdasarkan tanggal
+		daily_plot = daily_plot.sort_values('Date')
+
+		# Jika tidak ada data, tampilkan info
+		if daily_plot.empty:
+			st.info("Tidak ada data harian untuk line ini.")
+		else:
 			fig = go.Figure()
 
-			# Bar chart untuk Total_lot (Insp(B/H)) di axis primer -added on 13Jun2025
+			# Bar chart untuk Total_lot (Insp(B/H)) di axis primer
 			fig.add_trace(go.Bar(
-				x=daily_plot['Date'],
+				x=daily_plot['Date'].astype(str),
 				y=daily_plot['Insp(B/H)'],
 				name='Total Inspected (Lot)',
 				marker_color='#8A784E',
@@ -1798,9 +1799,9 @@ def cleaning_process(df):
 				textposition='inside'
 			))
 
-			# Line chart untuk NG_% di axis sekunder, value label warna merah - added on 13Jun2025
+			# Line chart untuk NG_% di axis sekunder, value label warna merah
 			fig.add_trace(go.Scatter(
-				x=daily_plot['Date'],
+				x=daily_plot['Date'].astype(str),
 				y=daily_plot['NG_%'],
 				name='NG (%)',
 				mode='lines+markers+text',
@@ -1820,10 +1821,7 @@ def cleaning_process(df):
 					titlefont=dict(color='#8A784E'),
 					tickfont=dict(color='#8A784E'),
 					type='category',
-					tickformat='%d-%m-%y',  # ubah ke format dd-mm-yy
 					tickangle=45,
-					tickmode='auto',
-					dtick=1
 				),
 				yaxis2=dict(
 					title='Rata-rata NG (%)',
@@ -1840,6 +1838,7 @@ def cleaning_process(df):
 				)
 			)
 			st.plotly_chart(fig, use_container_width=True)
+		#endregion
 			#endregion
 			
 		with sum_tab2: # Summary Trial 

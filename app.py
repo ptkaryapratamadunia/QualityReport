@@ -143,8 +143,17 @@ def About():
 				dan menambah kolom yang diperlukan,dll. <br> Menjadi sangat efisien karena pada Tools ini sudah disediakan juga\
 				Summary Report berupa Tabel dan Grafik yang siap digunakan untuk analisa dan pengambilan keputusan.<br>\
 				<span style="color:Orange">Disclaimer: <span> <br>Tools ini dapat dijalankan hanya jika sumber file nya adalah hasil ekspor dari program\
-				Autocon QC yang lengkap dan file original belum diedit\
-				(menghapus dan atau menambah kolom)</p>""", unsafe_allow_html=True)
+				Autocon QC PT. KPD yang lengkap dan file original belum diedit\
+				(menghapus dan atau menambah kolom). Aplikasi ini hanya diperuntukan untuk pengguna di internal PT. KARYAPRATAMA DUNIA. Kebenaran dan keakuratan data yang dihasilkan oleh aplikasi ini diluar tanggung jawab Apps-Developer</p>""", unsafe_allow_html=True)
+
+	st.markdown("""<h3 style="color:Brown">DEFINISI</h3>""", unsafe_allow_html=True)
+	st.markdown("""<p style="margin-top:-10px;margin-bottom:0px;font-size:14px">Definisi satuan dalam aplikasi ini:<br><br>
+			1. Satuan lot ada 2 definisi :<br><br>
+				<tab> a. Line Barrel ( LB4 dan LNi ), definisi lot adalah satuan yang mewakili jumlah part dalam 1 box atau 1 barrel atau 1 Kanban. Jumlah part dalam 1 box atau 1 barrel atau satu Kanban berbeda-beda untuk setiap part tergantung standar loadingnya.<br><br>
+				b. Line Rack, definisi lot adalah satuan yang mewakili jumlah part dari 1 batch proses atau 1 hanger proses. Setiap 1 hanger berisi jumlah part yang berbeda-beda tergantung dari standar loading setiap part.<br><br>
+			2. Satuan pc/pcs adalah satuan yang mewakili satu atau beberapa jumlah part.<br><br>
+			3. Prosentase (%) adalah hasil dari perhitungan pembagian antara jumlah total NG (lot) dibagi dengan jumlah total hasil inspeksi (lot) dikalikan 100% <br><br>
+			<span style="color:Blue">e-WeYe</p>""", unsafe_allow_html=True)
 def header():	
 	# heading
 	kolkir,kolnan=st.columns((2,1))	#artinya kolom sebelahkiri lebih lebar 2x dari kanan

@@ -1819,7 +1819,7 @@ def cleaning_process(df):
 					titlefont=dict(color='#8A784E'),
 					tickfont=dict(color='#8A784E'),
 					type='category',
-					tickformat='%d-%b-%Y',
+					tickformat='%d-%m-%y',  # ubah ke format dd-mm-yy
 					tickangle=45,
 					tickmode='auto',
 					dtick=1

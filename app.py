@@ -1771,36 +1771,72 @@ def cleaning_process(df):
 
 			# Group by Date (tanpa waktu), hitung rata-rata NG_%
 			daily_ng = df_daily.groupby('Date', as_index=False)['NG_%'].mean()
+			daily_lot = df_daily.groupby('Date', as_index=False)['Insp(B/H)'].sum()
 			all_dates_df = pd.DataFrame({'Date': all_dates})
 			daily_ng = pd.merge(all_dates_df, daily_ng, how='left', on='Date')
 			daily_ng['NG_%'] = daily_ng['NG_%'].fillna(0)  # Isi 0 jika tidak ada data
+			daily_lot = pd.merge(all_dates_df, daily_lot, how='left', on='Date')
+			daily_lot['Insp(B/H)'] = daily_lot['Insp(B/H)'].fillna(0)
 
 			# st.write("Tabel Rata-rata NG (%) Harian")
 			# st.dataframe(daily_ng, use_container_width=True)
 
-			fig = px.line(
-				daily_ng,
-				x='Date',
-				y='NG_%',
-				title=f'Rata-rata NG (%) Harian - {selected_line}',
-				labels={'Date': 'Tanggal', 'NG_%': 'Rata-rata NG (%)'},
-				markers=True,
-				text=daily_ng['NG_%'].round(2)  # Tampilkan nilai di atas grafik
-			)
-			fig.update_traces(
-				textposition='top center',
-				textfont=dict(color='red', size=12)
-			)
+			# Gabungkan data untuk plotting
+			daily_plot = daily_ng.copy()
+			daily_plot['Insp(B/H)'] = daily_lot['Insp(B/H)']
+
+			fig = go.Figure()
+
+			# Bar chart untuk Total_lot (Insp(B/H)) di axis primer
+			fig.add_trace(go.Bar(
+				x=daily_plot['Date'],
+				y=daily_plot['Insp(B/H)'],
+				name='Total Inspected (Lot)',
+				marker_color='#8A784E',
+				yaxis='y1',
+				text=daily_plot['Insp(B/H)'].round(0).astype(int).astype(str),
+				textposition='inside'
+			))
+
+			# Line chart untuk NG_% di axis sekunder
+			fig.add_trace(go.Scatter(
+				x=daily_plot['Date'],
+				y=daily_plot['NG_%'],
+				name='NG (%)',
+				mode='lines+markers+text',
+				marker_color='red',
+				line_color='red',
+				yaxis='y2',
+				text=daily_plot['NG_%'].round(2),
+				textposition='top center'
+			))
+
 			fig.update_layout(
+				title=f'Rata-rata NG (%) Harian & Total Inspected (Lot) - {selected_line}',
 				xaxis_title='Tanggal',
-				yaxis_title='Rata-rata NG (%)',
-				xaxis=dict(
+				yaxis=dict(
+					title='Total Inspected (Lot)',
+					titlefont=dict(color='#8A784E'),
+					tickfont=dict(color='#8A784E'),
 					type='category',
 					tickformat='%d-%b-%Y',
 					tickangle=45,
 					tickmode='auto',
-					dtick=1  # Tampilkan setiap hari
+					dtick=1
 				),
+				yaxis2=dict(
+					title='Rata-rata NG (%)',
+					titlefont=dict(color='red'),
+					tickfont=dict(color='red'),
+					overlaying='y',
+					side='right'
+				),
+				legend=dict(
+					yanchor="top",
+					y=-0.2,
+					xanchor="center",
+					x=0.5
+				)
 			)
 			st.plotly_chart(fig, use_container_width=True)
 			#endregion

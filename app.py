@@ -991,8 +991,8 @@ def cleaning_process(df):
 
 					# Customize the layout
 					fig.update_traces(
-						textposition='outside',
-						textfont=dict(color='black', size=12)
+						textposition='inside',
+						textfont=dict(color='white', size=12)
 					)
 					fig.update_layout(
 						xaxis_title="Customer",
@@ -1030,8 +1030,8 @@ def cleaning_process(df):
 
 					# Customize the layout
 					fig.update_traces(
-						textposition='outside',
-						textfont=dict(color='black', size=12)
+						textposition='inside',
+						textfont=dict(color='white', size=12)
 					)
 					fig.update_layout(
 						xaxis_title="Customer",

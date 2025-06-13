@@ -1786,7 +1786,7 @@ def cleaning_process(df):
 			daily_plot['Insp(B/H)'] = daily_lot['Insp(B/H)']
 			fig = go.Figure()
 
-			# Bar chart untuk Total_lot (Insp(B/H)) di axis primer
+			# Bar chart untuk Total_lot (Insp(B/H)) di axis primer -added on 13Jun2025
 			fig.add_trace(go.Bar(
 				x=daily_plot['Date'],
 				y=daily_plot['Insp(B/H)'],
@@ -1797,7 +1797,7 @@ def cleaning_process(df):
 				textposition='inside'
 			))
 
-			# Line chart untuk NG_% di axis sekunder, value label warna merah
+			# Line chart untuk NG_% di axis sekunder, value label warna merah - added on 13Jun2025
 			fig.add_trace(go.Scatter(
 				x=daily_plot['Date'],
 				y=daily_plot['NG_%'],

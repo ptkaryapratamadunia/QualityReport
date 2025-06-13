@@ -1487,6 +1487,36 @@ def cleaning_process(df):
 				fig.update_traces(textposition='inside')
 				fig.update_layout(yaxis_title="Defect Type", xaxis_title="Total NG (lot)", yaxis_tickangle=0)
 				st.plotly_chart(fig)
+
+				st.markdown("---")
+				# Grafik bar horizontal: sumbu y = Defect Type, sumbu x = NG_% untuk Line = Barrel 4
+				# Hitung rata-rata NG_% per defect type untuk Line Barrel 4
+				ng_percent_by_defect = {}
+				for defect in new_columns:
+					if defect in df_LB4.columns and 'NG_%' in df_LB4.columns:
+						mask = df_LB4[defect] > 0
+						if mask.any():
+							ng_percent_by_defect[defect] = df_LB4.loc[mask, 'NG_%'].mean()
+						else:
+							ng_percent_by_defect[defect] = 0
+
+				ng_percent_df = pd.DataFrame(list(ng_percent_by_defect.items()), columns=['Defect Type', 'NG_%'])
+				ng_percent_df = ng_percent_df[ng_percent_df['NG_%'] > 0]
+				ng_percent_df = ng_percent_df.sort_values(by='NG_%', ascending=True)
+
+				fig = px.bar(
+					ng_percent_df,
+					y='Defect Type',
+					x='NG_%',
+					orientation='h',
+					title='Rata-rata NG (%) per Defect Type - Line Barrel 4',
+					labels={'Defect Type': 'Defect Type', 'NG_%': 'NG (%)'},
+					color_discrete_sequence=['#FEBA17'],
+					text=ng_percent_df['NG_%'].round(2)
+				)
+				fig.update_traces(textposition='inside')
+				fig.update_layout(yaxis_title="Defect Type", xaxis_title="NG (%)", yaxis_tickangle=0)
+				st.plotly_chart(fig)
 			
 			with barisR1:	#baris kanan Grafik Vertical Bar R1 Blue
 			

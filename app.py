@@ -145,7 +145,7 @@ def About():
 				<span style="color:Orange">Disclaimer: <span> <br>Tools ini dapat dijalankan hanya jika sumber file nya adalah hasil ekspor dari program\
 				Autocon QC PT. KPD yang lengkap dan file original belum diedit\
 				(menghapus dan atau menambah kolom). Aplikasi ini hanya diperuntukan untuk pengguna di internal PT. KARYAPRATAMA DUNIA. Kebenaran dan keakuratan data yang dihasilkan oleh aplikasi ini diluar tanggung jawab Apps-Developer</p>""", unsafe_allow_html=True)
-
+	st.markdown("---")
 	st.markdown("""<h3 style="color:Brown">DEFINISI</h3>""", unsafe_allow_html=True)
 	st.markdown("""<p style="margin-top:-10px;margin-bottom:0px;font-size:14px">Definisi satuan dalam aplikasi ini:<br><br>
 			1. Satuan lot ada 2 definisi :<br><br>

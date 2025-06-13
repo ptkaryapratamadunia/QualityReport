@@ -1504,7 +1504,7 @@ def cleaning_process(df):
 				pareto_df['Cumulative'] = pareto_df['Total NG (lot)'].cumsum()
 				pareto_df['Cumulative %'] = 100 * pareto_df['Cumulative'] / pareto_df['Total NG (lot)'].sum()
 
-				# Buat grafik Pareto
+				# Buat grafik Pareto-13Jun2025
 
 				fig = go.Figure()
 
@@ -1587,6 +1587,79 @@ def cleaning_process(df):
 				fig.update_traces(textposition='inside')
 				fig.update_layout(yaxis_title="Defect Type", xaxis_title="Total NG (lot)", yaxis_tickangle=0)
 				st.plotly_chart(fig)
+
+				st.markdown("---")
+				# Grafik Pareto: Bar = jumlah NG (lot) per Defect Type, Line = cumulative %
+				# Data: df_LR1, kolom new_columns
+
+				# Hitung total NG (lot) per defect type
+				pareto_df = pd.DataFrame({
+					'Defect Type': new_columns,
+					'Total NG (lot)': [df_LR1[col].sum() if col in df_LR1.columns else 0 for col in new_columns]
+				})
+				pareto_df = pareto_df[pareto_df['Total NG (lot)'] > 0]
+				pareto_df = pareto_df.sort_values(by='Total NG (lot)', ascending=False).reset_index(drop=True)
+
+				# Hitung cumulative %
+				pareto_df['Cumulative'] = pareto_df['Total NG (lot)'].cumsum()
+				pareto_df['Cumulative %'] = 100 * pareto_df['Cumulative'] / pareto_df['Total NG (lot)'].sum()
+
+				# Buat grafik Pareto-13Jun2025
+
+				fig = go.Figure()
+
+				# Bar chart
+				fig.add_trace(go.Bar(
+					x=pareto_df['Defect Type'],
+					y=pareto_df['Total NG (lot)'],
+					name='Total NG (lot)',
+					marker_color="#d33d22",
+					yaxis='y1',
+					text=pareto_df['Total NG (lot)'].round(0).astype(int),
+					textposition='inside'
+				))
+
+				# Line chart cumulative %
+				fig.add_trace(go.Scatter(
+					x=pareto_df['Defect Type'],
+					y=pareto_df['Cumulative %'],
+					name='Cumulative %',
+					yaxis='y2',
+					mode='lines+markers',
+					marker_color='orange',
+					line=dict(color='orange', width=3),
+					text=pareto_df['Cumulative %'].round(1).astype(str) + '%',
+					textposition='top center'
+				))
+
+				fig.update_layout(
+					title='Pareto Chart: Total NG (lot) per Defect Type - Line Barrel 4',
+					xaxis=dict(title='Defect Type'),
+					yaxis=dict(
+						title='Total NG (lot)',
+						showgrid=True,
+						zeroline=True
+					),
+					yaxis2=dict(
+						title='Cumulative %',
+						overlaying='y',
+						side='right',
+						range=[0, 110],
+						showgrid=False,
+						tickformat='.0f',
+						ticksuffix='%'
+					),
+					legend=dict(
+						orientation="h",
+						yanchor="bottom",
+						y=1.02,
+						xanchor="right",
+						x=1
+					),
+					bargap=0.2
+				)
+
+				st.plotly_chart(fig, use_container_width=True)
 
 			st.markdown("---")
 			#-------------------------------------------------------

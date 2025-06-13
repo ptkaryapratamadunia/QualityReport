@@ -155,7 +155,7 @@ def About():
 		&nbsp;&nbsp;&nbsp;&nbsp;b. Line Rack, definisi lot adalah satuan yang mewakili jumlah part dari 1 batch proses atau 1 hanger proses. Setiap 1 hanger berisi jumlah part yang berbeda-beda tergantung dari standar loading setiap part.<br><br>
 		2. Satuan pc/pcs adalah satuan yang mewakili satu atau beberapa jumlah part.<br><br>
 		3. Prosentase (%) adalah hasil dari perhitungan pembagian antara jumlah total NG (lot) dibagi dengan jumlah total hasil inspeksi (lot) dikalikan 100% <br><br>
-		<span style="color:Blue">e-WeYe</span>
+		
 		</p>
 	""", unsafe_allow_html=True)
 
@@ -170,7 +170,9 @@ def About():
 						Isi tabel tidak bisa diubah. Lebar kolom bisa diatur lebarnya dengan cara meletakkan cursor mouse di antara batas\
 					antar tabel lalu geser kanan atau kiri. Bila ada tabel yang menampilkan banyak kolom yang tidak terlihat di bagian kanan tabel\
 					untuk melihatnya, arahkan mouse ke bagian bawah tabel sampai muncul 'scroll-bar' lalu tahan dengan mouse dan geser kanan kiri.\
-						Selain itu, jika ingin mensort data, klik saja bagian header kolom.</p>""", unsafe_allow_html=True)
+						Selain itu, jika ingin mensort data, klik saja bagian header kolom. 
+			 <span style="color:Blue">e-WeYe</span>
+			 </p>""", unsafe_allow_html=True)
 def header():	
 	# heading
 	kolkir,kolnan=st.columns((2,1))	#artinya kolom sebelahkiri lebih lebar 2x dari kanan

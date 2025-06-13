@@ -1778,12 +1778,13 @@ def cleaning_process(df):
 			daily_lot = pd.merge(all_dates_df, daily_lot, how='left', on='Date')
 			daily_lot['Insp(B/H)'] = daily_lot['Insp(B/H)'].fillna(0)
 
-			# st.write("Tabel Rata-rata NG (%) Harian")
-			# st.dataframe(daily_ng, use_container_width=True)
-
 			# Gabungkan data untuk plotting
 			daily_plot = daily_ng.copy()
 			daily_plot['Insp(B/H)'] = daily_lot['Insp(B/H)']
+
+			# Filter hanya tanggal yang ada datanya (NG_% > 0 atau Insp(B/H) > 0)
+			daily_plot = daily_plot[(daily_plot['NG_%'] > 0) | (daily_plot['Insp(B/H)'] > 0)]
+
 			fig = go.Figure()
 
 			# Bar chart untuk Total_lot (Insp(B/H)) di axis primer -added on 13Jun2025

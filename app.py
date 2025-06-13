@@ -158,6 +158,19 @@ def About():
 		<span style="color:Blue">e-WeYe</span>
 		</p>
 	""", unsafe_allow_html=True)
+
+st.markdown("---")
+
+st.markdown("""<h5 style="color:blue;margin-top:-10px;margin-bottom:0px;"> PETUNJUK SINGKAT </h5>""", unsafe_allow_html=True)
+st.markdown("""<h6 style="color:green;margin-top:-10px;margin-bottom:0px;"> TABEL </h6>""", unsafe_allow_html=True)
+st.markdown("""<p style="font-size:12px;margin-top:-10px;margin-bottom:0px;">Tampilan tabel terdiri dari beberapa kolom,ada yang menggunakan kolom index (adalah\
+						nomer urut yg diawali dengan angka nol) dan ada juga ada yang tidak menggunakan.\
+						Jika ingin melihat menu lainnya terkait tindakan yang akan diperlakukan terhadap tabel tersebut, caranya \
+				arahkan mouse ke tabel pada bagian atas kanan tabel. Akan ditemukan menu: Download, Search dan Full Screen.\
+					Isi tabel tidak bisa diubah. Lebar kolom bisa diatur lebarnya dengan cara meletakkan cursor mouse di antara batas\
+				antar tabel lalu geser kanan atau kiri. Bila ada tabel yang menampilkan banyak kolom yang tidak terlihat di bagian kanan tabel\
+				untuk melihatnya, arahkan mouse ke bagian bawah tabel sampai muncul 'scroll-bar' lalu tahan dengan mouse dan geser kanan kiri.\
+					Selain itu, jika ingin mensort data, klik saja bagian header kolom.</p>""", unsafe_allow_html=True)
 def header():	
 	# heading
 	kolkir,kolnan=st.columns((2,1))	#artinya kolom sebelahkiri lebih lebar 2x dari kanan
@@ -1893,18 +1906,6 @@ def cleaning_process(df):
 				st.plotly_chart(fig) # Display the plot
 			#endregion
 			#--------------------------------------
-
-			st.markdown("---")
-			
-			with st.expander("DEFINISI SATUAN", expanded=True):
-				st.markdown("""<h3 style="color:Brown">DEFINISI</h3>""", unsafe_allow_html=True)
-				st.markdown("""<p style="margin-top:-10px;margin-bottom:0px;font-size:14px">Definisi satuan dalam aplikasi ini:<br><br>
-			1. Satuan lot ada 2 definisi :<br><br>
-				<tab> a. Line Barrel ( LB4 dan LNi ), definisi lot adalah satuan yang mewakili jumlah part dalam 1 box atau 1 barrel atau 1 Kanban. Jumlah part dalam 1 box atau 1 barrel atau satu Kanban berbeda-beda untuk setiap part tergantung standar loadingnya.<br><br>
-				b. Line Rack, definisi lot adalah satuan yang mewakili jumlah part dari 1 batch proses atau 1 hanger proses. Setiap 1 hanger berisi jumlah part yang berbeda-beda tergantung dari standar loading setiap part.<br><br>
-			2. Satuan pc/pcs adalah satuan yang mewakili satu atau beberapa jumlah part.<br><br>
-			3. Prosentase (%) adalah hasil dari perhitungan pembagian antara jumlah total NG (lot) dibagi dengan jumlah total hasil inspeksi (lot) dikalikan 100% <br><br>
-			<span style="color:Blue">e-WeYe</p>""", unsafe_allow_html=True)
 
 			st.markdown("---")
 

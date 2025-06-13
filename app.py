@@ -138,10 +138,10 @@ def About():
 	# """, unsafe_allow_html=True)
 	st.markdown("""<p style="margin-top:-10px;margin-bottom:0px;font-size:14px">Beberapa data output dari aplikasi AUTOCON-KPD belum siap pakai,\
 				oleh karena itu perlu dilakukan proses cleaning, seperti mengkonversi data TEXT menjadi angka,\
-				konversi type NG ABCDSEFGIJKLMN menjadi definisi type NG, mengekstrasi data Nomer Jig\
+				konversi inisial type NG "A,B, dst" menjadi definisi type NG menjadi "Warna, Buram, dst", mengekstrasi data Nomer Jig\
 				menjadi Nomer Mesin Smallpart, menghapus kolom yang tidak perlu\
 				dan menambah kolom yang diperlukan,dll. <br> Menjadi sangat efisien karena pada Tools ini sudah disediakan juga\
-				Summary Report berupa Tabel dan Grafik yang siap digunakan untuk analisa dan pengambilan keputusan.<br>\
+				Summary Report berupa Tabel dan Grafik serta mode FILTERING yang siap digunakan untuk analisa dan pengambilan keputusan.<br>\
 				<span style="color:Orange">Disclaimer: <span> <br>Tools ini dapat dijalankan hanya jika sumber file nya adalah hasil ekspor dari program\
 				Autocon QC PT. KPD yang lengkap dan file original belum diedit\
 				(menghapus dan atau menambah kolom). Aplikasi ini hanya diperuntukan untuk pengguna di internal PT. KARYAPRATAMA DUNIA. Kebenaran dan keakuratan data yang dihasilkan oleh aplikasi ini diluar tanggung jawab Apps-Developer</p>""", unsafe_allow_html=True)

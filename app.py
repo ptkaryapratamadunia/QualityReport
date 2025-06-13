@@ -1431,6 +1431,18 @@ def cleaning_process(df):
 			total_row_RingParts['Jumlah Total'] = total_row_RingParts.sum(axis=1)
 			total_row_RingParts = total_row_RingParts.map(format_with_comma)
 			st.write(total_row_RingParts)
+
+			#MTL/ SLipMelintir Only Pivot Table
+			# Filter df untuk hanya menampilkan PartName yang mengandung salah satu kode ring
+			df_ring_mtl = df[df['PartName'].str.contains('JK067662-0190|JK067662-0160|JK067662-0112', na=False)]
+			# Hitung total 'MTL/ SLipMelintir' (lot)
+			total_mtl = df_ring_mtl['MTL/ SLipMelintir'].sum()
+			# Buat pivot table dengan index 'Total_NG(lot)'
+			pivot_mtl = pd.DataFrame({'MTL/ SLipMelintir': [total_mtl]}, index=['Total_NG(lot)'])
+			pivot_mtl = pivot_mtl.map(format_with_comma)
+			st.write("Pivot Table MTL/ SLipMelintir (Lot) - Ring Parts")
+			st.write(pivot_mtl)
+
 			
 
 			#LR1

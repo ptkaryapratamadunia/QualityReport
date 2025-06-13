@@ -1633,7 +1633,7 @@ def cleaning_process(df):
 				))
 
 				fig.update_layout(
-					title='Pareto Chart: Total NG (lot) per Defect Type - Line Barrel 4',
+					title='Pareto Chart: Total NG (lot) per Defect Type - Line Rack 1',
 					xaxis=dict(title='Defect Type'),
 					yaxis=dict(
 						title='Total NG (lot)',

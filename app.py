@@ -1784,11 +1784,17 @@ def cleaning_process(df):
 		if daily_plot.empty:
 			st.info("Tidak ada data harian untuk line ini.")
 		else:
+			# Pastikan data tidak kosong dan urut berdasarkan tanggal
+			daily_plot = daily_plot.copy()
+			daily_plot['Date'] = pd.to_datetime(daily_plot['Date'])
+			daily_plot = daily_plot.sort_values('Date')
+			daily_plot['Date_str'] = daily_plot['Date'].dt.strftime('%d-%b-%Y')
+
 			fig = go.Figure()
 
 			# Bar chart untuk Total_lot (Insp(B/H)) di axis primer
 			fig.add_trace(go.Bar(
-				x=daily_plot['Date'].astype(str),
+				x=daily_plot['Date_str'],
 				y=daily_plot['Insp(B/H)'],
 				name='Total Inspected (Lot)',
 				marker_color='#8A784E',
@@ -1799,7 +1805,7 @@ def cleaning_process(df):
 
 			# Line chart untuk NG_% di axis sekunder, value label warna merah
 			fig.add_trace(go.Scatter(
-				x=daily_plot['Date'].astype(str),
+				x=daily_plot['Date_str'],
 				y=daily_plot['NG_%'],
 				name='NG (%)',
 				mode='lines+markers+text',
@@ -1818,8 +1824,6 @@ def cleaning_process(df):
 					title='Total Inspected (Lot)',
 					titlefont=dict(color='#8A784E'),
 					tickfont=dict(color='#8A784E'),
-					type='category',
-					tickangle=45,
 				),
 				yaxis2=dict(
 					title='Rata-rata NG (%)',
@@ -1827,6 +1831,10 @@ def cleaning_process(df):
 					tickfont=dict(color='red'),
 					overlaying='y',
 					side='right'
+				),
+				xaxis=dict(
+					type='category',
+					tickangle=45,
 				),
 				legend=dict(
 					yanchor="top",

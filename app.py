@@ -1789,7 +1789,7 @@ def cleaning_process(df):
 			)
 			fig.update_traces(
 				textposition='top center',
-				textfont=dict(color='black', size=12)
+				textfont=dict(color='red', size=12)
 			)
 			fig.update_layout(
 				xaxis_title='Tanggal',

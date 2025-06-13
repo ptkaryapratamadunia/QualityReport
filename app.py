@@ -1774,10 +1774,8 @@ def cleaning_process(df):
 
 		# Gabungkan data ke satu DataFrame
 		daily_plot = pd.merge(daily_ng, daily_lot, on='Date', how='outer')
-		daily_plot = daily_plot.fillna(0)
-
-		# Filter hanya tanggal yang ada datanya (NG_% > 0 atau Insp(B/H) > 0)
-		daily_plot = daily_plot[(daily_plot['Insp(B/H)'] > 0)]
+		daily_plot = daily_plot.set_index('Date').reindex(all_dates).fillna(0).reset_index()
+		daily_plot.rename(columns={'index': 'Date'}, inplace=True)
 
 		# Urutkan berdasarkan tanggal
 		daily_plot = daily_plot.sort_values('Date')

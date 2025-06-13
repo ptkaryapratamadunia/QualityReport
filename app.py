@@ -1819,7 +1819,7 @@ def cleaning_process(df):
 
 			fig.update_layout(
 				title=f'Rata-rata NG (%) Harian & Total Inspected (Lot) - {selected_line}',
-				xaxis_title='Tanggal',
+				xaxis_title='',
 				yaxis=dict(
 					title='Total Inspected (Lot)',
 					titlefont=dict(color='#8A784E'),

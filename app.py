@@ -170,7 +170,21 @@ def About():
 						Isi tabel tidak bisa diubah. Lebar kolom bisa diatur lebarnya dengan cara meletakkan cursor mouse di antara batas\
 					antar tabel lalu geser kanan atau kiri. Bila ada tabel yang menampilkan banyak kolom yang tidak terlihat di bagian kanan tabel\
 					untuk melihatnya, arahkan mouse ke bagian bawah tabel sampai muncul 'scroll-bar' lalu tahan dengan mouse dan geser kanan kiri.\
-						Selain itu, jika ingin mensort data, klik saja bagian header kolom.<br><br> 
+						Selain itu, jika ingin mensort data, klik saja bagian header kolom.
+			 
+				<h6 style="color:green;margin-top:-10px;margin-bottom:0px;"> GRAFIK </h6>
+				<br>
+				<h6 style="font-size:12px;color:brown;margin-top:-10px;margin-bottom:0px;"> 
+				✔️ Tidak bisa di-edit <br>
+				✔️ Bisa di-download sebagai gambar .png <br>
+				✔️ Bisa di Zoom-IN dan Zoom-OUT <br>
+				✔️ Bisa di-pan / geser kanan kiri <br>
+				✔️ Bisa di-auto scale </h6>		 
+			 
+			 
+			 
+			 
+			 <br><br> 
 			 <span style="color:Blue">e-WeYe</span>
 			 </p>""", unsafe_allow_html=True)
 def header():	
@@ -1342,25 +1356,7 @@ def cleaning_process(df):
 			
 			with colkir: #kolom kiri untuk tempat PETUNJUK SINGKAT
 
-				st.markdown("""<h5 style="color:blue;margin-top:-10px;margin-bottom:0px;"> PETUNJUK SINGKAT </h5>""", unsafe_allow_html=True)
-				st.markdown("---")
-				st.markdown("""<h6 style="color:green;margin-top:-10px;margin-bottom:0px;"> TABEL </h6>""", unsafe_allow_html=True)
-				st.markdown("""<p style="font-size:12px;margin-top:-10px;margin-bottom:0px;">Tampilan tabel terdiri dari beberapa kolom,ada yang menggunakan kolom index (adalah\
-						nomer urut yg diawali dengan angka nol) dan ada juga ada yang tidak menggunakan.\
-						Jika ingin melihat menu lainnya terkait tindakan yang akan diperlakukan terhadap tabel tersebut, caranya \
-				arahkan mouse ke tabel pada bagian atas kanan tabel. Akan ditemukan menu: Download, Search dan Full Screen.\
-					Isi tabel tidak bisa diubah. Lebar kolom bisa diatur lebarnya dengan cara meletakkan cursor mouse di antara batas\
-				antar tabel lalu geser kanan atau kiri. Bila ada tabel yang menampilkan banyak kolom yang tidak terlihat di bagian kanan tabel\
-				untuk melihatnya, arahkan mouse ke bagian bawah tabel sampai muncul 'scroll-bar' lalu tahan dengan mouse dan geser kanan kiri.\
-					Selain itu, jika ingin mensort data, klik saja bagian header kolom.</p>""", unsafe_allow_html=True)
-				# st.write("Tampilan tabel terdiri dari beberapa kolom,ada yang menggunakan kolom index (adalah\
-				# 		  nomer urut yg diawali dengan angka nol) dan ada juga ada yang tidak menggunakan.\
-				# 		Jika ingin melihat menu lainnya terkait tindakan yang akan diperlakukan terhadap tabel tersebut, caranya \
-				# arahkan mouse ke tabel pada bagian atas kanan tabel. Akan ditemukan menu: Download, Search dan Full Screen.\
-				# 	Isi tabel tidak bisa diubah. Lebar kolom bisa diatur lebarnya dengan cara meletakkan cursor mouse di antara batas\
-				# antar tabel lalu geser kanan atau kiri. Bila ada tabel yang menampilkan banyak kolom yang tidak terlihat di bagian kanan tabel\
-				# untuk melihatnya, arahkan mouse ke bagian bawah tabel sampai muncul 'scroll-bar' lalu tahan dengan mouse dan geser kanan kiri.\
-				# 	Selain itu, jika ingin mensort data, klik saja bagian header toko.")
+				
 
 				st.write("***")
 				st.markdown("""<h6 style="color:green;margin-top:-10px;margin-bottom:0px;"> GRAFIK </h6>""", unsafe_allow_html=True)

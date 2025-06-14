@@ -1922,6 +1922,7 @@ def cleaning_process(df):
 
 			st.markdown("---")
 
+			st.subheader("Filter Data Harian Berdasarkan Line")
 		#region Pilihan Line untuk filter
 			df3['Date'] = pd.to_datetime(df3['Date'], errors='coerce').dt.date  # pastikan hanya tanggal (tanpa waktu)
 			date_min = df3['Date'].min()

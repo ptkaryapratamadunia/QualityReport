@@ -25,6 +25,7 @@ import sys
 import subprocess
 
 st.set_page_config(page_title="Quality Report", page_icon=":bar_chart:", layout="wide")
+# ---- CSS Styling ----14Jun2025
 st.markdown("""
     <link href="https://fonts.googleapis.com/css?family=Nunito:400,700&display=swap" rel="stylesheet">
     <style>

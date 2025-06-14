@@ -2367,8 +2367,10 @@ def cleaning_process(df):
 
 				# Gabungkan data ke satu DataFrame
 				daily_plot = pd.merge(daily_ng, daily_lot, on='Date', how='outer')
-				daily_plot = daily_plot.set_index('Date').reindex(all_dates).fillna(0).reset_index()
-				daily_plot.rename(columns={'index': 'Date'}, inplace=True)
+				# Buat DataFrame dengan semua tanggal dalam range
+				all_dates_df = pd.DataFrame({'Date': all_dates})
+				# Merge agar semua tanggal muncul, isi NaN dengan 0
+				daily_plot = pd.merge(all_dates_df, daily_plot, on='Date', how='left').fillna(0)
 
 				# Urutkan berdasarkan tanggal
 				daily_plot = daily_plot.sort_values('Date')

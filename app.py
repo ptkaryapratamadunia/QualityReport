@@ -2061,7 +2061,7 @@ def cleaning_process(df):
 				daily_plot2['Date_str'] = pd.to_datetime(daily_plot2['Date']).dt.strftime('%d-%b-%Y')
 
 				# Plot grafik
-				import plotly.graph_objects as go
+				
 				fig = go.Figure()
 
 				# Bar chart untuk Insp(B/H)

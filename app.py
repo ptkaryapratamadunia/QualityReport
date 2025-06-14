@@ -24,6 +24,7 @@ from plotly.subplots import make_subplots
 import sys
 import subprocess
 
+st.set_page_config(page_title="Quality Report", page_icon=":bar_chart:", layout="wide")
 st.markdown("""
     <link href="https://fonts.googleapis.com/css?family=Nunito:400,700&display=swap" rel="stylesheet">
     <style>
@@ -33,7 +34,6 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-st.set_page_config(page_title="Quality Report", page_icon=":bar_chart:", layout="wide")
 
 # Jangan pernah lagi berfikiran untuk merubah tampilan streamlit menjadi Dark MOode, hanya akan membuang waktumu saja!!!! 20May2025
 

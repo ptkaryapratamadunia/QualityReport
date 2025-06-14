@@ -24,6 +24,14 @@ from plotly.subplots import make_subplots
 import sys
 import subprocess
 
+st.markdown("""
+    <link href="https://fonts.googleapis.com/css?family=Nunito:400,700&display=swap" rel="stylesheet">
+    <style>
+    html, body, [data-testid="stAppViewContainer"], .stApp, .stMarkdown, .stDataFrame, .stTable, .stTextInput, .stSelectbox, .stButton, .stExpander, .stAlert, .stMetric, .stPlotlyChart, .stHeader, .stSubheader, .stTitle, .stInfo, .stWarning, .stError, .stSuccess {
+        font-family: 'Nunito', sans-serif !important;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
 st.set_page_config(page_title="Quality Report", page_icon=":bar_chart:", layout="wide")
 

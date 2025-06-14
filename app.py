@@ -25,6 +25,17 @@ import sys
 import subprocess
 
 st.set_page_config(page_title="Quality Report", page_icon=":bar_chart:", layout="wide")
+
+# ---- HIDE STREAMLIT STYLE ----
+hide_st_style = """
+<style>
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
+</style>
+"""
+st.markdown(hide_st_style, unsafe_allow_html=True)
+
 # ---- CSS Styling ----14Jun2025
 st.markdown("""
     <link href="https://fonts.googleapis.com/css?family=Nunito:400,700&display=swap" rel="stylesheet">
@@ -37,17 +48,6 @@ st.markdown("""
 
 
 # Jangan pernah lagi berfikiran untuk merubah tampilan streamlit menjadi Dark MOode, hanya akan membuang waktumu saja!!!! 20May2025
-
-
-# ---- HIDE STREAMLIT STYLE ----
-hide_st_style = """
-<style>
-#MainMenu {visibility: hidden;}
-footer {visibility: hidden;}
-header {visibility: hidden;}
-</style>
-"""
-st.markdown(hide_st_style, unsafe_allow_html=True)
 
 
 # --- Your Main Content ---

@@ -2069,7 +2069,7 @@ def cleaning_process(df):
 					x=daily_plot2['Date_str'],
 					y=daily_plot2['Insp(B/H)'],
 					name='Total Inspected (Lot)',
-					marker_color='#8A784E',
+					marker_color="#754E34",
 					yaxis='y1',
 					text=daily_plot2['Insp(B/H)'].round(0).astype(int).astype(str),
 					textposition='inside'
@@ -2091,11 +2091,11 @@ def cleaning_process(df):
 
 				fig.update_layout(
 					title=f'Rata-rata NG (%) Harian & Total Inspected (Lot) - {selected_line2} - {selected_ng}',
-					xaxis_title='Tanggal',
+					xaxis_title='',
 					yaxis=dict(
 						title='Total Inspected (Lot)',
-						titlefont=dict(color='#8A784E'),
-						tickfont=dict(color='#8A784E'),
+						titlefont=dict(color='#754E34'),
+						tickfont=dict(color='#754E34'),
 					),
 					yaxis2=dict(
 						title='Rata-rata NG (%)',

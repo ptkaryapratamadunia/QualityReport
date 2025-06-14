@@ -1928,97 +1928,97 @@ def cleaning_process(df):
 			
 			# st.write(df3)
 		#region Pilihan Line untuk filter
-		df3['Date'] = pd.to_datetime(df3['Date'], errors='coerce').dt.date  # pastikan hanya tanggal (tanpa waktu)
-		date_min = df3['Date'].min()
-		date_max = df3['Date'].max()
+			df3['Date'] = pd.to_datetime(df3['Date'], errors='coerce').dt.date  # pastikan hanya tanggal (tanpa waktu)
+			date_min = df3['Date'].min()
+			date_max = df3['Date'].max()
 
-		line_options = df3['Line'].dropna().unique().tolist()
-		selected_line = st.selectbox("Pilih Line yang ingin ditampilkan:", line_options)
+			line_options = df3['Line'].dropna().unique().tolist()
+			selected_line = st.selectbox("Pilih Line yang ingin ditampilkan:", line_options)
 
-		# Filter df berdasarkan Line yang dipilih
-		df_daily = df3[df3['Line'] == selected_line].copy()
+			# Filter df berdasarkan Line yang dipilih
+			df_daily = df3[df3['Line'] == selected_line].copy()
 
-		# Buat range tanggal lengkap
-		all_dates = pd.date_range(start=date_min, end=date_max, freq='D').date
+			# Buat range tanggal lengkap
+			all_dates = pd.date_range(start=date_min, end=date_max, freq='D').date
 
-		# Group by Date (tanpa waktu), hitung rata-rata NG_% dan total Inspected
-		daily_ng = df_daily.groupby('Date', as_index=False)['NG_%'].mean()
-		daily_lot = df_daily.groupby('Date', as_index=False)['Insp(B/H)'].sum()
+			# Group by Date (tanpa waktu), hitung rata-rata NG_% dan total Inspected
+			daily_ng = df_daily.groupby('Date', as_index=False)['NG_%'].mean()
+			daily_lot = df_daily.groupby('Date', as_index=False)['Insp(B/H)'].sum()
 
-		# Gabungkan data ke satu DataFrame
-		daily_plot = pd.merge(daily_ng, daily_lot, on='Date', how='outer')
-		daily_plot = daily_plot.set_index('Date').reindex(all_dates).fillna(0).reset_index()
-		daily_plot.rename(columns={'index': 'Date'}, inplace=True)
+			# Gabungkan data ke satu DataFrame
+			daily_plot = pd.merge(daily_ng, daily_lot, on='Date', how='outer')
+			daily_plot = daily_plot.set_index('Date').reindex(all_dates).fillna(0).reset_index()
+			daily_plot.rename(columns={'index': 'Date'}, inplace=True)
 
-		# Urutkan berdasarkan tanggal
-		daily_plot = daily_plot.sort_values('Date')
-
-		# Jika tidak ada data, tampilkan info
-		if daily_plot.empty:
-			st.info("Tidak ada data harian untuk line ini.")
-		else:
-			# Pastikan data tidak kosong dan urut berdasarkan tanggal
-			daily_plot = daily_plot.copy()
-			daily_plot['Date'] = pd.to_datetime(daily_plot['Date'])
+			# Urutkan berdasarkan tanggal
 			daily_plot = daily_plot.sort_values('Date')
-			daily_plot['Date_str'] = daily_plot['Date'].dt.strftime('%d-%b-%Y')
 
-			fig = go.Figure()
+			# Jika tidak ada data, tampilkan info
+			if daily_plot.empty:
+				st.info("Tidak ada data harian untuk line ini.")
+			else:
+				# Pastikan data tidak kosong dan urut berdasarkan tanggal
+				daily_plot = daily_plot.copy()
+				daily_plot['Date'] = pd.to_datetime(daily_plot['Date'])
+				daily_plot = daily_plot.sort_values('Date')
+				daily_plot['Date_str'] = daily_plot['Date'].dt.strftime('%d-%b-%Y')
 
-			# Bar chart untuk Total_lot (Insp(B/H)) di axis primer
-			fig.add_trace(go.Bar(
-				x=daily_plot['Date_str'],
-				y=daily_plot['Insp(B/H)'],
-				name='Total Inspected (Lot)',
-				marker_color='#8A784E',
-				yaxis='y1',
-				text=daily_plot['Insp(B/H)'].round(0).astype(int).astype(str),
-				textposition='inside'
-			))
+				fig = go.Figure()
 
-			# Line chart untuk NG_% di axis sekunder, value label warna merah
-			fig.add_trace(go.Scatter(
-				x=daily_plot['Date_str'],
-				y=daily_plot['NG_%'],
-				name='NG (%)',
-				mode='lines+markers+text',
-				marker_color='red',
-				line_color='red',
-				yaxis='y2',
-				text=[f"<span style='color:red'>{v:.2f}</span>" for v in daily_plot['NG_%']],
-				textposition='top center',
-				hoverinfo='text'
-			))
+				# Bar chart untuk Total_lot (Insp(B/H)) di axis primer
+				fig.add_trace(go.Bar(
+					x=daily_plot['Date_str'],
+					y=daily_plot['Insp(B/H)'],
+					name='Total Inspected (Lot)',
+					marker_color='#8A784E',
+					yaxis='y1',
+					text=daily_plot['Insp(B/H)'].round(0).astype(int).astype(str),
+					textposition='inside'
+				))
 
-			fig.update_layout(
-				title=f'Rata-rata NG (%) Harian & Total Inspected (Lot) - {selected_line}',
-				xaxis_title='',
-				yaxis=dict(
-					title='Total Inspected (Lot)',
-					titlefont=dict(color='#8A784E'),
-					tickfont=dict(color='#8A784E'),
-				),
-				yaxis2=dict(
-					title='Rata-rata NG (%)',
-					titlefont=dict(color='red'),
-					tickfont=dict(color='red'),
-					overlaying='y',
-					side='right'
-				),
-				xaxis=dict(
-					type='category',
-					tickangle=45,
-				),
-				legend=dict(
-					yanchor="top",
-					y=-0.2,
-					xanchor="center",
-					x=0.5
+				# Line chart untuk NG_% di axis sekunder, value label warna merah
+				fig.add_trace(go.Scatter(
+					x=daily_plot['Date_str'],
+					y=daily_plot['NG_%'],
+					name='NG (%)',
+					mode='lines+markers+text',
+					marker_color='red',
+					line_color='red',
+					yaxis='y2',
+					text=[f"<span style='color:red'>{v:.2f}</span>" for v in daily_plot['NG_%']],
+					textposition='top center',
+					hoverinfo='text'
+				))
+
+				fig.update_layout(
+					title=f'Rata-rata NG (%) Harian & Total Inspected (Lot) - {selected_line}',
+					xaxis_title='',
+					yaxis=dict(
+						title='Total Inspected (Lot)',
+						titlefont=dict(color='#8A784E'),
+						tickfont=dict(color='#8A784E'),
+					),
+					yaxis2=dict(
+						title='Rata-rata NG (%)',
+						titlefont=dict(color='red'),
+						tickfont=dict(color='red'),
+						overlaying='y',
+						side='right'
+					),
+					xaxis=dict(
+						type='category',
+						tickangle=45,
+					),
+					legend=dict(
+						yanchor="top",
+						y=-0.2,
+						xanchor="center",
+						x=0.5
+					)
 				)
-			)
-			st.plotly_chart(fig, use_container_width=True)
+				st.plotly_chart(fig, use_container_width=True)
 		#endregion
-			#endregion
+			
 			
 		with sum_tab2: # Summary Trial 
 			st.subheader("Summary Trial")
@@ -2213,10 +2213,9 @@ def cleaning_process(df):
 				st.info("Tidak ada data TRIAL untuk ditampilkan.")
 
 		
-		
-		#----------------------Batas Tab Filtering Data
 
-		with sum_tab3:
+
+		with sum_tab3: # Summary NG by Line
 			#menampilkan tabel berdasarkan filter - 19Nov2024
 			#----------
 			st.subheader("Filtering Data")

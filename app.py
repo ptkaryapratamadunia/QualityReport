@@ -40,7 +40,7 @@ st.markdown(hide_st_style, unsafe_allow_html=True)
 st.markdown("""
     <link href="https://fonts.googleapis.com/css?family=Nunito:400,700&display=swap" rel="stylesheet">
     <style>
-    html, body, [data-testid="stAppViewContainer"], .stApp, .stMarkdown, .stDataFrame, .stTable, .stTextInput, .stSelectbox, .stButton, .stExpander, .stAlert, .stMetric, .stPlotlyChart, .stHeader, .stSubheader, .stTitle, .stInfo, .stWarning, .stError, .stSuccess {
+    html, body, [data-testid="stAppViewContainer"], .stApp, .stMarkdown, .stInfo,.stDataFrame, .stTable, .stTextInput, .stSelectbox, .stButton, .stExpander, .stAlert, .stMetric, .stPlotlyChart, .stHeader, .stSubheader, .stTitle, .stInfo, .stWarning, .stError, .stSuccess {
         font-family: 'Nunito', sans-serif !important;
     }
     </style>

@@ -1922,7 +1922,7 @@ def cleaning_process(df):
 
 			st.markdown("---")
 
-			st.subheader("Filter Data Harian Berdasarkan Line")
+			st.write("Filter Data Harian Berdasarkan Line")
 		#region Pilihan Line untuk filter
 			df3['Date'] = pd.to_datetime(df3['Date'], errors='coerce').dt.date  # pastikan hanya tanggal (tanpa waktu)
 			date_min = df3['Date'].min()
@@ -2016,7 +2016,109 @@ def cleaning_process(df):
 			#endregion
 		
 			
+			st.markdown("---")
+
+			st.write("Filter Data Harian Berdasarkan Line dan pilih Kolom Jenis NG")
+			# Pilihan Line untuk filter
+			line_options2 = df3['Line'].dropna().unique().tolist()
+			selected_line2 = st.selectbox("Pilih Line untuk grafik harian:", line_options2, key="line_daily_ng")
 			
+			# Filter df berdasarkan Line yang dipilih
+			df_daily2 = df3[df3['Line'] == selected_line2].copy()
+
+			# Tambahkan filter untuk pilih Jenis NG
+			jenis_ng_columns = [
+				'Warna', 'Buram', 'Berbayang', 'Kotor', 'Tdk Terplating', 'Rontok/ Blister',
+				'Tipis/ EE No Plating', 'Flek Kuning', 'Terbakar', 'Watermark', 'Jig Mark/ Renggang',
+				'Lecet/ Scratch', 'Seret', 'Flek Hitam', 'Flek Tangan', 'Belang/ Dempet', 'Bintik',
+				'Kilap', 'Tebal', 'Flek Putih', 'Spark', 'Kotor H/ Oval', 'Terkikis/ Crack',
+				'Dimensi/ Penyok'
+			]
+			selected_ng = st.selectbox("Pilih Jenis NG:", jenis_ng_columns, key="ng_daily_ng")
+
+			# Filter hanya baris dengan nilai Jenis NG > 0
+			df_daily2 = df_daily2[df_daily2[selected_ng] > 0].copy()
+
+			# Pastikan kolom Date dalam format datetime.date
+			df_daily2['Date'] = pd.to_datetime(df_daily2['Date'], errors='coerce').dt.date
+
+			# Buat range tanggal lengkap
+			date_min2 = df_daily2['Date'].min()
+			date_max2 = df_daily2['Date'].max()
+			if pd.isnull(date_min2) or pd.isnull(date_max2):
+				st.info("Tidak ada data untuk kombinasi Line dan Jenis NG ini.")
+			else:
+				all_dates2 = pd.date_range(start=date_min2, end=date_max2, freq='D').date
+
+				# Group by Date, hitung rata-rata NG_% dan total Inspected
+				daily_ng2 = df_daily2.groupby('Date', as_index=False)['NG_%'].mean()
+				daily_lot2 = df_daily2.groupby('Date', as_index=False)['Insp(B/H)'].sum()
+
+				# Gabungkan data ke satu DataFrame
+				daily_plot2 = pd.merge(daily_ng2, daily_lot2, on='Date', how='outer')
+				daily_plot2 = daily_plot2.set_index('Date').reindex(all_dates2).fillna(0).reset_index()
+				daily_plot2 = daily_plot2.sort_values('Date')
+				daily_plot2['Date_str'] = pd.to_datetime(daily_plot2['Date']).dt.strftime('%d-%b-%Y')
+
+				# Plot grafik
+				import plotly.graph_objects as go
+				fig = go.Figure()
+
+				# Bar chart untuk Insp(B/H)
+				fig.add_trace(go.Bar(
+					x=daily_plot2['Date_str'],
+					y=daily_plot2['Insp(B/H)'],
+					name='Total Inspected (Lot)',
+					marker_color='#8A784E',
+					yaxis='y1',
+					text=daily_plot2['Insp(B/H)'].round(0).astype(int).astype(str),
+					textposition='inside'
+				))
+
+				# Line chart untuk NG_%
+				fig.add_trace(go.Scatter(
+					x=daily_plot2['Date_str'],
+					y=daily_plot2['NG_%'],
+					name='NG (%)',
+					mode='lines+markers+text',
+					marker_color='red',
+					line_color='red',
+					yaxis='y2',
+					text=[f"<span style='color:red'>{v:.2f}</span>" for v in daily_plot2['NG_%']],
+					textposition='top center',
+					hoverinfo='text'
+				))
+
+				fig.update_layout(
+					title=f'Rata-rata NG (%) Harian & Total Inspected (Lot) - {selected_line2} - {selected_ng}',
+					xaxis_title='Tanggal',
+					yaxis=dict(
+						title='Total Inspected (Lot)',
+						titlefont=dict(color='#8A784E'),
+						tickfont=dict(color='#8A784E'),
+					),
+					yaxis2=dict(
+						title='Rata-rata NG (%)',
+						titlefont=dict(color='red'),
+						tickfont=dict(color='red'),
+						overlaying='y',
+						side='right'
+					),
+					xaxis=dict(
+						type='category',
+						tickangle=45,
+					),
+					legend=dict(
+						yanchor="top",
+						y=-0.2,
+						xanchor="center",
+						x=0.5
+					)
+				)
+				st.plotly_chart(fig, use_container_width=True)
+
+
+
 		with sum_tab2: # Summary Trial 
 			st.subheader("Summary Trial")
 			DateRange(df3)

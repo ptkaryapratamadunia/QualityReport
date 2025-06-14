@@ -2436,7 +2436,7 @@ def cleaning_process(df):
 						st.write(grouped_df)
 
 			with Filter_tab3:# Filter data berdasarkan Line untuk grafik harian
-				# --- Grafik Garis Rata-rata NG (%) Harian berdasarkan Line ---
+				st.info("Grafik Garis Rata-rata NG (%) Harian berdasarkan Line ---")
 				
 				
 	else:

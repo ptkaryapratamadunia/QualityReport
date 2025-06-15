@@ -2051,6 +2051,21 @@ def cleaning_process(df):
 				(daily_plot[selected_jenisNG] / (daily_plot['Insp(B/H)'])) * 100
 			)
 
+			# Pastikan kolom 'NG(B/H)' ada, jika tidak, buat dengan menjumlahkan semua jenis NG
+			if 'NG(B/H)' not in daily_plot.columns:
+				jenis_ng_columns = [
+					'Warna', 'Buram', 'Berbayang', 'Kotor', 'Tdk Terplating', 'Rontok/ Blister',
+					'Tipis/ EE No Plating', 'Flek Kuning', 'Terbakar', 'Watermark', 'Jig Mark/ Renggang',
+					'Lecet/ Scratch', 'Seret', 'Flek Hitam', 'Flek Tangan', 'Belang/ Dempet', 'Bintik',
+					'Kilap', 'Tebal', 'Flek Putih', 'Spark', 'Kotor H/ Oval', 'Terkikis/ Crack',
+					'Dimensi/ Penyok'
+				]
+				ng_cols = [col for col in jenis_ng_columns if col in daily_plot.columns]
+				if ng_cols:
+					daily_plot['NG(B/H)'] = daily_plot[ng_cols].sum(axis=1)
+				else:
+					daily_plot['NG(B/H)'] = 0
+
 			# Urutkan berdasarkan tanggal
 			daily_plot = daily_plot.sort_values('Date')
 			

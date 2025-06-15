@@ -2010,9 +2010,8 @@ def cleaning_process(df):
 		
 			
 			st.markdown("---")
-
-			st.write("Filter Data Harian Berdasarkan Line dan pilih Jenis NG")
-			st.write(daily_plot)
+			st.write("Filter Data Harian Berdasarkan Jenis NG")
+		#region Pilihan Jenis NG untuk filter
 			# Pilihan Jenis NG untuk filter
 			df3['Date'] = pd.to_datetime(df3['Date'], errors='coerce').dt.date  # pastikan hanya tanggal (tanpa waktu)
 			date_min = df3['Date'].min()
@@ -2125,7 +2124,8 @@ def cleaning_process(df):
 				)
 			)
 			st.plotly_chart(fig, use_container_width=True)
-			
+		#endregion
+			st.markdown("---")	
 
 
 

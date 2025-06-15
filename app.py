@@ -1370,33 +1370,26 @@ def cleaning_process(df):
 			colkir,colteng,colnan=st.columns(3)
 			
 			with colkir: #kolom kiri untuk tempat PETUNJUK SINGKAT
+				st.write('Quantity Inspected (pcs) by Line & Kategori')
+				pt_kategori_line_InspPcs = pt_kategori_line_InspPcs.round(0)
+				st.write(pt_kategori_line_InspPcs)
+				st.write('Data Qty NG (pcs) by Line & Kategori')
+				pt_kategori_line_NGpcs = pt_kategori_line_NGpcs.round(0)
+				st.write(pt_kategori_line_NGpcs)
 
 				
-
-				st.write("***")
-				st.markdown("""<h6 style="color:green;margin-top:-10px;margin-bottom:0px;"> GRAFIK </h6>""", unsafe_allow_html=True)
-				st.markdown("""<h6 style="font-size:12px;color:brown;margin-top:-10px;margin-bottom:0px;"> 
-				✔️ Tidak bisa di-edit <br>
-				✔️ Bisa di-download sebagai gambar .png <br>
-				✔️ Bisa di Zoom-IN dan Zoom-OUT <br>
-				✔️ Bisa di-pan / geser kanan kiri <br>
-				✔️ Bisa di-auto scale </h6>""", unsafe_allow_html=True)	
 		
 			with colteng:	#Tabel Data Qty NG (lot) by Line & Kategori
 				st.write('Data Qty NG (lot) by Line & Kategori')
 				st.write(pt_kategori_line3)
-				st.write('Data Qty NG (pcs) by Line & Kategori')
-				pt_kategori_line_NGpcs = pt_kategori_line_NGpcs.round(0)
-				st.write(pt_kategori_line_NGpcs)
+				
 			
 			with colnan: #Tabel Quantity Inspected (lot) by Line & Kategori
 				st.write('Quantity Inspected (lot) by Line & Kategori')
 				pt_kategori_line2 = pt_kategori_line2.map(format_with_comma)
 				st.write(pt_kategori_line2)
 
-				st.write('Quantity Inspected (pcs) by Line & Kategori')
-				pt_kategori_line_InspPcs = pt_kategori_line_InspPcs.round(0)
-				st.write(pt_kategori_line_InspPcs)
+				
 
 			st.markdown("---")
 			#groupby dataframe	---------------
@@ -2020,6 +2013,106 @@ def cleaning_process(df):
 
 			st.write("Filter Data Harian Berdasarkan Line dan pilih Jenis NG")
 			st.write(daily_plot)
+			# Pilihan Jenis NG untuk filter
+			df3['Date'] = pd.to_datetime(df3['Date'], errors='coerce').dt.date  # pastikan hanya tanggal (tanpa waktu)
+			date_min = df3['Date'].min()
+			date_max = df3['Date'].max()
+
+			# Daftar kolom Jenis NG yang tersedia (kecuali kolom non-NG)
+			jenis_ng_columns = [
+				'Warna', 'Buram', 'Berbayang', 'Kotor', 'Tdk Terplating', 'Rontok/ Blister',
+				'Tipis/ EE No Plating', 'Flek Kuning', 'Terbakar', 'Watermark', 'Jig Mark/ Renggang',
+				'Lecet/ Scratch', 'Seret', 'Flek Hitam', 'Flek Tangan', 'Belang/ Dempet', 'Bintik',
+				'Kilap', 'Tebal', 'Flek Putih', 'Spark', 'Kotor H/ Oval', 'Terkikis/ Crack',
+				'Dimensi/ Penyok'
+			]
+			jenisNG_options = [col for col in jenis_ng_columns if col in df3.columns]
+			selected_jenisNG = st.selectbox("Pilih Jenis NG yang ingin ditampilkan:", jenisNG_options, key='jenisNG_options')
+
+			# Buat range tanggal lengkap
+			all_dates = pd.date_range(start=date_min, end=date_max, freq='D').date
+
+			# Filter df_daily sesuai Line yang dipilih
+			# (df_daily sudah didefinisikan sebelumnya sebagai df3[df3['Line'] == selected_line].copy())
+			# Hitung Qty NG (lot) harian (dari kolom 'NG(B/H)')
+			daily_ng = df_daily.groupby('Date', as_index=False)['NG(B/H)'].sum()
+			# Hitung Qty Inspected (lot) harian
+			daily_lot = df_daily.groupby('Date', as_index=False)['Insp(B/H)'].sum()
+			# Hitung Qty Jenis NG (lot) harian
+			daily_jenisNG = df_daily.groupby('Date', as_index=False)[selected_jenisNG].sum()
+
+			# Gabungkan data ke satu DataFrame
+			daily_plot = pd.merge(daily_ng, daily_lot, on='Date', how='outer')
+			daily_plot = pd.merge(daily_plot, daily_jenisNG, on='Date', how='outer')
+			daily_plot = daily_plot.set_index('Date').reindex(all_dates).fillna(0).reset_index()
+			daily_plot.rename(columns={'index': 'Date'}, inplace=True)
+
+			# Hitung Jenis NG (%) = (Qty Jenis NG / Qty Inspected) * 100, handle pembagi 0
+			daily_plot['JenisNG_%'] = np.where(
+				daily_plot['Insp(B/H)'] == 0,
+				0,
+				(daily_plot[selected_jenisNG] / daily_plot['Insp(B/H)']) * 100
+			)
+
+			# Urutkan berdasarkan tanggal
+			daily_plot = daily_plot.sort_values('Date')
+			
+			# Tampilkan grafik
+			daily_plot['Date_str'] = pd.to_datetime(daily_plot['Date']).dt.strftime('%d-%b-%Y')
+			fig = go.Figure()
+
+			# Grafik batang Qty NG (lot)
+			fig.add_trace(go.Bar(
+				x=daily_plot['Date_str'],
+				y=daily_plot['NG(B/H)'],
+				name='Qty NG (lot)',
+				marker_color='#8A784E',
+				yaxis='y1',
+				text=daily_plot['NG(B/H)'].round(0).astype(int).astype(str),
+				textposition='inside'
+			))
+
+			# Grafik garis Jenis NG (%)
+			fig.add_trace(go.Scatter(
+				x=daily_plot['Date_str'],
+				y=daily_plot['JenisNG_%'],
+				name=f'{selected_jenisNG} (%)',
+				mode='lines+markers+text',
+				marker_color='red',
+				line_color='red',
+				yaxis='y2',
+				text=[f"<span style='color:red'>{v:.2f}</span>" for v in daily_plot['JenisNG_%']],
+				textposition='top center',
+				hoverinfo='text'
+			))
+
+			fig.update_layout(
+				title=f'Qty NG (lot) & {selected_jenisNG} (%) Harian - {selected_line}',
+				xaxis_title='',
+				yaxis=dict(
+					title='Qty NG (lot)',
+					titlefont=dict(color='#8A784E'),
+					tickfont=dict(color='#8A784E'),
+				),
+				yaxis2=dict(
+					title=f'{selected_jenisNG} (%)',
+					titlefont=dict(color='red'),
+					tickfont=dict(color='red'),
+					overlaying='y',
+					side='right'
+				),
+				xaxis=dict(
+					type='category',
+					tickangle=45,
+				),
+				legend=dict(
+					yanchor="top",
+					y=-0.2,
+					xanchor="center",
+					x=0.5
+				)
+			)
+			st.plotly_chart(fig, use_container_width=True)
 			
 
 

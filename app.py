@@ -2056,7 +2056,7 @@ def cleaning_process(df):
 
 			# Gabungkan data ke satu DataFrame
 			daily_plot = pd.merge(daily_ng, daily_lot, on='Date', how='outer')
-			daily_plot = daily_plot.set_index('Date').reindex(all_dates2).fillna(0).reset_index()
+			daily_plot = daily_plot.set_index('Date').reindex(all_dates).fillna(0).reset_index()
 			daily_plot = daily_plot.sort_values('Date')
 			daily_plot['Date_str'] = pd.to_datetime(daily_plot['Date']).dt.strftime('%d-%b-%Y')
 

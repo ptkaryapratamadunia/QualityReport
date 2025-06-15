@@ -2170,16 +2170,16 @@ def cleaning_process(df):
 				'Date': 'TOTAL',
 				'PartName': '',
 				selected_jenisNG: tabel_harian[selected_jenisNG].sum(),
-				'Insp(B/H)': tabel_harian['Insp(B/H)'].sum(),
+				'Inspected (lot)': tabel_harian['Insp(B/H)'].sum(),
 				'JenisNG_%': (tabel_harian[selected_jenisNG].sum() / tabel_harian['Insp(B/H)'].sum() * 100) if tabel_harian['Insp(B/H)'].sum() != 0 else 0
 			}
 			tabel_harian = pd.concat([tabel_harian, pd.DataFrame([total_row])], ignore_index=True)
 
-			st.write("Tabel Harian: Tanggal, PartName, Jenis NG (lot), Insp(B/H), JenisNG_%")
+			st.write("Tabel Tanggal, PartName, Jenis NG (lot), Tot Inspected (lot), JenisNG (%)")
 			st.dataframe(tabel_harian, use_container_width=True)
-
-
 		#endregion
+
+
 
 
 		with sum_tab2: # Summary Trial 

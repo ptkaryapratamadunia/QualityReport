@@ -2099,7 +2099,7 @@ def cleaning_process(df):
 			))
 
 			fig.update_layout(
-				title=f'Qty NG (lot) & {selected_jenisNG} (%) Harian - {selected_line}',
+				title=f'Qty NG (lot) - {selected_jenisNG} (%) Harian - {selected_line}',
 				xaxis_title='',
 				yaxis=dict(
 					title='Qty NG (lot)',

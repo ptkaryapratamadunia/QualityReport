@@ -2134,25 +2134,20 @@ def cleaning_process(df):
 			date_min = df3['Date'].min()
 			date_max = df3['Date'].max()
 
-			# Filter berdasarkan PartName yang dipilih
-			if 'selected_partname' in locals() and selected_partname:
-				df_filtered = df3[df3['PartName'].isin(selected_partname)].copy()
+			# --- Filter PartName dari dataframe hasil filter Line dan Jenis NG sebelumnya ---
+
+			# partname_options hanya dari df_daily (sudah terfilter Line dan Jenis NG)
+			partname_options = df_daily['PartName'].dropna().unique().tolist()
+			selected_partname = st.multiselect("Pilih PartName:", partname_options, key="filter_partname_for_table")
+
+			if selected_partname:
+				df_partname_filtered = df_daily[df_daily['PartName'].isin(selected_partname)].copy()
 			else:
-				df_filtered = df3.copy()
+				df_partname_filtered = df_daily.copy()
 
-			# Pilihan Jenis NG untuk filter
-			jenis_ng_columns = [
-				'Warna', 'Buram', 'Berbayang', 'Kotor', 'Tdk Terplating', 'Rontok/ Blister',
-				'Tipis/ EE No Plating', 'Flek Kuning', 'Terbakar', 'Watermark', 'Jig Mark/ Renggang',
-				'Lecet/ Scratch', 'Seret', 'Flek Hitam', 'Flek Tangan', 'Belang/ Dempet', 'Bintik',
-				'Kilap', 'Tebal', 'Flek Putih', 'Spark', 'Kotor H/ Oval', 'Terkikis/ Crack',
-				'Dimensi/ Penyok'
-			]
-			jenisNG_options = [col for col in jenis_ng_columns if col in df3.columns]
-			selected_jenisNG = st.selectbox("Pilih Jenis NG yang ingin ditampilkan (untuk tabel):", jenisNG_options, key='jenisNG_options_tabel')
-
-			# Buat tabel harian
-			tabel_harian = df_filtered.groupby(['Date', 'PartName'], as_index=False).agg({
+			# Buat tabel harian: Date, PartName, Jenis NG (lot), Insp(B/H), JenisNG_%
+			# selected_jenisNG sudah didefinisikan di step sebelumnya
+			tabel_harian = df_partname_filtered.groupby(['Date', 'PartName'], as_index=False).agg({
 				selected_jenisNG: 'sum',
 				'Insp(B/H)': 'sum'
 			})

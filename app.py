@@ -1366,7 +1366,7 @@ def cleaning_process(df):
 			
 			#-----------------
 			st.markdown("---")
-			#buat kolom	untuk grafik dan tabel BUSI
+		#region : kolom	untuk tabel BY Line & Kategori
 			colkir,colteng1,colteng2,colnan=st.columns(4)
 			
 			with colkir: #Tabel Qty Inspected (pcs) by Line & Kategori
@@ -1390,7 +1390,7 @@ def cleaning_process(df):
 				pt_kategori_line2 = pt_kategori_line2.map(format_with_comma)
 				st.write(pt_kategori_line2)
 
-				
+		#endregion : kolom	untuk tabel BY Line & Kategori	
 
 			st.markdown("---")
 			#groupby dataframe	---------------
@@ -2127,7 +2127,64 @@ def cleaning_process(df):
 			st.plotly_chart(fig, use_container_width=True)
 		#endregion
 			st.markdown("---")	
+		#region tabel hasil filter by Line, Jenis NG dan Partname
+			st.write("Tabel Hasil Filter Berdasarkan Line, Jenis NG dan Part Name")
+			# Pilihan Jenis NG untuk filter
+			df3['Date'] = pd.to_datetime(df3['Date'], errors='coerce').dt.date  # pastikan hanya tanggal (tanpa waktu)
+			date_min = df3['Date'].min()
+			date_max = df3['Date'].max()
 
+			# Filter berdasarkan PartName yang dipilih
+			if 'selected_partname' in locals() and selected_partname:
+				df_filtered = df3[df3['PartName'].isin(selected_partname)].copy()
+			else:
+				df_filtered = df3.copy()
+
+			# Pilihan Jenis NG untuk filter
+			jenis_ng_columns = [
+				'Warna', 'Buram', 'Berbayang', 'Kotor', 'Tdk Terplating', 'Rontok/ Blister',
+				'Tipis/ EE No Plating', 'Flek Kuning', 'Terbakar', 'Watermark', 'Jig Mark/ Renggang',
+				'Lecet/ Scratch', 'Seret', 'Flek Hitam', 'Flek Tangan', 'Belang/ Dempet', 'Bintik',
+				'Kilap', 'Tebal', 'Flek Putih', 'Spark', 'Kotor H/ Oval', 'Terkikis/ Crack',
+				'Dimensi/ Penyok'
+			]
+			jenisNG_options = [col for col in jenis_ng_columns if col in df3.columns]
+			selected_jenisNG = st.selectbox("Pilih Jenis NG yang ingin ditampilkan (untuk tabel):", jenisNG_options, key='jenisNG_options_tabel')
+
+			# Buat tabel harian
+			tabel_harian = df_filtered.groupby(['Date', 'PartName'], as_index=False).agg({
+				selected_jenisNG: 'sum',
+				'Insp(B/H)': 'sum'
+			})
+
+			# Hitung JenisNG_% (handle pembagi 0)
+			tabel_harian['JenisNG_%'] = np.where(
+				tabel_harian['Insp(B/H)'] == 0,
+				0,
+				(tabel_harian[selected_jenisNG] / tabel_harian['Insp(B/H)']) * 100
+			)
+
+			# Format kolom tanggal
+			tabel_harian['Date'] = pd.to_datetime(tabel_harian['Date']).dt.strftime('%d-%b-%Y')
+
+			# Urutkan tabel
+			tabel_harian = tabel_harian.sort_values(['Date', 'PartName'])
+
+			# Tambahkan baris TOTAL
+			total_row = {
+				'Date': 'TOTAL',
+				'PartName': '',
+				selected_jenisNG: tabel_harian[selected_jenisNG].sum(),
+				'Insp(B/H)': tabel_harian['Insp(B/H)'].sum(),
+				'JenisNG_%': (tabel_harian[selected_jenisNG].sum() / tabel_harian['Insp(B/H)'].sum() * 100) if tabel_harian['Insp(B/H)'].sum() != 0 else 0
+			}
+			tabel_harian = pd.concat([tabel_harian, pd.DataFrame([total_row])], ignore_index=True)
+
+			st.write("Tabel Harian: Tanggal, PartName, Jenis NG (lot), Insp(B/H), JenisNG_%")
+			st.dataframe(tabel_harian, use_container_width=True)
+
+
+		#endregion
 
 
 		with sum_tab2: # Summary Trial 

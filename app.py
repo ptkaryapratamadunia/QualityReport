@@ -2068,7 +2068,7 @@ def cleaning_process(df):
 				name='Qty NG (lot)',
 				marker_color='#8A784E',
 				yaxis='y1',
-				text=daily_plot['NG(B/H)'].round(0).astype(int).astype(str),
+				text=daily_plot['NG(B/H)'].round(2).astype(int).astype(str),
 				textposition='inside'
 			))
 

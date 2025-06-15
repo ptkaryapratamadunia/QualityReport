@@ -2175,6 +2175,12 @@ def cleaning_process(df):
 			}
 			tabel_harian = pd.concat([tabel_harian, pd.DataFrame([total_row])], ignore_index=True)
 
+			# Format nilai numerik menjadi 2 digit di belakang koma
+			cols_to_format = [selected_jenisNG, 'Insp(B/H)', 'JenisNG_%']
+			for col in cols_to_format:
+				if col in tabel_harian.columns:
+					tabel_harian[col] = pd.to_numeric(tabel_harian[col], errors='coerce').map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
+
 			st.write("Tabel Tanggal, PartName, Jenis NG (lot), Tot Inspected (lot), JenisNG (%)")
 			st.dataframe(tabel_harian, use_container_width=True)
 		#endregion

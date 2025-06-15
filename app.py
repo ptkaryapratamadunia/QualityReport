@@ -2034,24 +2034,21 @@ def cleaning_process(df):
 
 			# Filter df_daily sesuai Line yang dipilih
 			# (df_daily sudah didefinisikan sebelumnya sebagai df3[df3['Line'] == selected_line].copy())
-			# Hitung Qty NG (lot) harian (dari kolom 'NG(B/H)')
-			daily_ng = df_daily.groupby('Date', as_index=False)['NG(B/H)'].sum()
+			# Hitung Qty Jenis NG (lot) harian (dari kolom jenis NG yang dipilih)
+			daily_ng = df_daily.groupby('Date', as_index=False)[selected_jenisNG].sum()
 			# Hitung Qty Inspected (lot) harian
 			daily_lot = df_daily.groupby('Date', as_index=False)['Insp(B/H)'].sum()
-			# Hitung Qty Jenis NG (lot) harian
-			daily_jenisNG = df_daily.groupby('Date', as_index=False)[selected_jenisNG].sum()
 
 			# Gabungkan data ke satu DataFrame
 			daily_plot = pd.merge(daily_ng, daily_lot, on='Date', how='outer')
-			daily_plot = pd.merge(daily_plot, daily_jenisNG, on='Date', how='outer')
 			daily_plot = daily_plot.set_index('Date').reindex(all_dates).fillna(0).reset_index()
 			daily_plot.rename(columns={'index': 'Date'}, inplace=True)
 
-			# Hitung Jenis NG (%) = (Qty Jenis NG / Qty Inspected) * 100, handle pembagi 0
+			# Hitung Jenis NG (%) = (Qty Jenis NG / (Qty Jenis NG + Qty Inspected)) * 100, handle pembagi 0
 			daily_plot['JenisNG_%'] = np.where(
-				daily_plot['Insp(B/H)'] == 0,
+				(daily_plot[selected_jenisNG] + daily_plot['Insp(B/H)']) == 0,
 				0,
-				(daily_plot[selected_jenisNG] / daily_plot['Insp(B/H)']) * 100
+				(daily_plot[selected_jenisNG] / (daily_plot['Insp(B/H)'])) * 100
 			)
 
 			# Urutkan berdasarkan tanggal

@@ -1367,25 +1367,26 @@ def cleaning_process(df):
 			#-----------------
 			st.markdown("---")
 			#buat kolom	untuk grafik dan tabel BUSI
-			colkir,colteng,colnan=st.columns(3)
+			colkir,colteng1,colteng2,colnan=st.columns(4)
 			
-			with colkir: #kolom kiri untuk tempat PETUNJUK SINGKAT
-				st.write('Quantity Inspected (pcs) by Line & Kategori')
+			with colkir: #Tabel Qty Inspected (pcs) by Line & Kategori
+				st.write('Tabel Qty Inspected (pcs) by Line & Kategori')
 				pt_kategori_line_InspPcs = pt_kategori_line_InspPcs.round(0)
 				st.write(pt_kategori_line_InspPcs)
-				st.write('Data Qty NG (pcs) by Line & Kategori')
+				
+
+			with colteng1:	#Tabel Data Qty NG (pcs) by Line & Kategori	
+				st.write('Tabel Qty NG (pcs) by Line & Kategori')
 				pt_kategori_line_NGpcs = pt_kategori_line_NGpcs.round(0)
 				st.write(pt_kategori_line_NGpcs)
-
-				
 		
-			with colteng:	#Tabel Data Qty NG (lot) by Line & Kategori
-				st.write('Data Qty NG (lot) by Line & Kategori')
+			with colteng2:	#Tabel Qty NG (lot) by Line & Kategori
+				st.write('Tabel Qty NG (lot) by Line & Kategori')
 				st.write(pt_kategori_line3)
 				
 			
 			with colnan: #Tabel Quantity Inspected (lot) by Line & Kategori
-				st.write('Quantity Inspected (lot) by Line & Kategori')
+				st.write('Tabel Qty Inspected (lot) by Line & Kategori')
 				pt_kategori_line2 = pt_kategori_line2.map(format_with_comma)
 				st.write(pt_kategori_line2)
 
@@ -2077,7 +2078,7 @@ def cleaning_process(df):
 				x=daily_plot['Date_str'],
 				y=daily_plot['NG(B/H)'],
 				name='Qty NG (lot)',
-				marker_color='#8A784E',
+				marker_color='#83692D',
 				yaxis='y1',
 				text=daily_plot['NG(B/H)'].round(4).map(lambda x: f"{x:.2f}"),
 				textposition='inside'
@@ -2102,8 +2103,8 @@ def cleaning_process(df):
 				xaxis_title='',
 				yaxis=dict(
 					title='Qty NG (lot)',
-					titlefont=dict(color='#8A784E'),
-					tickfont=dict(color='#8A784E'),
+					titlefont=dict(color="#83692D"),
+					tickfont=dict(color='#83692D'),
 				),
 				yaxis2=dict(
 					title=f'{selected_jenisNG} (%)',

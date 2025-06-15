@@ -1370,7 +1370,7 @@ def cleaning_process(df):
 			colkir,colteng1,colteng2,colnan=st.columns(4)
 			
 			with colkir: #Tabel Qty Inspected (pcs) by Line & Kategori
-				st.write('Tabel Qty Inspected (pcs) by Line & Kategori')
+				st.write('Tabel Qty Inspected (pcs) by Line & Kat')
 				pt_kategori_line_InspPcs = pt_kategori_line_InspPcs.round(0)
 				st.write(pt_kategori_line_InspPcs)
 				

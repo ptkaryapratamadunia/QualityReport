@@ -1674,7 +1674,7 @@ def cleaning_process(df):
 					x='Total NG (lot)',
 					title='Defect Types - Line Rack 1',
 					labels={'Defect Type': 'Defect Type', 'Total NG (lot)': 'Total NG (lot)'},
-					color_discrete_sequence=["#FF7601"],
+					color_discrete_sequence=["#FFD0C7"],
 					text='Total NG (lot)'
 				)
 				fig.update_traces(textposition='inside')
@@ -1708,7 +1708,7 @@ def cleaning_process(df):
 					x=pareto_df['Defect Type'],
 					y=pareto_df['Total NG (lot)'],
 					name='Total NG (lot)',
-					marker_color="#FF7601",
+					marker_color="#FFD0C7",
 					yaxis='y1',
 					text=pareto_df['Total NG (lot)'].round(0).astype(int),
 					textposition='inside'

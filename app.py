@@ -744,8 +744,16 @@ def cleaning_process(df):
 				st.write('Table Qty Inspected (lot) by Line & Month')
 				pivot_df_bulan_line3 = pivot_df_bulan_line3.round(0)
 				pivot_df_bulan_line3 = pivot_df_bulan_line3.reset_index()
-				pivot_df_bulan_line3 = pivot_df_bulan_line3[pivot_df_bulan_line3['Date'] != 'Total']
-				pivot_df_bulan_line3 = pivot_df_bulan_line3.sort_values(by='Date', key=lambda x: pd.to_datetime(x, format='%b-%Y')).set_index('Date')
+				# Urutkan, tetap tampilkan baris 'Total'
+				pivot_df_bulan_line3 = pivot_df_bulan_line3.sort_values(
+					by='Date', 
+					key=lambda x: pd.to_datetime(x.where(x != 'Total', '2100-01'), format='%b-%Y', errors='coerce')
+				).set_index('Date')
+				# Hitung baris Total (sum semua baris kecuali 'Total' jika sudah ada)
+				if 'Total' not in pivot_df_bulan_line3.index:
+					total_row = pivot_df_bulan_line3.loc[pivot_df_bulan_line3.index != 'Total'].sum(numeric_only=True)
+					total_row.name = 'Total'
+					pivot_df_bulan_line3 = pd.concat([pivot_df_bulan_line3, pd.DataFrame([total_row])])
 				st.write(pivot_df_bulan_line3)
 
 			#3 kolom buat tabel by Line and Shift - 26Nov2024

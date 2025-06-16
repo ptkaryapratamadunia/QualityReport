@@ -604,11 +604,10 @@ def cleaning_process(df):
 		# Urutkan DataFrame berdasarkan kolom Month 
 		# df = df.sort_values('Date')
 
-		NG_persen = 100 * df['NG(B/H)'].sum() / df['Insp(B/H)'].sum() if df['Insp(B/H)'].sum() != 0 else 0
-		# Buat pivot table seperti biasa
+		
+		# Membuat tabel pivot Qty NG(%) by MONTH and LINE---------------
 		pivot_df_bulan_line = pd.pivot_table(df, values='NG_%', index='Date', columns='Line', aggfunc='mean', margins=True, margins_name='Total')
-		# Ganti semua nilai di pivot dengan NG_persen (broadcast ke seluruh tabel)
-		# pivot_df_bulan_line.loc[:, :] = NG_persen
+		
 		pivot_df_bulan_line_grafik= pd.pivot_table(df, values='NG_%', index='Date', aggfunc='mean')
 		# Membuat tabel pivot Qty NG(Lot) by MONTH and LINE---------------
 		pivot_df_bulan_line2= pd.pivot_table(df, values='Tot_NG', index=['Date'],columns=['Line'], aggfunc='sum',margins=True,margins_name='Total')		
@@ -650,7 +649,7 @@ def cleaning_process(df):
 			st.markdown(container_html, unsafe_allow_html=True)
 			# bt3.metric("Total NG (lot):",f"{tot_NG_lot:.2f}")
 
-		with bariskanan:#Total NG (%)
+		with bariskanan:#Total NG (%)			
 			# container2=st.container(border=True)
 			# tot_NG_persen=df['NG_%'].mean()
 			NG_persen= 100 * df['NG(B/H)'].sum() / df['Insp(B/H)'].sum() if df['Insp(B/H)'].sum() != 0 else 0
@@ -688,6 +687,39 @@ def cleaning_process(df):
 				pivot_df_bulan_line = pivot_df_bulan_line[pivot_df_bulan_line['Date'] != 'Total']
 				pivot_df_bulan_line = pivot_df_bulan_line.sort_values(by='Date', key=lambda x: pd.to_datetime(x, format='%b-%Y')).set_index('Date')
 				st.write(pivot_df_bulan_line)
+
+				NG_persen = 100 * df['NG(B/H)'].sum() / df['Insp(B/H)'].sum() if df['Insp(B/H)'].sum() != 0 else 0
+				# Buat tabel NG (%) bulanan untuk masing-masing Line
+				df['Date'] = pd.to_datetime(df['Date'], errors='coerce')
+				df['MonthYear'] = df['Date'].dt.strftime('%b-%Y')
+
+				# Hitung NG (%) per bulan untuk setiap Line
+				ng_bulanan = (
+					df.groupby('MonthYear').apply(
+						lambda g: pd.Series({
+							'NG B4 (%)': 100 * g.loc[g['Line'] == 'Barrel 4', 'NG(B/H)'].sum() / g.loc[g['Line'] == 'Barrel 4', 'Insp(B/H)'].sum() if g.loc[g['Line'] == 'Barrel 4', 'Insp(B/H)'].sum() != 0 else 0,
+							'NG R1 (%)': 100 * g.loc[g['Line'] == 'Rack 1', 'NG(B/H)'].sum() / g.loc[g['Line'] == 'Rack 1', 'Insp(B/H)'].sum() if g.loc[g['Line'] == 'Rack 1', 'Insp(B/H)'].sum() != 0 else 0,
+							'NG Ni (%)': 100 * g.loc[g['Line'] == 'Nickel', 'NG(B/H)'].sum() / g.loc[g['Line'] == 'Nickel', 'Insp(B/H)'].sum() if g.loc[g['Line'] == 'Nickel', 'Insp(B/H)'].sum() != 0 else 0,
+						})
+					)
+				).reset_index().rename(columns={'MonthYear': 'Date'})
+
+				# Tambahkan baris TotAverage
+				tot_avg = {
+					'Date': 'TotAverage',
+					'NG B4 (%)': ng_bulanan['NG B4 (%)'].mean(),
+					'NG R1 (%)': ng_bulanan['NG R1 (%)'].mean(),
+					'NG Ni (%)': ng_bulanan['NG Ni (%)'].mean(),
+				}
+				ng_bulanan = pd.concat([ng_bulanan, pd.DataFrame([tot_avg])], ignore_index=True)
+
+				# Format angka 2 digit di belakang koma
+				for col in ['NG B4 (%)', 'NG R1 (%)', 'NG Ni (%)']:
+					ng_bulanan[col] = pd.to_numeric(ng_bulanan[col], errors='coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "")
+
+				st.write("Tabel NG (%) per Bulan per Line")
+				st.dataframe(ng_bulanan, use_container_width=True)
+
 			with tengah:	#Table Qty NG (lot) by Line & Month
 				st.write('Table Qty NG (lot) by Line & Month')
 				pivot_df_bulan_line2 = pivot_df_bulan_line2.map(format_with_comma)

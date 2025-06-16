@@ -1593,6 +1593,8 @@ def cleaning_process(df):
 				# Hitung cumulative %
 				pareto_df['Cumulative'] = pareto_df['Total NG (lot)'].cumsum()
 				pareto_df['Cumulative %'] = 100 * pareto_df['Cumulative'] / pareto_df['Total NG (lot)'].sum()
+				# Tambahkan kolom label untuk value cumulative % di atas grafik
+				pareto_df['Cumulative % Label'] = pareto_df['Cumulative %'].round(1).astype(str) + '%'
 
 				# Buat grafik Pareto-13Jun2025
 

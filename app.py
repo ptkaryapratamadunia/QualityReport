@@ -1708,7 +1708,7 @@ def cleaning_process(df):
 					x=pareto_df['Defect Type'],
 					y=pareto_df['Total NG (lot)'],
 					name='Total NG (lot)',
-					marker_color="#d33d22",
+					marker_color="#A070EE",
 					yaxis='y1',
 					text=pareto_df['Total NG (lot)'].round(0).astype(int),
 					textposition='inside'

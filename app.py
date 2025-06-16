@@ -682,13 +682,13 @@ def cleaning_process(df):
 			kiri,tengah,kanan=st.columns(3)
 			with kiri:	#Table NG (%) by Line & Month
 				st.write('Table NG (%) by Line & Month')
-				pivot_df_bulan_line = pivot_df_bulan_line.round(2)
-				pivot_df_bulan_line = pivot_df_bulan_line.reset_index()
-				pivot_df_bulan_line = pivot_df_bulan_line[pivot_df_bulan_line['Date'] != 'Total']
-				pivot_df_bulan_line = pivot_df_bulan_line.sort_values(by='Date', key=lambda x: pd.to_datetime(x, format='%b-%Y')).set_index('Date')
-				st.write(pivot_df_bulan_line)
+				# pivot_df_bulan_line = pivot_df_bulan_line.round(2)
+				# pivot_df_bulan_line = pivot_df_bulan_line.reset_index()
+				# pivot_df_bulan_line = pivot_df_bulan_line[pivot_df_bulan_line['Date'] != 'Total']
+				# pivot_df_bulan_line = pivot_df_bulan_line.sort_values(by='Date', key=lambda x: pd.to_datetime(x, format='%b-%Y')).set_index('Date')
+				# st.write(pivot_df_bulan_line)
 
-				NG_persen = 100 * df['NG(B/H)'].sum() / df['Insp(B/H)'].sum() if df['Insp(B/H)'].sum() != 0 else 0
+				
 				# Buat tabel NG (%) bulanan untuk masing-masing Line
 				df['Date'] = pd.to_datetime(df['Date'], errors='coerce')
 				df['MonthYear'] = df['Date'].dt.strftime('%b-%Y')
@@ -717,7 +717,7 @@ def cleaning_process(df):
 				for col in ['NG B4 (%)', 'NG R1 (%)', 'NG Ni (%)']:
 					ng_bulanan[col] = pd.to_numeric(ng_bulanan[col], errors='coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "")
 
-				st.write("Tabel NG (%) per Bulan per Line")
+				# st.write("Tabel NG (%) per Bulan per Line")
 				st.dataframe(ng_bulanan, use_container_width=True)
 
 			with tengah:	#Table Qty NG (lot) by Line & Month

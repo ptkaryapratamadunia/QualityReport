@@ -2145,7 +2145,7 @@ def cleaning_process(df):
 			# Urutkan berdasarkan tanggal
 			daily_plot = daily_plot.sort_values('Date')
 
-			st.write(f" Tabel Data Harian untuk Jenis NG: {selected_jenisNG}")
+			st.write(f" Tabel Data Harian untuk Jenis NG: {selected_jenisNG} di Line: {selected_line}")
 			# Tampilkan tabel data harian
 			with st.expander("Klik untuk melihat TabelData Harian", expanded=False):
 				st.write(daily_plot)

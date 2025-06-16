@@ -680,14 +680,13 @@ def cleaning_process(df):
 			DateRange(df3)
 		
 			kiri,tengah,kanan=st.columns(3)
-			with kiri:	#Table NG (%) by Line & Month
+			with kiri:	#Table NG (%) by Line & Month-edited use formula  16Jun2025
 				st.write('Table NG (%) by Line & Month')
 				# pivot_df_bulan_line = pivot_df_bulan_line.round(2)
 				# pivot_df_bulan_line = pivot_df_bulan_line.reset_index()
 				# pivot_df_bulan_line = pivot_df_bulan_line[pivot_df_bulan_line['Date'] != 'Total']
 				# pivot_df_bulan_line = pivot_df_bulan_line.sort_values(by='Date', key=lambda x: pd.to_datetime(x, format='%b-%Y')).set_index('Date')
 				# st.write(pivot_df_bulan_line)
-
 				
 				# Buat tabel NG (%) bulanan untuk masing-masing Line
 				df['Date'] = pd.to_datetime(df['Date'], errors='coerce')
@@ -698,8 +697,8 @@ def cleaning_process(df):
 					df.groupby('MonthYear').apply(
 						lambda g: pd.Series({
 							'NG B4 (%)': 100 * g.loc[g['Line'] == 'Barrel 4', 'NG(B/H)'].sum() / g.loc[g['Line'] == 'Barrel 4', 'Insp(B/H)'].sum() if g.loc[g['Line'] == 'Barrel 4', 'Insp(B/H)'].sum() != 0 else 0,
-							'NG R1 (%)': 100 * g.loc[g['Line'] == 'Rack 1', 'NG(B/H)'].sum() / g.loc[g['Line'] == 'Rack 1', 'Insp(B/H)'].sum() if g.loc[g['Line'] == 'Rack 1', 'Insp(B/H)'].sum() != 0 else 0,
 							'NG Ni (%)': 100 * g.loc[g['Line'] == 'Nickel', 'NG(B/H)'].sum() / g.loc[g['Line'] == 'Nickel', 'Insp(B/H)'].sum() if g.loc[g['Line'] == 'Nickel', 'Insp(B/H)'].sum() != 0 else 0,
+							'NG R1 (%)': 100 * g.loc[g['Line'] == 'Rack 1', 'NG(B/H)'].sum() / g.loc[g['Line'] == 'Rack 1', 'Insp(B/H)'].sum() if g.loc[g['Line'] == 'Rack 1', 'Insp(B/H)'].sum() != 0 else 0,
 						})
 					)
 				).reset_index().rename(columns={'MonthYear': 'Date'})
@@ -708,19 +707,18 @@ def cleaning_process(df):
 				tot_avg = {
 					'Date': 'TotAverage',
 					'NG B4 (%)': ng_bulanan['NG B4 (%)'].mean(),
-					'NG R1 (%)': ng_bulanan['NG R1 (%)'].mean(),
 					'NG Ni (%)': ng_bulanan['NG Ni (%)'].mean(),
+					'NG R1 (%)': ng_bulanan['NG R1 (%)'].mean(),
 				}
 				ng_bulanan = pd.concat([ng_bulanan, pd.DataFrame([tot_avg])], ignore_index=True)
 
 				# Format angka 2 digit di belakang koma
-				for col in ['NG B4 (%)', 'NG R1 (%)', 'NG Ni (%)']:
+				for col in ['NG B4 (%)', 'NG Ni (%)','NG R1 (%)' ]:
 					ng_bulanan[col] = pd.to_numeric(ng_bulanan[col], errors='coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "")
 
 				# Tampilkan tabel tanpa kolom index (hide_index=True)
 				st.dataframe(ng_bulanan, use_container_width=True, hide_index=True)
-
-			with tengah:	#Table Qty NG (lot) by Line & Month
+			with tengah:	#Table Qty NG (lot) by Line & Month-edited add total row 16Jun2025
 				st.write('Table Qty NG (lot) by Line & Month')
 				# Ubah kolom selain 'Date' ke numerik agar bisa dijumlahkan
 				for col in pivot_df_bulan_line2.columns:
@@ -740,7 +738,7 @@ def cleaning_process(df):
 				# Format angka
 				pivot_df_bulan_line2 = pivot_df_bulan_line2.map(format_with_comma)
 				st.write(pivot_df_bulan_line2)
-			with kanan:	#Table Qty Inspected (lot) by Line & Month
+			with kanan:	#Table Qty Inspected (lot) by Line & Month-edited add total row 16Jun2025
 				st.write('Table Qty Inspected (lot) by Line & Month')
 				pivot_df_bulan_line3 = pivot_df_bulan_line3.round(0)
 				pivot_df_bulan_line3 = pivot_df_bulan_line3.reset_index()

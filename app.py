@@ -2006,6 +2006,10 @@ def cleaning_process(df):
 			# Urutkan berdasarkan tanggal
 			daily_plot = daily_plot.sort_values('Date')
 
+			st.write(f"Data Harian untuk Line: {selected_line}")
+			# Tampilkan tabel data harian
+			st.write(daily_plot)
+
 			# Jika tidak ada data, tampilkan info
 			if daily_plot.empty:
 				st.info("Tidak ada data harian untuk line ini.")

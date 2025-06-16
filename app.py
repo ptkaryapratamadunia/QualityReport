@@ -2006,9 +2006,9 @@ def cleaning_process(df):
 			# Urutkan berdasarkan tanggal
 			daily_plot = daily_plot.sort_values('Date')
 
-			st.write(f"Data Harian untuk Line: {selected_line}")
+			st.write(f" Tabel Data Harian untuk Line: {selected_line}")
 			# Tampilkan tabel data harian
-			with st.expander("Data Harian", expanded=False):
+			with st.expander("Klik untuk melihat TabelData Harian", expanded=False):
 				st.write(daily_plot)
 			# st.write(daily_plot.set_index('Date').transpose())
 
@@ -2144,6 +2144,11 @@ def cleaning_process(df):
 
 			# Urutkan berdasarkan tanggal
 			daily_plot = daily_plot.sort_values('Date')
+
+			st.write(f" Tabel Data Harian untuk Jenis NG: {selected_jenisNG}")
+			# Tampilkan tabel data harian
+			with st.expander("Klik untuk melihat TabelData Harian", expanded=False):
+				st.write(daily_plot)
 			
 			# Tampilkan grafik
 			daily_plot['Date_str'] = pd.to_datetime(daily_plot['Date']).dt.strftime('%d-%b-%Y')

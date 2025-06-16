@@ -2008,7 +2008,8 @@ def cleaning_process(df):
 
 			st.write(f"Data Harian untuk Line: {selected_line}")
 			# Tampilkan tabel data harian
-			st.write(daily_plot)
+			# Tampilkan tabel data harian dalam bentuk transpose
+			st.write(daily_plot.set_index('Date').transpose())
 
 			# Jika tidak ada data, tampilkan info
 			if daily_plot.empty:

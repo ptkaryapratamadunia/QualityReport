@@ -696,24 +696,28 @@ def cleaning_process(df):
 				ng_bulanan = (
 					df.groupby('MonthYear').apply(
 						lambda g: pd.Series({
-							'NG B4 (%)': 100 * g.loc[g['Line'] == 'Barrel 4', 'NG(B/H)'].sum() / g.loc[g['Line'] == 'Barrel 4', 'Insp(B/H)'].sum() if g.loc[g['Line'] == 'Barrel 4', 'Insp(B/H)'].sum() != 0 else 0,
-							'NG Ni (%)': 100 * g.loc[g['Line'] == 'Nickel', 'NG(B/H)'].sum() / g.loc[g['Line'] == 'Nickel', 'Insp(B/H)'].sum() if g.loc[g['Line'] == 'Nickel', 'Insp(B/H)'].sum() != 0 else 0,
-							'NG R1 (%)': 100 * g.loc[g['Line'] == 'Rack 1', 'NG(B/H)'].sum() / g.loc[g['Line'] == 'Rack 1', 'Insp(B/H)'].sum() if g.loc[g['Line'] == 'Rack 1', 'Insp(B/H)'].sum() != 0 else 0,
+							'NG B4 (%)': 100 * g.loc[g['Line'] == 'Barrel 4', 'NG(B/H)'].sum() / g.loc[g['Line'] == 'Barrel 4', 'Insp(B/H)'].sum() if g.loc[g['Line'] == 'Barrel 4', 'Insp(B/H)'].sum() != 0 else np.nan,
+							'NG Ni (%)': 100 * g.loc[g['Line'] == 'Nickel', 'NG(B/H)'].sum() / g.loc[g['Line'] == 'Nickel', 'Insp(B/H)'].sum() if g.loc[g['Line'] == 'Nickel', 'Insp(B/H)'].sum() != 0 else np.nan,
+							'NG R1 (%)': 100 * g.loc[g['Line'] == 'Rack 1', 'NG(B/H)'].sum() / g.loc[g['Line'] == 'Rack 1', 'Insp(B/H)'].sum() if g.loc[g['Line'] == 'Rack 1', 'Insp(B/H)'].sum() != 0 else np.nan,
 						})
 					)
 				).reset_index().rename(columns={'MonthYear': 'Date'})
 
-				# Tambahkan baris TotAverage
-				tot_avg = {
-					'Date': 'TotAverage',
-					'NG B4 (%)': ng_bulanan['NG B4 (%)'].mean(),
-					'NG Ni (%)': ng_bulanan['NG Ni (%)'].mean(),
-					'NG R1 (%)': ng_bulanan['NG R1 (%)'].mean(),
-				}
-				ng_bulanan = pd.concat([ng_bulanan, pd.DataFrame([tot_avg])], ignore_index=True)
+				# Hapus baris yang semua nilainya NaN (selain kolom Date)
+				ng_bulanan = ng_bulanan.dropna(subset=['NG B4 (%)', 'NG Ni (%)', 'NG R1 (%)'], how='all')
 
-				# Format angka 2 digit di belakang koma
-				for col in ['NG B4 (%)', 'NG Ni (%)','NG R1 (%)' ]:
+				# Tambahkan baris TotAverage hanya jika ada data
+				if not ng_bulanan.empty:
+					tot_avg = {
+						'Date': 'TotAverage',
+						'NG B4 (%)': ng_bulanan['NG B4 (%)'].mean(skipna=True),
+						'NG Ni (%)': ng_bulanan['NG Ni (%)'].mean(skipna=True),
+						'NG R1 (%)': ng_bulanan['NG R1 (%)'].mean(skipna=True),
+					}
+					ng_bulanan = pd.concat([ng_bulanan, pd.DataFrame([tot_avg])], ignore_index=True)
+
+				# Format angka 2 digit di belakang koma, kosongkan jika NaN
+				for col in ['NG B4 (%)', 'NG Ni (%)', 'NG R1 (%)']:
 					ng_bulanan[col] = pd.to_numeric(ng_bulanan[col], errors='coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "")
 
 				# Tampilkan tabel tanpa kolom index (hide_index=True)

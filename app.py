@@ -717,8 +717,8 @@ def cleaning_process(df):
 				for col in ['NG B4 (%)', 'NG R1 (%)', 'NG Ni (%)']:
 					ng_bulanan[col] = pd.to_numeric(ng_bulanan[col], errors='coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "")
 
-				# st.write("Tabel NG (%) per Bulan per Line")
-				st.dataframe(ng_bulanan, use_container_width=True)
+				# Tampilkan tabel tanpa kolom index (hide_index=True)
+				st.dataframe(ng_bulanan, use_container_width=True, hide_index=True)
 
 			with tengah:	#Table Qty NG (lot) by Line & Month
 				st.write('Table Qty NG (lot) by Line & Month')

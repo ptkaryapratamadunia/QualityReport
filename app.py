@@ -1696,6 +1696,8 @@ def cleaning_process(df):
 				# Hitung cumulative %
 				pareto_df['Cumulative'] = pareto_df['Total NG (lot)'].cumsum()
 				pareto_df['Cumulative %'] = 100 * pareto_df['Cumulative'] / pareto_df['Total NG (lot)'].sum()
+				# Tambahkan kolom label untuk value cumulative % di atas grafik
+				pareto_df['Cumulative % Label'] = pareto_df['Cumulative %'].round(1).astype(str) + '%'
 
 				# Buat grafik Pareto-13Jun2025
 
@@ -1712,17 +1714,18 @@ def cleaning_process(df):
 					textposition='inside'
 				))
 
-				# Line chart cumulative %
+				# Line chart cumulative % (dengan label di atas marker)
 				fig.add_trace(go.Scatter(
 					x=pareto_df['Defect Type'],
 					y=pareto_df['Cumulative %'],
 					name='Cumulative %',
 					yaxis='y2',
-					mode='lines+markers',
+					mode='lines+markers+text',
 					marker_color='orange',
 					line=dict(color='orange', width=3),
-					text=pareto_df['Cumulative %'].round(1).astype(str) + '%',
-					textposition='top center'
+					text=pareto_df['Cumulative % Label'],
+					textposition='top center',
+					hoverinfo='text'
 				))
 
 				fig.update_layout(

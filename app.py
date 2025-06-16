@@ -606,7 +606,7 @@ def cleaning_process(df):
 
 		NG_persen = 100 * df['NG(B/H)'].sum() / df['Insp(B/H)'].sum() if df['Insp(B/H)'].sum() != 0 else 0
 		# Buat pivot table seperti biasa
-		pivot_df_bulan_line = pd.pivot_table(df, values='NG_%', index='Date', columns='Line', aggfunc='sum', margins=True, margins_name='Total')
+		pivot_df_bulan_line = pd.pivot_table(df, values='NG_%', index='Date', columns='Line', aggfunc='mean', margins=True, margins_name='Total')
 		# Ganti semua nilai di pivot dengan NG_persen (broadcast ke seluruh tabel)
 		# pivot_df_bulan_line.loc[:, :] = NG_persen
 		pivot_df_bulan_line_grafik= pd.pivot_table(df, values='NG_%', index='Date', aggfunc='mean')

@@ -2084,7 +2084,14 @@ def cleaning_process(df):
 				'Dimensi/ Penyok'
 			]
 			jenisNG_options = [col for col in jenis_ng_columns if col in df3.columns]
-			selected_jenisNG = st.selectbox("Pilih Jenis NG yang ingin ditampilkan:", jenisNG_options, key='jenisNG_options')
+			# Set default value to 'Flek Hitam' if available, otherwise use the first option
+			default_jenisNG = 'Flek Hitam' if 'Flek Hitam' in jenisNG_options else (jenisNG_options[0] if jenisNG_options else None)
+			selected_jenisNG = st.selectbox(
+				"Pilih Jenis NG yang ingin ditampilkan:",
+				jenisNG_options,
+				index=jenisNG_options.index(default_jenisNG) if default_jenisNG in jenisNG_options else 0,
+				key='jenisNG_options'
+			)
 
 			# Buat range tanggal lengkap
 			all_dates = pd.date_range(start=date_min, end=date_max, freq='D').date

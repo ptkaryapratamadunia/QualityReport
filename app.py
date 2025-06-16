@@ -604,17 +604,10 @@ def cleaning_process(df):
 		# Urutkan DataFrame berdasarkan kolom Month 
 		# df = df.sort_values('Date')
 
-		pivot_df_bulan_line= pd.pivot_table(df, values='NG_%', index='Date',columns='Line', aggfunc='mean',margins=True,margins_name='Total')
+		pivot_df_bulan_line= pd.pivot_table(df, values='NG_%', index='Date',columns='Line', aggfunc='sum',margins=True,margins_name='Total')
 		pivot_df_bulan_line_grafik= pd.pivot_table(df, values='NG_%', index='Date', aggfunc='mean')
 		# Membuat tabel pivot Qty NG(Lot) by MONTH and LINE---------------
-		pivot_df_bulan_line2= pd.pivot_table(df, values='Tot_NG', index=['Date'],columns=['Line'], aggfunc='sum',margins=True,margins_name='Total')
-		
-		# #Reset index untuk memudahkan plotting
-		# pivot_df_bulan_line2.reset_index(inplace=True)
-		
-		# # Urutkan DataFrame berdasarkan kolom 'Month'
-		# pivot_df_bulan_line2.sort_index(inplace=True)
-
+		pivot_df_bulan_line2= pd.pivot_table(df, values='Tot_NG', index=['Date'],columns=['Line'], aggfunc='sum',margins=True,margins_name='Total')		
 
 		# Membuat tabel pivot Qty Insp(Lot) by MONTH and LINE---------------
 		pivot_df_bulan_line3= pd.pivot_table(df, values='Insp(B/H)', index='Date',columns='Line', aggfunc='sum',margins=True,margins_name='Total')
@@ -656,7 +649,7 @@ def cleaning_process(df):
 		with bariskanan:#Total NG (%)
 			# container2=st.container(border=True)
 			# tot_NG_persen=df['NG_%'].mean()
-			NG_persen= 100 * df['Tot_NG'].sum() / df['Insp(B/H)'].sum() if df['Insp(B/H)'].sum() != 0 else 0
+			NG_persen= 100 * df['NG(B/H)'].sum() / df['Insp(B/H)'].sum() if df['Insp(B/H)'].sum() != 0 else 0
 			# container2.write(f"Tot. NG (%)	: {tot_NG_persen:.2f}")
 			container_html = f""" <div style='border: 2px solid #4CAF50; padding: 2px; border-radius: 5px; text-align: center;'> <h4 style='font-size:12px; margin:0;color:orange;'>Total NG (%)</h4> <p style='font-size:46px; margin:0;'>{NG_persen:,.2f}</p> </div> """
 			st.markdown(container_html, unsafe_allow_html=True)			

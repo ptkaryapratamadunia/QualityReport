@@ -1674,7 +1674,7 @@ def cleaning_process(df):
 					x='Total NG (lot)',
 					title='Defect Types - Line Rack 1',
 					labels={'Defect Type': 'Defect Type', 'Total NG (lot)': 'Total NG (lot)'},
-					color_discrete_sequence=['#8E1616'],
+					color_discrete_sequence=["#A070EE"],
 					text='Total NG (lot)'
 				)
 				fig.update_traces(textposition='inside')

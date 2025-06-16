@@ -2023,7 +2023,7 @@ def cleaning_process(df):
 					x=daily_plot['Date_str'],
 					y=daily_plot['Insp(B/H)'],
 					name='Total Inspected (Lot)',
-					marker_color='#8A784E',
+					marker_color='#819A91',
 					yaxis='y1',
 					text=daily_plot['Insp(B/H)'].round(0).astype(int).astype(str),
 					textposition='inside'
@@ -2048,8 +2048,8 @@ def cleaning_process(df):
 					xaxis_title='',
 					yaxis=dict(
 						title='Total Inspected (Lot)',
-						titlefont=dict(color='#8A784E'),
-						tickfont=dict(color='#8A784E'),
+						titlefont=dict(color='#819A91'),
+						tickfont=dict(color='#819A91'),
 					),
 					yaxis2=dict(
 						title='Rata-rata NG (%)',

@@ -722,10 +722,23 @@ def cleaning_process(df):
 
 			with tengah:	#Table Qty NG (lot) by Line & Month
 				st.write('Table Qty NG (lot) by Line & Month')
-				pivot_df_bulan_line2 = pivot_df_bulan_line2.map(format_with_comma)
+				# Ubah kolom selain 'Date' ke numerik agar bisa dijumlahkan
+				for col in pivot_df_bulan_line2.columns:
+					if col != 'Date':
+						pivot_df_bulan_line2[col] = pd.to_numeric(pivot_df_bulan_line2[col], errors='coerce')
+				# Reset index dan urutkan, tetap tampilkan baris 'Total'
 				pivot_df_bulan_line2 = pivot_df_bulan_line2.reset_index()
-				pivot_df_bulan_line2 = pivot_df_bulan_line2[pivot_df_bulan_line2['Date'] != 'Total']
-				pivot_df_bulan_line2 = pivot_df_bulan_line2.sort_values(by='Date', key=lambda x: pd.to_datetime(x, format='%b-%Y')).set_index('Date')
+				pivot_df_bulan_line2 = pivot_df_bulan_line2.sort_values(
+					by='Date', 
+					key=lambda x: pd.to_datetime(x.where(x != 'Total', '2100-01'), format='%b-%Y', errors='coerce')
+				).set_index('Date')
+				# Hitung baris Total (sum semua baris kecuali 'Total' jika sudah ada)
+				if 'Total' not in pivot_df_bulan_line2.index:
+					total_row = pivot_df_bulan_line2.loc[pivot_df_bulan_line2.index != 'Total'].sum(numeric_only=True)
+					total_row.name = 'Total'
+					pivot_df_bulan_line2 = pd.concat([pivot_df_bulan_line2, pd.DataFrame([total_row])])
+				# Format angka
+				pivot_df_bulan_line2 = pivot_df_bulan_line2.map(format_with_comma)
 				st.write(pivot_df_bulan_line2)
 			with kanan:	#Table Qty Inspected (lot) by Line & Month
 				st.write('Table Qty Inspected (lot) by Line & Month')

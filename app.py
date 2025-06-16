@@ -706,19 +706,23 @@ def cleaning_process(df):
 				# Hapus baris yang semua nilainya NaN (selain kolom Date)
 				ng_bulanan = ng_bulanan.dropna(subset=['NG B4 (%)', 'NG Ni (%)', 'NG R1 (%)'], how='all')
 
+				# Hapus kolom yang seluruh nilainya NaN (selain kolom Date)
+				cols_to_check = ['NG B4 (%)', 'NG Ni (%)', 'NG R1 (%)']
+				cols_to_drop = [col for col in cols_to_check if ng_bulanan[col].isna().all()]
+				ng_bulanan = ng_bulanan.drop(columns=cols_to_drop)
+
 				# Tambahkan baris TotAverage hanya jika ada data
-				if not ng_bulanan.empty:
-					tot_avg = {
-						'Date': 'TotAverage',
-						'NG B4 (%)': ng_bulanan['NG B4 (%)'].mean(skipna=True),
-						'NG Ni (%)': ng_bulanan['NG Ni (%)'].mean(skipna=True),
-						'NG R1 (%)': ng_bulanan['NG R1 (%)'].mean(skipna=True),
-					}
-					ng_bulanan = pd.concat([ng_bulanan, pd.DataFrame([tot_avg])], ignore_index=True)
+				avg_dict = {'Date': 'TotAverage'}
+				for col in cols_to_check:
+					if col in ng_bulanan.columns:
+						avg_dict[col] = ng_bulanan[col].mean(skipna=True)
+				if len(avg_dict) > 1:
+					ng_bulanan = pd.concat([ng_bulanan, pd.DataFrame([avg_dict])], ignore_index=True)
 
 				# Format angka 2 digit di belakang koma, kosongkan jika NaN
-				for col in ['NG B4 (%)', 'NG Ni (%)', 'NG R1 (%)']:
-					ng_bulanan[col] = pd.to_numeric(ng_bulanan[col], errors='coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "")
+				for col in cols_to_check:
+					if col in ng_bulanan.columns:
+						ng_bulanan[col] = pd.to_numeric(ng_bulanan[col], errors='coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "")
 
 				# Tampilkan tabel tanpa kolom index (hide_index=True)
 				st.dataframe(ng_bulanan, use_container_width=True, hide_index=True)

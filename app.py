@@ -649,7 +649,7 @@ def cleaning_process(df):
 			# container=st.container(border=True)
 			tot_NG_lot=df['NG(B/H)'].sum()
 			# container.write(f"Tot. NG (lot)  :  {tot_NG_lot:.0f}")
-			container_html = f""" <div style='border: 2px solid #4CAF50; padding: 2px; border-radius: 5px; text-align: center;'> <h4 style='font-size:12px; margin:0;color:orange;'>Total NG (lot)</h4> <p style='font-size:46px; margin:0;'>{tot_NG_lot:,.2f}</p> </div> """
+			container_html = f""" <div style='border: 2px solid #4CAF50; padding: 2px; border-radius: 5px; text-align: center;'> <h4 style='font-size:12px; margin:0;color:orange;'>Total NG (lot)</h4> <p style='font-size:46px; margin:0;'>{tot_NG_lot:,.4f}</p> </div> """
 			st.markdown(container_html, unsafe_allow_html=True)
 			# bt3.metric("Total NG (lot):",f"{tot_NG_lot:.2f}")
 
@@ -658,7 +658,7 @@ def cleaning_process(df):
 			# tot_NG_persen=df['NG_%'].mean()
 			NG_persen= 100 * df['Tot_NG'].sum() / df['Insp(B/H)'].sum() if df['Insp(B/H)'].sum() != 0 else 0
 			# container2.write(f"Tot. NG (%)	: {tot_NG_persen:.2f}")
-			container_html = f""" <div style='border: 2px solid #4CAF50; padding: 2px; border-radius: 5px; text-align: center;'> <h4 style='font-size:12px; margin:0;color:orange;'>Total NG (%)</h4> <p style='font-size:46px; margin:0;'>{NG_persen:,.2f}</p> </div> """
+			container_html = f""" <div style='border: 2px solid #4CAF50; padding: 2px; border-radius: 5px; text-align: center;'> <h4 style='font-size:12px; margin:0;color:orange;'>Total NG (%)</h4> <p style='font-size:46px; margin:0;'>{NG_persen:,.4f}</p> </div> """
 			st.markdown(container_html, unsafe_allow_html=True)			
 			# bariskanan.metric("Total NG (%)",f"{tot_NG_persen:.2f}")
 

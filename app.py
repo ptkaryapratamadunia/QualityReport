@@ -1079,7 +1079,7 @@ def cleaning_process(df):
 			st.write(pt_customer_line_transposed)
 
 			dew1, dew2=st.columns(2)
-			with dew1: #NG (%) for Barrel 4 by Customer
+			with dew1: #NG (%) for Barrel 4 by Customer-change to pareto chart 17Jun2025
 				
 				# Check if 'Barrel 4' column exists in the dataframe
 				if 'Barrel 4' in pt_customer_line.columns:
@@ -1156,42 +1156,78 @@ def cleaning_process(df):
 
 			with dew2: #NG (%) for Rack 1 by Customer
 			
-				# Check if 'Barrel 4' column exists in the dataframe
+				# Check if 'Rack 1' column exists in the dataframe
 				if 'Rack 1' in pt_customer_line.columns:
-					# Extract 'Barrel 4' line and exclude 'Total' column
+					# Extract 'Rack 1' line and exclude 'Total' column
 					R1_data = pt_customer_line['Rack 1'].drop('Total').reset_index()
 
-					# Filter out rows where 'Barrel 4' is zero 
+					# Filter out rows where 'Rack 1' is greater than zero 
 					R1_data_filtered = R1_data[R1_data['Rack 1'] > 0]
 
 					# Sort the data by NG_% in descending order
-					R1_data_sorted = R1_data_filtered.sort_values(by='Rack 1', ascending=False)
+					R1_data_sorted = R1_data_filtered.sort_values(by='Rack 1', ascending=False).reset_index(drop=True)
 
-					# Create the bar chart
-					fig = px.bar(
-						R1_data_sorted,
-						x='Cust.ID',
-						y='Rack 1',
-						title='NG (%) for Rack 1 by Customer',
-						labels={'Rack 1': 'NG (%)', 'Cust.ID': 'Customer'},
-						color='Cust.ID',  # Different color for each customer
-						color_discrete_sequence=px.colors.qualitative.Plotly,
-						text=R1_data_sorted['Rack 1'].round(2)  # Show value labels
-					)
+					# Hitung cumulative %
+					R1_data_sorted['Cumulative'] = R1_data_sorted['Rack 1'].cumsum()
+					R1_data_sorted['Cumulative %'] = 100 * R1_data_sorted['Cumulative'] / R1_data_sorted['Rack 1'].sum()
+					R1_data_sorted['Cumulative % Label'] = R1_data_sorted['Cumulative %'].round(1).astype(str) + '%'
 
-					# Customize the layout
-					fig.update_traces(
-						textposition='inside',
-						textfont=dict(color='white', size=12)
-					)
+					# Buat grafik Pareto
+					fig = go.Figure()
+
+					# Bar chart
+					fig.add_trace(go.Bar(
+						x=R1_data_sorted['Cust.ID'],
+						y=R1_data_sorted['Rack 1'],
+						name='NG (%)',
+						marker_color="#FFD0C7",
+						yaxis='y1',
+						text=R1_data_sorted['Rack 1'].round(2),
+						textposition='inside'
+					))
+
+					# Line chart cumulative % (dengan label di atas marker)
+					fig.add_trace(go.Scatter(
+						x=R1_data_sorted['Cust.ID'],
+						y=R1_data_sorted['Cumulative %'],
+						name='Cumulative %',
+						yaxis='y2',
+						mode='lines+markers+text',
+						marker_color='orange',
+						line=dict(color='orange', width=3),
+						text=R1_data_sorted['Cumulative % Label'],
+						textposition='top center',
+						hoverinfo='text'
+					))
+
 					fig.update_layout(
-						xaxis_title="Customer",
-						yaxis_title="NG (%)",
-						xaxis_tickangle=0
+						title='Pareto Chart: NG (%) per Customer - Rack 1',
+						xaxis=dict(title='Customer'),
+						yaxis=dict(
+							title='NG (%)',
+							showgrid=True,
+							zeroline=True
+						),
+						yaxis2=dict(
+							title='Cumulative %',
+							overlaying='y',
+							side='right',
+							range=[0, 110],
+							showgrid=False,
+							tickformat='.0f',
+							ticksuffix='%'
+						),
+						legend=dict(
+							orientation="h",
+							yanchor="bottom",
+							y=1.02,
+							xanchor="right",
+							x=1
+						),
+						bargap=0.2
 					)
 
-					# Display the plot in Streamlit
-					st.plotly_chart(fig)
+					st.plotly_chart(fig, use_container_width=True)
 
 			#--------- pivot Qty NG (lot) by Line dan Customer
 			pt_customer_line2=pd.pivot_table(df,values='NG(B/H)',index='Cust.ID',columns='Line',aggfunc='sum',margins=True,margins_name='Total')

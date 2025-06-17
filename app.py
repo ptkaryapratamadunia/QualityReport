@@ -6,6 +6,7 @@ from math import exp
 from re import X
 from typing import Text
 from unicodedata import category
+from matplotlib.hatch import SmallCircles
 from referencing import Anchor
 import streamlit as st
 import pandas as pd
@@ -1468,7 +1469,7 @@ def cleaning_process(df):
 
 			#LB4
 
-			lb4_kiri, lb4_kanan = st.columns(4,1)
+			lb4_kiri, lb4_kanan = st.columns(5,gap="small") #Tabel Jenis NG (Lot) - Line Barrel 4 - All Parts
 			with lb4_kiri: #Tabel Jenis NG (Lot) - Line Barrel 4 - All Parts
 				df_LB4 = df[df['Line'] == 'Barrel 4']
 				# Menjumlahkan kolom-kolom yang diinginkan (lot)

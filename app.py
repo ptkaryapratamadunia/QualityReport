@@ -1596,7 +1596,7 @@ def cleaning_process(df):
 				total_production_LR1 = format_with_comma(total_production_LR1)
 				st.write("Total Production (lot) LR1:")
 				st.markdown(f"<div style='font-size: 32px; color: orange; font-weight: bold; text-align: center;'>{total_production_LR1}</div>", unsafe_allow_html=True)
-				
+
 			st.markdown("---")
 			#tampilkan grafik batangnya -- 14Nov2024
 			barisB4, barisR1=st.columns(2)
@@ -1627,7 +1627,7 @@ def cleaning_process(df):
 				fig.update_layout(yaxis_title="Defect Type", xaxis_title="Total NG (lot)", yaxis_tickangle=0)
 				st.plotly_chart(fig)
 
-				st.markdown("---")
+				
 				# Grafik Pareto: Bar = jumlah NG (lot) per Defect Type, Line = cumulative %
 				# Data: df_LB4, kolom new_columns
 
@@ -1730,7 +1730,7 @@ def cleaning_process(df):
 				fig.update_layout(yaxis_title="Defect Type", xaxis_title="Total NG (lot)", yaxis_tickangle=0)
 				st.plotly_chart(fig)
 
-				st.markdown("---")
+				
 				# Grafik Pareto: Bar = jumlah NG (lot) per Defect Type, Line = cumulative %
 				# Data: df_LR1, kolom new_columns
 

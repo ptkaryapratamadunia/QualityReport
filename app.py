@@ -1487,7 +1487,7 @@ def cleaning_process(df):
 				# Total Production (lot) Line Barrel 4
 				total_production_B4 = df_LB4['Insp(B/H)'].sum()
 				total_production_B4 = format_with_comma(total_production_B4)
-				st.write("Total Production (lot) LB 4:")
+				st.write("Total Inspected (lot) LB 4:")
 				st.markdown(f"<div style='font-size: 32px; color: orange; font-weight: bold; text-align: center;'>{total_production_B4}</div>", unsafe_allow_html=True)
 
 			# Tabel Jenis NG (Lot) - Line Barrel 4 - Parts HDI

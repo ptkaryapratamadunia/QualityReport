@@ -1490,85 +1490,112 @@ def cleaning_process(df):
 				st.write("Total Production (lot) LB 4:")
 				st.markdown(f"<div style='font-size: 32px; color: orange; font-weight: bold; text-align: center;'>{total_production_B4}</div>", unsafe_allow_html=True)
 
-			st.write("Tabel Jenis NG (Lot) - Line Barrel 4 - Parts HDI")
-			# Filter df untuk hanya menampilkan Jenis  yang mengandung 'HDI' pada kolom 'Cust.ID' - 10Jun2025 
-			df_HDI = df_LB4[df_LB4['Cust.ID'].str.contains('HDI', na=False)]
-			# Menjumlahkan kolom-kolom yang diinginkan (lot)
-			total_row_HDI = df_HDI[new_columns].sum().to_frame().T
-			total_row_HDI['index'] = 'Total_NG(lot)'
-			total_row_HDI.set_index('index', inplace=True)
-			# Hanya tampilkan kolom dengan nilai > 0
-			total_row_HDI = total_row_HDI.loc[:, (total_row_HDI != 0).any(axis=0)]
-			# Tambahkan kolom 'Jumlah Total' yang merupakan jumlah dari semua kolom yang tampil
-			total_row_HDI['Jumlah Total'] = total_row_HDI.sum(axis=1)
-			total_row_HDI = total_row_HDI.map(format_with_comma)
-			st.write(total_row_HDI)
+			# Tabel Jenis NG (Lot) - Line Barrel 4 - Parts HDI
+			lb4_hdi_kiri, lb4_hdi_kanan = st.columns([4, 1])
+			with lb4_hdi_kiri:
+				st.write("Tabel Jenis NG (Lot) - Line Barrel 4 - Parts HDI")
+				# Filter df untuk hanya menampilkan Jenis yang mengandung 'HDI' pada kolom 'Cust.ID' - 10Jun2025 
+				df_HDI = df_LB4[df_LB4['Cust.ID'].str.contains('HDI', na=False)]
+				# Menjumlahkan kolom-kolom yang diinginkan (lot)
+				total_row_HDI = df_HDI[new_columns].sum().to_frame().T
+				total_row_HDI['index'] = 'Total_NG(lot)'
+				total_row_HDI.set_index('index', inplace=True)
+				# Hanya tampilkan kolom dengan nilai > 0
+				total_row_HDI = total_row_HDI.loc[:, (total_row_HDI != 0).any(axis=0)]
+				# Tambahkan kolom 'Jumlah Total' yang merupakan jumlah dari semua kolom yang tampil
+				total_row_HDI['Jumlah Total'] = total_row_HDI.sum(axis=1)
+				total_row_HDI = total_row_HDI.map(format_with_comma)
+				st.write(total_row_HDI)
+			with lb4_hdi_kanan:
+				total_production_HDI = df_HDI['Insp(B/H)'].sum()
+				total_production_HDI = format_with_comma(total_production_HDI)
+				st.write("Total Production (lot) HDI:")
+				st.markdown(f"<div style='font-size: 32px; color: orange; font-weight: bold; text-align: center;'>{total_production_HDI}</div>", unsafe_allow_html=True)
 
-			st.write("Tabel Jenis NG (Lot) - Line Barrel 4 - Small Parts")
-			# Filter df untuk hanya menampilkan Jenis  yang mengandung 'SMP' pada kolom 'Kategori' - 10Jun2025
-			df_SMP = df_LB4[df_LB4['Kategori'].str.contains('SMP', na=False)]
-			# Menjumlahkan kolom-kolom yang diinginkan (lot)
-			total_row_SMP = df_SMP[new_columns].sum().to_frame().T
-			total_row_SMP['index'] = 'Total_NG(lot)'
-			total_row_SMP.set_index('index', inplace=True)
-			# Hanya tampilkan kolom dengan nilai > 0
-			total_row_SMP = total_row_SMP.loc[:, (total_row_SMP != 0).any(axis=0)]
-			# Tambahkan kolom 'Jumlah Total' yang merupakan jumlah dari semua kolom yang tampil
-			total_row_SMP['Jumlah Total'] = total_row_SMP.sum(axis=1)
-			total_row_SMP = total_row_SMP.map(format_with_comma)
-			st.write(total_row_SMP)
-			
-			st.write("Tabel Jenis NG (Lot) - Line Barrel 4 - RING Part")
-			# Filter df untuk hanya menampilkan Jenis  yang mengandung 'JK067662-0190, JK067662-0160, JK067662-0112' pada kolom 'PartName' - 11Jun2025
-			df_RingParts = df_LB4[df_LB4['PartName'].str.contains('JK067662-0190|JK067662-0160|JK067662-0112', na=False)]
-			
-			# Gabungkan semua variasi kolom 'MTL/ SLipMelintir' (dengan spasi berbeda) menjadi satu kolom
-			# Temukan semua variasi nama kolom 'MTL/ SLipMelintir' (case-insensitive, strip spasi)
-			mtl_variants = [col for col in df_RingParts.columns if col.strip().lower() == 'mtl/ slipmelintir']
-			if len(mtl_variants) > 1:
-				# Gabungkan semua nilai ke kolom pertama, lalu hapus kolom duplikat
-				main_col = mtl_variants[0]
-				for col in mtl_variants[1:]:
-					df_RingParts[main_col] += df_RingParts[col]
-					df_RingParts.drop(columns=col, inplace=True)
-			elif len(mtl_variants) == 0:
-				# Jika tidak ada, tambahkan kolom dengan nilai 0 agar tetap muncul di tabel
-				df_RingParts['MTL/ SLipMelintir'] = 0
-				main_col = 'MTL/ SLipMelintir'
-			else:
-				main_col = mtl_variants[0]
+			# Tabel Jenis NG (Lot) - Line Barrel 4 - Small Parts
+			lb4_smp_kiri, lb4_smp_kanan = st.columns([4, 1])
+			with lb4_smp_kiri:
+				st.write("Tabel Jenis NG (Lot) - Line Barrel 4 - Small Parts")
+				# Filter df untuk hanya menampilkan Jenis yang mengandung 'SMP' pada kolom 'Kategori' - 10Jun2025
+				df_SMP = df_LB4[df_LB4['Kategori'].str.contains('SMP', na=False)]
+				# Menjumlahkan kolom-kolom yang diinginkan (lot)
+				total_row_SMP = df_SMP[new_columns].sum().to_frame().T
+				total_row_SMP['index'] = 'Total_NG(lot)'
+				total_row_SMP.set_index('index', inplace=True)
+				# Hanya tampilkan kolom dengan nilai > 0
+				total_row_SMP = total_row_SMP.loc[:, (total_row_SMP != 0).any(axis=0)]
+				# Tambahkan kolom 'Jumlah Total' yang merupakan jumlah dari semua kolom yang tampil
+				total_row_SMP['Jumlah Total'] = total_row_SMP.sum(axis=1)
+				total_row_SMP = total_row_SMP.map(format_with_comma)
+				st.write(total_row_SMP)
+			with lb4_smp_kanan:
+				total_production_SMP = df_SMP['Insp(B/H)'].sum()
+				total_production_SMP = format_with_comma(total_production_SMP)
+				st.write("Total Production (lot) SMP:")
+				st.markdown(f"<div style='font-size: 32px; color: orange; font-weight: bold; text-align: center;'>{total_production_SMP}</div>", unsafe_allow_html=True)
 
-			# Pastikan kolom 'MTL/ SLipMelintir' ada di new_columns dan urutan kolom sesuai new_columns
-			ng_cols = [col for col in new_columns if col in df_RingParts.columns]
-			if main_col not in ng_cols:
-				ng_cols.append(main_col)
+			# Tabel Jenis NG (Lot) - Line Barrel 4 - RING Part
+			lb4_ring_kiri, lb4_ring_kanan = st.columns([4, 1])
+			with lb4_ring_kiri:
+				st.write("Tabel Jenis NG (Lot) - Line Barrel 4 - RING Part")
+				# Filter df untuk hanya menampilkan Jenis yang mengandung 'JK067662-0190, JK067662-0160, JK067662-0112' pada kolom 'PartName' - 11Jun2025
+				df_RingParts = df_LB4[df_LB4['PartName'].str.contains('JK067662-0190|JK067662-0160|JK067662-0112', na=False)]
+				
+				# Gabungkan semua variasi kolom 'MTL/ SLipMelintir' (dengan spasi berbeda) menjadi satu kolom
+				mtl_variants = [col for col in df_RingParts.columns if col.strip().lower() == 'mtl/ slipmelintir']
+				if len(mtl_variants) > 1:
+					main_col = mtl_variants[0]
+					for col in mtl_variants[1:]:
+						df_RingParts[main_col] += df_RingParts[col]
+						df_RingParts.drop(columns=col, inplace=True)
+				elif len(mtl_variants) == 0:
+					df_RingParts['MTL/ SLipMelintir'] = 0
+					main_col = 'MTL/ SLipMelintir'
+				else:
+					main_col = mtl_variants[0]
 
-			# Menjumlahkan kolom-kolom yang diinginkan (lot)
-			total_row_RingParts = df_RingParts[ng_cols].sum().to_frame().T
-			total_row_RingParts['index'] = 'Total_NG(lot)'
-			total_row_RingParts.set_index('index', inplace=True)
-			# Hanya tampilkan kolom dengan nilai > 0
-			total_row_RingParts = total_row_RingParts.loc[:, (total_row_RingParts != 0).any(axis=0)]
-			# Tambahkan kolom 'Jumlah Total' di paling kanan dan hitung jumlah seluruh kolom data (tanpa 'Jumlah Total' itu sendiri)
-			total_row_RingParts['Jumlah Total'] = total_row_RingParts.sum(axis=1)
-			cols = [col for col in total_row_RingParts.columns if col != 'Jumlah Total'] + ['Jumlah Total']
-			total_row_RingParts = total_row_RingParts[cols]
-			total_row_RingParts = total_row_RingParts.map(format_with_comma)
-			st.write(total_row_RingParts)
+				ng_cols = [col for col in new_columns if col in df_RingParts.columns]
+				if main_col not in ng_cols:
+					ng_cols.append(main_col)
+
+				# Menjumlahkan kolom-kolom yang diinginkan (lot)
+				total_row_RingParts = df_RingParts[ng_cols].sum().to_frame().T
+				total_row_RingParts['index'] = 'Total_NG(lot)'
+				total_row_RingParts.set_index('index', inplace=True)
+				# Hanya tampilkan kolom dengan nilai > 0
+				total_row_RingParts = total_row_RingParts.loc[:, (total_row_RingParts != 0).any(axis=0)]
+				# Tambahkan kolom 'Jumlah Total' di paling kanan dan hitung jumlah seluruh kolom data (tanpa 'Jumlah Total' itu sendiri)
+				total_row_RingParts['Jumlah Total'] = total_row_RingParts.sum(axis=1)
+				cols = [col for col in total_row_RingParts.columns if col != 'Jumlah Total'] + ['Jumlah Total']
+				total_row_RingParts = total_row_RingParts[cols]
+				total_row_RingParts = total_row_RingParts.map(format_with_comma)
+				st.write(total_row_RingParts)
+			with lb4_ring_kanan:
+				total_production_Ring = df_RingParts['Insp(B/H)'].sum()
+				total_production_Ring = format_with_comma(total_production_Ring)
+				st.write("Total Production (lot) RING:")
+				st.markdown(f"<div style='font-size: 32px; color: orange; font-weight: bold; text-align: center;'>{total_production_Ring}</div>", unsafe_allow_html=True)
 
 			#LR1
-			df_LR1 = df[df['Line'] == 'Rack 1']
-			# Menjumlahkan kolom-kolom yang diinginkan (lot)
-			total_row = df_LR1[new_columns].sum().to_frame().T
-			total_row['index'] = 'Total_NG(lot)'
-			total_row.set_index('index', inplace=True)
-			# Hanya tampilkan kolom dengan nilai > 0
-			total_row = total_row.loc[:, (total_row != 0).any(axis=0)]
-			# Tambahkan kolom 'Jumlah Total' yang merupakan jumlah dari semua kolom yang tampil
-			total_row['Jumlah Total'] = total_row.sum(axis=1)
-			total_row = total_row.map(format_with_comma)
-			st.write("Tabel Jenis NG (lot) - Line Rack 1")
-			st.write(total_row)
+			lr1_kiri, lr1_kanan = st.columns([4, 1])
+			with lr1_kiri:
+				df_LR1 = df[df['Line'] == 'Rack 1']
+				# Menjumlahkan kolom-kolom yang diinginkan (lot)
+				total_row = df_LR1[new_columns].sum().to_frame().T
+				total_row['index'] = 'Total_NG(lot)'
+				total_row.set_index('index', inplace=True)
+				# Hanya tampilkan kolom dengan nilai > 0
+				total_row = total_row.loc[:, (total_row != 0).any(axis=0)]
+				# Tambahkan kolom 'Jumlah Total' yang merupakan jumlah dari semua kolom yang tampil
+				total_row['Jumlah Total'] = total_row.sum(axis=1)
+				total_row = total_row.map(format_with_comma)
+				st.write("Tabel Jenis NG (lot) - Line Rack 1")
+				st.write(total_row)
+			with lr1_kanan:
+				total_production_LR1 = df_LR1['Insp(B/H)'].sum()
+				total_production_LR1 = format_with_comma(total_production_LR1)
+				st.write("Total Production (lot) LR1:")
+				st.markdown(f"<div style='font-size: 32px; color: orange; font-weight: bold; text-align: center;'>{total_production_LR1}</div>", unsafe_allow_html=True)
 
 			#tampilkan grafik batangnya -- 14Nov2024
 			barisB4, barisR1=st.columns(2)

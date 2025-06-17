@@ -1245,34 +1245,78 @@ def cleaning_process(df):
 			#Grafik kolom Qty NG(lot) B4 by Cust.ID Ungu 09Jun25 show value inside bar
 			with sikir:
 			
-				df_byLine=df[df['Line']=='Barrel 4']	
-				df_byLine=df_byLine[df_byLine['NG(B/H)']>0]			#menampilkan hanya yg ada nilainya 03Dec2024
+				df_byLine = df[df['Line'] == 'Barrel 4']
+				df_byLine = df_byLine[df_byLine['NG(B/H)'] > 0]
 
-				NG_by_custid=(
-				df_byLine[["Cust.ID","NG(B/H)"]]
-				.groupby(by="Cust.ID")
-				.sum()
-				.sort_values(by="NG(B/H)",ascending=False)
-				.reset_index()
+				NG_by_custid = (
+					df_byLine[["Cust.ID", "NG(B/H)"]]
+					.groupby(by="Cust.ID")
+					.sum()
+					.sort_values(by="NG(B/H)", ascending=False)
+					.reset_index()
 				)
-				# st.write(NG_by_kategori)
-				
-				# Buat grafik batang interaktif dengan nilai di atas grafik
-				fig = go.Figure(data=go.Bar(
+
+				# Hitung cumulative %
+				NG_by_custid['Cumulative'] = NG_by_custid['NG(B/H)'].cumsum()
+				NG_by_custid['Cumulative %'] = 100 * NG_by_custid['Cumulative'] / NG_by_custid['NG(B/H)'].sum()
+				NG_by_custid['Cumulative % Label'] = NG_by_custid['Cumulative %'].round(1).astype(str) + '%'
+
+				# Buat grafik Pareto
+				fig = go.Figure()
+
+				# Bar chart
+				fig.add_trace(go.Bar(
 					x=NG_by_custid['Cust.ID'],
 					y=NG_by_custid['NG(B/H)'],
+					name='Qty NG (Lot)',
 					marker_color='#725CAD',
-					text=NG_by_custid['NG(B/H)'].round(2).astype(str),  # Tampilkan nilai di atas batang
-					textposition='inside'  # Posisi teks di dalam batang
+					yaxis='y1',
+					text=NG_by_custid['NG(B/H)'].round(2),
+					textposition='inside'
+				))
+
+				# Line chart cumulative % (dengan label di atas marker)
+				fig.add_trace(go.Scatter(
+					x=NG_by_custid['Cust.ID'],
+					y=NG_by_custid['Cumulative %'],
+					name='Cumulative %',
+					yaxis='y2',
+					mode='lines+markers+text',
+					marker_color='orange',
+					line=dict(color='orange', width=3),
+					text=NG_by_custid['Cumulative % Label'],
+					textposition='top center',
+					hoverinfo='text'
 				))
 
 				fig.update_layout(
-					title='Grafik Qty NG(lot) by Cust.ID - Barrel 4',
-					xaxis_title='Cust.ID',
-					yaxis_title='Qty NG (Lot)'
+					title='Pareto Chart: Qty NG (lot) per Cust.ID - Barrel 4',
+					xaxis=dict(title='Cust.ID'),
+					yaxis=dict(
+						title='Qty NG (Lot)',
+						showgrid=True,
+						zeroline=True
+					),
+					yaxis2=dict(
+						title='Cumulative %',
+						overlaying='y',
+						side='right',
+						range=[0, 110],
+						showgrid=False,
+						tickformat='.0f',
+						ticksuffix='%'
+					),
+					legend=dict(
+						orientation="h",
+						yanchor="bottom",
+						y=1.02,
+						xanchor="right",
+						x=1
+					),
+					bargap=0.2
 				)
 
-				st.plotly_chart(fig)
+				st.plotly_chart(fig, use_container_width=True)
 			#Grafik NG(lot) by Cust.ID Blue Rack 1
 			with sinan:
 				df_byLineR1=df[df['Line']=='Rack 1']

@@ -2036,39 +2036,82 @@ def cleaning_process(df):
 			sikir2,sinan2=st.columns(2)
 			
 			with sikir2:	#sisi kiri Grafik Batang Vertikal by PartName B4
+			df_byLine = df[df['Line'] == 'Barrel 4']
 
-				df_byLine=df[df['Line']=='Barrel 4']
-
-				NG_by_part=(
-				df_byLine[["PartName","NG_%"]]
+			NG_by_part = (
+				df_byLine[["PartName", "NG_%"]]
 				.groupby(by="PartName")
 				.mean()
-				.sort_values(by="NG_%",ascending=False)
+				.sort_values(by="NG_%", ascending=False)
 				.reset_index()
-				)
-				# Filter nilai yang lebih besar dari 0 
-				NG_by_part = NG_by_part[NG_by_part['NG_%'] > 0.5]
+			)
+			# Filter nilai yang lebih besar dari 0.5
+			NG_by_part = NG_by_part[NG_by_part['NG_%'] > 0.5]
 
-				# Buat grafik batang dengan Plotly, tampilkan nilai di dalam batang
-				fig = px.bar(
-					NG_by_part,
-					x='NG_%',
-					y='PartName',
-					color='NG_%',
-					barmode="relative",
-					text=NG_by_part['NG_%'].round(2).astype(str)  # Tampilkan nilai di dalam batang
-				)
-				fig.update_traces(textposition='inside')
-				fig.update_layout(
-					title='Grafik NG (%) by Part Name - LB4',
-					xaxis_title='NG_%',
-					yaxis_title='PartName',
-					yaxis=dict(categoryorder='total ascending')  # Mengatur urutan sumbu y dari terbesar ke terkecil
-				)
-				st.plotly_chart(fig)
+			# Hitung cumulative %
+			NG_by_part['Cumulative'] = NG_by_part['NG_%'].cumsum()
+			NG_by_part['Cumulative %'] = 100 * NG_by_part['Cumulative'] / NG_by_part['NG_%'].sum()
+			NG_by_part['Cumulative % Label'] = NG_by_part['Cumulative %'].round(1).astype(str) + '%'
 
-				NG_by_part = NG_by_part.map(format_with_comma)
-				st.write(NG_by_part)
+			# Buat grafik Pareto: Bar = NG_%, Line = cumulative %
+			fig = go.Figure()
+
+			# Bar chart
+			fig.add_trace(go.Bar(
+				x=NG_by_part['PartName'],
+				y=NG_by_part['NG_%'],
+				name='NG (%)',
+				marker_color="#6D9BDF",
+				yaxis='y1',
+				text=NG_by_part['NG_%'].round(2),
+				textposition='inside'
+			))
+
+			# Line chart cumulative % (dengan label di atas marker)
+			fig.add_trace(go.Scatter(
+				x=NG_by_part['PartName'],
+				y=NG_by_part['Cumulative %'],
+				name='Cumulative %',
+				yaxis='y2',
+				mode='lines+markers+text',
+				marker_color='orange',
+				line=dict(color='orange', width=3),
+				text=NG_by_part['Cumulative % Label'],
+				textposition='top center',
+				hoverinfo='text'
+			))
+
+			fig.update_layout(
+				title='Pareto Chart: NG (%) per Part Name - LB4',
+				xaxis=dict(title='PartName'),
+				yaxis=dict(
+					title='NG (%)',
+					showgrid=True,
+					zeroline=True
+				),
+				yaxis2=dict(
+					title='Cumulative %',
+					overlaying='y',
+					side='right',
+					range=[0, 110],
+					showgrid=False,
+					tickformat='.0f',
+					ticksuffix='%'
+				),
+				legend=dict(
+					orientation="h",
+					yanchor="bottom",
+					y=1.02,
+					xanchor="right",
+					x=1
+				),
+				bargap=0.2
+			)
+
+			st.plotly_chart(fig, use_container_width=True)
+
+			NG_by_part = NG_by_part.map(format_with_comma)
+			st.write(NG_by_part)
 				
 			with sinan2:	#sisi kanan Grafik Batang Vertikal by PartName R1
 			

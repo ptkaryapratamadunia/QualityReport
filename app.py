@@ -2229,13 +2229,19 @@ def cleaning_process(df):
 				# Plotting the graph
 				pt_MesinNo = pt_MesinNo.reset_index()
 				pt_MesinNo = pt_MesinNo[pt_MesinNo['M/C No.'] != 'Total']
+				# Generate a color for each unique M/C No.
+				unique_mc_no = pt_MesinNo['M/C No.'].unique()
+				colors = px.colors.qualitative.Plotly
+				color_map = {mc: colors[i % len(colors)] for i, mc in enumerate(unique_mc_no)}
+				bar_colors = pt_MesinNo['M/C No.'].map(color_map)
+
 				fig = go.Figure()
-				# Add Insp(B/H) bar trace with value inside the bar
+				# Add Insp(B/H) bar trace with value inside the bar, colored by M/C No.
 				fig.add_trace(go.Bar(
 					x=pt_MesinNo['M/C No.'],
 					y=pt_MesinNo['Insp(B/H)'],
 					name='Insp(B/H)',
-					marker_color='#60B5FF',
+					marker_color=bar_colors,
 					text=pt_MesinNo['Insp(B/H)'].apply(lambda x: f'{x:,.0f}'),
 					textposition='inside'
 				))

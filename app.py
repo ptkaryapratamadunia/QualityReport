@@ -2274,7 +2274,7 @@ def cleaning_process(df):
 						xanchor="center",
 						x=0.5   # Posisi horizontal di tengah
 					),
-					legend_title_text='by e-WeYe'
+					legend_title_text=''
 				)
 				st.plotly_chart(fig) # Display the plot
 			#endregion

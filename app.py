@@ -1469,7 +1469,7 @@ def cleaning_process(df):
 
 			#LB4
 
-			lb4_kiri, lb4_kanan = st.columns(5,gap="small") #Tabel Jenis NG (Lot) - Line Barrel 4 - All Parts
+			lb4_kiri, lb4_kanan = st.columns(2,gap="small") #Tabel Jenis NG (Lot) - Line Barrel 4 - All Parts
 			with lb4_kiri: #Tabel Jenis NG (Lot) - Line Barrel 4 - All Parts
 				df_LB4 = df[df['Line'] == 'Barrel 4']
 				# Menjumlahkan kolom-kolom yang diinginkan (lot)

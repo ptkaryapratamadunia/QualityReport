@@ -1511,32 +1511,30 @@ def cleaning_process(df):
 			st.write("Tabel Jenis NG (Lot) - Line Barrel 4 - RING Part")
 			# Filter df untuk hanya menampilkan Jenis  yang mengandung 'JK067662-0190, JK067662-0160, JK067662-0112' pada kolom 'PartName' - 11Jun2025
 			df_RingParts = df_LB4[df_LB4['PartName'].str.contains('JK067662-0190|JK067662-0160|JK067662-0112', na=False)]
+			
+			# Gabungkan kolom 'MTL/ SLipMelintir' jika ada duplikat dengan spasi berbeda
+			ng_cols = [col for col in new_columns if col in df_RingParts.columns]
+			# Cari semua variasi nama kolom 'MTL/ SLipMelintir'
+			mtl_cols = [col for col in ng_cols if col.strip().lower() == 'mtl/ slipmelintir']
+			if len(mtl_cols) > 1:
+				# Gabungkan nilainya ke kolom pertama, lalu hapus kolom duplikat
+				main_col = mtl_cols[0]
+				for col in mtl_cols[1:]:
+					df_RingParts[main_col] += df_RingParts[col]
+					df_RingParts.drop(columns=col, inplace=True)
+				# Update daftar kolom
+				ng_cols = [col for col in ng_cols if col not in mtl_cols[1:]]
+
 			# Menjumlahkan kolom-kolom yang diinginkan (lot)
-			total_row_RingParts = df_RingParts[new_columns].sum().to_frame().T
+			total_row_RingParts = df_RingParts[ng_cols].sum().to_frame().T
 			total_row_RingParts['index'] = 'Total_NG(lot)'
 			total_row_RingParts.set_index('index', inplace=True)
 			# Hanya tampilkan kolom dengan nilai > 0
 			total_row_RingParts = total_row_RingParts.loc[:, (total_row_RingParts != 0).any(axis=0)]
-			# Tambahkan kolom 'Jumlah Total' yang merupakan jumlah dari semua kolom yang tampil
+			# Tambahkan kolom 'Jumlah Total' di paling kanan dan hitung jumlah seluruh kolom data (tanpa 'Jumlah Total' itu sendiri)
 			total_row_RingParts['Jumlah Total'] = total_row_RingParts.sum(axis=1)
-
-			#MTL/ SLipMelintir Only - gabungkan ke tabel RingParts
-			# Filter df untuk hanya menampilkan PartName yang mengandung salah satu kode ring
-			df_ring_mtl = df_RingParts  # sudah terfilter ring parts
-			# Hitung total 'MTL/ SLipMelintir' (lot)
-			if 'MTL/ SLipMelintir' in df_ring_mtl.columns:
-				total_mtl = df_ring_mtl['MTL/ SLipMelintir'].sum()
-				# Jika kolom belum ada di total_row_RingParts, tambahkan
-				if 'MTL/ SLipMelintir' not in total_row_RingParts.columns:
-					total_row_RingParts['MTL/ SLipMelintir'] = 0
-				total_row_RingParts['MTL/ SLipMelintir'] = total_mtl
-			else:
-				total_row_RingParts['MTL/ SLipMelintir'] = 0
-
-			# Update 'Jumlah Total' setelah penambahan kolom
-			total_row_RingParts['Jumlah Total'] = total_row_RingParts.sum(axis=1)
-
-			# Format angka
+			cols = [col for col in total_row_RingParts.columns if col != 'Jumlah Total'] + ['Jumlah Total']
+			total_row_RingParts = total_row_RingParts[cols]
 			total_row_RingParts = total_row_RingParts.map(format_with_comma)
 			st.write(total_row_RingParts)
 

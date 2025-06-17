@@ -1092,31 +1092,67 @@ def cleaning_process(df):
 					# Sort the data by NG_% in descending order
 					barrel4_data_sorted = barrel4_data_filtered.sort_values(by='Barrel 4', ascending=False)
 
-					# Create the bar chart
-					fig = px.bar(
-						barrel4_data_sorted,
-						x='Cust.ID',
-						y='Barrel 4',
-						title='NG (%) for Barrel 4 by Customer',
-						labels={'Barrel 4': 'NG (%)', 'Cust.ID': 'Customer'},
-						color='Cust.ID',  # Different color for each customer
-						color_discrete_sequence=px.colors.qualitative.Plotly,
-						text=barrel4_data_sorted['Barrel 4'].round(2)  # Show value labels
-					)
+					# Hitung cumulative %
+					barrel4_data_sorted['Cumulative'] = barrel4_data_sorted['Barrel 4'].cumsum()
+					barrel4_data_sorted['Cumulative %'] = 100 * barrel4_data_sorted['Cumulative'] / barrel4_data_sorted['Barrel 4'].sum()
+					barrel4_data_sorted['Cumulative % Label'] = barrel4_data_sorted['Cumulative %'].round(1).astype(str) + '%'
 
-					# Customize the layout
-					fig.update_traces(
-						textposition='inside',
-						textfont=dict(color='white', size=12)
-					)
+					# Buat grafik Pareto
+					fig = go.Figure()
+
+					# Bar chart
+					fig.add_trace(go.Bar(
+						x=barrel4_data_sorted['Cust.ID'],
+						y=barrel4_data_sorted['Barrel 4'],
+						name='NG (%)',
+						marker_color="#F4E7E1",
+						yaxis='y1',
+						text=barrel4_data_sorted['Barrel 4'].round(2),
+						textposition='inside'
+					))
+
+					# Line chart cumulative % (dengan label di atas marker)
+					fig.add_trace(go.Scatter(
+						x=barrel4_data_sorted['Cust.ID'],
+						y=barrel4_data_sorted['Cumulative %'],
+						name='Cumulative %',
+						yaxis='y2',
+						mode='lines+markers+text',
+						marker_color='orange',
+						line=dict(color='orange', width=3),
+						text=barrel4_data_sorted['Cumulative % Label'],
+						textposition='top center',
+						hoverinfo='text'
+					))
+
 					fig.update_layout(
-						xaxis_title="Customer",
-						yaxis_title="NG (%)",
-						xaxis_tickangle=0
+						title='Pareto Chart: NG (%) per Customer - Barrel 4',
+						xaxis=dict(title='Customer'),
+						yaxis=dict(
+							title='NG (%)',
+							showgrid=True,
+							zeroline=True
+						),
+						yaxis2=dict(
+							title='Cumulative %',
+							overlaying='y',
+							side='right',
+							range=[0, 110],
+							showgrid=False,
+							tickformat='.0f',
+							ticksuffix='%'
+						),
+						legend=dict(
+							orientation="h",
+							yanchor="bottom",
+							y=1.02,
+							xanchor="right",
+							x=1
+						),
+						bargap=0.2
 					)
 
-					# Display the plot in Streamlit
-					st.plotly_chart(fig)
+					st.plotly_chart(fig, use_container_width=True)
 
 			with dew2: #NG (%) for Rack 1 by Customer
 			

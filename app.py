@@ -1105,7 +1105,7 @@ def cleaning_process(df):
 						x=barrel4_data_sorted['Cust.ID'],
 						y=barrel4_data_sorted['Barrel 4'],
 						name='NG (%)',
-						marker_color="#F4E7E1",
+						marker_color="#6D9BDF",
 						yaxis='y1',
 						text=barrel4_data_sorted['Barrel 4'].round(2),
 						textposition='inside'
@@ -1180,7 +1180,7 @@ def cleaning_process(df):
 						x=R1_data_sorted['Cust.ID'],
 						y=R1_data_sorted['Rack 1'],
 						name='NG (%)',
-						marker_color="#FFD0C7",
+						marker_color="#9DEC89",
 						yaxis='y1',
 						text=R1_data_sorted['Rack 1'].round(2),
 						textposition='inside'

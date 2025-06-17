@@ -1596,7 +1596,8 @@ def cleaning_process(df):
 				total_production_LR1 = format_with_comma(total_production_LR1)
 				st.write("Total Production (lot) LR1:")
 				st.markdown(f"<div style='font-size: 32px; color: orange; font-weight: bold; text-align: center;'>{total_production_LR1}</div>", unsafe_allow_html=True)
-
+				
+			st.markdown("---")
 			#tampilkan grafik batangnya -- 14Nov2024
 			barisB4, barisR1=st.columns(2)
 				

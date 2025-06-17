@@ -1428,23 +1428,23 @@ def cleaning_process(df):
 			colkir,colteng1,colteng2,colnan=st.columns(4)
 			
 			with colkir: #Tabel Qty Inspected (pcs) by Line & Kategori
-				st.write('Tabel Qty Inspected (pcs) by Line & Kat')
+				st.write('Tabel Qty Inspected (pcs)')
 				pt_kategori_line_InspPcs = pt_kategori_line_InspPcs.round(0)
 				st.write(pt_kategori_line_InspPcs)
 				
 
 			with colteng1:	#Tabel Data Qty NG (pcs) by Line & Kategori	
-				st.write('Tabel Qty NG (pcs) by Line & Kategori')
+				st.write('Tabel Qty NG (pcs) ')
 				pt_kategori_line_NGpcs = pt_kategori_line_NGpcs.round(0)
 				st.write(pt_kategori_line_NGpcs)
 		
 			with colteng2:	#Tabel Qty NG (lot) by Line & Kategori
-				st.write('Tabel Qty NG (lot) by Line & Kategori')
+				st.write('Tabel Qty NG (lot) ')
 				st.write(pt_kategori_line3)
 				
 			
 			with colnan: #Tabel Quantity Inspected (lot) by Line & Kategori
-				st.write('Tabel Qty Inspected (lot) by Line & Kategori')
+				st.write('Tabel Qty Inspected (lot)')
 				pt_kategori_line2 = pt_kategori_line2.map(format_with_comma)
 				st.write(pt_kategori_line2)
 

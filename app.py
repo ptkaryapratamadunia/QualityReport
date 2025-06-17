@@ -1920,7 +1920,7 @@ def cleaning_process(df):
 					name='Total NG (lot)',
 					marker_color="#FFD0C7",
 					yaxis='y1',
-					text=pareto_df['Total NG (lot)'].round(2).astype(int),
+					text=pareto_df['Total NG (lot)'].round(2).map(lambda x: f"{x:.2f}"),
 					textposition='inside'
 				))
 

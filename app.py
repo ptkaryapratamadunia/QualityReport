@@ -1481,7 +1481,7 @@ def cleaning_process(df):
 			st.write(total_rowB4)
 
 			st.write("Tabel Jenis NG (Lot) - Line Barrel 4 - Parts HDI")
-			# Filter df untuk hanya menampilkan Jenis  yang mengandung 'HDI' pada kolom 'Cust.ID' - 10Jun2025
+			# Filter df untuk hanya menampilkan Jenis  yang mengandung 'HDI' pada kolom 'Cust.ID' - 10Jun2025 
 			df_HDI = df_LB4[df_LB4['Cust.ID'].str.contains('HDI', na=False)]
 			# Menjumlahkan kolom-kolom yang diinginkan (lot)
 			total_row_HDI = df_HDI[new_columns].sum().to_frame().T
@@ -1519,21 +1519,26 @@ def cleaning_process(df):
 			total_row_RingParts = total_row_RingParts.loc[:, (total_row_RingParts != 0).any(axis=0)]
 			# Tambahkan kolom 'Jumlah Total' yang merupakan jumlah dari semua kolom yang tampil
 			total_row_RingParts['Jumlah Total'] = total_row_RingParts.sum(axis=1)
+
+			#MTL/ SLipMelintir Only - gabungkan ke tabel RingParts
+			# Filter df untuk hanya menampilkan PartName yang mengandung salah satu kode ring
+			df_ring_mtl = df_RingParts  # sudah terfilter ring parts
+			# Hitung total 'MTL/ SLipMelintir' (lot)
+			if 'MTL/ SLipMelintir' in df_ring_mtl.columns:
+				total_mtl = df_ring_mtl['MTL/ SLipMelintir'].sum()
+				# Jika kolom belum ada di total_row_RingParts, tambahkan
+				if 'MTL/ SLipMelintir' not in total_row_RingParts.columns:
+					total_row_RingParts['MTL/ SLipMelintir'] = 0
+				total_row_RingParts['MTL/ SLipMelintir'] = total_mtl
+			else:
+				total_row_RingParts['MTL/ SLipMelintir'] = 0
+
+			# Update 'Jumlah Total' setelah penambahan kolom
+			total_row_RingParts['Jumlah Total'] = total_row_RingParts.sum(axis=1)
+
+			# Format angka
 			total_row_RingParts = total_row_RingParts.map(format_with_comma)
 			st.write(total_row_RingParts)
-
-			#MTL/ SLipMelintir Only Pivot Table
-			# Filter df untuk hanya menampilkan PartName yang mengandung salah satu kode ring
-			df_ring_mtl = df[df['PartName'].str.contains('JK067662-0190|JK067662-0160|JK067662-0112', na=False)]
-			# Hitung total 'MTL/ SLipMelintir' (lot)
-			total_mtl = df_ring_mtl['MTL/ SLipMelintir'].sum()
-			# Buat pivot table dengan index 'Total_NG(lot)'
-			pivot_mtl = pd.DataFrame({'MTL/ SLipMelintir': [total_mtl]}, index=['Total_NG(lot)'])
-			pivot_mtl = pivot_mtl.map(format_with_comma)
-			st.write("Pivot Table MTL/ SLipMelintir (Lot) - Ring Parts")
-			st.write(pivot_mtl)
-
-			
 
 			#LR1
 			df_LR1 = df[df['Line'] == 'Rack 1']

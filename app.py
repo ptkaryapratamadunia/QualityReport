@@ -1512,18 +1512,26 @@ def cleaning_process(df):
 			# Filter df untuk hanya menampilkan Jenis  yang mengandung 'JK067662-0190, JK067662-0160, JK067662-0112' pada kolom 'PartName' - 11Jun2025
 			df_RingParts = df_LB4[df_LB4['PartName'].str.contains('JK067662-0190|JK067662-0160|JK067662-0112', na=False)]
 			
-			# Gabungkan kolom 'MTL/ SLipMelintir' jika ada duplikat dengan spasi berbeda
-			ng_cols = [col for col in new_columns if col in df_RingParts.columns]
-			# Cari semua variasi nama kolom 'MTL/ SLipMelintir'
-			mtl_cols = [col for col in ng_cols if col.strip().lower() == 'mtl/ slipmelintir']
-			if len(mtl_cols) > 1:
-				# Gabungkan nilainya ke kolom pertama, lalu hapus kolom duplikat
-				main_col = mtl_cols[0]
-				for col in mtl_cols[1:]:
+			# Gabungkan semua variasi kolom 'MTL/ SLipMelintir' (dengan spasi berbeda) menjadi satu kolom
+			# Temukan semua variasi nama kolom 'MTL/ SLipMelintir' (case-insensitive, strip spasi)
+			mtl_variants = [col for col in df_RingParts.columns if col.strip().lower() == 'mtl/ slipmelintir']
+			if len(mtl_variants) > 1:
+				# Gabungkan semua nilai ke kolom pertama, lalu hapus kolom duplikat
+				main_col = mtl_variants[0]
+				for col in mtl_variants[1:]:
 					df_RingParts[main_col] += df_RingParts[col]
 					df_RingParts.drop(columns=col, inplace=True)
-				# Update daftar kolom
-				ng_cols = [col for col in ng_cols if col not in mtl_cols[1:]]
+			elif len(mtl_variants) == 0:
+				# Jika tidak ada, tambahkan kolom dengan nilai 0 agar tetap muncul di tabel
+				df_RingParts['MTL/ SLipMelintir'] = 0
+				main_col = 'MTL/ SLipMelintir'
+			else:
+				main_col = mtl_variants[0]
+
+			# Pastikan kolom 'MTL/ SLipMelintir' ada di new_columns dan urutan kolom sesuai new_columns
+			ng_cols = [col for col in new_columns if col in df_RingParts.columns]
+			if main_col not in ng_cols:
+				ng_cols.append(main_col)
 
 			# Menjumlahkan kolom-kolom yang diinginkan (lot)
 			total_row_RingParts = df_RingParts[ng_cols].sum().to_frame().T

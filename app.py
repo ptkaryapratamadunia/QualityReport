@@ -1467,18 +1467,26 @@ def cleaning_process(df):
 			]
 
 			#LB4
-			df_LB4 = df[df['Line'] == 'Barrel 4']
-			# Menjumlahkan kolom-kolom yang diinginkan (lot)
-			total_rowB4 = df_LB4[new_columns].sum().to_frame().T
-			total_rowB4['index'] = 'Total_NG(lot)'
-			total_rowB4.set_index('index', inplace=True)
-			# Hanya tampilkan kolom dengan nilai > 0
-			total_rowB4 = total_rowB4.loc[:, (total_rowB4 != 0).any(axis=0)]
-			# Tambahkan kolom 'Jumlah Total' yang merupakan jumlah dari semua kolom yang tampil
-			total_rowB4['Jumlah Total'] = total_rowB4.sum(axis=1)
-			total_rowB4 = total_rowB4.map(format_with_comma)
-			st.write("Tabel Jenis NG (Lot) - Line Barrel 4 - All Parts")
-			st.write(total_rowB4)
+
+			lb4_kiri, lb4_kanan = st.columns(4,1)
+			with lb4_kiri: #Tabel Jenis NG (Lot) - Line Barrel 4 - All Parts
+				df_LB4 = df[df['Line'] == 'Barrel 4']
+				# Menjumlahkan kolom-kolom yang diinginkan (lot)
+				total_rowB4 = df_LB4[new_columns].sum().to_frame().T
+				total_rowB4['index'] = 'Total_NG(lot)'
+				total_rowB4.set_index('index', inplace=True)
+				# Hanya tampilkan kolom dengan nilai > 0
+				total_rowB4 = total_rowB4.loc[:, (total_rowB4 != 0).any(axis=0)]
+				# Tambahkan kolom 'Jumlah Total' yang merupakan jumlah dari semua kolom yang tampil
+				total_rowB4['Jumlah Total'] = total_rowB4.sum(axis=1)
+				total_rowB4 = total_rowB4.map(format_with_comma)
+				st.write("Tabel Jenis NG (Lot) - Line Barrel 4 - All Parts")
+				st.write(total_rowB4)
+			with lb4_kanan: #Tabel Qty Inspected (lot) - Line Barrel 4
+				#Total Production (lot) Line Barrel 4
+				total_production_B4 = df_LB4['Insp(B/H)'].sum()
+				total_production_B4 = format_with_comma(total_production_B4)
+				st.write(f"Total Production (lot) Line Barrel 4: {total_production_B4}")
 
 			st.write("Tabel Jenis NG (Lot) - Line Barrel 4 - Parts HDI")
 			# Filter df untuk hanya menampilkan Jenis  yang mengandung 'HDI' pada kolom 'Cust.ID' - 10Jun2025 

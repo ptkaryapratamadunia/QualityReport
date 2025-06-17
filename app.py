@@ -2061,7 +2061,7 @@ def cleaning_process(df):
 					x=NG_by_part['PartName'],
 					y=NG_by_part['NG_%'],
 					name='NG (%)',
-					marker_color="#78E4DB",
+					marker_color="#78E4C0",
 					yaxis='y1',
 					text=NG_by_part['NG_%'].round(2),
 					textposition='inside'
@@ -2141,7 +2141,7 @@ def cleaning_process(df):
 					x=NGpersenR1_by_part['PartName'],
 					y=NGpersenR1_by_part['NG_%'],
 					name='NG (%)',
-					marker_color="#E49A78",
+					marker_color="#B483EB",
 					yaxis='y1',
 					text=NGpersenR1_by_part['NG_%'].round(2),
 					textposition='inside'

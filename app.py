@@ -1269,7 +1269,7 @@ def cleaning_process(df):
 					x=NG_by_custid['Cust.ID'],
 					y=NG_by_custid['NG(B/H)'],
 					name='Qty NG (Lot)',
-					marker_color='#725CAD',
+					marker_color="#7F70AA",
 					yaxis='y1',
 					text=NG_by_custid['NG(B/H)'].round(2),
 					textposition='inside'
@@ -1319,33 +1319,78 @@ def cleaning_process(df):
 				st.plotly_chart(fig, use_container_width=True)
 			#Grafik NG(lot) by Cust.ID Blue Rack 1
 			with sinan:
-				df_byLineR1=df[df['Line']=='Rack 1']
-				df_byLineR1=df_byLineR1[df_byLineR1['NG(B/H)']>0]
+				df_byLineR1 = df[df['Line'] == 'Rack 1']
+				df_byLineR1 = df_byLineR1[df_byLineR1['NG(B/H)'] > 0]
 
-				NG_by_Cust=(
-						df_byLineR1[["Cust.ID","NG(B/H)"]]
-						.groupby(by="Cust.ID")
-						.sum()
-						.sort_values(by="NG(B/H)",ascending=False)
-						.reset_index()
+				NG_by_Cust = (
+					df_byLineR1[["Cust.ID", "NG(B/H)"]]
+					.groupby(by="Cust.ID")
+					.sum()
+					.sort_values(by="NG(B/H)", ascending=False)
+					.reset_index()
 				)
-				
-				# Buat grafik batang interaktif dengan nilai di dalam batang
-				fig = go.Figure(data=go.Bar(
+
+				# Hitung cumulative %
+				NG_by_Cust['Cumulative'] = NG_by_Cust['NG(B/H)'].cumsum()
+				NG_by_Cust['Cumulative %'] = 100 * NG_by_Cust['Cumulative'] / NG_by_Cust['NG(B/H)'].sum()
+				NG_by_Cust['Cumulative % Label'] = NG_by_Cust['Cumulative %'].round(1).astype(str) + '%'
+
+				# Buat grafik Pareto
+				fig = go.Figure()
+
+				# Bar chart
+				fig.add_trace(go.Bar(
 					x=NG_by_Cust['Cust.ID'],
 					y=NG_by_Cust['NG(B/H)'],
-					marker_color='#0B1D51',
-					text=NG_by_Cust['NG(B/H)'].round(2).astype(str),  # Tampilkan nilai di dalam batang
-					textposition='inside'  # Posisi teks di dalam batang
+					name='Qty NG (Lot)',
+					marker_color="#0B1D51",
+					yaxis='y1',
+					text=NG_by_Cust['NG(B/H)'].round(2),
+					textposition='inside'
+				))
+
+				# Line chart cumulative % (dengan label di atas marker)
+				fig.add_trace(go.Scatter(
+					x=NG_by_Cust['Cust.ID'],
+					y=NG_by_Cust['Cumulative %'],
+					name='Cumulative %',
+					yaxis='y2',
+					mode='lines+markers+text',
+					marker_color='orange',
+					line=dict(color='orange', width=3),
+					text=NG_by_Cust['Cumulative % Label'],
+					textposition='top center',
+					hoverinfo='text'
 				))
 
 				fig.update_layout(
-					title="Grafik Qty NG(lot) by Cust.ID - Rack 1",
-					xaxis_title='Cust.ID',
-					yaxis_title='Qty NG (Lot)'
+					title='Pareto Chart: Qty NG (lot) per Cust.ID - Rack 1',
+					xaxis=dict(title='Cust.ID'),
+					yaxis=dict(
+						title='Qty NG (Lot)',
+						showgrid=True,
+						zeroline=True
+					),
+					yaxis2=dict(
+						title='Cumulative %',
+						overlaying='y',
+						side='right',
+						range=[0, 110],
+						showgrid=False,
+						tickformat='.0f',
+						ticksuffix='%'
+					),
+					legend=dict(
+						orientation="h",
+						yanchor="bottom",
+						y=1.02,
+						xanchor="right",
+						x=1
+					),
+					bargap=0.2
 				)
 
-				st.plotly_chart(fig)
+				st.plotly_chart(fig, use_container_width=True)
 
 			st.markdown("---")
 

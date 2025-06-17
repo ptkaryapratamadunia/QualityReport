@@ -2035,7 +2035,7 @@ def cleaning_process(df):
 			#kolom lagi untuk grafik NG by Part Name B4 dan R1 only
 			sikir2,sinan2=st.columns(2)
 			
-			with sikir2:	#sisi kiri Grafik Batang Vertikal by PartName B4
+			with sikir2:	#sisi kiri Grafik Batang Vertikal by PartName B4 Pareto 17Jun2025
 				df_byLine = df[df['Line'] == 'Barrel 4']
 
 				NG_by_part = (
@@ -2061,7 +2061,7 @@ def cleaning_process(df):
 					x=NG_by_part['PartName'],
 					y=NG_by_part['NG_%'],
 					name='NG (%)',
-					marker_color="#6D9BDF",
+					marker_color="#78E4DB",
 					yaxis='y1',
 					text=NG_by_part['NG_%'].round(2),
 					textposition='inside'
@@ -2118,33 +2118,77 @@ def cleaning_process(df):
 				#filter df hanya yg tampil sesuai Line yg dipilih
 				df_byLine=df[df['Line']=='Rack 1']
 
-				NGpersenR1_by_part=(
-				df_byLine[["PartName","NG_%"]]
-				.groupby(by="PartName")
-				.mean()
-				.sort_values(by="NG_%",ascending=False)
-				.reset_index()
+				NGpersenR1_by_part = (
+					df_byLine[["PartName", "NG_%"]]
+					.groupby(by="PartName")
+					.mean()
+					.sort_values(by="NG_%", ascending=False)
+					.reset_index()
 				)
-				# Filter nilai yang lebih besar dari 0 
+				# Filter nilai yang lebih besar dari 2
 				NGpersenR1_by_part = NGpersenR1_by_part[NGpersenR1_by_part['NG_%'] > 2]
 
-				# Buat grafik batang dengan Plotly, tampilkan nilai di dalam batang
-				fig = px.bar(
-					NGpersenR1_by_part,
-					x="NG_%",
-					y='PartName',
-					color="NG_%",
-					barmode="group",
-					text=NGpersenR1_by_part['NG_%'].round(2).astype(str)  # Tampilkan nilai di dalam batang
-				)
-				fig.update_traces(textposition='inside')
+				# Hitung cumulative %
+				NGpersenR1_by_part['Cumulative'] = NGpersenR1_by_part['NG_%'].cumsum()
+				NGpersenR1_by_part['Cumulative %'] = 100 * NGpersenR1_by_part['Cumulative'] / NGpersenR1_by_part['NG_%'].sum()
+				NGpersenR1_by_part['Cumulative % Label'] = NGpersenR1_by_part['Cumulative %'].round(1).astype(str) + '%'
+
+				# Buat grafik Pareto: Bar = NG_%, Line = cumulative %
+				fig = go.Figure()
+
+				# Bar chart
+				fig.add_trace(go.Bar(
+					x=NGpersenR1_by_part['PartName'],
+					y=NGpersenR1_by_part['NG_%'],
+					name='NG (%)',
+					marker_color="#78E4DB",
+					yaxis='y1',
+					text=NGpersenR1_by_part['NG_%'].round(2),
+					textposition='inside'
+				))
+
+				# Line chart cumulative % (dengan label di atas marker)
+				fig.add_trace(go.Scatter(
+					x=NGpersenR1_by_part['PartName'],
+					y=NGpersenR1_by_part['Cumulative %'],
+					name='Cumulative %',
+					yaxis='y2',
+					mode='lines+markers+text',
+					marker_color='orange',
+					line=dict(color='orange', width=3),
+					text=NGpersenR1_by_part['Cumulative % Label'],
+					textposition='top center',
+					hoverinfo='text'
+				))
+
 				fig.update_layout(
-					title='Grafik NG (%) by Part Name - LR1',
-					xaxis_title='NG (%)',
-					yaxis_title='PartName',
-					yaxis=dict(categoryorder='total ascending')  # Mengatur urutan sumbu y dari terbesar ke terkecil
+					title='Pareto Chart: NG (%) per Part Name - LR1',
+					xaxis=dict(title='PartName'),
+					yaxis=dict(
+						title='NG (%)',
+						showgrid=True,
+						zeroline=True
+					),
+					yaxis2=dict(
+						title='Cumulative %',
+						overlaying='y',
+						side='right',
+						range=[0, 110],
+						showgrid=False,
+						tickformat='.0f',
+						ticksuffix='%'
+					),
+					legend=dict(
+						orientation="h",
+						yanchor="bottom",
+						y=1.02,
+						xanchor="right",
+						x=1
+					),
+					bargap=0.2
 				)
-				st.plotly_chart(fig)
+
+				st.plotly_chart(fig, use_container_width=True)
 
 				NGpersenR1_by_part = NGpersenR1_by_part.map(format_with_comma)
 				st.write(NGpersenR1_by_part)

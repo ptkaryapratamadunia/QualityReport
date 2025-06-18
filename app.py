@@ -1242,8 +1242,8 @@ def cleaning_process(df):
 			
 
 			sikir,sinan=st.columns(2)
-			#Grafik kolom Qty NG(lot) B4 by Cust.ID Ungu 09Jun25 show value inside bar
-			with sikir:
+			
+			with sikir: #Grafik kolom Qty NG(lot) B4 by Cust.ID Ungu 09Jun25 show value inside bar
 			
 				df_byLine = df[df['Line'] == 'Barrel 4']
 				df_byLine = df_byLine[df_byLine['NG(B/H)'] > 0]
@@ -1317,8 +1317,8 @@ def cleaning_process(df):
 				)
 
 				st.plotly_chart(fig, use_container_width=True)
-			#Grafik NG(lot) by Cust.ID Blue Rack 1
-			with sinan:
+			
+			with sinan:#Grafik NG(lot) by Cust.ID Blue Rack 1
 				df_byLineR1 = df[df['Line'] == 'Rack 1']
 				df_byLineR1 = df_byLineR1[df_byLineR1['NG(B/H)'] > 0]
 

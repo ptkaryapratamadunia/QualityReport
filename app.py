@@ -1606,7 +1606,7 @@ def cleaning_process(df):
 			
 			with colnan: #Tabel Quantity Inspected (lot) by Line & Kategori
 				st.write('Tabel Qty Inspected (lot)')
-				pt_kategori_line2 = pt_kategori_line2.map(format_with_comma)
+				# pt_kategori_line2 = pt_kategori_line2.map(format_with_comma)
 				st.write(pt_kategori_line2)
 
 		#endregion : kolom	untuk tabel BY Line & Kategori	

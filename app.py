@@ -269,7 +269,7 @@ def header():
 
 def format_with_comma(value):
 	if isinstance(value, (int, float)):
-		return "{:,.2f}".format(value)
+		return "{:,.4f}".format(value)
 	return value
 
 def show_footer():
@@ -2311,7 +2311,7 @@ def cleaning_process(df):
 
 			st.write(f" Tabel Data Harian untuk Line: {selected_line}")
 			# Tampilkan tabel data harian
-			with st.expander("Klik untuk melihat TabelData Harian", expanded=False):
+			with st.expander("Klik untuk melihat Tabel Data Harian", expanded=False):
 				st.write(daily_plot)
 			# st.write(daily_plot.set_index('Date').transpose())
 

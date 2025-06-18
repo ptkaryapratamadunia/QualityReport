@@ -1647,9 +1647,10 @@ def cleaning_process(df):
 			with lb4_kanan:  # Tabel Qty Inspected (lot) - Line Barrel 4
 				# Total Production (lot) Line Barrel 4
 				total_production_B4 = df_LB4['Insp(B/H)'].sum()
-				total_production_B4 = format_with_comma(total_production_B4)
+				# total_production_B4 = format_with_comma(total_production_B4)
 				st.write("Total Inspected (lot) LB 4:")
 				st.markdown(f"<div style='font-size: 32px; color: orange; font-weight: bold; text-align: center;'>{total_production_B4}</div>", unsafe_allow_html=True)
+				st.markdown("---")
 
 			# Tabel Jenis NG (Lot) - Line Barrel 4 - Parts HDI
 			lb4_hdi_kiri, lb4_hdi_kanan = st.columns([4, 1])

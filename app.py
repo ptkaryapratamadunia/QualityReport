@@ -2025,16 +2025,10 @@ def cleaning_process(df):
 				.reset_index()
 				)
 
-				# Buat grafik batang dengan Plotly
-				# fig = px.bar(NG_by_part, x='NG_%', y='PartName', color='NG_%',barmode="relative")
-				# fig.update_layout(title='Grafik NG (%) by Part Name - LB4',
-				# 				xaxis_title='NG_%',
-				# 				yaxis_title='PartName')
-				# st.plotly_chart(fig)
-
 				# List_Qty_R1 = List_Qty_R1.map(format_with_comma)
 				st.write("Tabel Qty (pcs) by Part Name Line Rack 1")
-				st.write(List_Qty_R1)
+				with st.expander("KLik untuk melihat Tabel Qty (pcs) by Part Name Line Rack 1", expanded=True):
+					st.write(List_Qty_R1)
 
 			#kolom lagi untuk grafik NG by Part Name B4 dan R1 only
 			sikir2,sinan2=st.columns(2)

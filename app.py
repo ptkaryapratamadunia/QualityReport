@@ -1999,7 +1999,7 @@ def cleaning_process(df):
 				# 				yaxis_title='PartName')
 				# st.plotly_chart(fig)
 
-				List_Qty_B4 = List_Qty_B4.map(format_with_comma)
+				# List_Qty_B4 = List_Qty_B4.map(format_with_comma)
 				st.write("Tabel Qty (pcs) by Part Name Line Barrel 4")
 				st.write(List_Qty_B4)
 				

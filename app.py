@@ -1978,8 +1978,8 @@ def cleaning_process(df):
 			#---------
 			#kolom lagi untuk Tabel Qty OK NG (pcs) by PartName
 			kolomkiri,kolomkanan=st.columns(2)
-			#Qty (pcs) B4
-			with kolomkiri:
+			
+			with kolomkiri:#Qty (pcs) B4
 
 				#filter df hanya yg tampil sesuai Line yg dipilih
 				df_byLine=df[df['Line']=='Barrel 4']
@@ -1992,16 +1992,10 @@ def cleaning_process(df):
 				.reset_index()
 				)
 
-				# Buat grafik batang dengan Plotly
-				# fig = px.bar(NG_by_part, x='NG_%', y='PartName', color='NG_%',barmode="relative")
-				# fig.update_layout(title='Grafik NG (%) by Part Name - LB4',
-				# 				xaxis_title='NG_%',
-				# 				yaxis_title='PartName')
-				# st.plotly_chart(fig)
-
 				# List_Qty_B4 = List_Qty_B4.map(format_with_comma)
 				st.write("Tabel Qty (pcs) by Part Name Line Barrel 4")
-				st.write(List_Qty_B4)
+				with st.expander("KLik untuk melihat Tabel Qty (pcs) by Part Name Line Barrel 4", expanded=False):
+					st.write(List_Qty_B4)
 				
 				# # Buat grafik batang interaktif
 				# fig = go.Figure(data=go.Bar(x=NG_by_part['PartName'], y=NG_by_part['NG_%'],
@@ -2012,8 +2006,8 @@ def cleaning_process(df):
 				# 				yaxis_title='NG_%')
 
 				# st.plotly_chart(fig)
-			#Qty (pcs) R1
-			with kolomkanan:
+			
+			with kolomkanan:#Qty (pcs) R1
 
 				df_byLine=df[df['Line']=='Rack 1']
 
@@ -2027,7 +2021,7 @@ def cleaning_process(df):
 
 				# List_Qty_R1 = List_Qty_R1.map(format_with_comma)
 				st.write("Tabel Qty (pcs) by Part Name Line Rack 1")
-				with st.expander("KLik untuk melihat Tabel Qty (pcs) by Part Name Line Rack 1", expanded=True):
+				with st.expander("KLik untuk melihat Tabel Qty (pcs) by Part Name Line Rack 1", expanded=False):
 					st.write(List_Qty_R1)
 
 			#kolom lagi untuk grafik NG by Part Name B4 dan R1 only

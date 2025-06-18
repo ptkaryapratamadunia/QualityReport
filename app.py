@@ -1673,6 +1673,7 @@ def cleaning_process(df):
 				# total_production_HDI = format_with_comma(total_production_HDI)
 				st.write("Total Inspected (lot) HDI:")
 				st.markdown(f"<div style='font-size: 32px; color: orange; font-weight: bold; text-align: center;'>{total_production_HDI}</div>", unsafe_allow_html=True)
+				st.markdown("---")
 
 			# Tabel Jenis NG (Lot) - Line Barrel 4 - Small Parts
 			lb4_smp_kiri, lb4_smp_kanan = st.columns([4, 1])
@@ -1695,6 +1696,7 @@ def cleaning_process(df):
 				# total_production_SMP = format_with_comma(total_production_SMP)
 				st.write("Total Inspected (lot) SMP:")
 				st.markdown(f"<div style='font-size: 32px; color: orange; font-weight: bold; text-align: center;'>{total_production_SMP}</div>", unsafe_allow_html=True)
+				st.markdown("---")
 
 			# Tabel Jenis NG (Lot) - Line Barrel 4 - RING Part
 			lb4_ring_kiri, lb4_ring_kanan = st.columns([4, 1])
@@ -1737,6 +1739,7 @@ def cleaning_process(df):
 				# total_production_Ring = format_with_comma(total_production_Ring)
 				st.write("Total Inspected (lot) RING:")
 				st.markdown(f"<div style='font-size: 32px; color: orange; font-weight: bold; text-align: center;'>{total_production_Ring}</div>", unsafe_allow_html=True)
+				st.markdown("---")
 
 			#LR1
 			lr1_kiri, lr1_kanan = st.columns([4, 1])

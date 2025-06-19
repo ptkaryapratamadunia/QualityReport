@@ -1409,7 +1409,7 @@ def cleaning_process(df):
 			with st.expander("Klik untuk melihat Tabel Qty Inspected (lot) by Line & Customer", expanded=False):
 				st.write(pt_customer_line2_tranposed)
 
-			st.markdown("---")
+			
 			# ---------------------------------------
 			# Membuat tabel pivot NG by Kategori and LINE---------------
 
@@ -1509,6 +1509,7 @@ def cleaning_process(df):
 
 					st.plotly_chart(fig)
 
+			st.markdown("---")
 			# Terapkan format ke seluruh pivot table
 			pt_kategori_line = pt_kategori_line.map(format_with_comma)	
 			pt_kategori_line3 = pt_kategori_line3.map(format_with_comma)	

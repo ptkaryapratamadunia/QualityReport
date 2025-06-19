@@ -716,7 +716,7 @@ def cleaning_process(df):
 				avg_dict = {'Date': 'TotAverage'}
 				for col in cols_to_check:
 					if col in ng_bulanan.columns:
-						avg_dict[col] = ng_bulanan[col].mean(skipna=True)
+						avg_dict[col] = f"{ng_bulanan[col].mean(skipna=True):.2f}" if pd.notnull(ng_bulanan[col].mean(skipna=True)) else ""
 				if len(avg_dict) > 1:
 					ng_bulanan = pd.concat([ng_bulanan, pd.DataFrame([avg_dict])], ignore_index=True)
 
@@ -2104,8 +2104,9 @@ def cleaning_process(df):
 
 				st.plotly_chart(fig, use_container_width=True)
 
-				NG_by_part = NG_by_part.map(format_with_comma)
-				st.write(NG_by_part)
+				with st.expander("KLik untuk melihat Tabel NG (%) by Part Name Line Barrel 4", expanded=False):
+					NG_by_part = NG_by_part.map(format_with_comma)
+					st.write(NG_by_part)
 				
 			with sinan2:	#sisi kanan Grafik Batang Vertikal by PartName R1
 			
@@ -2184,8 +2185,9 @@ def cleaning_process(df):
 
 				st.plotly_chart(fig, use_container_width=True)
 
-				NGpersenR1_by_part = NGpersenR1_by_part.map(format_with_comma)
-				st.write(NGpersenR1_by_part)
+				with st.expander("KLik untuk melihat Tabel NG (%) by Part Name Line Rack 1", expanded=False):
+					NGpersenR1_by_part = NGpersenR1_by_part.map(format_with_comma)
+					st.write(NGpersenR1_by_part)
 
 			#-------------------------------------------------------
 

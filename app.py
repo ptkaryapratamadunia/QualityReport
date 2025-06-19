@@ -1022,6 +1022,8 @@ def cleaning_process(df):
 					st.warning('Data Line Rack 1 tidak tersedia')
 
 			#grafik PIE ----------------------
+			st.markdown("---")
+			DateRange(df3)
 
 			pie_kiri,pie_kanan=st.columns(2)
 

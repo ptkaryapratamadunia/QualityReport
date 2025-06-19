@@ -1406,7 +1406,8 @@ def cleaning_process(df):
 
 			st.write('Qty Inspected (lot) by Line & Customer')
 			pt_customer_line2_tranposed=pt_customer_line2.transpose()
-			st.write(pt_customer_line2_tranposed)
+			with st.expander("Klik untuk melihat Tabel Qty Inspected (lot) by Line & Customer", expanded=False):
+				st.write(pt_customer_line2_tranposed)
 
 			st.markdown("---")
 			# ---------------------------------------

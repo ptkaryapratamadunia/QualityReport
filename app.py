@@ -1772,6 +1772,8 @@ def cleaning_process(df):
 				st.markdown(f"<div style='font-size: 32px; color: orange; font-weight: bold; text-align: center;'>{total_production_LR1}</div>", unsafe_allow_html=True)
 
 			st.markdown("---")
+
+			dateRange(df3)
 			#tampilkan grafik batangnya -- 14Nov2024
 			barisB4, barisR1=st.columns(2)
 				

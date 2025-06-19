@@ -1773,7 +1773,7 @@ def cleaning_process(df):
 
 			st.markdown("---")
 
-			dateRange(df3)
+			DateRange(df3)	
 			#tampilkan grafik batangnya -- 14Nov2024
 			barisB4, barisR1=st.columns(2)
 				

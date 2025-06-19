@@ -1230,6 +1230,7 @@ def cleaning_process(df):
 
 					st.plotly_chart(fig, use_container_width=True)
 
+			st.markdown("---")
 			#--------- pivot Qty NG (lot) by Line dan Customer
 			pt_customer_line2=pd.pivot_table(df,values='NG(B/H)',index='Cust.ID',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
 			# Bulatkan nilai-nilai ke angka bulat terdekat
@@ -1239,7 +1240,7 @@ def cleaning_process(df):
 			pt_customer_line2_tranposed=pt_customer_line2.transpose()
 			st.write(pt_customer_line2_tranposed)
 
-			st.markdown("---")
+			
 			
 
 			sikir,sinan=st.columns(2)

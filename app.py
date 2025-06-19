@@ -1076,7 +1076,8 @@ def cleaning_process(df):
 			# Round the values to 2 decimal places
 			pt_customer_line = pt_customer_line.round(2)
 			pt_customer_line_transposed = pt_customer_line.transpose()
-			st.write(pt_customer_line_transposed)
+			with st.expander("Klik untuk melihat Tabel NG (%) by Line & Customer", expanded=False):				
+				st.write(pt_customer_line_transposed)
 
 			dew1, dew2=st.columns(2)
 			with dew1: #NG (%) for Barrel 4 by Customer-change to pareto chart 17Jun2025

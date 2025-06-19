@@ -2035,7 +2035,7 @@ def cleaning_process(df):
 				with st.expander("KLik untuk melihat Tabel Qty (pcs) by Part Name Line Rack 1", expanded=False):
 					st.write(List_Qty_R1)
 
-			DateRange(df3)	
+				
 			#kolom lagi untuk grafik NG by Part Name B4 dan R1 only
 			sikir2,sinan2=st.columns(2)
 			

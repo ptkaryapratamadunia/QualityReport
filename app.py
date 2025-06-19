@@ -1767,7 +1767,7 @@ def cleaning_process(df):
 				st.write(total_row)
 			with lr1_kanan:
 				total_production_LR1 = df_LR1['Insp(B/H)'].sum()
-				# total_production_LR1 = format_with_comma(total_production_LR1)
+				total_production_LR1 = format_with_comma(total_production_LR1)
 				st.write("Total Inspected (lot) LR1:")
 				st.markdown(f"<div style='font-size: 32px; color: orange; font-weight: bold; text-align: center;'>{total_production_LR1}</div>", unsafe_allow_html=True)
 

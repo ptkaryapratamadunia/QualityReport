@@ -802,7 +802,7 @@ def cleaning_process(df):
 				
 			
 			st.markdown("---")
-
+			DateRange(df3)
 			#Grafik area
 			grafik_kiri,grafik_kanan=st.columns(2)
 

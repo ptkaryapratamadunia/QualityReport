@@ -1623,7 +1623,7 @@ def cleaning_process(df):
 			
 			with colnan: #Tabel Quantity Inspected (lot) by Line & Kategori
 				st.write('Tabel Qty Inspected (lot)')
-				# pt_kategori_line2 = pt_kategori_line2.map(format_with_comma)
+				pt_kategori_line2 = pt_kategori_line2.map(format_with_comma2)
 				st.write(pt_kategori_line2)
 
 		#endregion : kolom	untuk tabel BY Line & Kategori	
@@ -2303,7 +2303,7 @@ def cleaning_process(df):
 					pt_MesinNo = pd.concat([pt_MesinNo, pd.DataFrame([total_row])], ignore_index=True)
 
 				pt_MesinNo_transposed = pt_MesinNo.set_index('M/C No.').transpose()
-				pt_MesinNo_transposed = pt_MesinNo_transposed.round(2).map(format_with_comma)
+				pt_MesinNo_transposed = pt_MesinNo_transposed.round(2).map(format_with_comma2)
 				st.dataframe(pt_MesinNo_transposed)
 			#endregion
 			#--------------------------------------

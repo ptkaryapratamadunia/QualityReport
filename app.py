@@ -2291,7 +2291,16 @@ def cleaning_process(df):
 				st.plotly_chart(fig) # Display the plot
 
 				st.write('Tabel NG (%) by M/C No. Stamping')
-				pt_MesinNo_transposed = pt_MesinNo.transpose()
+				# Tambahkan baris Total jika belum ada
+				if 'Total' not in pt_MesinNo['M/C No.'].values:
+					total_row = {
+						'M/C No.': 'Total',
+						'NG_%': pt_MesinNo['NG_%'].mean(),
+						'Insp(B/H)': pt_MesinNo['Insp(B/H)'].sum()
+					}
+					pt_MesinNo = pd.concat([pt_MesinNo, pd.DataFrame([total_row])], ignore_index=True)
+
+				pt_MesinNo_transposed = pt_MesinNo.set_index('M/C No.').transpose()
 				pt_MesinNo_transposed = pt_MesinNo_transposed.round(2).map(format_with_comma)
 				st.dataframe(pt_MesinNo_transposed, use_container_width=True)
 			#endregion

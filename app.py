@@ -1779,7 +1779,7 @@ def cleaning_process(df):
 
 			st.markdown("---")
 
-			DateRange(df3)	
+			DateRange(df3)
 			#tampilkan grafik batangnya -- 14Nov2024
 			barisB4, barisR1=st.columns(2)
 				
@@ -1882,7 +1882,7 @@ def cleaning_process(df):
 					),
 					bargap=0.2
 				)
-				DateRange(df3)
+				
 				st.plotly_chart(fig, use_container_width=True)
 			
 			with barisR1:	#baris kanan Grafik Vertical Bar R1 PARETO

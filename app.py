@@ -1993,7 +1993,7 @@ def cleaning_process(df):
 				st.plotly_chart(fig, use_container_width=True)
 
 			st.markdown("---")
-			
+			DateRange(df3)
 			
 			#kolom lagi untuk grafik NG by Part Name B4 dan R1 only
 			sikir2,sinan2=st.columns(2)

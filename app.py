@@ -3,7 +3,6 @@
 # 08 Oct 2024 start deploy : qualityreportkpd.streamlit.app atau s.id/kpdqualitydatacleaner
 
 from math import exp
-from operator import index
 from re import X
 from typing import Text
 from unicodedata import category

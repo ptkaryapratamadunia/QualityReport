@@ -3,6 +3,7 @@
 # 08 Oct 2024 start deploy : qualityreportkpd.streamlit.app atau s.id/kpdqualitydatacleaner
 
 from math import exp
+from operator import index
 from re import X
 from typing import Text
 from unicodedata import category
@@ -2293,7 +2294,7 @@ def cleaning_process(df):
 				st.write('Tabel NG (%) by M/C No. Stamping')
 				pt_MesinNo_transposed = pt_MesinNo.transpose() # Transpose the pivot table
 				pt_MesinNo_transposed = pt_MesinNo_transposed.round(2).map(format_with_comma) # Format the values
-				st.write(pt_MesinNo_transposed)
+				st.write(pt_MesinNo_transposed,index=False) # Display the transposed table without index
 			#endregion
 			#--------------------------------------
 

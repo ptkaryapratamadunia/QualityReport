@@ -1882,7 +1882,7 @@ def cleaning_process(df):
 					),
 					bargap=0.2
 				)
-
+				DateRange(df3)
 				st.plotly_chart(fig, use_container_width=True)
 			
 			with barisR1:	#baris kanan Grafik Vertical Bar R1 PARETO
@@ -1992,7 +1992,7 @@ def cleaning_process(df):
 			#-------------------------------------------------------
 			#---------added 24Mar2025
 			DateRange(df3)
-			#---------
+			
 			#kolom lagi untuk Tabel Qty OK NG (pcs) by PartName
 			kolomkiri,kolomkanan=st.columns(2)
 			
@@ -2041,7 +2041,7 @@ def cleaning_process(df):
 				with st.expander("KLik untuk melihat Tabel Qty (pcs) by Part Name Line Rack 1", expanded=False):
 					st.write(List_Qty_R1)
 
-			DateRange(df3)	
+			
 			#kolom lagi untuk grafik NG by Part Name B4 dan R1 only
 			sikir2,sinan2=st.columns(2)
 			

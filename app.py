@@ -1411,7 +1411,7 @@ def cleaning_process(df):
 			#--------- pivot Qty Inspected (lot) by Line dan Customer
 			pt_customer_line2=pd.pivot_table(df,values='Insp(B/H)',index='Cust.ID',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
 			# Bulatkan nilai-nilai ke angka bulat terdekat
-			pt_customer_line2 = pt_customer_line2.map(format_with_comma)
+			pt_customer_line2 = pt_customer_line2.map(format_with_comma2)
 
 			# ---------------------------------------
 			# Membuat tabel pivot NG by Kategori and LINE---------------

@@ -2235,10 +2235,9 @@ def cleaning_process(df):
 									aggfunc={'NG_%': 'mean', 'Insp(B/H)': 'sum'}, 
 									margins=True, 
 									margins_name='Total')
-				st.write('NG (%) by M/C No. Stamping')
-				pt_MesinNo_transposed = pt_MesinNo.transpose() # Transpose the pivot table
-				pt_MesinNo_transposed = pt_MesinNo_transposed.round(2)
-				st.write(pt_MesinNo_transposed)
+				
+				
+
 				# Plotting the graph
 				pt_MesinNo = pt_MesinNo.reset_index()
 				pt_MesinNo = pt_MesinNo[pt_MesinNo['M/C No.'] != 'Total']
@@ -2290,6 +2289,11 @@ def cleaning_process(df):
 					legend_title_text=''
 				)
 				st.plotly_chart(fig) # Display the plot
+
+				st.write('Tabel NG (%) by M/C No. Stamping')
+				pt_MesinNo_transposed = pt_MesinNo.transpose() # Transpose the pivot table
+				pt_MesinNo_transposed = pt_MesinNo_transposed.round(2)
+				st.write(pt_MesinNo_transposed)
 			#endregion
 			#--------------------------------------
 

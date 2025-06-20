@@ -1073,7 +1073,7 @@ def cleaning_process(df):
 
 			# Pivot table creation for B4
 			pt_customer_line = pd.pivot_table(df, values='NG_%', index='Cust.ID', columns='Line', aggfunc='mean', margins=True, margins_name='Total')
-			st.write('NG (%) by Line & Customer')
+			
 
 			dew1, dew2=st.columns(2)
 			with dew1: #NG (%) for Barrel 4 by Customer-change to pareto chart 17Jun2025
@@ -1227,6 +1227,7 @@ def cleaning_process(df):
 
 					st.plotly_chart(fig, use_container_width=True)
 
+			st.write('Tabel NG (%) by Line & Customer')
 			# Round the values to 2 decimal places
 			pt_customer_line = pt_customer_line.round(2)
 			pt_customer_line_transposed = pt_customer_line.transpose()

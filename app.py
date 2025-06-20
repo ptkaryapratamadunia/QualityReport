@@ -1989,13 +1989,12 @@ def cleaning_process(df):
 				st.plotly_chart(fig, use_container_width=True)
 
 			st.markdown("---")
-			#-------------------------------------------------------
-			#---------added 24Mar2025
-			DateRange(df3)
+			
+			
 			
 			#kolom lagi untuk grafik NG by Part Name B4 dan R1 only
 			sikir2,sinan2=st.columns(2)
-			
+			DateRange(df3)
 			with sikir2:	#sisi kiri Grafik Batang Vertikal by PartName B4 Pareto 17Jun2025
 				df_byLine = df[df['Line'] == 'Barrel 4']
 

@@ -1595,7 +1595,7 @@ def cleaning_process(df):
 			with zahra:	#Tabel NG% by Line& Kategori
 				st.write('NG (%) by Line & Kategori')
 				pt_kategori_line = pt_kategori_line.round(2)
-				pt_kategori_line = pt_kategori_line.map(format_with_comma)		
+				pt_kategori_line = pt_kategori_line.map(format_with_comma2)		
 				st.write(pt_kategori_line)
 			
 			#-----------------

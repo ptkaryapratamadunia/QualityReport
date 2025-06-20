@@ -1519,7 +1519,7 @@ def cleaning_process(df):
 
 			st.markdown("---")
 			# Terapkan format ke seluruh pivot table
-			pt_kategori_line = pt_kategori_line.map(format_with_comma)	
+			pt_kategori_line = pt_kategori_line.map(format_with_comma2)	
 			pt_kategori_line3 = pt_kategori_line3.map(format_with_comma)	
 
 			#Grafik model double axis:kiri %NG kanan Qty Inspected - 27Nov2024 @home before PILKADA

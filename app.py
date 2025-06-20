@@ -1413,9 +1413,6 @@ def cleaning_process(df):
 			# Bulatkan nilai-nilai ke angka bulat terdekat
 			pt_customer_line2 = pt_customer_line2.map(format_with_comma)
 
-			
-
-			
 			# ---------------------------------------
 			# Membuat tabel pivot NG by Kategori and LINE---------------
 
@@ -1667,7 +1664,7 @@ def cleaning_process(df):
 			with lb4_kanan:  # Tabel Qty Inspected (lot) - Line Barrel 4
 				# Total Production (lot) Line Barrel 4
 				total_production_B4 = df_LB4['Insp(B/H)'].sum()
-				# total_production_B4 = format_with_comma(total_production_B4)
+				total_production_B4 = format_with_comma2(total_production_B4)
 				st.write("Total Inspected (lot) LB 4:")
 				st.markdown(f"<div style='font-size: 32px; color: orange; font-weight: bold; text-align: center;'>{total_production_B4}</div>", unsafe_allow_html=True)
 				st.markdown("---")
@@ -1690,7 +1687,7 @@ def cleaning_process(df):
 				st.write(total_row_HDI)
 			with lb4_hdi_kanan:
 				total_production_HDI = df_HDI['Insp(B/H)'].sum()
-				# total_production_HDI = format_with_comma(total_production_HDI)
+				total_production_HDI = format_with_comma2(total_production_HDI)
 				st.write("Total Inspected (lot) HDI:")
 				st.markdown(f"<div style='font-size: 32px; color: orange; font-weight: bold; text-align: center;'>{total_production_HDI}</div>", unsafe_allow_html=True)
 				st.markdown("---")
@@ -1713,7 +1710,7 @@ def cleaning_process(df):
 				st.write(total_row_SMP)
 			with lb4_smp_kanan:
 				total_production_SMP = df_SMP['Insp(B/H)'].sum()
-				# total_production_SMP = format_with_comma(total_production_SMP)
+				total_production_SMP = format_with_comma2(total_production_SMP)
 				st.write("Total Inspected (lot) SMP:")
 				st.markdown(f"<div style='font-size: 32px; color: orange; font-weight: bold; text-align: center;'>{total_production_SMP}</div>", unsafe_allow_html=True)
 				st.markdown("---")
@@ -1756,7 +1753,7 @@ def cleaning_process(df):
 				st.write(total_row_RingParts)
 			with lb4_ring_kanan:
 				total_production_Ring = df_RingParts['Insp(B/H)'].sum()
-				# total_production_Ring = format_with_comma(total_production_Ring)
+				total_production_Ring = format_with_comma2(total_production_Ring)
 				st.write("Total Inspected (lot) RING:")
 				st.markdown(f"<div style='font-size: 32px; color: orange; font-weight: bold; text-align: center;'>{total_production_Ring}</div>", unsafe_allow_html=True)
 				st.markdown("---")
@@ -1778,7 +1775,7 @@ def cleaning_process(df):
 				st.write(total_row)
 			with lr1_kanan:
 				total_production_LR1 = df_LR1['Insp(B/H)'].sum()
-				total_production_LR1 = format_with_comma(total_production_LR1)
+				total_production_LR1 = format_with_comma2(total_production_LR1)
 				st.write("Total Inspected (lot) LR1:")
 				st.markdown(f"<div style='font-size: 32px; color: orange; font-weight: bold; text-align: center;'>{total_production_LR1}</div>", unsafe_allow_html=True)
 

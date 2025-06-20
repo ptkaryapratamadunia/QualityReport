@@ -272,6 +272,11 @@ def format_with_comma(value):
 		return "{:,.4f}".format(value)
 	return value
 
+def format_with_comma2(value):
+	if isinstance(value, (int, float)):
+		return "{:,.2f}".format(value)
+	return value
+
 def show_footer():
 
 	

@@ -1598,6 +1598,8 @@ def cleaning_process(df):
 			
 			#-----------------
 			st.markdown("---")
+
+			DateRange(df3)
 		#region : kolom	untuk tabel BY Line & Kategori
 			colkir,colteng1,colteng2,colnan=st.columns(4)
 			

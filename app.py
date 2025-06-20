@@ -2302,7 +2302,7 @@ def cleaning_process(df):
 
 				pt_MesinNo_transposed = pt_MesinNo.set_index('M/C No.').transpose()
 				pt_MesinNo_transposed = pt_MesinNo_transposed.round(2).map(format_with_comma)
-				st.dataframe(pt_MesinNo_transposed, use_container_width=False)
+				st.dataframe(pt_MesinNo_transposed)
 			#endregion
 			#--------------------------------------
 

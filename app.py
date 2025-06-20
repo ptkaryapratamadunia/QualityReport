@@ -1408,10 +1408,7 @@ def cleaning_process(df):
 			# Bulatkan nilai-nilai ke angka bulat terdekat
 			pt_customer_line2 = pt_customer_line2.map(format_with_comma)
 
-			st.write('Qty Inspected (lot) by Line & Customer')
-			pt_customer_line2_tranposed=pt_customer_line2.transpose()
-			with st.expander("Klik untuk melihat Tabel Qty Inspected (lot) by Line & Customer", expanded=False):
-				st.write(pt_customer_line2_tranposed)
+			
 
 			
 			# ---------------------------------------
@@ -1512,6 +1509,11 @@ def cleaning_process(df):
 					)
 
 					st.plotly_chart(fig)
+			
+			st.write('Tabel Qty Inspected (lot) by Line & Customer')
+			pt_customer_line2_tranposed=pt_customer_line2.transpose()
+			with st.expander("Klik untuk melihat Tabel Qty Inspected (lot) by Line & Customer", expanded=False):
+				st.write(pt_customer_line2_tranposed)
 
 			st.markdown("---")
 			# Terapkan format ke seluruh pivot table

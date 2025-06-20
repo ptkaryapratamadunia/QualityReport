@@ -2293,7 +2293,7 @@ def cleaning_process(df):
 				st.write('Tabel NG (%) by M/C No. Stamping')
 				pt_MesinNo_transposed = pt_MesinNo.transpose()
 				pt_MesinNo_transposed = pt_MesinNo_transposed.round(2).map(format_with_comma)
-				st.dataframe(pt_MesinNo_transposed, use_container_width=True, hide_index=True)
+				st.dataframe(pt_MesinNo_transposed, use_container_width=True)
 			#endregion
 			#--------------------------------------
 

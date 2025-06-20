@@ -784,7 +784,7 @@ def cleaning_process(df):
 				
 				pt_NGLot_line_by_shift=pd.pivot_table(df,values='NG(B/H)',index='Line',columns='Shift',aggfunc='sum',margins=True,margins_name='Total')
 				# Bulatkan nilai-nilai ke angka bulat terdekat
-				pt_NGLot_line_by_shift = pt_NGLot_line_by_shift.map(format_with_comma)
+				pt_NGLot_line_by_shift = pt_NGLot_line_by_shift.map(format_with_comma2)
 				pt_NGLot_line_by_shift_transposed = pt_NGLot_line_by_shift.transpose()
 
 				st.write('Qty NG(lot) by Line-Shift')

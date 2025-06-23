@@ -285,23 +285,21 @@ def print2PDF():
 	with col_print:
 		st.markdown("""
 			<button onclick="window.print()" style="
-				background-color: #4CAF50;
-				color: white;
-				padding: 8px 18px;
-				border: none;
-				border-radius: 5px;
-				font-size: 16px;
-				font-family: Nunito, Arial, sans-serif;
-				cursor: pointer;
-				margin-top: 16px;
-			">
-				🖨️ Print to PDF
-			</button>
-			<script>
-			// Agar tombol tetap berfungsi di Streamlit
-			const printBtns = window.parent.document.querySelectorAll('button[onclick="window.print()"]');
-			printBtns.forEach(btn => btn.onclick = () => window.print());
-			</script>
+            background-color: #4CAF50;
+            color: white;
+            padding: 8px 18px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-family: Nunito, Arial, sans-serif;
+            cursor: pointer;
+            margin-top: 16px;
+        ">
+            🖨️ Print to PDF
+        </button>
+        <div style="font-size:13px;color:grey;margin-top:4px;">
+            Jika tombol tidak berfungsi, gunakan <b>Ctrl+P</b> pada keyboard untuk mencetak halaman ini ke PDF.
+        </div>
 		""", unsafe_allow_html=True)
 def show_footer():
 

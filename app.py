@@ -3146,7 +3146,7 @@ def main():
 
 		
 		# Tombol Print to PDF (letakkan di bagian paling bawah tab, sebelah kiri)
-		print2PDF()
+		# print2PDF()
 	
 	with tab_top2:
 		About()

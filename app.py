@@ -2621,8 +2621,8 @@ def cleaning_process(df):
 			st.dataframe(tabel_harian, use_container_width=True)
 		#endregion
 
-		st.markdown("---")
-		print2PDF()
+		# st.markdown("---")
+		# print2PDF()
 
 		with sum_tab2: # Summary Trial 
 			st.subheader("Summary Trial")

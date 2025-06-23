@@ -3143,6 +3143,8 @@ def main():
 				
 		else:
 			st.error("Menunggu file diupload....")
+
+		print2PDF() # type: ignore
 	
 	with tab_top2:
 		About()

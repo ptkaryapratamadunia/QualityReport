@@ -9,7 +9,7 @@ from unicodedata import category
 from matplotlib.hatch import SmallCircles
 from referencing import Anchor
 import streamlit as st
-from streamlit_js_eval import streamlit_js_eval
+
 import pandas as pd
 import numpy as np
 from streamlit_extras.dataframe_explorer import dataframe_explorer
@@ -3148,9 +3148,7 @@ def main():
 
 		
 		# Tombol Print to PDF (letakkan di bagian paling bawah tab, sebelah kiri)
-		col_print, _ = st.columns([1, 9])
-		with col_print:
-			if st.button("🖨️ Print to PDF", help="Cetak halaman ini ke PDF (Ctrl+P)"):streamlit_js_eval(js_expressions="window.print()", key="print_pdf")
+		print2PDF()
 	
 	with tab_top2:
 		About()

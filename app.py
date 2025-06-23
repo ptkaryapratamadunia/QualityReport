@@ -24,6 +24,7 @@ import plotly.graph_objects as go       #cara 2 agar data terlihat saat mouse ov
 from plotly.subplots import make_subplots
 import sys
 import subprocess
+from streamlit_js_eval import streamlit_js_eval
 
 st.set_page_config(page_title="Quality Report", page_icon=":bar_chart:", layout="wide")
 
@@ -3148,26 +3149,7 @@ def main():
 		# Tombol Print to PDF (letakkan di bagian paling bawah tab, sebelah kiri)
 		col_print, _ = st.columns([1, 9])
 		with col_print:
-			st.markdown("""
-				<button onclick="window.print()" style="
-					background-color: #4CAF50;
-					color: white;
-					padding: 8px 18px;
-					border: none;
-					border-radius: 5px;
-					font-size: 16px;
-					font-family: Nunito, Arial, sans-serif;
-					cursor: pointer;
-					margin-top: 16px;
-				">
-					🖨️ Print to PDF
-				</button>
-				<script>
-				// Agar tombol tetap berfungsi di Streamlit
-				const printBtns = window.parent.document.querySelectorAll('button[onclick="window.print()"]');
-				printBtns.forEach(btn => btn.onclick = () => window.print());
-				</script>
-			""", unsafe_allow_html=True)
+			if st.button("🖨️ Print to PDF", help="Cetak halaman ini ke PDF (Ctrl+P)"):streamlit_js_eval(js_expressions="window.print()", key="print_pdf")
 	
 	with tab_top2:
 		About()

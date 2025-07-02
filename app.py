@@ -2803,7 +2803,7 @@ def cleaning_process(df):
 						yaxis_title='PartName',
 						xaxis_title='Qty (pcs)',
 						barmode='stack',
-						legend=dict(orientation="h", yanchor="top", y=1.02, xanchor="right", x=1),
+						legend=dict(orientation="v", yanchor="right", y=1.02, xanchor="right", x=1),
 						autosize=True,
 						width=800,
 						height=500,

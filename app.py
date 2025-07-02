@@ -2774,7 +2774,7 @@ def cleaning_process(df):
 						summary_trial_sorted = summary_trial_sorted[summary_trial_sorted['PartName'] != 'TOTAL']
 					summary_trial_sorted = summary_trial_sorted.sort_values(
 						by=['Qty OK (pcs)', 'Qty NG (pcs)'], 
-						ascending=[False, False]
+						ascending=[True, True]
 					)
 
 					fig = go.Figure()

@@ -820,20 +820,25 @@ def cleaning_process(df):
 				
 			with col2:	#Qty NG Lot by Line and Shift - 26Nov2024
 				
-				pt_NGLot_line_by_shift=pd.pivot_table(df,values='NG(B/H)',index='Line',columns='Shift',aggfunc='sum',margins=True,margins_name='Total')
+				pt_NGLot_line_by_shift = pd.pivot_table(df, values='NG(B/H)', index='Line', columns='Shift', aggfunc='sum', margins=True, margins_name='Total')
 				# Bulatkan nilai-nilai ke angka bulat terdekat
 				pt_NGLot_line_by_shift = pt_NGLot_line_by_shift.map(format_with_comma2)
 				pt_NGLot_line_by_shift_transposed = pt_NGLot_line_by_shift.transpose()
+				# Hapus baris 'Total' jika ada
+				if 'Total' in pt_NGLot_line_by_shift_transposed.index:
+					pt_NGLot_line_by_shift_transposed = pt_NGLot_line_by_shift_transposed.drop('Total', axis=0)
 
 				st.write('Qty NG(lot) by Line-Shift')
 				st.write(pt_NGLot_line_by_shift_transposed)
 
 			with col3:	#Qty Inspected Lot by Line and Shift - 26Nov2024
-				
-				pt_InspLot_line_by_shift=pd.pivot_table(df,values='Insp(B/H)',index='Line',columns='Shift',aggfunc='sum',margins=True,margins_name='Total')
+				pt_InspLot_line_by_shift = pd.pivot_table(df, values='Insp(B/H)', index='Line', columns='Shift', aggfunc='sum', margins=True, margins_name='Total')
 				# Bulatkan nilai-nilai ke angka bulat terdekat
 				pt_InspLot_line_by_shift = pt_InspLot_line_by_shift.round(0)
 				pt_InspLot_line_by_shift_transposed = pt_InspLot_line_by_shift.transpose()
+				# Hapus baris 'Total' jika ada
+				if 'Total' in pt_InspLot_line_by_shift_transposed.index:
+					pt_InspLot_line_by_shift_transposed = pt_InspLot_line_by_shift_transposed.drop('Total', axis=0)
 
 				st.write('Qty Insp(lot) by Line-Shift')
 				st.write(pt_InspLot_line_by_shift_transposed)

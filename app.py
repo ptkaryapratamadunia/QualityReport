@@ -430,7 +430,7 @@ def cleaning_process(df):
 					'V': 'Kotor H/ Oval',
 					'W': 'Terkikis/ Crack',
 					'X': 'Dimensi/ Penyok',
-					'Y': 'MTL/SLipMelintir'
+					'Y': 'MTL/SlipMelintir'
 				}
 
 		df.rename(columns=new_columns, inplace=True)

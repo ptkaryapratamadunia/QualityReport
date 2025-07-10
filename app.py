@@ -1712,17 +1712,16 @@ def cleaning_process(df):
 				for col in ['Qty NG (lot)', 'Qty OK (lot)', 'Qty Insp (lot)', 'Qty NG (pcs)', 'Qty OK (pcs)', 'Qty Insp (pcs)']:
 					pivot[col] = pd.to_numeric(pivot[col], errors='coerce').map(lambda x: f"{x:,.0f}" if pd.notnull(x) else "")
 
-				# Tambahkan kolom Total (sum baris untuk Qty, mean untuk NG (%))
+				# Tambahkan kolom Total (sum baris untuk Qty, mean untuk NG (%)), hanya untuk baris selain 'TOTAL'
 				def sum_row(row):
 					cols = ['Qty NG (lot)', 'Qty OK (lot)', 'Qty Insp (lot)', 'Qty NG (pcs)', 'Qty OK (pcs)', 'Qty Insp (pcs)']
 					vals = [float(row[c].replace(',', '')) if row[c] != '' else 0 for c in cols]
 					return f"{sum(vals):,.0f}"
 
 				pivot['Total'] = pivot.apply(lambda row: sum_row(row) if row['Housing Horn'] != 'TOTAL' else '', axis=1)
-				# Untuk baris TOTAL, isi kolom 'Total' dengan sum seluruh kolom Total
+				# Hapus kolom 'Total' pada baris 'TOTAL'
 				if not pivot[pivot['Housing Horn'] == 'TOTAL'].empty:
-					total_sum = pivot.loc[pivot['Housing Horn'] != 'TOTAL', 'Total'].replace('', 0).apply(lambda x: float(str(x).replace(',', ''))).sum()
-					pivot.loc[pivot['Housing Horn'] == 'TOTAL', 'Total'] = f"{total_sum:,.0f}"
+					pivot.loc[pivot['Housing Horn'] == 'TOTAL', 'Total'] = ''
 
 				st.write('Tabel Housing Horn (Barrel 4, Cust.ID=HDI, PartName mengandung "HOUSING")')
 				st.dataframe(pivot, use_container_width=True)

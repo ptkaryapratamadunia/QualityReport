@@ -1674,6 +1674,7 @@ def cleaning_process(df):
 
 		#region : Tampilkan tabel khusus untuk Barrel 4 cust.id 'HDI' dan partname dengan awalan 'HOUSING'**** - 10jUL2025
 			st.markdown("---")
+			st.markdown("### Total Housing Horn Metrics")
 			DateRange(df3)
 			# Filter data: Line = 'Barrel 4', Cust.ID = 'HDI', PartName contains 'HOUSING'
 			df_housing = df_with_pcs[
@@ -1683,7 +1684,6 @@ def cleaning_process(df):
 			].copy()
 
 			# --- METRIC: Total Housing Horn ---
-			st.markdown("### Total Housing Horn Metrics")
 			if not df_housing.empty:
 				total_ok_pcs = df_housing['OK(pcs)'].sum() if 'OK(pcs)' in df_housing.columns else 0
 				total_ng_pcs = df_housing['Qty(NG)'].sum() if 'Qty(NG)' in df_housing.columns else 0
@@ -1789,9 +1789,9 @@ def cleaning_process(df):
 				pivot_pcs = pivot_pcs[[col for col in ordered_pcs_cols if col in pivot_pcs.columns]]
 				pivot_lot = pivot_lot[[col for col in ordered_lot_cols if col in pivot_lot.columns]]
 
-				with st.expander("Klik untuk melihat Tabel Khusus Housing Horn (lot) - PT. HDI - Barrel 4", expanded=False):
+				with st.expander("Klik untuk melihat details Data Housing Horn (lot) - PT. HDI - Barrel 4", expanded=False):
 					st.dataframe(pivot_lot, use_container_width=True)
-				with st.expander("Klik untuk melihat Tabel Housing Horn (pcs) - PT. HDI - Barrel 4", expanded=False):
+				with st.expander("Klik untuk melihat details Data Housing Horn (pcs) - PT. HDI - Barrel 4", expanded=False):
 					st.dataframe(pivot_pcs, use_container_width=True)
 			else:
 				st.info('Tidak ada data Housing Horn untuk Barrel 4, Cust.ID=HDI, PartName mengandung "HOUSING".')

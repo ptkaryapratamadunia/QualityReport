@@ -1654,10 +1654,11 @@ def cleaning_process(df):
 
 		#endregion : kolom	untuk tabel BY Line & Kategori	
 
-		#region : Tampilkan tabel khusus untuk Barrel 4 cust.id 'HDI' dan partname dengan awalan 'HOUSING'**** - 10jUL2015
+		#region : Tampilkan tabel khusus untuk Barrel 4 cust.id 'HDI' dan partname dengan awalan 'HOUSING'**** - 10jUL2025
 			st.markdown("---")
 			DateRange(df3)
 			# Filter data: Line = 'Barrel 4', Cust.ID = 'HDI', PartName contains 'HOUSING'
+			st.dataframe(df, use_container_width=True)
 			df_housing = df[
 				(df['Line'] == 'Barrel 4') &
 				(df['Cust.ID'] == 'HDI') &
@@ -1740,7 +1741,7 @@ def cleaning_process(df):
 				st.dataframe(pivot_pcs, use_container_width=True)
 			else:
 				st.info('Tidak ada data Housing Horn untuk Barrel 4, Cust.ID=HDI, PartName mengandung "HOUSING".')
-		#endregion : Tampilkan tabel khusus untuk Barrel 4 cust.id 'HDI' dan partname dengan awalan 'HOUSING'**** - 10jUL2015
+		#endregion : Tampilkan tabel khusus untuk Barrel 4 cust.id 'HDI' dan partname dengan awalan 'HOUSING'**** - 10jUL2025
 
 			st.markdown("---")
 			#groupby dataframe	---------------

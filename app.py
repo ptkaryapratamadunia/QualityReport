@@ -1658,7 +1658,6 @@ def cleaning_process(df):
 			st.markdown("---")
 			DateRange(df3)
 			# Filter data: Line = 'Barrel 4', Cust.ID = 'HDI', PartName contains 'HOUSING'
-			# Filter data Housing Horn
 			df_housing = df[
 				(df['Line'] == 'Barrel 4') &
 				(df['Cust.ID'] == 'HDI') &
@@ -1666,94 +1665,57 @@ def cleaning_process(df):
 			].copy()
 
 			if not df_housing.empty:
-				# Buat kolom 'Housing Horn' dari PartName
-				df_housing['Housing Horn'] = df_housing['PartName']
+				# --- Pivot Table PCS ---
+				# Pastikan kolom yang diperlukan ada
+				for col in ['OK(pcs)', 'QInspec', 'Qty(NG)', 'MTL/ SLipMelintir(pcs)']:
+					if col not in df_housing.columns:
+						df_housing[col] = 0
 
-				# Kolom NG MATERIAL dari 'MTL/ SLipMelintir'
-				if 'MTL/ SLipMelintir' in df_housing.columns:
-					df_housing['NG MATERIAL'] = df_housing['MTL/ SLipMelintir']
-				else:
-					df_housing['NG MATERIAL'] = 0
-
-				# Hitung Qty OK (lot) dan Qty OK (pcs)
-				df_housing['Qty OK (lot)'] = df_housing['Insp(B/H)'] - df_housing['NG(B/H)']
-				df_housing['Qty OK (pcs)'] = df_housing['QInspec'] - df_housing['Qty(NG)']
-
-				# Group by Housing Horn (PartName)
-				group_cols = ['Housing Horn']
-				agg_dict_lot = {
-					'NG_%': 'mean',
-					'NG(B/H)': 'sum',
-					'NG MATERIAL': 'sum',
-					'Qty OK (lot)': 'sum',
-					'Insp(B/H)': 'sum'
-				}
-				df_lot = df_housing.groupby(group_cols, as_index=False).agg(agg_dict_lot)
-				df_lot = df_lot.rename(columns={
-					'NG_%': 'NG (%)',
-					'NG(B/H)': 'Qty NG (lot)',
-					'NG MATERIAL': 'NG MATERIAL (lot)',
-					'Qty OK (lot)': 'Qty OK (lot)',
-					'Insp(B/H)': 'Qty Insp (lot)'
+				pivot_pcs = df_housing.pivot_table(
+					index='PartName',
+					values=['OK(pcs)', 'QInspec', 'Qty(NG)', 'MTL/ SLipMelintir(pcs)'],
+					aggfunc='sum',
+					fill_value=0
+				).reset_index()
+				pivot_pcs = pivot_pcs.rename(columns={
+					'OK(pcs)': 'OK (pcs)',
+					'QInspec': 'Tot.Insp (pcs)',
+					'Qty(NG)': 'NG (pcs)',
+					'MTL/ SLipMelintir(pcs)': 'NGM (pcs)'
 				})
 
-				# Baris total
-				total_row_lot = {
-					'Housing Horn': 'TOTAL',
-					'NG (%)': df_lot['NG (%)'].astype(float).mean(),
-					'Qty NG (lot)': df_lot['Qty NG (lot)'].astype(float).sum(),
-					'NG MATERIAL (lot)': df_lot['NG MATERIAL (lot)'].astype(float).sum(),
-					'Qty OK (lot)': df_lot['Qty OK (lot)'].astype(float).sum(),
-					'Qty Insp (lot)': df_lot['Qty Insp (lot)'].astype(float).sum()
-				}
-				df_lot = pd.concat([df_lot, pd.DataFrame([total_row_lot])], ignore_index=True)
+				# --- Pivot Table LOT ---
+				for col in ['OK(B/H)', 'Insp(B/H)', 'NG(B/H)', 'MTL/ SLipMelintir']:
+					if col not in df_housing.columns:
+						df_housing[col] = 0
+
+				pivot_lot = df_housing.pivot_table(
+					index='PartName',
+					values=['OK(B/H)', 'Insp(B/H)', 'NG(B/H)', 'MTL/ SLipMelintir'],
+					aggfunc='sum',
+					fill_value=0
+				).reset_index()
+				pivot_lot = pivot_lot.rename(columns={
+					'OK(B/H)': 'OK (lot)',
+					'Insp(B/H)': 'Tot.Insp (lot)',
+					'NG(B/H)': 'NG (lot)',
+					'MTL/ SLipMelintir': 'NGM (lot)'
+				})
 
 				# Format angka
-				for col in ['NG (%)','Qty NG (lot)', 'NG MATERIAL (lot)', 'Qty OK (lot)', 'Qty Insp (lot)']:
-					df_lot[col] = pd.to_numeric(df_lot[col], errors='coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "")
-
-				# PCS table
-				agg_dict_pcs = {
-					'Qty(NG)': 'sum',
-					'NG MATERIAL': 'sum',
-					'Qty OK (pcs)': 'sum',
-					'QInspec': 'sum'
-				}
-				df_pcs = df_housing.groupby(group_cols, as_index=False).agg(agg_dict_pcs)
-				df_pcs = df_pcs.rename(columns={
-					'Qty(NG)': 'Qty NG (pcs)',
-					'NG MATERIAL': 'NG MATERIAL (pcs)',
-					'Qty OK (pcs)': 'Qty OK (pcs)',
-					'QInspec': 'Qty Insp (pcs)'
-				})
-
-				# Baris total
-				total_row_pcs = {
-					'Housing Horn': 'TOTAL',
-					'Qty NG (pcs)': df_pcs['Qty NG (pcs)'].astype(float).sum(),
-					'NG MATERIAL (pcs)': df_pcs['NG MATERIAL (pcs)'].astype(float).sum(),
-					'Qty OK (pcs)': df_pcs['Qty OK (pcs)'].astype(float).sum(),
-					'Qty Insp (pcs)': df_pcs['Qty Insp (pcs)'].astype(float).sum()
-				}
-				df_pcs = pd.concat([df_pcs, pd.DataFrame([total_row_pcs])], ignore_index=True)
-
-				for col in ['Qty NG (pcs)', 'NG MATERIAL (pcs)', 'Qty OK (pcs)', 'Qty Insp (pcs)']:
-					df_pcs[col] = pd.to_numeric(df_pcs[col], errors='coerce').map(lambda x: f"{x:,.0f}" if pd.notnull(x) else "")
+				for col in ['OK (pcs)', 'Tot.Insp (pcs)', 'NG (pcs)', 'NGM (pcs)']:
+					pivot_pcs[col] = pd.to_numeric(pivot_pcs[col], errors='coerce').map(lambda x: f"{x:,.0f}" if pd.notnull(x) else "")
+				for col in ['OK (lot)', 'Tot.Insp (lot)', 'NG (lot)', 'NGM (lot)']:
+					pivot_lot[col] = pd.to_numeric(pivot_lot[col], errors='coerce').map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
 
 				# Tampilkan dalam 2 kolom
 				col_lot, col_pcs = st.columns(2)
 				with col_lot:
 					st.write('Tabel Housing Horn (Satuan Lot, Group by PartName)')
-					# Hapus kolom 'Total' jika ada
-					if 'Total' in df_lot.columns:
-						df_lot = df_lot.drop(columns=['Total'])
-					st.dataframe(df_lot, use_container_width=True)
+					st.dataframe(pivot_lot, use_container_width=True)
 				with col_pcs:
 					st.write('Tabel Housing Horn (Satuan PCS, Group by PartName)')
-					# Hapus kolom 'Total' jika ada
-					if 'Total' in df_pcs.columns:
-						df_pcs = df_pcs.drop(columns=['Total'])
-					st.dataframe(df_pcs, use_container_width=True)
+					st.dataframe(pivot_pcs, use_container_width=True)
 			else:
 				st.info('Tidak ada data Housing Horn untuk Barrel 4, Cust.ID=HDI, PartName mengandung "HOUSING".')
 		#endregion : Tampilkan tabel khusus untuk Barrel 4 cust.id 'HDI' dan partname dengan awalan 'HOUSING'**** - 10jUL2015

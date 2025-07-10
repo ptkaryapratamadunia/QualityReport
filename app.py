@@ -1887,7 +1887,7 @@ def cleaning_process(df):
 			# Tabel Jenis NG (Lot) - Line Barrel 4 - RING Part
 			lb4_ring_kiri, lb4_ring_kanan = st.columns([4, 1])
 			with lb4_ring_kiri:
-				st.markdown("---")
+				
 				st.write("Tabel Jenis NG (Lot) - Line Barrel 4 - RING Part")
 				# Filter df untuk hanya menampilkan Jenis yang mengandung 'JK067662-0190, JK067662-0160, JK067662-0112' pada kolom 'PartName' - 11Jun2025
 				df_RingParts = df_LB4[df_LB4['PartName'].str.contains('JK067662-0190|JK067662-0160|JK067662-0112', na=False)]

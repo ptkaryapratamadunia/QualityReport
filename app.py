@@ -1658,7 +1658,6 @@ def cleaning_process(df):
 			st.markdown("---")
 			DateRange(df3)
 			# Filter data: Line = 'Barrel 4', Cust.ID = 'HDI', PartName contains 'HOUSING'
-			# st.dataframe(df_with_pcs, use_container_width=True)........untuk menguji bahwa df yg diambil benar mengandung pcs dari baris 597 di atas
 			df_housing = df_with_pcs[
 				(df_with_pcs['Line'] == 'Barrel 4') &
 				(df_with_pcs['Cust.ID'] == 'HDI') &
@@ -1667,7 +1666,6 @@ def cleaning_process(df):
 
 			if not df_housing.empty:
 				# --- Pivot Table PCS ---
-				# Pastikan kolom yang diperlukan ada
 				for col in ['OK(pcs)', 'QInspec', 'Qty(NG)', 'MTL/ SLipMelintir(pcs)']:
 					if col not in df_housing.columns:
 						df_housing[col] = 0
@@ -1678,6 +1676,9 @@ def cleaning_process(df):
 					aggfunc='sum',
 					fill_value=0
 				).reset_index()
+				# Tambahkan kolom NG (%) (mean dari NG_% per PartName)
+				ng_persen_pcs = df_housing.groupby('PartName')['NG_%'].mean().reset_index().rename(columns={'NG_%': 'NG (%)'})
+				pivot_pcs = pd.merge(pivot_pcs, ng_persen_pcs, on='PartName', how='left')
 				pivot_pcs = pivot_pcs.rename(columns={
 					'OK(pcs)': 'OK (pcs)',
 					'QInspec': 'Tot.Insp (pcs)',
@@ -1691,7 +1692,8 @@ def cleaning_process(df):
 					'OK (pcs)': pivot_pcs['OK (pcs)'].sum(),
 					'NG (pcs)': pivot_pcs['NG (pcs)'].sum(),
 					'NGM (pcs)': pivot_pcs['NGM (pcs)'].sum(),
-					'Tot.Insp (pcs)': pivot_pcs['Tot.Insp (pcs)'].sum()
+					'Tot.Insp (pcs)': pivot_pcs['Tot.Insp (pcs)'].sum(),
+					'NG (%)': pivot_pcs['NG (%)'].mean()
 				}
 				pivot_pcs = pd.concat([pivot_pcs, pd.DataFrame([total_row_pcs])], ignore_index=True)
 
@@ -1706,6 +1708,9 @@ def cleaning_process(df):
 					aggfunc='sum',
 					fill_value=0
 				).reset_index()
+				# Tambahkan kolom NG (%) (mean dari NG_% per PartName)
+				ng_persen_lot = df_housing.groupby('PartName')['NG_%'].mean().reset_index().rename(columns={'NG_%': 'NG (%)'})
+				pivot_lot = pd.merge(pivot_lot, ng_persen_lot, on='PartName', how='left')
 				pivot_lot = pivot_lot.rename(columns={
 					'OK(B/H)': 'OK (lot)',
 					'Insp(B/H)': 'Tot.Insp (lot)',
@@ -1719,7 +1724,8 @@ def cleaning_process(df):
 					'OK (lot)': pivot_lot['OK (lot)'].sum(),
 					'NG (lot)': pivot_lot['NG (lot)'].sum(),
 					'NGM (lot)': pivot_lot['NGM (lot)'].sum(),
-					'Tot.Insp (lot)': pivot_lot['Tot.Insp (lot)'].sum()
+					'Tot.Insp (lot)': pivot_lot['Tot.Insp (lot)'].sum(),
+					'NG (%)': pivot_lot['NG (%)'].mean()
 				}
 				pivot_lot = pd.concat([pivot_lot, pd.DataFrame([total_row_lot])], ignore_index=True)
 
@@ -1728,17 +1734,18 @@ def cleaning_process(df):
 					pivot_pcs[col] = pd.to_numeric(pivot_pcs[col], errors='coerce').map(lambda x: f"{x:,.0f}" if pd.notnull(x) else "")
 				for col in ['OK (lot)', 'Tot.Insp (lot)', 'NG (lot)', 'NGM (lot)']:
 					pivot_lot[col] = pd.to_numeric(pivot_lot[col], errors='coerce').map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
+				for col in ['NG (%)']:
+					pivot_pcs[col] = pd.to_numeric(pivot_pcs[col], errors='coerce').map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
+					pivot_lot[col] = pd.to_numeric(pivot_lot[col], errors='coerce').map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
 
-				# Urutkan kolom: OK, NG, NGM, Tot.Insp
-				ordered_pcs_cols = ['PartName', 'OK (pcs)', 'NG (pcs)', 'NGM (pcs)', 'Tot.Insp (pcs)']
-				ordered_lot_cols = ['PartName', 'OK (lot)', 'NG (lot)', 'NGM (lot)', 'Tot.Insp (lot)']
+				# Urutkan kolom: OK, NG, NGM, Tot.Insp, NG (%)
+				ordered_pcs_cols = ['PartName', 'OK (pcs)', 'NG (pcs)', 'NGM (pcs)', 'Tot.Insp (pcs)', 'NG (%)']
+				ordered_lot_cols = ['PartName', 'OK (lot)', 'NG (lot)', 'NGM (lot)', 'Tot.Insp (lot)', 'NG (%)']
 				pivot_pcs = pivot_pcs[[col for col in ordered_pcs_cols if col in pivot_pcs.columns]]
 				pivot_lot = pivot_lot[[col for col in ordered_lot_cols if col in pivot_lot.columns]]
 
-				# st.write('Tabel Khusus Housing Horn (lot) - PT. HDI - Barrel 4')
 				with st.expander("Klik untuk melihat Tabel Khusus Housing Horn (lot) - PT. HDI - Barrel 4", expanded=False):
 					st.dataframe(pivot_lot, use_container_width=True)
-				# st.write('Tabel Housing Horn (pcs) - PT. HDI - Barrel 4')
 				with st.expander("Klik untuk melihat Tabel Housing Horn (pcs) - PT. HDI - Barrel 4", expanded=False):
 					st.dataframe(pivot_pcs, use_container_width=True)
 			else:

@@ -3,6 +3,7 @@
 # 08 Oct 2024 start deploy : qualityreportkpd.streamlit.app atau s.id/kpdqualitydatacleaner
 
 from math import exp
+from operator import index
 from re import X
 from typing import Text
 from unicodedata import category
@@ -1712,8 +1713,8 @@ def cleaning_process(df):
 				for col in [ 'Qty NG (pcs)', 'Qty OK (pcs)', 'Qty Insp (pcs)']:
 					pivot[col] = pd.to_numeric(pivot[col], errors='coerce').map(lambda x: f"{x:,.0f}" if pd.notnull(x) else "")
 
-				st.write('Tabel Housing Horn (Barrel 4, Cust.ID=HDI, PartName mengandung "HOUSING")')
-				st.dataframe(pivot, use_container_width=True)
+				st.write('Tabel Khusus Part Housing Horn PT. HDI - Barrel 4')
+				st.write(pivot, use_container_width=True,index=False)
 			else:
 				st.info('Tidak ada data Housing Horn untuk Barrel 4, Cust.ID=HDI, PartName mengandung "HOUSING".')
 		#endregion : Tampilkan tabel khusus untuk Barrel 4 cust.id 'HDI' dan partname dengan awalan 'HOUSING'**** - 10jUL2015

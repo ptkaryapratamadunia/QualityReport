@@ -1685,7 +1685,7 @@ def cleaning_process(df):
 				total_ok_lot = df_housing['OK(B/H)'].sum() if 'OK(B/H)' in df_housing.columns else 0
 				total_ng_lot = df_housing['NG(B/H)'].sum() if 'NG(B/H)' in df_housing.columns else 0
 				total_insp_lot = df_housing['Insp(B/H)'].sum() if 'Insp(B/H)' in df_housing.columns else 0
-				ng_percent = (total_ng_lot / total_insp_lot * 100) if total_insp_lot != 0 else 0
+				ng_percent = df_housing['NG_%'].mean() if 'NG_%' in df_housing.columns else 0
 
 				metrik1, metrik2, metrik3, metrik4, metrik5, metrik6, metrik7 = st.columns(7)
 				with metrik1:

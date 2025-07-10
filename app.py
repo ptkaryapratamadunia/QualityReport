@@ -1677,6 +1677,32 @@ def cleaning_process(df):
 				(df_with_pcs['PartName'].str.contains('HOUSING', case=False, na=False))
 			].copy()
 
+			# --- METRIC: Total Housing Horn ---
+			if not df_housing.empty:
+				total_ok_pcs = df_housing['OK(pcs)'].sum() if 'OK(pcs)' in df_housing.columns else 0
+				total_ng_pcs = df_housing['Qty(NG)'].sum() if 'Qty(NG)' in df_housing.columns else 0
+				total_insp_pcs = df_housing['QInspec'].sum() if 'QInspec' in df_housing.columns else 0
+				total_ok_lot = df_housing['OK(B/H)'].sum() if 'OK(B/H)' in df_housing.columns else 0
+				total_ng_lot = df_housing['NG(B/H)'].sum() if 'NG(B/H)' in df_housing.columns else 0
+				total_insp_lot = df_housing['Insp(B/H)'].sum() if 'Insp(B/H)' in df_housing.columns else 0
+				ng_percent = (total_ng_lot / total_insp_lot * 100) if total_insp_lot != 0 else 0
+
+				metrik1, metrik2, metrik3, metrik4, metrik5, metrik6, metrik7 = st.columns(7)
+				with metrik1:
+					st.metric("OK (pcs)", f"{total_ok_pcs:,.0f}")
+				with metrik2:
+					st.metric("NG (pcs)", f"{total_ng_pcs:,.0f}")
+				with metrik3:
+					st.metric("Insp (pcs)", f"{total_insp_pcs:,.0f}")
+				with metrik4:
+					st.metric("OK (lot)", f"{total_ok_lot:,.2f}")
+				with metrik5:
+					st.metric("NG (lot)", f"{total_ng_lot:,.2f}")
+				with metrik6:
+					st.metric("Insp (lot)", f"{total_insp_lot:,.2f}")
+				with metrik7:
+					st.metric("NG (%)", f"{ng_percent:,.2f}")
+
 			if not df_housing.empty:
 				# --- Pivot Table PCS ---
 				for col in ['OK(pcs)', 'QInspec', 'Qty(NG)', 'MTL/ SLipMelintir(pcs)']:

@@ -1696,7 +1696,6 @@ def cleaning_process(df):
 					'Qty OK (lot)': 'Qty OK (lot)',
 					'Insp(B/H)': 'Qty Insp (lot)'
 				})
-				df_lot['Total'] = df_lot[['Qty NG (lot)', 'NG MATERIAL (lot)', 'Qty OK (lot)']].sum(axis=1)
 
 				# Baris total
 				total_row_lot = {
@@ -1705,13 +1704,12 @@ def cleaning_process(df):
 					'Qty NG (lot)': df_lot['Qty NG (lot)'].astype(float).sum(),
 					'NG MATERIAL (lot)': df_lot['NG MATERIAL (lot)'].astype(float).sum(),
 					'Qty OK (lot)': df_lot['Qty OK (lot)'].astype(float).sum(),
-					'Qty Insp (lot)': df_lot['Qty Insp (lot)'].astype(float).sum(),
-					'Total': df_lot['Total'].astype(float).sum()
+					'Qty Insp (lot)': df_lot['Qty Insp (lot)'].astype(float).sum()
 				}
 				df_lot = pd.concat([df_lot, pd.DataFrame([total_row_lot])], ignore_index=True)
 
 				# Format angka
-				for col in ['NG (%)','Qty NG (lot)', 'NG MATERIAL (lot)', 'Qty OK (lot)', 'Qty Insp (lot)', 'Total']:
+				for col in ['NG (%)','Qty NG (lot)', 'NG MATERIAL (lot)', 'Qty OK (lot)', 'Qty Insp (lot)']:
 					df_lot[col] = pd.to_numeric(df_lot[col], errors='coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "")
 
 				# PCS table
@@ -1728,7 +1726,6 @@ def cleaning_process(df):
 					'Qty OK (pcs)': 'Qty OK (pcs)',
 					'QInspec': 'Qty Insp (pcs)'
 				})
-				df_pcs['Total'] = df_pcs[['Qty NG (pcs)', 'NG MATERIAL (pcs)', 'Qty OK (pcs)']].sum(axis=1)
 
 				# Baris total
 				total_row_pcs = {
@@ -1736,21 +1733,26 @@ def cleaning_process(df):
 					'Qty NG (pcs)': df_pcs['Qty NG (pcs)'].astype(float).sum(),
 					'NG MATERIAL (pcs)': df_pcs['NG MATERIAL (pcs)'].astype(float).sum(),
 					'Qty OK (pcs)': df_pcs['Qty OK (pcs)'].astype(float).sum(),
-					'Qty Insp (pcs)': df_pcs['Qty Insp (pcs)'].astype(float).sum(),
-					'Total': df_pcs['Total'].astype(float).sum()
+					'Qty Insp (pcs)': df_pcs['Qty Insp (pcs)'].astype(float).sum()
 				}
 				df_pcs = pd.concat([df_pcs, pd.DataFrame([total_row_pcs])], ignore_index=True)
 
-				for col in ['Qty NG (pcs)', 'NG MATERIAL (pcs)', 'Qty OK (pcs)', 'Qty Insp (pcs)', 'Total']:
+				for col in ['Qty NG (pcs)', 'NG MATERIAL (pcs)', 'Qty OK (pcs)', 'Qty Insp (pcs)']:
 					df_pcs[col] = pd.to_numeric(df_pcs[col], errors='coerce').map(lambda x: f"{x:,.0f}" if pd.notnull(x) else "")
 
 				# Tampilkan dalam 2 kolom
 				col_lot, col_pcs = st.columns(2)
 				with col_lot:
 					st.write('Tabel Housing Horn (Satuan Lot, Group by PartName)')
+					# Hapus kolom 'Total' jika ada
+					if 'Total' in df_lot.columns:
+						df_lot = df_lot.drop(columns=['Total'])
 					st.dataframe(df_lot, use_container_width=True)
 				with col_pcs:
 					st.write('Tabel Housing Horn (Satuan PCS, Group by PartName)')
+					# Hapus kolom 'Total' jika ada
+					if 'Total' in df_pcs.columns:
+						df_pcs = df_pcs.drop(columns=['Total'])
 					st.dataframe(df_pcs, use_container_width=True)
 			else:
 				st.info('Tidak ada data Housing Horn untuk Barrel 4, Cust.ID=HDI, PartName mengandung "HOUSING".')

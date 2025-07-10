@@ -1735,10 +1735,12 @@ def cleaning_process(df):
 				pivot_pcs = pivot_pcs[[col for col in ordered_pcs_cols if col in pivot_pcs.columns]]
 				pivot_lot = pivot_lot[[col for col in ordered_lot_cols if col in pivot_lot.columns]]
 
-				st.write('Tabel Khusus Housing Horn (lot) - PT. HDI - Barrel 4')
-				st.dataframe(pivot_lot, use_container_width=True)
-				st.write('Tabel Housing Horn (pcs) - PT. HDI - Barrel 4')
-				st.dataframe(pivot_pcs, use_container_width=True)
+				# st.write('Tabel Khusus Housing Horn (lot) - PT. HDI - Barrel 4')
+				with st.expander("Klik untuk melihat Tabel Khusus Housing Horn (lot) - PT. HDI - Barrel 4", expanded=False):
+					st.dataframe(pivot_lot, use_container_width=True)
+				# st.write('Tabel Housing Horn (pcs) - PT. HDI - Barrel 4')
+				with st.expander("Klik untuk melihat Tabel Housing Horn (pcs) - PT. HDI - Barrel 4", expanded=False):
+					st.dataframe(pivot_pcs, use_container_width=True)
 			else:
 				st.info('Tidak ada data Housing Horn untuk Barrel 4, Cust.ID=HDI, PartName mengandung "HOUSING".')
 		#endregion : Tampilkan tabel khusus untuk Barrel 4 cust.id 'HDI' dan partname dengan awalan 'HOUSING'**** - 10jUL2025

@@ -1658,7 +1658,7 @@ def cleaning_process(df):
 			st.markdown("---")
 			DateRange(df3)
 			# Filter data: Line = 'Barrel 4', Cust.ID = 'HDI', PartName contains 'HOUSING'
-			st.dataframe(df, use_container_width=True)
+			st.dataframe(dataframe1, use_container_width=True)
 			df_housing = df[
 				(df['Line'] == 'Barrel 4') &
 				(df['Cust.ID'] == 'HDI') &

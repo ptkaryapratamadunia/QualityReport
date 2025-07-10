@@ -1658,7 +1658,7 @@ def cleaning_process(df):
 			st.markdown("---")
 			DateRange(df3)
 			# Filter data: Line = 'Barrel 4', Cust.ID = 'HDI', PartName contains 'HOUSING'
-			st.dataframe(df_with_pcs, use_container_width=True)
+			# st.dataframe(df_with_pcs, use_container_width=True)........untuk menguji bahwa df yg diambil benar mengandung pcs dari baris 597 di atas
 			df_housing = df_with_pcs[
 				(df_with_pcs['Line'] == 'Barrel 4') &
 				(df_with_pcs['Cust.ID'] == 'HDI') &

@@ -594,7 +594,7 @@ def cleaning_process(df):
 	#------------
 		df = dataframe1
 
-		
+		df_with_pcs = df.copy()		#added 10Jul2025 untuk menampilkan HDI Housing (pcs)
 
 		#------------- merapihkan kolom sama dengan target looker 21Oct2024
 		# Menghapus kolom tambahan 19Nov2024 kolom berisi jenis NG satuan pcs
@@ -1658,11 +1658,11 @@ def cleaning_process(df):
 			st.markdown("---")
 			DateRange(df3)
 			# Filter data: Line = 'Barrel 4', Cust.ID = 'HDI', PartName contains 'HOUSING'
-			st.dataframe(dataframe1, use_container_width=True)
-			df_housing = df[
-				(df['Line'] == 'Barrel 4') &
-				(df['Cust.ID'] == 'HDI') &
-				(df['PartName'].str.contains('HOUSING', case=False, na=False))
+			st.dataframe(df_with_pcs, use_container_width=True)
+			df_housing = df_with_pcs[
+				(df_with_pcs['Line'] == 'Barrel 4') &
+				(df_with_pcs['Cust.ID'] == 'HDI') &
+				(df_with_pcs['PartName'].str.contains('HOUSING', case=False, na=False))
 			].copy()
 
 			if not df_housing.empty:

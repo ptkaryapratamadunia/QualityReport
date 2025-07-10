@@ -1688,9 +1688,9 @@ def cleaning_process(df):
 				total_row_pcs = {
 					'PartName': 'TOTAL',
 					'OK (pcs)': pivot_pcs['OK (pcs)'].sum(),
-					'Tot.Insp (pcs)': pivot_pcs['Tot.Insp (pcs)'].sum(),
 					'NG (pcs)': pivot_pcs['NG (pcs)'].sum(),
-					'NGM (pcs)': pivot_pcs['NGM (pcs)'].sum()
+					'NGM (pcs)': pivot_pcs['NGM (pcs)'].sum(),
+					'Tot.Insp (pcs)': pivot_pcs['Tot.Insp (pcs)'].sum()
 				}
 				pivot_pcs = pd.concat([pivot_pcs, pd.DataFrame([total_row_pcs])], ignore_index=True)
 
@@ -1716,9 +1716,9 @@ def cleaning_process(df):
 				total_row_lot = {
 					'PartName': 'TOTAL',
 					'OK (lot)': pivot_lot['OK (lot)'].sum(),
-					'Tot.Insp (lot)': pivot_lot['Tot.Insp (lot)'].sum(),
 					'NG (lot)': pivot_lot['NG (lot)'].sum(),
-					'NGM (lot)': pivot_lot['NGM (lot)'].sum()
+					'NGM (lot)': pivot_lot['NGM (lot)'].sum(),
+					'Tot.Insp (lot)': pivot_lot['Tot.Insp (lot)'].sum()
 				}
 				pivot_lot = pd.concat([pivot_lot, pd.DataFrame([total_row_lot])], ignore_index=True)
 
@@ -1728,14 +1728,16 @@ def cleaning_process(df):
 				for col in ['OK (lot)', 'Tot.Insp (lot)', 'NG (lot)', 'NGM (lot)']:
 					pivot_lot[col] = pd.to_numeric(pivot_lot[col], errors='coerce').map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
 
-				# Tampilkan dalam 2 kolom
-				# col_lot, col_pcs = st.columns(2)
-				# with col_lot:
-					st.write('Tabel Housing Horn (Satuan Lot, Group by PartName)')
-					st.dataframe(pivot_lot, use_container_width=True)
-				# with col_pcs:
-					st.write('Tabel Housing Horn (Satuan PCS, Group by PartName)')
-					st.dataframe(pivot_pcs, use_container_width=True)
+				# Urutkan kolom: OK, NG, NGM, Tot.Insp
+				ordered_pcs_cols = ['PartName', 'OK (pcs)', 'NG (pcs)', 'NGM (pcs)', 'Tot.Insp (pcs)']
+				ordered_lot_cols = ['PartName', 'OK (lot)', 'NG (lot)', 'NGM (lot)', 'Tot.Insp (lot)']
+				pivot_pcs = pivot_pcs[[col for col in ordered_pcs_cols if col in pivot_pcs.columns]]
+				pivot_lot = pivot_lot[[col for col in ordered_lot_cols if col in pivot_lot.columns]]
+
+				st.write('Tabel Housing Horn (Satuan Lot, Group by PartName)')
+				st.dataframe(pivot_lot, use_container_width=True)
+				st.write('Tabel Housing Horn (Satuan PCS, Group by PartName)')
+				st.dataframe(pivot_pcs, use_container_width=True)
 			else:
 				st.info('Tidak ada data Housing Horn untuk Barrel 4, Cust.ID=HDI, PartName mengandung "HOUSING".')
 		#endregion : Tampilkan tabel khusus untuk Barrel 4 cust.id 'HDI' dan partname dengan awalan 'HOUSING'**** - 10jUL2015

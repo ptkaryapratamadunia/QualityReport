@@ -1658,6 +1658,7 @@ def cleaning_process(df):
 			st.markdown("---")
 			DateRange(df3)
 			# Filter data: Line = 'Barrel 4', Cust.ID = 'HDI', PartName contains 'HOUSING'
+			# Filter data Housing Horn
 			df_housing = df[
 				(df['Line'] == 'Barrel 4') &
 				(df['Cust.ID'] == 'HDI') &
@@ -1678,11 +1679,16 @@ def cleaning_process(df):
 				df_housing['Qty OK (lot)'] = df_housing['Insp(B/H)'] - df_housing['NG(B/H)']
 				df_housing['Qty OK (pcs)'] = df_housing['QInspec'] - df_housing['Qty(NG)']
 
-				# Tabel LOT
-				lot_cols = [
-					'Housing Horn', 'NG_%', 'NG(B/H)', 'NG MATERIAL', 'Qty OK (lot)', 'Insp(B/H)'
-				]
-				df_lot = df_housing[lot_cols].copy()
+				# Group by Housing Horn (PartName)
+				group_cols = ['Housing Horn']
+				agg_dict_lot = {
+					'NG_%': 'mean',
+					'NG(B/H)': 'sum',
+					'NG MATERIAL': 'sum',
+					'Qty OK (lot)': 'sum',
+					'Insp(B/H)': 'sum'
+				}
+				df_lot = df_housing.groupby(group_cols, as_index=False).agg(agg_dict_lot)
 				df_lot = df_lot.rename(columns={
 					'NG_%': 'NG (%)',
 					'NG(B/H)': 'Qty NG (lot)',
@@ -1696,11 +1702,11 @@ def cleaning_process(df):
 				total_row_lot = {
 					'Housing Horn': 'TOTAL',
 					'NG (%)': df_lot['NG (%)'].astype(float).mean(),
-					'Qty NG (lot)': df_lot['Qty NG (lot)'].replace('', 0).astype(float).sum(),
-					'NG MATERIAL (lot)': df_lot['NG MATERIAL (lot)'].replace('', 0).astype(float).sum(),
-					'Qty OK (lot)': df_lot['Qty OK (lot)'].replace('', 0).astype(float).sum(),
-					'Qty Insp (lot)': df_lot['Qty Insp (lot)'].replace('', 0).astype(float).sum(),
-					'Total': df_lot['Total'].replace('', 0).astype(float).sum()
+					'Qty NG (lot)': df_lot['Qty NG (lot)'].astype(float).sum(),
+					'NG MATERIAL (lot)': df_lot['NG MATERIAL (lot)'].astype(float).sum(),
+					'Qty OK (lot)': df_lot['Qty OK (lot)'].astype(float).sum(),
+					'Qty Insp (lot)': df_lot['Qty Insp (lot)'].astype(float).sum(),
+					'Total': df_lot['Total'].astype(float).sum()
 				}
 				df_lot = pd.concat([df_lot, pd.DataFrame([total_row_lot])], ignore_index=True)
 
@@ -1708,11 +1714,14 @@ def cleaning_process(df):
 				for col in ['NG (%)','Qty NG (lot)', 'NG MATERIAL (lot)', 'Qty OK (lot)', 'Qty Insp (lot)', 'Total']:
 					df_lot[col] = pd.to_numeric(df_lot[col], errors='coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "")
 
-				# Tabel PCS
-				pcs_cols = [
-					'Housing Horn', 'Qty(NG)', 'NG MATERIAL', 'Qty OK (pcs)', 'QInspec'
-				]
-				df_pcs = df_housing[pcs_cols].copy()
+				# PCS table
+				agg_dict_pcs = {
+					'Qty(NG)': 'sum',
+					'NG MATERIAL': 'sum',
+					'Qty OK (pcs)': 'sum',
+					'QInspec': 'sum'
+				}
+				df_pcs = df_housing.groupby(group_cols, as_index=False).agg(agg_dict_pcs)
 				df_pcs = df_pcs.rename(columns={
 					'Qty(NG)': 'Qty NG (pcs)',
 					'NG MATERIAL': 'NG MATERIAL (pcs)',
@@ -1724,11 +1733,11 @@ def cleaning_process(df):
 				# Baris total
 				total_row_pcs = {
 					'Housing Horn': 'TOTAL',
-					'Qty NG (pcs)': df_pcs['Qty NG (pcs)'].replace('', 0).astype(float).sum(),
-					'NG MATERIAL (pcs)': df_pcs['NG MATERIAL (pcs)'].replace('', 0).astype(float).sum(),
-					'Qty OK (pcs)': df_pcs['Qty OK (pcs)'].replace('', 0).astype(float).sum(),
-					'Qty Insp (pcs)': df_pcs['Qty Insp (pcs)'].replace('', 0).astype(float).sum(),
-					'Total': df_pcs['Total'].replace('', 0).astype(float).sum()
+					'Qty NG (pcs)': df_pcs['Qty NG (pcs)'].astype(float).sum(),
+					'NG MATERIAL (pcs)': df_pcs['NG MATERIAL (pcs)'].astype(float).sum(),
+					'Qty OK (pcs)': df_pcs['Qty OK (pcs)'].astype(float).sum(),
+					'Qty Insp (pcs)': df_pcs['Qty Insp (pcs)'].astype(float).sum(),
+					'Total': df_pcs['Total'].astype(float).sum()
 				}
 				df_pcs = pd.concat([df_pcs, pd.DataFrame([total_row_pcs])], ignore_index=True)
 
@@ -1738,10 +1747,10 @@ def cleaning_process(df):
 				# Tampilkan dalam 2 kolom
 				col_lot, col_pcs = st.columns(2)
 				with col_lot:
-					st.write('Tabel Housing Horn (Satuan Lot)')
+					st.write('Tabel Housing Horn (Satuan Lot, Group by PartName)')
 					st.dataframe(df_lot, use_container_width=True)
 				with col_pcs:
-					st.write('Tabel Housing Horn (Satuan PCS)')
+					st.write('Tabel Housing Horn (Satuan PCS, Group by PartName)')
 					st.dataframe(df_pcs, use_container_width=True)
 			else:
 				st.info('Tidak ada data Housing Horn untuk Barrel 4, Cust.ID=HDI, PartName mengandung "HOUSING".')

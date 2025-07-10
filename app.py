@@ -827,10 +827,10 @@ def cleaning_process(df):
 			st.markdown("---")
 			DateRange(df3)
 			#Tampilkan tabel khusus untuk Barrel 4 cust.id 'HDI' dan partname dengan awalan 'HOUSING'**** - 10jUL2015
-			df3=df[(df['Cust.ID']=='HDI') & (df['PartName'].str.startswith('HOUSING'))]
+			df_HDI_HOUSING=df[(df['Cust.ID']=='HDI') & (df['PartName'].str.startswith('HOUSING'))]
 			st.write('Tabel khusus untuk Barrel 4 cust.id HDI dan PartName dengan awalan HOUSING')
-			st.dataframe(df3, use_container_width=True)
-			
+			st.dataframe(df_HDI_HOUSING, use_container_width=True)
+
 			st.markdown("---")
 			DateRange(df3)
 			#Grafik area

@@ -1683,6 +1683,7 @@ def cleaning_process(df):
 			].copy()
 
 			# --- METRIC: Total Housing Horn ---
+			st.markdown("### Total Housing Horn Metrics")
 			if not df_housing.empty:
 				total_ok_pcs = df_housing['OK(pcs)'].sum() if 'OK(pcs)' in df_housing.columns else 0
 				total_ng_pcs = df_housing['Qty(NG)'].sum() if 'Qty(NG)' in df_housing.columns else 0

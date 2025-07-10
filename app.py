@@ -1729,11 +1729,11 @@ def cleaning_process(df):
 					pivot_lot[col] = pd.to_numeric(pivot_lot[col], errors='coerce').map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
 
 				# Tampilkan dalam 2 kolom
-				col_lot, col_pcs = st.columns(2)
-				with col_lot:
+				# col_lot, col_pcs = st.columns(2)
+				# with col_lot:
 					st.write('Tabel Housing Horn (Satuan Lot, Group by PartName)')
 					st.dataframe(pivot_lot, use_container_width=True)
-				with col_pcs:
+				# with col_pcs:
 					st.write('Tabel Housing Horn (Satuan PCS, Group by PartName)')
 					st.dataframe(pivot_pcs, use_container_width=True)
 			else:

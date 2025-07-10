@@ -1653,9 +1653,9 @@ def cleaning_process(df):
 
 		#endregion : kolom	untuk tabel BY Line & Kategori	
 
+		#region : Tampilkan tabel khusus untuk Barrel 4 cust.id 'HDI' dan partname dengan awalan 'HOUSING'**** - 10jUL2015
 			st.markdown("---")
 			DateRange(df3)
-			#Tampilkan tabel khusus untuk Barrel 4 cust.id 'HDI' dan partname dengan awalan 'HOUSING'**** - 10jUL2015
 			# Filter data: Line = 'Barrel 4', Cust.ID = 'HDI', PartName contains 'HOUSING'
 			df_housing = df[
 				(df['Line'] == 'Barrel 4') &
@@ -1693,16 +1693,42 @@ def cleaning_process(df):
 					'QInspec': 'Qty Insp (pcs)'
 				})
 
+				# Tambahkan baris Total (sum untuk semua kolom numerik, mean untuk NG (%))
+				total_row = {
+					'Housing Horn': 'TOTAL',
+					'NG (%)': pivot['NG (%)'].astype(float).mean(),
+					'Qty NG (lot)': pivot['Qty NG (lot)'].replace('', 0).astype(float).sum(),
+					'Qty OK (lot)': pivot['Qty OK (lot)'].replace('', 0).astype(float).sum(),
+					'Qty Insp (lot)': pivot['Qty Insp (lot)'].replace('', 0).astype(float).sum(),
+					'Qty NG (pcs)': pivot['Qty NG (pcs)'].replace('', 0).astype(float).sum(),
+					'Qty OK (pcs)': pivot['Qty OK (pcs)'].replace('', 0).astype(float).sum(),
+					'Qty Insp (pcs)': pivot['Qty Insp (pcs)'].replace('', 0).astype(float).sum(),
+				}
+				pivot = pd.concat([pivot, pd.DataFrame([total_row])], ignore_index=True)
+
 				# Format angka
 				for col in ['NG (%)']:
-					pivot[col] = pivot[col].map(lambda x: f"{x:.2f}" if pd.notnull(x) else "")
+					pivot[col] = pd.to_numeric(pivot[col], errors='coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "")
 				for col in ['Qty NG (lot)', 'Qty OK (lot)', 'Qty Insp (lot)', 'Qty NG (pcs)', 'Qty OK (pcs)', 'Qty Insp (pcs)']:
-					pivot[col] = pivot[col].map(lambda x: f"{x:,.0f}" if pd.notnull(x) else "")
+					pivot[col] = pd.to_numeric(pivot[col], errors='coerce').map(lambda x: f"{x:,.0f}" if pd.notnull(x) else "")
+
+				# Tambahkan kolom Total (sum baris untuk Qty, mean untuk NG (%))
+				def sum_row(row):
+					cols = ['Qty NG (lot)', 'Qty OK (lot)', 'Qty Insp (lot)', 'Qty NG (pcs)', 'Qty OK (pcs)', 'Qty Insp (pcs)']
+					vals = [float(row[c].replace(',', '')) if row[c] != '' else 0 for c in cols]
+					return f"{sum(vals):,.0f}"
+
+				pivot['Total'] = pivot.apply(lambda row: sum_row(row) if row['Housing Horn'] != 'TOTAL' else '', axis=1)
+				# Untuk baris TOTAL, isi kolom 'Total' dengan sum seluruh kolom Total
+				if not pivot[pivot['Housing Horn'] == 'TOTAL'].empty:
+					total_sum = pivot.loc[pivot['Housing Horn'] != 'TOTAL', 'Total'].replace('', 0).apply(lambda x: float(str(x).replace(',', ''))).sum()
+					pivot.loc[pivot['Housing Horn'] == 'TOTAL', 'Total'] = f"{total_sum:,.0f}"
 
 				st.write('Tabel Housing Horn (Barrel 4, Cust.ID=HDI, PartName mengandung "HOUSING")')
 				st.dataframe(pivot, use_container_width=True)
 			else:
 				st.info('Tidak ada data Housing Horn untuk Barrel 4, Cust.ID=HDI, PartName mengandung "HOUSING".')
+		#endregion : Tampilkan tabel khusus untuk Barrel 4 cust.id 'HDI' dan partname dengan awalan 'HOUSING'**** - 10jUL2015
 
 			st.markdown("---")
 			#groupby dataframe	---------------

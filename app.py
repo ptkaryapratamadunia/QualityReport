@@ -1669,7 +1669,7 @@ def cleaning_process(df):
 				# Pastikan kolom yang diperlukan ada
 				for col in ['OK(pcs)', 'QInspec', 'Qty(NG)', 'MTL/ SLipMelintir(pcs)']:
 					if col not in df_housing.columns:
-						df_housing[col] = df_housing[col]
+						df_housing[col] = 0
 
 				pivot_pcs = df_housing.pivot_table(
 					index='PartName',

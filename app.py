@@ -824,12 +824,7 @@ def cleaning_process(df):
 				st.write('Qty Insp(lot) by Line-Shift')
 				st.write(pt_InspLot_line_by_shift_transposed)
 				
-			st.markdown("---")
-			DateRange(df3)
-			#Tampilkan tabel khusus untuk Barrel 4 cust.id 'HDI' dan partname dengan awalan 'HOUSING'**** - 10jUL2015
-			df_HDI_HOUSING=df[(df['Cust.ID']=='HDI') & (df['PartName'].str.startswith('HOUSING'))]
-			st.write('Tabel khusus untuk Barrel 4 cust.id HDI dan PartName dengan awalan HOUSING')
-			st.dataframe(df_HDI_HOUSING, use_container_width=True)
+			
 
 			st.markdown("---")
 			DateRange(df3)
@@ -1657,6 +1652,57 @@ def cleaning_process(df):
 				st.write(pt_kategori_line2)
 
 		#endregion : kolom	untuk tabel BY Line & Kategori	
+
+			st.markdown("---")
+			DateRange(df3)
+			#Tampilkan tabel khusus untuk Barrel 4 cust.id 'HDI' dan partname dengan awalan 'HOUSING'**** - 10jUL2015
+			# Filter data: Line = 'Barrel 4', Cust.ID = 'HDI', PartName contains 'HOUSING'
+			df_housing = df[
+				(df['Line'] == 'Barrel 4') &
+				(df['Cust.ID'] == 'HDI') &
+				(df['PartName'].str.contains('HOUSING', case=False, na=False))
+			].copy()
+
+			if not df_housing.empty:
+				# Buat kolom 'Housing Horn' dari PartName (atau gunakan PartName jika tidak ada kolom khusus)
+				df_housing['Housing Horn'] = df_housing['PartName']
+
+				# Hitung Qty OK (lot) dan Qty OK (pcs)
+				df_housing['Qty OK (lot)'] = df_housing['Insp(B/H)'] - df_housing['NG(B/H)']
+				df_housing['Qty OK (pcs)'] = df_housing['QInspec'] - df_housing['Qty(NG)']
+
+				# Pivot tabel
+				pivot = df_housing.groupby('Housing Horn').agg({
+					'NG_%': 'mean',
+					'NG(B/H)': 'sum',
+					'Qty OK (lot)': 'sum',
+					'Insp(B/H)': 'sum',
+					'Qty(NG)': 'sum',
+					'Qty OK (pcs)': 'sum',
+					'QInspec': 'sum'
+				}).reset_index()
+
+				# Rename columns for display
+				pivot = pivot.rename(columns={
+					'NG_%': 'NG (%)',
+					'NG(B/H)': 'Qty NG (lot)',
+					'Qty OK (lot)': 'Qty OK (lot)',
+					'Insp(B/H)': 'Qty Insp (lot)',
+					'Qty(NG)': 'Qty NG (pcs)',
+					'Qty OK (pcs)': 'Qty OK (pcs)',
+					'QInspec': 'Qty Insp (pcs)'
+				})
+
+				# Format angka
+				for col in ['NG (%)']:
+					pivot[col] = pivot[col].map(lambda x: f"{x:.2f}" if pd.notnull(x) else "")
+				for col in ['Qty NG (lot)', 'Qty OK (lot)', 'Qty Insp (lot)', 'Qty NG (pcs)', 'Qty OK (pcs)', 'Qty Insp (pcs)']:
+					pivot[col] = pivot[col].map(lambda x: f"{x:,.0f}" if pd.notnull(x) else "")
+
+				st.write('Tabel Housing Horn (Barrel 4, Cust.ID=HDI, PartName mengandung "HOUSING")')
+				st.dataframe(pivot, use_container_width=True)
+			else:
+				st.info('Tidak ada data Housing Horn untuk Barrel 4, Cust.ID=HDI, PartName mengandung "HOUSING".')
 
 			st.markdown("---")
 			#groupby dataframe	---------------

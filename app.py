@@ -1734,9 +1734,9 @@ def cleaning_process(df):
 				pivot_pcs = pivot_pcs[[col for col in ordered_pcs_cols if col in pivot_pcs.columns]]
 				pivot_lot = pivot_lot[[col for col in ordered_lot_cols if col in pivot_lot.columns]]
 
-				st.write('Tabel Housing Horn (Satuan Lot, Group by PartName)')
+				st.write('Tabel Khusus Housing Horn (lot) - PT. HDI - Barrel 4')
 				st.dataframe(pivot_lot, use_container_width=True)
-				st.write('Tabel Housing Horn (Satuan PCS, Group by PartName)')
+				st.write('Tabel Housing Horn (pcs) - PT. HDI - Barrel 4')
 				st.dataframe(pivot_pcs, use_container_width=True)
 			else:
 				st.info('Tidak ada data Housing Horn untuk Barrel 4, Cust.ID=HDI, PartName mengandung "HOUSING".')

@@ -594,7 +594,7 @@ def cleaning_process(df):
 	#------------
 		df = dataframe1
 
-		df_with_pcs = df.copy()		#added 10Jul2025 untuk menampilkan HDI Housing (pcs)
+		df_with_pcs = df.copy()		#added 10Jul2025 untuk menampilkan HDI Housing (pcs) stdr baris 597
 
 		#------------- merapihkan kolom sama dengan target looker 21Oct2024
 		# Menghapus kolom tambahan 19Nov2024 kolom berisi jenis NG satuan pcs
@@ -798,10 +798,23 @@ def cleaning_process(df):
 				
 			with col1: #NG % by Line and Shift - 26Nov2024
 				
-				pt_NGpersen_line_by_shift=pd.pivot_table(df,values='NG_%',index='Line',columns='Shift',aggfunc='mean',margins=True,margins_name='Total')
+				pt_NGpersen_line_by_shift = pd.pivot_table(
+					df,
+					values='NG_%',
+					index='Line',
+					columns='Shift',
+					aggfunc='mean',
+					margins=True,
+					margins_name='Total'
+				)
 				# Bulatkan nilai-nilai ke angka bulat terdekat
 				pt_NGpersen_line_by_shift = pt_NGpersen_line_by_shift.round(2)
 				pt_NGpersen_line_by_shift_transposed = pt_NGpersen_line_by_shift.transpose()
+
+				# Hapus baris 'Total' jika ada
+				if 'Total' in pt_NGpersen_line_by_shift_transposed.index:
+					pt_NGpersen_line_by_shift_transposed = pt_NGpersen_line_by_shift_transposed.drop('Total', axis=0)
+
 				st.write('NG (%) by Line & Shift')
 				st.write(pt_NGpersen_line_by_shift_transposed)
 				

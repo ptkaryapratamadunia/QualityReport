@@ -1930,7 +1930,7 @@ def cleaning_process(df):
 				else:
 					st.write("Kolom 'NG_%' tidak ditemukan dalam data RING Parts.")
 
-				st.markdown("---")
+				
 			with lb4_ring_kanan:
 				total_production_Ring = df_RingParts['Insp(B/H)'].sum()
 				total_production_Ring = format_with_comma2(total_production_Ring)

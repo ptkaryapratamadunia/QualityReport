@@ -1920,6 +1920,14 @@ def cleaning_process(df):
 				total_row_RingParts = total_row_RingParts[cols]
 				total_row_RingParts = total_row_RingParts.map(format_with_comma)
 				st.write(total_row_RingParts)
+
+				#hitung total rata-rata NG (%) untuk RING Parts
+				if 'NG_%' in df_RingParts.columns:
+					ng_percent_Ring = df_RingParts['NG_%'].mean()
+					ng_percent_Ring = format_with_comma2(ng_percent_Ring)
+					st.write(f"Rata-rata NG (%) untuk RING Parts: {ng_percent_Ring}")
+				else:
+					st.write("Kolom 'NG_%' tidak ditemukan dalam data RING Parts.")
 			with lb4_ring_kanan:
 				total_production_Ring = df_RingParts['Insp(B/H)'].sum()
 				total_production_Ring = format_with_comma2(total_production_Ring)

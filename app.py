@@ -824,6 +824,12 @@ def cleaning_process(df):
 				st.write('Qty Insp(lot) by Line-Shift')
 				st.write(pt_InspLot_line_by_shift_transposed)
 				
+			st.markdown("---")
+			DateRange(df3)
+			#Tampilkan tabel khusus untuk Barrel 4 cust.id 'HDI' dan partname dengan awalan 'HOUSING'**** - 10jUL2015
+			df3=df[(df['Cust.ID']=='HDI') & (df['PartName'].str.startswith('HOUSING'))]
+			st.write('Tabel khusus untuk Barrel 4 cust.id HDI dan PartName dengan awalan HOUSING')
+			st.dataframe(df3, use_container_width=True)
 			
 			st.markdown("---")
 			DateRange(df3)

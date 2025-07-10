@@ -1666,43 +1666,23 @@ def cleaning_process(df):
 
 			if not df_housing.empty:
 				# --- Pivot Table PCS ---
-				# Normalisasi nama kolom agar tidak ada variasi spasi/case
-				df_housing.columns = [col.strip().replace(' ', '').lower() for col in df_housing.columns]
-				# Mapping nama kolom normal ke nama asli
-				col_map = {
-					'ok(pcs)': 'OK(pcs)',
-					'qinspec': 'QInspec',
-					'qty(ng)': 'Qty(NG)',
-					'mtl/slipmelintir(pcs)': None
-				}
-				# Cari kolom NGM (pcs) yang sesuai
-				ngm_pcs_col = None
-				for col in df_housing.columns:
-					if 'mtl/slipmelintir' in col and '(pcs)' in col:
-						ngm_pcs_col = col
-						break
-				if ngm_pcs_col is None:
-					ngm_pcs_col = 'mtl/slipmelintir(pcs)'
-					df_housing[ngm_pcs_col] = 0
-				# Siapkan nama kolom yang akan dipakai
-				cols_pcs = ['ok(pcs)', 'qinspec', 'qty(ng)', ngm_pcs_col]
-				for col in cols_pcs:
-					if col not in df_housing.columns:
-						df_housing[col] = 0
+				# Pastikan kolom yang diperlukan ada
+				# for col in ['OK(pcs)', 'QInspec', 'Qty(NG)', 'MTL/ SLipMelintir(pcs)']:
+				# 	if col not in df_housing.columns:
+				# 		df_housing[col] = 0
+
 				pivot_pcs = df_housing.pivot_table(
-					index='partname',
-					values=cols_pcs,
+					index='PartName',
+					values=['OK(pcs)', 'QInspec', 'Qty(NG)', 'MTL/ SLipMelintir(pcs)'],
 					aggfunc='sum',
 					fill_value=0
 				).reset_index()
-				# Rename kolom hasil pivot ke format tampilan
-				rename_dict = {
-					'ok(pcs)': 'OK (pcs)',
-					'qinspec': 'Tot.Insp (pcs)',
-					'qty(ng)': 'NG (pcs)',
-					ngm_pcs_col: 'NGM (pcs)'
-				}
-				pivot_pcs = pivot_pcs.rename(columns=rename_dict)
+				pivot_pcs = pivot_pcs.rename(columns={
+					'OK(pcs)': 'OK (pcs)',
+					'QInspec': 'Tot.Insp (pcs)',
+					'Qty(NG)': 'NG (pcs)',
+					'MTL/ SLipMelintir(pcs)': 'NGM (pcs)'
+				})
 
 				# Tambahkan baris TOTAL untuk PCS
 				total_row_pcs = {

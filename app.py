@@ -1667,7 +1667,7 @@ def cleaning_process(df):
 			if not df_housing.empty:
 				# --- Pivot Table PCS ---
 				# Pastikan kolom yang diperlukan ada
-				for col in ['OK(pcs)', 'QInspec', 'Qty(NG)', 'MTL/ SLipMelintir(pcs)']:
+				for col in ['OK(pcs)', 'QInspec', 'Qty(NG)', 'MTL/SLipMelintir(pcs)']:
 					if col not in df_housing.columns:
 						df_housing[col] = 0
 
@@ -1684,8 +1684,18 @@ def cleaning_process(df):
 					'MTL/ SLipMelintir(pcs)': 'NGM (pcs)'
 				})
 
+				# Tambahkan baris TOTAL untuk PCS
+				total_row_pcs = {
+					'PartName': 'TOTAL',
+					'OK (pcs)': pivot_pcs['OK (pcs)'].sum(),
+					'Tot.Insp (pcs)': pivot_pcs['Tot.Insp (pcs)'].sum(),
+					'NG (pcs)': pivot_pcs['NG (pcs)'].sum(),
+					'NGM (pcs)': pivot_pcs['NGM (pcs)'].sum()
+				}
+				pivot_pcs = pd.concat([pivot_pcs, pd.DataFrame([total_row_pcs])], ignore_index=True)
+
 				# --- Pivot Table LOT ---
-				for col in ['OK(B/H)', 'Insp(B/H)', 'NG(B/H)', 'MTL/ SLipMelintir']:
+				for col in ['OK(B/H)', 'Insp(B/H)', 'NG(B/H)', 'MTL/SLipMelintir']:
 					if col not in df_housing.columns:
 						df_housing[col] = 0
 
@@ -1701,6 +1711,16 @@ def cleaning_process(df):
 					'NG(B/H)': 'NG (lot)',
 					'MTL/ SLipMelintir': 'NGM (lot)'
 				})
+
+				# Tambahkan baris TOTAL untuk LOT
+				total_row_lot = {
+					'PartName': 'TOTAL',
+					'OK (lot)': pivot_lot['OK (lot)'].sum(),
+					'Tot.Insp (lot)': pivot_lot['Tot.Insp (lot)'].sum(),
+					'NG (lot)': pivot_lot['NG (lot)'].sum(),
+					'NGM (lot)': pivot_lot['NGM (lot)'].sum()
+				}
+				pivot_lot = pd.concat([pivot_lot, pd.DataFrame([total_row_lot])], ignore_index=True)
 
 				# Format angka
 				for col in ['OK (pcs)', 'Tot.Insp (pcs)', 'NG (pcs)', 'NGM (pcs)']:

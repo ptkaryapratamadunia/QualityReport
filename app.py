@@ -1714,7 +1714,7 @@ def cleaning_process(df):
 					pivot[col] = pd.to_numeric(pivot[col], errors='coerce').map(lambda x: f"{x:,.0f}" if pd.notnull(x) else "")
 
 				st.write('Tabel Khusus Part Housing Horn PT. HDI - Barrel 4')
-				st.write(pivot, use_container_width=True,index=False)
+				st.dataframe(pivot, use_container_width=True)
 			else:
 				st.info('Tidak ada data Housing Horn untuk Barrel 4, Cust.ID=HDI, PartName mengandung "HOUSING".')
 		#endregion : Tampilkan tabel khusus untuk Barrel 4 cust.id 'HDI' dan partname dengan awalan 'HOUSING'**** - 10jUL2015

@@ -2418,8 +2418,6 @@ def cleaning_process(df):
 									margins=True, 
 									margins_name='Total')
 				
-				
-
 				# Plotting the graph
 				pt_MesinNo = pt_MesinNo.reset_index()
 				pt_MesinNo = pt_MesinNo[pt_MesinNo['M/C No.'] != 'Total']
@@ -2587,7 +2585,7 @@ def cleaning_process(df):
 					)
 				)
 				st.plotly_chart(fig, use_container_width=True)
-			#endregion
+		#endregion
 		
 			
 			st.markdown("---")
@@ -2777,9 +2775,8 @@ def cleaning_process(df):
 			st.dataframe(tabel_harian, use_container_width=True)
 		#endregion
 
-		# st.markdown("---")
-		# print2PDF()
-
+		
+	#region Summary Trial
 		with sum_tab2: # Summary Trial 
 			st.subheader("Summary Trial")
 			DateRange(df3)
@@ -2972,8 +2969,7 @@ def cleaning_process(df):
 			else:
 				st.info("Tidak ada data TRIAL untuk ditampilkan.")
 
-		
-
+	#endregion TRIAL
 
 		with sum_tab3: # Summary NG by Line
 			#menampilkan tabel berdasarkan filter - 19Nov2024

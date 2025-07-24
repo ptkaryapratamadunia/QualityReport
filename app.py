@@ -571,8 +571,8 @@ def cleaning_process(df):
 		#Data setelah dirapihkan (cleaning)
 		#dataframe awal
 		with st.expander("Preview Data setelah dirapihkan (Full - include 'TRIAL')"):
-			df3 = dataframe_explorer(df, case=False)
-			st.dataframe(df3, use_container_width=True)
+			df_ori_pcs = dataframe_explorer(df, case=False)
+			st.dataframe(df_ori_pcs, use_container_width=True)
 
 			#Filter data yang kolom NoCard-nya mengandung kata "TRIAL"
 			# Pisahkan data berdasarkan kolom NoCard yang mengandung kata "TRIAL"
@@ -699,16 +699,16 @@ def cleaning_process(df):
 			st.subheader('Summary Data')
 			#---------added 24Mar2025 
 			#Change to def 20May 2025
-			def DateRange(df3):
-				df3['Date'] = pd.to_datetime(df3['Date'])
-				start_date = df3['Date'].min().strftime('%d-%b-%Y')
-				end_date = df3['Date'].max().strftime('%d-%b-%Y')
+			def DateRange(df_ori_pcs):
+				df_ori_pcs['Date'] = pd.to_datetime(df_ori_pcs['Date'])
+				start_date = df_ori_pcs['Date'].min().strftime('%d-%b-%Y')
+				end_date = df_ori_pcs['Date'].max().strftime('%d-%b-%Y')
 				st.write(f"""
 				Periode dari Tanggal: {start_date}
 				sampai Tanggal : {end_date}
 				""")
 			
-			DateRange(df3)
+			DateRange(df_ori_pcs)
 		
 			kiri,tengah,kanan=st.columns(3)
 			with kiri:	#Table NG (%) by Line & Month-edited use formula  16Jun2025
@@ -846,7 +846,7 @@ def cleaning_process(df):
 			
 
 			st.markdown("---")
-			DateRange(df3)
+			DateRange(df_ori_pcs)
 			#Grafik area
 			grafik_kiri,grafik_kanan=st.columns(2)
 
@@ -931,7 +931,7 @@ def cleaning_process(df):
 
 			st.markdown("---")
 			#---------added 24Mar2025
-			DateRange(df3)	
+			DateRange(df_ori_pcs)	
 			#---------
 
 			chart_kiri,chart_kanan=st.columns(2)	#added 19March2025 08.59PM @home 
@@ -1072,7 +1072,7 @@ def cleaning_process(df):
 
 			#grafik PIE ----------------------
 			st.markdown("---")
-			DateRange(df3)
+			DateRange(df_ori_pcs)
 
 			pie_kiri,pie_kanan=st.columns(2)
 
@@ -1115,7 +1115,7 @@ def cleaning_process(df):
 			st.markdown("---")
 			# ---------------------------------------
 			#---------added 24Mar2025
-			DateRange(df3)
+			DateRange(df_ori_pcs)
 			
 			#---------
 			# Membuat tabel pivot NG by Customer and LINE---------------
@@ -1285,7 +1285,7 @@ def cleaning_process(df):
 			
 			st.markdown("---")
 
-			DateRange(df3)
+			DateRange(df_ori_pcs)
 
 			#--------- pivot Qty NG (lot) by Line dan Customer
 			pt_customer_line2=pd.pivot_table(df,values='NG(B/H)',index='Cust.ID',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
@@ -1450,7 +1450,7 @@ def cleaning_process(df):
 
 			st.markdown("---")
 
-			DateRange(df3)
+			DateRange(df_ori_pcs)
 			
 			#--------- pivot Qty Inspected (lot) by Line dan Customer
 			pt_customer_line2=pd.pivot_table(df,values='Insp(B/H)',index='Cust.ID',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
@@ -1620,13 +1620,13 @@ def cleaning_process(df):
 
 				#---------added 24Mar2025
 				
-				df3['Date'] = pd.to_datetime(df3['Date'])
+				df_ori_pcs['Date'] = pd.to_datetime(df_ori_pcs['Date'])
 
 				# Tanggal tertua
-				start_date = df3['Date'].min().strftime('%d-%b-%Y')
+				start_date = df_ori_pcs['Date'].min().strftime('%d-%b-%Y')
 
 				# Tanggal termuda
-				end_date = df3['Date'].max().strftime('%d-%b-%Y')
+				end_date = df_ori_pcs['Date'].max().strftime('%d-%b-%Y')
 				st.write(f"""
 				Periode dari Tanggal: {start_date}
 				sampai Tanggal : {end_date}
@@ -1645,7 +1645,7 @@ def cleaning_process(df):
 			#-----------------
 			st.markdown("---")
 
-			DateRange(df3)
+			DateRange(df_ori_pcs)
 		#region : kolom	untuk tabel BY Line & Kategori
 			colkir,colteng1,colteng2,colnan=st.columns(4)
 			
@@ -1675,7 +1675,7 @@ def cleaning_process(df):
 		#region : Tampilkan tabel khusus untuk Barrel 4 cust.id 'HDI' dan partname dengan awalan 'HOUSING'**** - 10jUL2025
 			st.markdown("---")
 			st.markdown("### Metrics for Housing Horn - PT.HDI - Barrel 4")
-			DateRange(df3)
+			DateRange(df_ori_pcs)
 			# Filter data: Line = 'Barrel 4', Cust.ID = 'HDI', PartName contains 'HOUSING'
 			df_housing = df_with_pcs[
 				(df_with_pcs['Line'] == 'Barrel 4') &
@@ -1800,7 +1800,7 @@ def cleaning_process(df):
 			st.markdown("---")
 			#groupby dataframe	---------------
 			#---------added 24Mar2025
-			DateRange(df3)	
+			DateRange(df_ori_pcs)	
 			#---------
 
 			#----------------- JUMLAH KOLOM TYPE NG ----------------
@@ -1961,7 +1961,7 @@ def cleaning_process(df):
 
 			st.markdown("---")
 
-			DateRange(df3)
+			DateRange(df_ori_pcs)
 			#tampilkan grafik batangnya -- 14Nov2024
 			barisB4, barisR1=st.columns(2)
 				
@@ -2064,7 +2064,7 @@ def cleaning_process(df):
 					),
 					bargap=0.2
 				)
-				DateRange(df3)  # Tampilkan rentang tanggal
+				DateRange(df_ori_pcs)  # Tampilkan rentang tanggal
 				st.plotly_chart(fig, use_container_width=True)
 			
 			with barisR1:	#baris kanan Grafik Vertical Bar R1 PARETO
@@ -2173,7 +2173,7 @@ def cleaning_process(df):
 				st.plotly_chart(fig, use_container_width=True)
 
 			st.markdown("---")
-			DateRange(df3)
+			DateRange(df_ori_pcs)
 			
 			#kolom lagi untuk grafik NG by Part Name B4 dan R1 only
 			sikir2,sinan2=st.columns(2)
@@ -2393,7 +2393,7 @@ def cleaning_process(df):
 			st.markdown("---")
 
 			#---------added 24Mar2025
-			DateRange(df3)	
+			DateRange(df_ori_pcs)	
 			
 			#---------
 			#--------------------------------------
@@ -2488,298 +2488,12 @@ def cleaning_process(df):
 
 			st.markdown("---")
 
-			st.write("Filter Data Harian Berdasarkan Line")
-		#region Pilihan Line untuk filter
-			df3['Date'] = pd.to_datetime(df3['Date'], errors='coerce').dt.date  # pastikan hanya tanggal (tanpa waktu)
-			date_min = df3['Date'].min()
-			date_max = df3['Date'].max()
-
-			line_options = df3['Line'].dropna().unique().tolist()
-			selected_line = st.selectbox("Pilih Line yang ingin ditampilkan:", line_options)
-
-			# Filter df berdasarkan Line yang dipilih
-			df_daily = df3[df3['Line'] == selected_line].copy()
-
-			# Buat range tanggal lengkap
-			all_dates = pd.date_range(start=date_min, end=date_max, freq='D').date
-
-			# Group by Date (tanpa waktu), hitung rata-rata NG_% dan total Inspected
-			daily_ng = df_daily.groupby('Date', as_index=False)['NG_%'].mean()
-			daily_lot = df_daily.groupby('Date', as_index=False)['Insp(B/H)'].sum()
-
-			# Gabungkan data ke satu DataFrame
-			daily_plot = pd.merge(daily_ng, daily_lot, on='Date', how='outer')
-			daily_plot = daily_plot.set_index('Date').reindex(all_dates).fillna(0).reset_index()
-			daily_plot.rename(columns={'index': 'Date'}, inplace=True)
-
-			# Urutkan berdasarkan tanggal
-			daily_plot = daily_plot.sort_values('Date')
-
-			st.write(f" Tabel Data Harian untuk Line: {selected_line}")
-			# Tampilkan tabel data harian
-			with st.expander("Klik untuk melihat Tabel Data Harian", expanded=False):
-				st.write(daily_plot)
-			# st.write(daily_plot.set_index('Date').transpose())
-
-			# Jika tidak ada data, tampilkan info
-			if daily_plot.empty:
-				st.info("Tidak ada data harian untuk line ini.")
-			else:
-				# Pastikan data tidak kosong dan urut berdasarkan tanggal
-				daily_plot = daily_plot.copy()
-				daily_plot['Date'] = pd.to_datetime(daily_plot['Date'])
-				daily_plot = daily_plot.sort_values('Date')
-				daily_plot['Date_str'] = daily_plot['Date'].dt.strftime('%d-%b-%Y')
-
-				fig = go.Figure()
-
-				# Bar chart untuk Total_lot (Insp(B/H)) di axis primer
-				fig.add_trace(go.Bar(
-					x=daily_plot['Date_str'],
-					y=daily_plot['Insp(B/H)'],
-					name='Total Inspected (Lot)',
-					marker_color='#819A91',
-					yaxis='y1',
-					text=daily_plot['Insp(B/H)'].round(0).astype(int).astype(str),
-					textposition='inside'
-				))
-
-				# Line chart untuk NG_% di axis sekunder, value label warna merah
-				fig.add_trace(go.Scatter(
-					x=daily_plot['Date_str'],
-					y=daily_plot['NG_%'],
-					name='NG (%)',
-					mode='lines+markers+text',
-					marker_color='red',
-					line_color='red',
-					yaxis='y2',
-					text=[f"<span style='color:red'>{v:.2f}</span>" for v in daily_plot['NG_%']],
-					textposition='top center',
-					hoverinfo='text'
-				))
-
-				fig.update_layout(
-					title=f'Rata-rata NG (%) Harian & Total Inspected (Lot) - {selected_line}',
-					xaxis_title='',
-					yaxis=dict(
-						title='Total Inspected (Lot)',
-						titlefont=dict(color='#819A91'),
-						tickfont=dict(color='#819A91'),
-					),
-					yaxis2=dict(
-						title='Rata-rata NG (%)',
-						titlefont=dict(color='red'),
-						tickfont=dict(color='red'),
-						overlaying='y',
-						side='right'
-					),
-					xaxis=dict(
-						type='category',
-						tickangle=45,
-					),
-					legend=dict(
-						yanchor="top",
-						y=-0.2,
-						xanchor="center",
-						x=0.5
-					)
-				)
-				st.plotly_chart(fig, use_container_width=True)
-		#endregion
 		
-			
-			st.markdown("---")
-			st.write("Filter Data Harian Berdasarkan Jenis NG")
-		#region Pilihan Jenis NG untuk filter
-			# Pilihan Jenis NG untuk filter
-			df3['Date'] = pd.to_datetime(df3['Date'], errors='coerce').dt.date  # pastikan hanya tanggal (tanpa waktu)
-			date_min = df3['Date'].min()
-			date_max = df3['Date'].max()
-
-			# Daftar kolom Jenis NG yang tersedia (kecuali kolom non-NG)
-			jenis_ng_columns = [
-				'Warna', 'Buram', 'Berbayang', 'Kotor', 'Tdk Terplating', 'Rontok/ Blister',
-				'Tipis/ EE No Plating', 'Flek Kuning', 'Terbakar', 'Watermark', 'Jig Mark/ Renggang',
-				'Lecet/ Scratch', 'Seret', 'Flek Hitam', 'Flek Tangan', 'Belang/ Dempet', 'Bintik',
-				'Kilap', 'Tebal', 'Flek Putih', 'Spark', 'Kotor H/ Oval', 'Terkikis/ Crack',
-				'Dimensi/ Penyok'
-			]
-			jenisNG_options = [col for col in jenis_ng_columns if col in df3.columns]
-			# Set default value to 'Flek Hitam' if available, otherwise use the first option
-			default_jenisNG = 'Flek Hitam' if 'Flek Hitam' in jenisNG_options else (jenisNG_options[0] if jenisNG_options else None)
-			selected_jenisNG = st.selectbox(
-				"Pilih Jenis NG yang ingin ditampilkan:",
-				jenisNG_options,
-				index=jenisNG_options.index(default_jenisNG) if default_jenisNG in jenisNG_options else 0,
-				key='jenisNG_options'
-			)
-
-			# Buat range tanggal lengkap
-			all_dates = pd.date_range(start=date_min, end=date_max, freq='D').date
-
-			# Filter df_daily sesuai Line yang dipilih
-			# (df_daily sudah didefinisikan sebelumnya sebagai df3[df3['Line'] == selected_line].copy())
-			# Hitung Qty Jenis NG (lot) harian (dari kolom jenis NG yang dipilih)
-			daily_ng = df_daily.groupby('Date', as_index=False)[selected_jenisNG].sum()
-			# Hitung Qty Inspected (lot) harian
-			daily_lot = df_daily.groupby('Date', as_index=False)['Insp(B/H)'].sum()
-
-			# Gabungkan data ke satu DataFrame
-			daily_plot = pd.merge(daily_ng, daily_lot, on='Date', how='outer')
-			daily_plot = daily_plot.set_index('Date').reindex(all_dates).fillna(0).reset_index()
-			daily_plot.rename(columns={'index': 'Date'}, inplace=True)
-
-			# Hitung Jenis NG (%) = (Qty Jenis NG / (Qty Jenis NG + Qty Inspected)) * 100, handle pembagi 0
-			daily_plot['JenisNG_%'] = np.where(
-				(daily_plot[selected_jenisNG] + daily_plot['Insp(B/H)']) == 0,
-				0,
-				(daily_plot[selected_jenisNG] / (daily_plot['Insp(B/H)'])) * 100
-			)
-
-			# Pastikan kolom 'NG(B/H)' ada, jika tidak, buat dengan menjumlahkan semua jenis NG
-			if 'NG(B/H)' not in daily_plot.columns:
-				jenis_ng_columns = [
-					'Warna', 'Buram', 'Berbayang', 'Kotor', 'Tdk Terplating', 'Rontok/ Blister',
-					'Tipis/ EE No Plating', 'Flek Kuning', 'Terbakar', 'Watermark', 'Jig Mark/ Renggang',
-					'Lecet/ Scratch', 'Seret', 'Flek Hitam', 'Flek Tangan', 'Belang/ Dempet', 'Bintik',
-					'Kilap', 'Tebal', 'Flek Putih', 'Spark', 'Kotor H/ Oval', 'Terkikis/ Crack',
-					'Dimensi/ Penyok'
-				]
-				ng_cols = [col for col in jenis_ng_columns if col in daily_plot.columns]
-				if ng_cols:
-					daily_plot['NG(B/H)'] = daily_plot[ng_cols].sum(axis=1)
-				else:
-					daily_plot['NG(B/H)'] = 0
-
-			# Urutkan berdasarkan tanggal
-			daily_plot = daily_plot.sort_values('Date')
-
-			st.write(f" Tabel Data Harian untuk Jenis NG: {selected_jenisNG} di Line: {selected_line}")
-			# Tampilkan tabel data harian
-			with st.expander("Klik untuk melihat TabelData Harian", expanded=False):
-				st.write(daily_plot)
-			
-			# Tampilkan grafik
-			daily_plot['Date_str'] = pd.to_datetime(daily_plot['Date']).dt.strftime('%d-%b-%Y')
-			fig = go.Figure()
-
-			# Grafik batang Qty NG (lot)
-			fig.add_trace(go.Bar(
-				x=daily_plot['Date_str'],
-				y=daily_plot['NG(B/H)'],
-				name='Qty NG (lot)',
-				marker_color='#83692D',
-				yaxis='y1',
-				text=daily_plot['NG(B/H)'].round(4).map(lambda x: f"{x:.2f}"),
-				textposition='inside'
-			))
-
-			# Grafik garis Jenis NG (%)
-			fig.add_trace(go.Scatter(
-				x=daily_plot['Date_str'],
-				y=daily_plot['JenisNG_%'],
-				name=f'{selected_jenisNG} (%)',
-				mode='lines+markers+text',
-				marker_color='red',
-				line_color='red',
-				yaxis='y2',
-				text=[f"<span style='color:red'>{v:.2f}</span>" for v in daily_plot['JenisNG_%']],
-				textposition='top center',
-				hoverinfo='text'
-			))
-
-			fig.update_layout(
-				title=f'Qty NG (lot) - {selected_jenisNG} (%) Harian - {selected_line}',
-				xaxis_title='',
-				yaxis=dict(
-					title='Qty NG (lot)',
-					titlefont=dict(color="#83692D"),
-					tickfont=dict(color='#83692D'),
-				),
-				yaxis2=dict(
-					title=f'{selected_jenisNG} (%)',
-					titlefont=dict(color='red'),
-					tickfont=dict(color='red'),
-					overlaying='y',
-					side='right'
-				),
-				xaxis=dict(
-					type='category',
-					tickangle=45,
-				),
-				legend=dict(
-					yanchor="top",
-					y=-0.2,
-					xanchor="center",
-					x=0.5
-				)
-			)
-			st.plotly_chart(fig, use_container_width=True)
-		#endregion
-			st.markdown("---")	
-		#region tabel hasil filter by Line, Jenis NG dan Partname
-			st.write("Tabel Hasil Filter Berdasarkan Line, Jenis NG dan Part Name")
-			# Pilihan Jenis NG untuk filter
-			df3['Date'] = pd.to_datetime(df3['Date'], errors='coerce').dt.date  # pastikan hanya tanggal (tanpa waktu)
-			date_min = df3['Date'].min()
-			date_max = df3['Date'].max()
-
-			# --- Filter PartName dari dataframe hasil filter Line dan Jenis NG sebelumnya ---
-
-			# partname_options hanya dari df_daily (sudah terfilter Line dan Jenis NG)
-			partname_options = df_daily['PartName'].dropna().unique().tolist()
-			selected_partname = st.multiselect("Pilih PartName:", partname_options, key="filter_partname_for_table")
-
-			if selected_partname:
-				df_partname_filtered = df_daily[df_daily['PartName'].isin(selected_partname)].copy()
-			else:
-				df_partname_filtered = df_daily.copy()
-
-			# Buat tabel harian: Date, PartName, Jenis NG (lot), Insp(B/H), JenisNG_%
-			# selected_jenisNG sudah didefinisikan di step sebelumnya
-			tabel_harian = df_partname_filtered.groupby(['Date', 'PartName'], as_index=False).agg({
-				selected_jenisNG: 'sum',
-				'Insp(B/H)': 'sum'
-			})
-
-			# Hitung JenisNG_% (handle pembagi 0)
-			tabel_harian['JenisNG_%'] = np.where(
-				tabel_harian['Insp(B/H)'] == 0,
-				0,
-				(tabel_harian[selected_jenisNG] / tabel_harian['Insp(B/H)']) * 100
-			)
-
-			# Format kolom tanggal
-			tabel_harian['Date'] = pd.to_datetime(tabel_harian['Date']).dt.strftime('%d-%b-%Y')
-
-			# Urutkan tabel
-			tabel_harian = tabel_harian.sort_values(['Date', 'PartName'])
-
-			# Tambahkan baris TOTAL
-			total_row = {
-				'Date': 'TOTAL',
-				'PartName': '',
-				selected_jenisNG: tabel_harian[selected_jenisNG].sum(),
-				'Insp(B/H)': tabel_harian['Insp(B/H)'].sum(),
-				'JenisNG_%': (tabel_harian[selected_jenisNG].sum() / tabel_harian['Insp(B/H)'].sum() * 100) if tabel_harian['Insp(B/H)'].sum() != 0 else 0
-			}
-			tabel_harian = pd.concat([tabel_harian, pd.DataFrame([total_row])], ignore_index=True)
-
-			# Format nilai numerik menjadi 2 digit di belakang koma
-			cols_to_format = [selected_jenisNG, 'Insp(B/H)', 'JenisNG_%']
-			for col in cols_to_format:
-				if col in tabel_harian.columns:
-					tabel_harian[col] = pd.to_numeric(tabel_harian[col], errors='coerce').map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
-
-			st.write("Tabel Tanggal, PartName, Jenis NG (lot), Tot Inspected (lot), JenisNG (%)")
-			st.dataframe(tabel_harian, use_container_width=True)
-		#endregion
-
 		
 	#region Summary Trial
 		with sum_tab2: # Summary Trial 
 			st.subheader("Summary Trial")
-			DateRange(df3)
+			DateRange(df_ori_pcs)
 			# dataframe2 = df[df['NoCard'].str.contains("TRIAL", case=False, na=False)]   # Data dengan "TRIAL"
 			with st.expander("Data TRIAL", expanded=False):
 				st.dataframe(dataframe2, use_container_width=True)
@@ -2975,42 +2689,37 @@ def cleaning_process(df):
 			#menampilkan tabel berdasarkan filter - 19Nov2024
 			#----------
 			st.subheader("Filtering Data")
-			DateRange(df3)
+			DateRange(df_ori_pcs)
 
-			# Daftar kolom jenis NG (pastikan sesuai dengan kolom di df3)
+			# Daftar kolom jenis NG (pastikan sesuai dengan kolom di df_ori_pcs)
 			jenis_ng_columns = [
-				'Warna', 'Buram', 'Berbayang', 'Kotor', 'Tdk Terplating', 'Rontok/ Blister',
-				'Tipis/ EE No Plating', 'Flek Kuning', 'Terbakar', 'Watermark', 'Jig Mark/ Renggang',
-				'Lecet/ Scratch', 'Seret', 'Flek Hitam', 'Flek Tangan', 'Belang/ Dempet', 'Bintik',
-				'Kilap', 'Tebal', 'Flek Putih', 'Spark', 'Kotor H/ Oval', 'Terkikis/ Crack',
-				'Dimensi/ Penyok'
-			]
+				# 'Warna', 'Buram', 'Berbayang', 'Kotor', 'Tdk Terplating', 'Rontok/ Blister',
+				# 'Tipis/ EE No Plating', 'Flek Kuning', 'Terbakar', 'Watermark', 'Jig Mark/ Renggang',
+				# 'Lecet/ Scratch', 'Seret', 'Flek Hitam', 'Flek Tangan', 'Belang/ Dempet', 'Bintik',
+				# 'Kilap', 'Tebal', 'Flek Putih', 'Spark', 'Kotor H/ Oval', 'Terkikis/ Crack',
+				# 'Dimensi/ Penyok', 'MTL/ SLipMelintir', 
+				'Warna(pcs)', 'Buram(pcs)', 'Berbayang(pcs)', 'Kotor(pcs)', 'Tdk Terplating(pcs)', 'Rontok/ Blister(pcs)',
+				'Tipis/ EE No Plating(pcs)', 'Flek Kuning(pcs)', 'Terbakar(pcs)', 'Watermark(pcs)', 'Jig Mark/ Renggang(pcs)',
+				'Lecet/ Scratch(pcs)', 'Seret(pcs)', 'Flek Hitam(pcs)', 'Flek Tangan(pcs)', 'Belang/ Dempet(pcs)', 'Bintik(pcs)',
+				'Kilap(pcs)', 'Tebal(pcs)', 'Flek Putih(pcs)', 'Spark(pcs)', 'Kotor H/ Oval(pcs)', 'Terkikis/ Crack(pcs)',
+				'Dimensi/ Penyok(pcs)', 'MTL/ SLipMelintir(pcs)'
+				]
 
 			Filter_tab1,Filter_tab2,Filter_tab3=st.tabs(["Filter by PartName","Multi Filtering Data","Filter Line for Daily Chart"])
 
 			with Filter_tab1:# Filter data berdasarkan PartName
-				st.write("Filtering Data by PartName")		
-				with st.expander("Preview Data setelah dirapihkan (Full - include 'TRIAL')"):
-					df3 = dataframe_explorer(df, case=False)
-					st.dataframe(df3, use_container_width=True)
+				st.write("Filtering Data by PartName (Excluding 'TRIAL')")		
+				with st.expander("Preview Data Excluding 'TRIAL' (satuan lot dan pcs)"):
+					df_ori_pcs = dataframe_explorer(df_with_pcs, case=False)
+					st.dataframe(df_ori_pcs, use_container_width=True)
 
-				# with st.expander("Preview Data setelah dirapihkan (Full - include 'TRIAL') PCS"):
-					# Buat salinan df3 untuk menampilkan satuan PCS pada kolom Jenis NG
-					# df3_pcs = df3.copy()
-					
-					# Kalikan setiap kolom Jenis NG (lot) dengan Std Load untuk mendapatkan PCS
-					# for col in jenis_ng_columns:
-					# 	if col in df3_pcs.columns and 'Std Load' in df3_pcs.columns:
-					# 		df3_pcs[col] = df3_pcs[col] * df3_pcs['Std Load']
-					# st.dataframe(df3_pcs, use_container_width=True)
-
-				#buatkan filter untuk menampilkan data sesuai dengan PartName
+				#filter untuk menampilkan data sesuai dengan PartName
 				# Mendapatkan unique values dari kolom 'PartName'
-				filter_partname = df3['PartName'].unique()
+				filter_partname = df_ori_pcs['PartName'].unique()
 				# Membuat selectbox untuk memilih PartName
 				selected_partname = st.multiselect("Pilih PartName:", filter_partname)
 				# Menampilkan tabel berdasarkan filter PartName
-				filtered_partname_df = df3[df3['PartName'].isin(selected_partname)]
+				filtered_partname_df = df_ori_pcs[df_ori_pcs['PartName'].isin(selected_partname)]
 
 				with st.expander("Preview Data hasil Filtering by PartName"):
 					
@@ -3042,72 +2751,55 @@ def cleaning_process(df):
 					st.write("Tabel NG (PCS) by Jenis NG & PartName")
 					st.write(pt_ng)
 
+					
+
+					#tabel PArtname vs NG_% (rata-rata untuk part yang dipilih), Total QTyInspec, Total NG pcs, Total OK pcs
+					# Buat pivot table untuk menghitung rata-rata NG_% per Jenis NG per PartName
+					# Filter hanya PartName yang dipilih
+					if selected_partname:
+						filtered_parts_df = filtered_partname_df[filtered_partname_df['PartName'].isin(selected_partname)]
+					else:
+						filtered_parts_df = filtered_partname_df
+
+					# Buat tabel PartName vs NG_% (mean), Total QInspec (sum), Total NG pcs (sum), Total OK pcs (sum)
+					tabel_summary = filtered_parts_df.groupby('PartName').agg({
+						'NG_%': 'mean',
+						'QInspec': 'sum',
+						'OK(pcs)': 'sum',
+						'Qty(NG)': 'sum',
+						'MTL/ SLipMelintir(pcs)': 'sum'
+					}).reset_index()
+					
+
+					# Baris TOTAL: NG_% = mean, lainnya SUM
+					total_row = {
+						'PartName': 'TOTAL',
+						'NG_%': tabel_summary['NG_%'].mean(),
+						'QInspec': int(tabel_summary['QInspec'].sum()),
+						'Qty(NG)': int(tabel_summary['Qty(NG)'].sum()),
+						'OK(pcs)': int(tabel_summary['OK(pcs)'].sum()),
+						'MTL/ SLipMelintir(pcs)': int(tabel_summary['MTL/ SLipMelintir(pcs)'].sum())
+					}
+					# Format angka dengan titik sebagai pemisah ribuan
+					def format_id_number(x):
+						return f"{x:,}".replace(",", ".") if isinstance(x, int) else x
+
+					tabel_summary['QInspec'] = tabel_summary['QInspec'].apply(lambda x: format_id_number(int(x)))
+					tabel_summary['Qty(NG)'] = tabel_summary['Qty(NG)'].apply(lambda x: format_id_number(int(x)))
+					tabel_summary['OK(pcs)'] = tabel_summary['OK(pcs)'].apply(lambda x: format_id_number(int(x)))
+					# Format juga untuk total_row
+					total_row['QInspec'] = format_id_number(total_row['QInspec'])
+					total_row['Qty(NG)'] = format_id_number(total_row['Qty(NG)'])
+					total_row['OK(pcs)'] = format_id_number(total_row['OK(pcs)'])
+					tabel_summary = pd.concat([tabel_summary, pd.DataFrame([total_row])], ignore_index=True)
+					st.write("Tabel Summary PartName vs NG (%), Qty Inspected (PCS), Qty NG (PCS), Qty OK (PCS)")
+					st.write(tabel_summary)
+						
+
 					#Tampilkan dalam 2 kolom
 					kol_filter1,kol_filter2=st.columns(2)
-					with kol_filter1:
-
-						#tabel PArtname vs NG_% (rata-rata untuk part yang dipilih), Total QTyInspec, Total NG pcs, Total OK pcs
-						# Buat pivot table untuk menghitung rata-rata NG_% per Jenis NG per PartName
-						# Filter hanya PartName yang dipilih
-						if selected_partname:
-							filtered_parts_df = filtered_partname_df[filtered_partname_df['PartName'].isin(selected_partname)]
-						else:
-							filtered_parts_df = filtered_partname_df
-
-						# Buat tabel PartName vs NG_% (mean), Total QInspec (sum), Total NG pcs (sum), Total OK pcs (sum)
-						tabel_summary = filtered_parts_df.groupby('PartName').agg({
-							'NG_%': 'mean',
-							'QInspec': 'sum',
-							'Qty(NG)': 'sum'
-						}).reset_index()
-						tabel_summary['Qty(OK)'] = tabel_summary['QInspec'] - tabel_summary['Qty(NG)']
-
-						# Baris TOTAL: NG_% = mean, lainnya SUM
-						total_row = {
-							'PartName': 'TOTAL',
-							'NG_%': tabel_summary['NG_%'].mean(),
-							'QInspec': int(tabel_summary['QInspec'].sum()),
-							'Qty(NG)': int(tabel_summary['Qty(NG)'].sum()),
-							'Qty(OK)': int(tabel_summary['Qty(OK)'].sum()),
-						}
-						# Format angka dengan titik sebagai pemisah ribuan
-						def format_id_number(x):
-							return f"{x:,}".replace(",", ".") if isinstance(x, int) else x
-
-						tabel_summary['QInspec'] = tabel_summary['QInspec'].apply(lambda x: format_id_number(int(x)))
-						tabel_summary['Qty(NG)'] = tabel_summary['Qty(NG)'].apply(lambda x: format_id_number(int(x)))
-						tabel_summary['Qty(OK)'] = tabel_summary['Qty(OK)'].apply(lambda x: format_id_number(int(x)))
-						# Format juga untuk total_row
-						total_row['QInspec'] = format_id_number(total_row['QInspec'])
-						total_row['Qty(NG)'] = format_id_number(total_row['Qty(NG)'])
-						total_row['Qty(OK)'] = format_id_number(total_row['Qty(OK)'])
-						tabel_summary = pd.concat([tabel_summary, pd.DataFrame([total_row])], ignore_index=True)
-						st.write("Tabel Summary PartName vs NG (%), Qty Inspected (PCS), Qty NG (PCS), Qty OK (PCS)")
-						st.write(tabel_summary)
-						# Hanya tampilkan part yang punya nilai NG > 0 pada salah satu jenis NG
-						
-						# grafik batang untuk Qty NG (lot) per Jenis NG
-						# Grafik batang untuk NG_% per Jenis NG (rata-rata untuk part yang dipilih)
-						# ng_percent = {}
-						# for col in jenis_ng_columns:
-						# 	if col in filtered_partname_df.columns:
-						# 		ng_percent[col] = filtered_partname_df[col].mean()
-						# ng_percent_df = pd.DataFrame(list(ng_percent.items()), columns=['Jenis NG', 'NG_%'])
-						# ng_percent_df = ng_percent_df[ng_percent_df['NG_%'] > 0]
-						# ng_percent_df = ng_percent_df.sort_values(by='NG_%', ascending=False)
-						# fig1 = px.bar(
-						# 	ng_percent_df,
-						# 	x='Jenis NG',
-						# 	y='NG_%',
-						# 	title='Rata-rata NG (%) per Jenis NG (Part Terpilih)',
-						# 	color='NG_%',
-						# 	text=ng_percent_df['NG_%'].apply(lambda x: f"{x:.2f}")
-						# )
-						# fig1.update_traces(textposition='outside')
-						# fig1.update_layout(xaxis_title='Jenis NG', yaxis_title='NG (%)')
-						# st.plotly_chart(fig1)
-
-					with kol_filter2:
+					with kol_filter1:#grafik batang horisontal Qty NG (lot) per Jenis NG
+						st.write("Qty NG (pcs) per Jenis NG")
 						# grafik batang untuk Qty NG (lot) per Jenis NG
 						ng_lot = {}
 						for col in jenis_ng_columns:
@@ -3115,35 +2807,106 @@ def cleaning_process(df):
 								ng_lot[col] = filtered_partname_df[col].sum()
 						ng_lot_df = pd.DataFrame(list(ng_lot.items()), columns=['Jenis NG', 'Qty NG (pcs)'])
 						ng_lot_df = ng_lot_df[ng_lot_df['Qty NG (pcs)'] > 0]
-						ng_lot_df = ng_lot_df.sort_values(by='Qty NG (pcs)', ascending=False)
+						ng_lot_df = ng_lot_df.sort_values(by='Qty NG (pcs)', ascending=True)
+
 						fig2 = px.bar(
 							ng_lot_df,
-							x='Jenis NG',
-							y='Qty NG (pcs)',
-							title='Qty NG (pcs) per Jenis NG',
+							x='Qty NG (pcs)',
+							y='Jenis NG',
+							orientation='h',
+							title='',
 							color='Qty NG (pcs)',
 							text=ng_lot_df['Qty NG (pcs)'].apply(lambda x: f"{x:.0f}")
 						)
 						fig2.update_traces(textposition='outside')
 						fig2.update_layout(xaxis_title='Jenis NG', yaxis_title='Qty NG (pcs)')
 						st.plotly_chart(fig2)
+
+					with kol_filter2:#garfik pareto per Jenis NG
+						st.write("Pareto Charts per Jenis NG")
+						
+
+						# Data awal seperti sebelumnya
+						ng_lot = {}
+						for col in jenis_ng_columns:
+							if col in filtered_partname_df.columns:
+								ng_lot[col] = filtered_partname_df[col].sum()
+
+						ng_lot_df = pd.DataFrame(list(ng_lot.items()), columns=['Jenis NG', 'Qty NG (pcs)'])
+						ng_lot_df = ng_lot_df[ng_lot_df['Qty NG (pcs)'] > 0]
+						ng_lot_df = ng_lot_df.sort_values(by='Qty NG (pcs)', ascending=False)
+
+						# Hitung cumulative percentage
+						ng_lot_df['Cumulative Sum'] = ng_lot_df['Qty NG (pcs)'].cumsum()
+						ng_lot_df['Cumulative %'] = 100 * ng_lot_df['Cumulative Sum'] / ng_lot_df['Qty NG (pcs)'].sum()
+
+						# Buat grafik Pareto
+						fig = go.Figure()
+
+						# Grafik batang
+						fig.add_trace(go.Bar(
+							x=ng_lot_df['Jenis NG'],
+							y=ng_lot_df['Qty NG (pcs)'],
+							name='Qty NG (pcs)',
+							text=ng_lot_df['Qty NG (pcs)'],
+							textposition='outside',
+							marker_color= '#34699A'
+						))
+
+						# Grafik garis kumulatif dengan nilai persentase sebagai teks
+						fig.add_trace(go.Scatter(
+							x=ng_lot_df['Jenis NG'],
+							y=ng_lot_df['Cumulative %'],
+							name='Cumulative %',
+							yaxis='y2',
+							mode='lines+markers+text',
+							text=ng_lot_df['Cumulative %'].apply(lambda x: f"{x:.1f}%"),
+							textposition='bottom right',
+							marker=dict(color='#FFDE63', size=8),
+							line=dict(dash='dash')
+						))
+
+						# Layout
+						fig.update_layout(
+							title='',
+							xaxis=dict(title='Jenis NG'),
+							yaxis=dict(title='Qty NG (pcs)'),
+							yaxis2=dict(
+								title='Cumulative %',
+								overlaying='y',
+								side='right',
+								range=[0, 110]
+							),
+							legend=dict(
+								orientation='h',
+								yanchor='bottom',
+								y=-0.3,        # Sesuaikan agar posisi di bawah grafik
+								xanchor='center',
+								x=0.5
+							)
+
+						)
+
+						# Tampilkan chart
+						st.plotly_chart(fig)
+						# st.markdown("""---""")
 						
 			with Filter_tab2:# Filter data berdasarkan Line dan Kategori
 				
 				st.write("Multi Filtering Data")
-				DateRange(df3)
+				DateRange(df_ori_pcs)
 				
 				filter_L, filter_mid, filter_R=st.columns([1,1,3])
 
 				with filter_L:
 					# Mendapatkan unique values dari kolom 'Line'
-					filter_line = df3['Line'].unique()
+					filter_line = df_ori_pcs['Line'].unique()
 
 					# Membuat selectbox untuk memilih Line
 					selected_Line = st.selectbox("Pilih Line:", filter_line)
 
 					# Menampilkan tabel berdasarkan filter Line
-					filtered_line_df = df3[df3['Line'] == selected_Line]
+					filtered_line_df = df_ori_pcs[df_ori_pcs['Line'] == selected_Line]
 
 				with filter_mid:
 					# Mendapatkan unique values dari kolom 'Kategori'
@@ -3157,7 +2920,7 @@ def cleaning_process(df):
 				with filter_R:
 
 					# Mendapatkan daftar semua kolom yang tersedia
-					kolom_tersedia = df3.columns.tolist()
+					kolom_tersedia = df_ori_pcs.columns.tolist()
 
 					# Menghapus kolom 'Kategori' dan 'Line' dari daftar kolom yang tersedia
 					kolom_tersedia.remove('Kategori')
@@ -3179,24 +2942,318 @@ def cleaning_process(df):
 					st.warning("Menunggu kolom nilai dipilih")
 				else:
 
-					# Memastikan tidak ada nilai 'NaN' dan tidak ada duplikat pada kolom 'PartName' 
-					# df3 = df3.dropna(subset=['PartName']).drop_duplicates(subset=['PartName'])
-
 					# Menampilkan tabel berdasarkan filter kategori dan kolom yang dipilih
-					filtered_df = filtered_df[selected_columns] # Tambahkan 'PartName' untuk keperluan groupby
+					filtered_df = filtered_df[selected_columns]
 
 					with st.expander("Preview Data hasil Filtering"):
 						st.write(filtered_df)
 
-					# Membuat groupby berdasarkan PartName dan kolom yang dipilih oleh user 
-					grouped_df = filtered_df.groupby('PartName').agg(agg_dict)
-					# grouped_df.reset_index()
-					# grouped_df.drop('PartName',inplace=True)
-					with st.expander("Preview Data hasil Grouping"):
-						st.write(grouped_df)
+					#pivot table
+					# Pivot tabel dengan kolom PartName, NG%, dan [Selected_columns]
+					pivot_df = filtered_df.pivot_table(
+						index='PartName',
+						columns=None,
+						values=selected_columns,
+						aggfunc=agg_dict
+					)
+
+					
+
+					with st.expander("Preview Data hasil Pivot"):
+						st.write(pivot_df)
+
+					
+
+					# Grouping data by PartName and selected columns
+					# grouped_df = filtered_df.groupby('PartName', as_index=False).agg(agg_dict)
+
+					# with st.expander("Preview Data hasil Grouping"):
+					# 	st.write(grouped_df)
 
 			with Filter_tab3:# Filter data berdasarkan Line untuk grafik harian
 				st.info("Grafik Garis Rata-rata NG (%) Harian berdasarkan Line ---")
+				df_ori_pcs['Date'] = pd.to_datetime(df_ori_pcs['Date'], errors='coerce').dt.date  # pastikan hanya tanggal (tanpa waktu)
+				date_min = df_ori_pcs['Date'].min()
+				date_max = df_ori_pcs['Date'].max()
+
+				line_options = df_ori_pcs['Line'].dropna().unique().tolist()
+				selected_line = st.selectbox("Pilih Line yang ingin ditampilkan:", line_options)
+
+				# Filter df berdasarkan Line yang dipilih
+				df_daily = df_ori_pcs[df_ori_pcs['Line'] == selected_line].copy()
+
+				# Buat range tanggal lengkap
+				all_dates = pd.date_range(start=date_min, end=date_max, freq='D').date
+
+				# Group by Date (tanpa waktu), hitung rata-rata NG_% dan total Inspected
+				daily_ng = df_daily.groupby('Date', as_index=False)['NG_%'].mean()
+				daily_lot = df_daily.groupby('Date', as_index=False)['Insp(B/H)'].sum()
+
+				# Gabungkan data ke satu DataFrame
+				daily_plot = pd.merge(daily_ng, daily_lot, on='Date', how='outer')
+				daily_plot = daily_plot.set_index('Date').reindex(all_dates).fillna(0).reset_index()
+				daily_plot.rename(columns={'index': 'Date'}, inplace=True)
+
+				# Urutkan berdasarkan tanggal
+				daily_plot = daily_plot.sort_values('Date')
+
+				st.write(f" Tabel Data Harian untuk Line: {selected_line}")
+				# Tampilkan tabel data harian
+				with st.expander("Klik untuk melihat Tabel Data Harian", expanded=False):
+					st.write(daily_plot)
+				# st.write(daily_plot.set_index('Date').transpose())
+
+				# Jika tidak ada data, tampilkan info
+				if daily_plot.empty:
+					st.info("Tidak ada data harian untuk line ini.")
+				else:
+					# Pastikan data tidak kosong dan urut berdasarkan tanggal
+					daily_plot = daily_plot.copy()
+					daily_plot['Date'] = pd.to_datetime(daily_plot['Date'])
+					daily_plot = daily_plot.sort_values('Date')
+					daily_plot['Date_str'] = daily_plot['Date'].dt.strftime('%d-%b-%Y')
+
+					fig = go.Figure()
+
+					# Bar chart untuk Total_lot (Insp(B/H)) di axis primer
+					fig.add_trace(go.Bar(
+						x=daily_plot['Date_str'],
+						y=daily_plot['Insp(B/H)'],
+						name='Total Inspected (Lot)',
+						marker_color='#819A91',
+						yaxis='y1',
+						text=daily_plot['Insp(B/H)'].round(0).astype(int).astype(str),
+						textposition='inside'
+					))
+
+					# Line chart untuk NG_% di axis sekunder, value label warna merah
+					fig.add_trace(go.Scatter(
+						x=daily_plot['Date_str'],
+						y=daily_plot['NG_%'],
+						name='NG (%)',
+						mode='lines+markers+text',
+						marker_color='red',
+						line_color='red',
+						yaxis='y2',
+						text=[f"<span style='color:red'>{v:.2f}</span>" for v in daily_plot['NG_%']],
+						textposition='top center',
+						hoverinfo='text'
+					))
+
+					fig.update_layout(
+						title=f'Rata-rata NG (%) Harian & Total Inspected (Lot) - {selected_line}',
+						xaxis_title='',
+						yaxis=dict(
+							title='Total Inspected (Lot)',
+							titlefont=dict(color='#819A91'),
+							tickfont=dict(color='#819A91'),
+						),
+						yaxis2=dict(
+							title='Rata-rata NG (%)',
+							titlefont=dict(color='red'),
+							tickfont=dict(color='red'),
+							overlaying='y',
+							side='right'
+						),
+						xaxis=dict(
+							type='category',
+							tickangle=45,
+						),
+						legend=dict(
+							yanchor="top",
+							y=-0.2,
+							xanchor="center",
+							x=0.5
+						)
+					)
+					st.plotly_chart(fig, use_container_width=True)
+
+				st.markdown("---")
+				st.write("Filter Data Harian Berdasarkan Jenis NG")
+			#region Pilihan Jenis NG untuk filter
+				# Pilihan Jenis NG untuk filter
+				df_ori_pcs['Date'] = pd.to_datetime(df_ori_pcs['Date'], errors='coerce').dt.date  # pastikan hanya tanggal (tanpa waktu)
+				date_min = df_ori_pcs['Date'].min()
+				date_max = df_ori_pcs['Date'].max()
+
+				# Daftar kolom Jenis NG yang tersedia (kecuali kolom non-NG)
+				jenis_ng_columns = [
+					'Warna', 'Buram', 'Berbayang', 'Kotor', 'Tdk Terplating', 'Rontok/ Blister',
+					'Tipis/ EE No Plating', 'Flek Kuning', 'Terbakar', 'Watermark', 'Jig Mark/ Renggang',
+					'Lecet/ Scratch', 'Seret', 'Flek Hitam', 'Flek Tangan', 'Belang/ Dempet', 'Bintik',
+					'Kilap', 'Tebal', 'Flek Putih', 'Spark', 'Kotor H/ Oval', 'Terkikis/ Crack',
+					'Dimensi/ Penyok'
+				]
+				jenisNG_options = [col for col in jenis_ng_columns if col in df_ori_pcs.columns]
+				# Set default value to 'Flek Hitam' if available, otherwise use the first option
+				default_jenisNG = 'Flek Hitam' if 'Flek Hitam' in jenisNG_options else (jenisNG_options[0] if jenisNG_options else None)
+				selected_jenisNG = st.selectbox(
+					"Pilih Jenis NG yang ingin ditampilkan:",
+					jenisNG_options,
+					index=jenisNG_options.index(default_jenisNG) if default_jenisNG in jenisNG_options else 0,
+					key='jenisNG_options'
+				)
+
+				# Buat range tanggal lengkap
+				all_dates = pd.date_range(start=date_min, end=date_max, freq='D').date
+
+				# Filter df_daily sesuai Line yang dipilih
+				# (df_daily sudah didefinisikan sebelumnya sebagai df_ori_pcs[df_ori_pcs['Line'] == selected_line].copy())
+				# Hitung Qty Jenis NG (lot) harian (dari kolom jenis NG yang dipilih)
+				daily_ng = df_daily.groupby('Date', as_index=False)[selected_jenisNG].sum()
+				# Hitung Qty Inspected (lot) harian
+				daily_lot = df_daily.groupby('Date', as_index=False)['Insp(B/H)'].sum()
+
+				# Gabungkan data ke satu DataFrame
+				daily_plot = pd.merge(daily_ng, daily_lot, on='Date', how='outer')
+				daily_plot = daily_plot.set_index('Date').reindex(all_dates).fillna(0).reset_index()
+				daily_plot.rename(columns={'index': 'Date'}, inplace=True)
+
+				# Hitung Jenis NG (%) = (Qty Jenis NG / (Qty Jenis NG + Qty Inspected)) * 100, handle pembagi 0
+				daily_plot['JenisNG_%'] = np.where(
+					(daily_plot[selected_jenisNG] + daily_plot['Insp(B/H)']) == 0,
+					0,
+					(daily_plot[selected_jenisNG] / (daily_plot['Insp(B/H)'])) * 100
+				)
+
+				# Pastikan kolom 'NG(B/H)' ada, jika tidak, buat dengan menjumlahkan semua jenis NG
+				if 'NG(B/H)' not in daily_plot.columns:
+					jenis_ng_columns = [
+						'Warna', 'Buram', 'Berbayang', 'Kotor', 'Tdk Terplating', 'Rontok/ Blister',
+						'Tipis/ EE No Plating', 'Flek Kuning', 'Terbakar', 'Watermark', 'Jig Mark/ Renggang',
+						'Lecet/ Scratch', 'Seret', 'Flek Hitam', 'Flek Tangan', 'Belang/ Dempet', 'Bintik',
+						'Kilap', 'Tebal', 'Flek Putih', 'Spark', 'Kotor H/ Oval', 'Terkikis/ Crack',
+						'Dimensi/ Penyok'
+					]
+					ng_cols = [col for col in jenis_ng_columns if col in daily_plot.columns]
+					if ng_cols:
+						daily_plot['NG(B/H)'] = daily_plot[ng_cols].sum(axis=1)
+					else:
+						daily_plot['NG(B/H)'] = 0
+
+				# Urutkan berdasarkan tanggal
+				daily_plot = daily_plot.sort_values('Date')
+
+				st.write(f" Tabel Data Harian untuk Jenis NG: {selected_jenisNG} di Line: {selected_line}")
+				# Tampilkan tabel data harian
+				with st.expander("Klik untuk melihat TabelData Harian", expanded=False):
+					st.write(daily_plot)
+				
+				# Tampilkan grafik
+				daily_plot['Date_str'] = pd.to_datetime(daily_plot['Date']).dt.strftime('%d-%b-%Y')
+				fig = go.Figure()
+
+				# Grafik batang Qty NG (lot)
+				fig.add_trace(go.Bar(
+					x=daily_plot['Date_str'],
+					y=daily_plot['NG(B/H)'],
+					name='Qty NG (lot)',
+					marker_color='#83692D',
+					yaxis='y1',
+					text=daily_plot['NG(B/H)'].round(4).map(lambda x: f"{x:.2f}"),
+					textposition='inside'
+				))
+
+				# Grafik garis Jenis NG (%)
+				fig.add_trace(go.Scatter(
+					x=daily_plot['Date_str'],
+					y=daily_plot['JenisNG_%'],
+					name=f'{selected_jenisNG} (%)',
+					mode='lines+markers+text',
+					marker_color='red',
+					line_color='red',
+					yaxis='y2',
+					text=[f"<span style='color:red'>{v:.2f}</span>" for v in daily_plot['JenisNG_%']],
+					textposition='top center',
+					hoverinfo='text'
+				))
+
+				fig.update_layout(
+					title=f'Qty NG (lot) - {selected_jenisNG} (%) Harian - {selected_line}',
+					xaxis_title='',
+					yaxis=dict(
+						title='Qty NG (lot)',
+						titlefont=dict(color="#83692D"),
+						tickfont=dict(color='#83692D'),
+					),
+					yaxis2=dict(
+						title=f'{selected_jenisNG} (%)',
+						titlefont=dict(color='red'),
+						tickfont=dict(color='red'),
+						overlaying='y',
+						side='right'
+					),
+					xaxis=dict(
+						type='category',
+						tickangle=45,
+					),
+					legend=dict(
+						yanchor="top",
+						y=-0.2,
+						xanchor="center",
+						x=0.5
+					)
+				)
+				st.plotly_chart(fig, use_container_width=True)
+			#endregion
+				st.markdown("---")	
+			#region tabel hasil filter by Line, Jenis NG dan Partname
+				st.write("Tabel Hasil Filter Berdasarkan Line, Jenis NG dan Part Name")
+				# Pilihan Jenis NG untuk filter
+				df_ori_pcs['Date'] = pd.to_datetime(df_ori_pcs['Date'], errors='coerce').dt.date  # pastikan hanya tanggal (tanpa waktu)
+				date_min = df_ori_pcs['Date'].min()
+				date_max = df_ori_pcs['Date'].max()
+
+				# --- Filter PartName dari dataframe hasil filter Line dan Jenis NG sebelumnya ---
+
+				# partname_options hanya dari df_daily (sudah terfilter Line dan Jenis NG)
+				partname_options = df_daily['PartName'].dropna().unique().tolist()
+				selected_partname = st.multiselect("Pilih PartName:", partname_options, key="filter_partname_for_table")
+
+				if selected_partname:
+					df_partname_filtered = df_daily[df_daily['PartName'].isin(selected_partname)].copy()
+				else:
+					df_partname_filtered = df_daily.copy()
+
+				# Buat tabel harian: Date, PartName, Jenis NG (lot), Insp(B/H), JenisNG_%
+				# selected_jenisNG sudah didefinisikan di step sebelumnya
+				tabel_harian = df_partname_filtered.groupby(['Date', 'PartName'], as_index=False).agg({
+					selected_jenisNG: 'sum',
+					'Insp(B/H)': 'sum'
+				})
+
+				# Hitung JenisNG_% (handle pembagi 0)
+				tabel_harian['JenisNG_%'] = np.where(
+					tabel_harian['Insp(B/H)'] == 0,
+					0,
+					(tabel_harian[selected_jenisNG] / tabel_harian['Insp(B/H)']) * 100
+				)
+
+				# Format kolom tanggal
+				tabel_harian['Date'] = pd.to_datetime(tabel_harian['Date']).dt.strftime('%d-%b-%Y')
+
+				# Urutkan tabel
+				tabel_harian = tabel_harian.sort_values(['Date', 'PartName'])
+
+				# Tambahkan baris TOTAL
+				total_row = {
+					'Date': 'TOTAL',
+					'PartName': '',
+					selected_jenisNG: tabel_harian[selected_jenisNG].sum(),
+					'Insp(B/H)': tabel_harian['Insp(B/H)'].sum(),
+					'JenisNG_%': (tabel_harian[selected_jenisNG].sum() / tabel_harian['Insp(B/H)'].sum() * 100) if tabel_harian['Insp(B/H)'].sum() != 0 else 0
+				}
+				tabel_harian = pd.concat([tabel_harian, pd.DataFrame([total_row])], ignore_index=True)
+
+				# Format nilai numerik menjadi 2 digit di belakang koma
+				cols_to_format = [selected_jenisNG, 'Insp(B/H)', 'JenisNG_%']
+				for col in cols_to_format:
+					if col in tabel_harian.columns:
+						tabel_harian[col] = pd.to_numeric(tabel_harian[col], errors='coerce').map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
+
+				st.write("Tabel Tanggal, PartName, Jenis NG (lot), Tot Inspected (lot), JenisNG (%)")
+				st.dataframe(tabel_harian, use_container_width=True)
+			#endregion
 				
 				
 	else:

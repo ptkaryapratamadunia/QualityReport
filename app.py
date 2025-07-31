@@ -2711,15 +2711,15 @@ def cleaning_process(df):
 				st.write("Filtering Data by PartName (Excluding 'TRIAL')")		
 				with st.expander("Preview Data Excluding 'TRIAL' (satuan lot dan pcs)"):
 					# df_ori_pcs = dataframe_explorer(df_with_pcs, case=False)
-					st.dataframe(df_ori_pcs, use_container_width=True)
+					st.dataframe(df_with_pcs, use_container_width=True)
 
 				#filter untuk menampilkan data sesuai dengan PartName
 				# Mendapatkan unique values dari kolom 'PartName'
-				filter_partname = df_ori_pcs['PartName'].unique()
+				filter_partname = df_with_pcs['PartName'].unique()
 				# Membuat selectbox untuk memilih PartName
 				selected_partname = st.multiselect("Pilih PartName:", filter_partname)
 				# Menampilkan tabel berdasarkan filter PartName
-				filtered_partname_df = df_ori_pcs[df_ori_pcs['PartName'].isin(selected_partname)]
+				filtered_partname_df = df_with_pcs[df_with_pcs['PartName'].isin(selected_partname)]
 
 				with st.expander("Preview Data hasil Filtering by PartName"):
 					
@@ -2900,13 +2900,13 @@ def cleaning_process(df):
 
 				with filter_L:
 					# Mendapatkan unique values dari kolom 'Line'
-					filter_line = df_ori_pcs['Line'].unique()
+					filter_line = df_with_pcs['Line'].unique()
 
 					# Membuat selectbox untuk memilih Line
 					selected_Line = st.selectbox("Pilih Line:", filter_line)
 
 					# Menampilkan tabel berdasarkan filter Line
-					filtered_line_df = df_ori_pcs[df_ori_pcs['Line'] == selected_Line]
+					filtered_line_df = df_with_pcs[df_with_pcs['Line'] == selected_Line]
 
 				with filter_mid:
 					# Mendapatkan unique values dari kolom 'Kategori'
@@ -2920,7 +2920,7 @@ def cleaning_process(df):
 				with filter_R:
 
 					# Mendapatkan daftar semua kolom yang tersedia
-					kolom_tersedia = df_ori_pcs.columns.tolist()
+					kolom_tersedia = df_with_pcs.columns.tolist()
 
 					# Menghapus kolom 'Kategori' dan 'Line' dari daftar kolom yang tersedia
 					kolom_tersedia.remove('Kategori')
@@ -2971,16 +2971,16 @@ def cleaning_process(df):
 					# 	st.write(grouped_df)
 
 			with Filter_tab3:# Filter data berdasarkan Line untuk grafik harian
-				st.info("Grafik Garis Rata-rata NG (%) Harian berdasarkan Line ---")
-				df_ori_pcs['Date'] = pd.to_datetime(df_ori_pcs['Date'], errors='coerce').dt.date  # pastikan hanya tanggal (tanpa waktu)
-				date_min = df_ori_pcs['Date'].min()
-				date_max = df_ori_pcs['Date'].max()
+				st.info("Filtering Data berdasarkan Line,Jenis NG dan PartName untuk menampilkan grafik harian")
+				df_with_pcs['Date'] = pd.to_datetime(df_with_pcs['Date'], errors='coerce').dt.date  # pastikan hanya tanggal (tanpa waktu)
+				date_min = df_with_pcs['Date'].min()
+				date_max = df_with_pcs['Date'].max()
 
-				line_options = df_ori_pcs['Line'].dropna().unique().tolist()
+				line_options = df_with_pcs['Line'].dropna().unique().tolist()
 				selected_line = st.selectbox("Pilih Line yang ingin ditampilkan:", line_options)
 
 				# Filter df berdasarkan Line yang dipilih
-				df_daily = df_ori_pcs[df_ori_pcs['Line'] == selected_line].copy()
+				df_daily = df_with_pcs[df_with_pcs['Line'] == selected_line].copy()
 
 				# Buat range tanggal lengkap
 				all_dates = pd.date_range(start=date_min, end=date_max, freq='D').date
@@ -3072,9 +3072,9 @@ def cleaning_process(df):
 				st.write("Filter Data Harian Berdasarkan Jenis NG")
 			#region Pilihan Jenis NG untuk filter
 				# Pilihan Jenis NG untuk filter
-				df_ori_pcs['Date'] = pd.to_datetime(df_ori_pcs['Date'], errors='coerce').dt.date  # pastikan hanya tanggal (tanpa waktu)
-				date_min = df_ori_pcs['Date'].min()
-				date_max = df_ori_pcs['Date'].max()
+				df_with_pcs['Date'] = pd.to_datetime(df_with_pcs['Date'], errors='coerce').dt.date  # pastikan hanya tanggal (tanpa waktu)
+				date_min = df_with_pcs['Date'].min()
+				date_max = df_with_pcs['Date'].max()
 
 				# Daftar kolom Jenis NG yang tersedia (kecuali kolom non-NG)
 				jenis_ng_columns = [
@@ -3084,7 +3084,7 @@ def cleaning_process(df):
 					'Kilap', 'Tebal', 'Flek Putih', 'Spark', 'Kotor H/ Oval', 'Terkikis/ Crack',
 					'Dimensi/ Penyok'
 				]
-				jenisNG_options = [col for col in jenis_ng_columns if col in df_ori_pcs.columns]
+				jenisNG_options = [col for col in jenis_ng_columns if col in df_with_pcs.columns]
 				# Set default value to 'Flek Hitam' if available, otherwise use the first option
 				default_jenisNG = 'Flek Hitam' if 'Flek Hitam' in jenisNG_options else (jenisNG_options[0] if jenisNG_options else None)
 				selected_jenisNG = st.selectbox(
@@ -3200,9 +3200,9 @@ def cleaning_process(df):
 			#region tabel hasil filter by Line, Jenis NG dan Partname
 				st.write("Tabel Hasil Filter Berdasarkan Line, Jenis NG dan Part Name")
 				# Pilihan Jenis NG untuk filter
-				df_ori_pcs['Date'] = pd.to_datetime(df_ori_pcs['Date'], errors='coerce').dt.date  # pastikan hanya tanggal (tanpa waktu)
-				date_min = df_ori_pcs['Date'].min()
-				date_max = df_ori_pcs['Date'].max()
+				df_with_pcs['Date'] = pd.to_datetime(df_with_pcs['Date'], errors='coerce').dt.date  # pastikan hanya tanggal (tanpa waktu)
+				date_min = df_with_pcs['Date'].min()
+				date_max = df_with_pcs['Date'].max()
 
 				# --- Filter PartName dari dataframe hasil filter Line dan Jenis NG sebelumnya ---
 

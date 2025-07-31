@@ -1620,17 +1620,17 @@ def cleaning_process(df):
 
 				#---------added 24Mar2025
 				
-				df_ori_pcs['Date'] = pd.to_datetime(df_ori_pcs['Date'])
+				# df_ori_pcs['Date'] = pd.to_datetime(df_ori_pcs['Date'])
 
-				# Tanggal tertua
-				start_date = df_ori_pcs['Date'].min().strftime('%d-%b-%Y')
+				# # Tanggal tertua
+				# start_date = df_ori_pcs['Date'].min().strftime('%d-%b-%Y')
 
-				# Tanggal termuda
-				end_date = df_ori_pcs['Date'].max().strftime('%d-%b-%Y')
-				st.write(f"""
-				Periode dari Tanggal: {start_date}
-				sampai Tanggal : {end_date}
-				""")
+				# # Tanggal termuda
+				# end_date = df_ori_pcs['Date'].max().strftime('%d-%b-%Y')
+				# st.write(f"""
+				# Periode dari Tanggal: {start_date}
+				# sampai Tanggal : {end_date}
+				# """)
 				#---------
 				
 				# Display the plot
@@ -2710,7 +2710,7 @@ def cleaning_process(df):
 			with Filter_tab1:# Filter data berdasarkan PartName
 				st.write("Filtering Data by PartName (Excluding 'TRIAL')")		
 				with st.expander("Preview Data Excluding 'TRIAL' (satuan lot dan pcs)"):
-					df_ori_pcs = dataframe_explorer(df_with_pcs, case=False)
+					# df_ori_pcs = dataframe_explorer(df_with_pcs, case=False)
 					st.dataframe(df_ori_pcs, use_container_width=True)
 
 				#filter untuk menampilkan data sesuai dengan PartName

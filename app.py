@@ -3236,14 +3236,14 @@ def cleaning_process(df):
 				tabel_harian = tabel_harian.sort_values(['Date', 'PartName'])
 
 				# Tambahkan baris TOTAL
-				total_row = {
-					'Date': 'TOTAL',
-					'PartName': '',
-					selected_jenisNG: tabel_harian[selected_jenisNG].sum(),
-					'Insp(B/H)': tabel_harian['Insp(B/H)'].sum(),
-					'JenisNG_%': (tabel_harian[selected_jenisNG].sum() / tabel_harian['Insp(B/H)'].sum() * 100) if tabel_harian['Insp(B/H)'].sum() != 0 else 0
-				}
-				tabel_harian = pd.concat([tabel_harian, pd.DataFrame([total_row])], ignore_index=True)
+				# total_row = {
+				# 	'Date': 'TOTAL',
+				# 	'PartName': '',
+				# 	selected_jenisNG: tabel_harian[selected_jenisNG].sum(),
+				# 	'Insp(B/H)': tabel_harian['Insp(B/H)'].sum(),
+				# 	'JenisNG_%': (tabel_harian[selected_jenisNG].sum() / tabel_harian['Insp(B/H)'].sum() * 100) if tabel_harian['Insp(B/H)'].sum() != 0 else 0
+				# }
+				# tabel_harian = pd.concat([tabel_harian, pd.DataFrame([total_row])], ignore_index=True)
 
 				# Format nilai numerik menjadi 2 digit di belakang koma
 				cols_to_format = [selected_jenisNG, 'Insp(B/H)', 'JenisNG_%']
@@ -3253,6 +3253,29 @@ def cleaning_process(df):
 
 				st.write("Tabel Tanggal, PartName, Jenis NG (lot), Tot Inspected (lot), JenisNG (%)")
 				st.dataframe(tabel_harian, use_container_width=True)
+
+				#Buat Unique PartName dari dataframse tabel_harian (gabung semua partname yg sama dalam satu baris)
+				grupby_df = tabel_harian[tabel_harian['PartName'].notna()].groupby('PartName').agg({
+					selected_jenisNG: 'sum',
+					'Insp(B/H)': 'sum'
+				}).reset_index()
+				# Ubah tipe data kolom selected_jenisNG menjadi numeric
+				grupby_df[selected_jenisNG] = pd.to_numeric(grupby_df[selected_jenisNG], errors='coerce')
+
+				# Filter hanya nilai > 0 pada kolom selected_jenisNG
+				grupby_df_isi = grupby_df[grupby_df[selected_jenisNG] > 0]
+
+				# Sort ascending pada kolom selected_jenisNG
+				grupby_df_isi = grupby_df_isi.sort_values(by=selected_jenisNG, ascending=False)
+				st.write("Rekap by PartName : Jenis NG (lot), Tot Inspected (lot)")
+				st.dataframe(grupby_df_isi, use_container_width=True, hide_index=True)
+
+				#pareto chart
+				fig = px.bar(grupby_df_isi, x='PartName', y=selected_jenisNG, title='Pareto Chart')
+				fig.update_layout(yaxis2=dict(title='Akumulatif', overlaying='y', side='right'))
+				fig.add_scatter(x=grupby_df_isi['PartName'], y=grupby_df_isi[selected_jenisNG].cumsum(), mode='lines', yaxis='y2')
+				st.plotly_chart(fig, use_container_width=True)
+
 			#endregion
 				
 				

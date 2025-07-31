@@ -3276,6 +3276,10 @@ def cleaning_process(df):
 				fig.add_scatter(x=grupby_df_isi['PartName'], y=grupby_df_isi[selected_jenisNG].cumsum(), mode='lines', yaxis='y2')
 				st.plotly_chart(fig, use_container_width=True)
 
+				#pie chart
+				fig = px.pie(grupby_df_isi, values=selected_jenisNG, names='PartName', title='Pie Chart')
+				st.plotly_chart(fig, use_container_width=True)
+
 			#endregion
 				
 				

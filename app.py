@@ -2802,7 +2802,7 @@ def cleaning_process(df):
 					total_row['OK(pcs)'] = format_id_number(total_row['OK(pcs)'])
 					tabel_summary = pd.concat([tabel_summary, pd.DataFrame([total_row])], ignore_index=True)
 					st.write("Tabel Summary PartName vs NG (%), Qty Inspected (PCS), Qty NG (PCS), Qty OK (PCS)")
-					st.dataframe(tabel_summary)
+					st.dataframe(tabel_summary, use_container_width=True)
 						
 
 					#Tampilkan dalam 2 kolom
@@ -3146,7 +3146,7 @@ def cleaning_process(df):
 				st.write(f" Tabel Data Harian untuk Jenis NG: {selected_jenisNG} di Line: {selected_line}")
 				# Tampilkan tabel data harian
 				with st.expander("Klik untuk melihat TabelData Harian", expanded=False):
-					st.dataframe(daily_plot,use_container_width=True)
+					st.dataframe(daily_plot, use_container_width=True)
 				
 				# Tampilkan grafik
 				daily_plot['Date_str'] = pd.to_datetime(daily_plot['Date']).dt.strftime('%d-%b-%Y')

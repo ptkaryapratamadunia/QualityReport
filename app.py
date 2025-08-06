@@ -7,6 +7,7 @@ from operator import index
 from re import X
 from typing import Text
 from unicodedata import category
+from matplotlib import use
 from matplotlib.hatch import SmallCircles
 from referencing import Anchor
 import streamlit as st
@@ -2723,7 +2724,7 @@ def cleaning_process(df):
 
 				with st.expander("Preview Data hasil Filtering by PartName"):
 					
-					st.write(filtered_partname_df)
+					st.write(filtered_partname_df, use_container_width=True)
 
 				# Summary grafik batang: X = Jenis NG, Y = Avg NG_%
 				if not filtered_partname_df.empty:
@@ -2756,7 +2757,7 @@ def cleaning_process(df):
 					# Ganti nama kolom 'Total' menjadi 'Total NG'
 					pt_ng = pt_ng.rename(columns={'Total': 'Total NG'})
 					st.write("Tabel NG (PCS) by Jenis NG & PartName")
-					st.write(pt_ng)
+					st.write(pt_ng, use_container_width=True)
 
 					
 

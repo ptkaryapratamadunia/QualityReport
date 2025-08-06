@@ -2725,7 +2725,7 @@ def cleaning_process(df):
 
 				with st.expander("Preview Data hasil Filtering by PartName"):
 					
-					st.write(filtered_partname_df, use_container_width=True)
+					st.dataframe(filtered_partname_df, use_container_width=True)
 
 				# Summary grafik batang: X = Jenis NG, Y = Avg NG_%
 				if not filtered_partname_df.empty:
@@ -2758,7 +2758,7 @@ def cleaning_process(df):
 					# Ganti nama kolom 'Total' menjadi 'Total NG'
 					pt_ng = pt_ng.rename(columns={'Total': 'Total NG'})
 					st.write("Tabel NG (PCS) by Jenis NG & PartName")
-					st.write(pt_ng, use_container_width=True)
+					st.dataframe(pt_ng, use_container_width=True)
 
 					
 
@@ -2802,7 +2802,7 @@ def cleaning_process(df):
 					total_row['OK(pcs)'] = format_id_number(total_row['OK(pcs)'])
 					tabel_summary = pd.concat([tabel_summary, pd.DataFrame([total_row])], ignore_index=True)
 					st.write("Tabel Summary PartName vs NG (%), Qty Inspected (PCS), Qty NG (PCS), Qty OK (PCS)")
-					st.write(tabel_summary)
+					st.dataframe(tabel_summary)
 						
 
 					#Tampilkan dalam 2 kolom
@@ -2969,7 +2969,7 @@ def cleaning_process(df):
 					
 
 					with st.expander("Preview Data hasil Pivot"):
-						st.write(pivot_df)
+						st.dataframe(pivot_df, use_container_width=True)
 
 					
 
@@ -3009,7 +3009,7 @@ def cleaning_process(df):
 				st.write(f" Tabel Data Harian untuk Line: {selected_line}")
 				# Tampilkan tabel data harian
 				with st.expander("Klik untuk melihat Tabel Data Harian", expanded=False):
-					st.write(daily_plot)
+					st.dataframe(daily_plot, use_container_width=True)
 				# st.write(daily_plot.set_index('Date').transpose())
 
 				# Jika tidak ada data, tampilkan info
@@ -3146,7 +3146,7 @@ def cleaning_process(df):
 				st.write(f" Tabel Data Harian untuk Jenis NG: {selected_jenisNG} di Line: {selected_line}")
 				# Tampilkan tabel data harian
 				with st.expander("Klik untuk melihat TabelData Harian", expanded=False):
-					st.write(daily_plot)
+					st.dataframe(daily_plot,use_container_width=True)
 				
 				# Tampilkan grafik
 				daily_plot['Date_str'] = pd.to_datetime(daily_plot['Date']).dt.strftime('%d-%b-%Y')

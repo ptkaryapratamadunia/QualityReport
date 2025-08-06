@@ -777,7 +777,7 @@ def cleaning_process(df):
 					pivot_df_bulan_line2 = pd.concat([pivot_df_bulan_line2, pd.DataFrame([total_row])])
 				# Format angka
 				pivot_df_bulan_line2 = pivot_df_bulan_line2.map(format_with_comma2)
-				st.write(pivot_df_bulan_line2)
+				st.write(pivot_df_bulan_line2,use_container_width=True)
 			with kanan:	#Table Qty Inspected (lot) by Line & Month-edited add total row 16Jun2025
 				st.write('Table Qty Inspected (lot) by Line & Month')
 				pivot_df_bulan_line3 = pivot_df_bulan_line3.round(0)
@@ -792,7 +792,7 @@ def cleaning_process(df):
 					total_row = pivot_df_bulan_line3.loc[pivot_df_bulan_line3.index != 'Total'].sum(numeric_only=True)
 					total_row.name = 'Total'
 					pivot_df_bulan_line3 = pd.concat([pivot_df_bulan_line3, pd.DataFrame([total_row])])
-				st.write(pivot_df_bulan_line3)
+				st.write(pivot_df_bulan_line3, use_container_width=True)
 
 			#3 kolom buat tabel by Line and Shift - 26Nov2024
 			col1,col2,col3,=st.columns(3)
@@ -817,7 +817,7 @@ def cleaning_process(df):
 					pt_NGpersen_line_by_shift_transposed = pt_NGpersen_line_by_shift_transposed.drop('Total', axis=0)
 
 				st.write('NG (%) by Line & Shift')
-				st.write(pt_NGpersen_line_by_shift_transposed)
+				st.write(pt_NGpersen_line_by_shift_transposed, use_container_width=True)
 				
 			with col2:	#Qty NG Lot by Line and Shift - 26Nov2024
 				
@@ -830,7 +830,7 @@ def cleaning_process(df):
 					pt_NGLot_line_by_shift_transposed = pt_NGLot_line_by_shift_transposed.drop('Total', axis=0)
 
 				st.write('Qty NG(lot) by Line-Shift')
-				st.write(pt_NGLot_line_by_shift_transposed)
+				st.write(pt_NGLot_line_by_shift_transposed,use_container_width=True)
 
 			with col3:	#Qty Inspected Lot by Line and Shift - 26Nov2024
 				pt_InspLot_line_by_shift = pd.pivot_table(df, values='Insp(B/H)', index='Line', columns='Shift', aggfunc='sum', margins=True, margins_name='Total')
@@ -842,7 +842,7 @@ def cleaning_process(df):
 					pt_InspLot_line_by_shift_transposed = pt_InspLot_line_by_shift_transposed.drop('Total', axis=0)
 
 				st.write('Qty Insp(lot) by Line-Shift')
-				st.write(pt_InspLot_line_by_shift_transposed)
+				st.write(pt_InspLot_line_by_shift_transposed,use_container_width=True)	
 				
 			
 

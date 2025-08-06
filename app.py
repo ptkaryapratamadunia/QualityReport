@@ -2748,6 +2748,13 @@ def cleaning_process(df):
 					total_row['PartName'] = 'TOTAL'
 					total_row['Total'] = total_row[jenis_ng_columns].sum(axis=1)
 					pt_ng = pd.concat([pt_ng, total_row], ignore_index=True)
+					# Filter kolom yang hanya berisi nilai numerik
+					numerik_columns = pt_ng.select_dtypes(include=['int64', 'float64']).columns
+					# Tampilkan hanya kolom yang bernilai lebih dari nol
+					kolom_filter = [col for col in pt_ng.columns if col in numerik_columns and (pt_ng[col] > 0).any()]
+					pt_ng = pt_ng[kolom_filter + ['PartName']]
+					# Ganti nama kolom 'Total' menjadi 'Total NG'
+					pt_ng = pt_ng.rename(columns={'Total': 'Total NG'})
 					st.write("Tabel NG (PCS) by Jenis NG & PartName")
 					st.write(pt_ng)
 

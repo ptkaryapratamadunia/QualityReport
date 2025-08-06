@@ -777,7 +777,8 @@ def cleaning_process(df):
 					pivot_df_bulan_line2 = pd.concat([pivot_df_bulan_line2, pd.DataFrame([total_row])])
 				# Format angka
 				pivot_df_bulan_line2 = pivot_df_bulan_line2.map(format_with_comma2)
-				st.write(pivot_df_bulan_line2,use_container_width=True)
+				st.dataframe(pivot_df_bulan_line2,use_container_width=True)
+
 			with kanan:	#Table Qty Inspected (lot) by Line & Month-edited add total row 16Jun2025
 				st.write('Table Qty Inspected (lot) by Line & Month')
 				pivot_df_bulan_line3 = pivot_df_bulan_line3.round(0)

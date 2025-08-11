@@ -533,8 +533,8 @@ def cleaning_process(df):
 
 		# Mengganti nilai 'CU' dengan 'RACK 1' - improve 13Nov2024
 		df['Kategori'] = df['Kategori'].str.strip()       # menghilangkan white space seperti: ' CU', dan 'CU '
-		df['Kategori'] = df['Kategori'].replace('CU', 'RACK 1')
-		df['Kategori'] = df['Kategori'].replace('RC', 'Barrel 4') #added 20March2025
+		#df['Kategori'] = df['Kategori'].replace('CU', 'RACK 1')
+		#df['Kategori'] = df['Kategori'].replace('RC', 'Barrel 4') #added 20March2025
 		
 		# Membersihkan nama kolom dari spasi atau karakter tersembunyi
 		df.columns = df.columns.str.strip()
@@ -547,11 +547,23 @@ def cleaning_process(df):
 		#kosong pengganti '' yang tidak terdeteksi sebagai .isna() -- 28 Sept 2024 at home after short gowes
 
 		# Mengisi kolom Kategori yang kosong berdasarkan kondisi
-		df.loc[(df['Line'] == 'Barrel 4') & (df['Cust.ID'] == 'HDI') & (df['Kategori']=='kosong'), 'Kategori'] = 'HDI'
+		#Daftar Cust untuk kategori OTH - added 11Aug2025 Preventive Action operator LUPA input OTH pada kolom Keterangan pada Autocon
+		daftar_custORI = [
+				'DNIAF'
+		]  # daftar Cust.ID
+
+		# Update Kategori menjadi 'OTH' jika Cust.ID TIDAK ADA di daftar_custORI dan Line = 'Barrel 4'
+		df.loc[
+			(df['Line'] == 'Barrel 4') &
+			(~df['Cust.ID'].isin(daftar_custORI)),
+			'Kategori'
+		] = 'OTH'
+		# Update Kategori berdasarkan kondisi tertentu
+		df.loc[(df['Line'] == 'Barrel 4') & (df['Cust.ID'] == 'HDI') & (df['Kategori']=='OTH'), 'Kategori'] = 'HDI'
 		df.loc[(df['Line'] == 'Barrel 4') & (df['Cust.ID'] == 'GARMET') & ((df['Kategori'] == 'OTH') | (df['Kategori'] == 'kosong')), 'Kategori'] = 'GARMET'	#updated condition
 		df.loc[(df['Line'] == 'Barrel 4') & (df['Kategori']=='kosong'), 'Kategori'] = 'SAGA'
 		df.loc[(df['Line'] == 'Rack 1') & (df['Kategori']=='kosong'), 'Kategori'] = 'RACK 1'
-		df.loc[(df['Line'] == 'Rack 1') & (df['Kategori']=='kosong'), 'Kategori'] = 'RACK 1'
+		
 		df.loc[(df['Line'] == 'Nickel') & (df['Kategori']=='kosong'), 'Kategori'] = 'NICKEL'
 		#Daftar Part.ID untuk kategori SMP - added 11Aug2025 Preventive Action operator LUPA input SMP pada kolom Keterangan pada Autocon
 		daftar_SMP = [
@@ -569,25 +581,25 @@ def cleaning_process(df):
 		df.loc[(df['Line'] == 'Barrel 4') & (df['Part.ID'].isin(daftar_SMP)), 'Kategori'] = 'SMP'
 
 		#Daftar Cust untuk kategori OTH - added 11Aug2025 Preventive Action operator LUPA input OTH pada kolom Keterangan pada Autocon
-		daftar_custID = [
-				'DPP',
-				'CTA',
-				'MTG',
-				'IPD',
-				'SSY',
-				'HABM',
-				'KW',
-				'IMN',
-				'CHI',
-				'DIL'
-		]  # daftar Cust.ID
+		# daftar_custID = [
+		# 		'DPP',
+		# 		'CTA',
+		# 		'MTG',
+		# 		'IPD',
+		# 		'SSY',
+		# 		'HABM',
+		# 		'KW',
+		# 		'IMN',
+		# 		'CHI',
+		# 		'DIL'
+		# ]  # daftar Cust.ID
 
 		# Update Kategori menjadi 'OTH' jika Cust.ID MENGANDUNG salah satu string dalam daftar_custID dan Line = 'Barrel 4'
-		df.loc[
-			(df['Line'] == 'Barrel 4') &
-			(df['Cust.ID'].apply(lambda x: any(cust in str(x) for cust in daftar_custID))),
-			'Kategori'
-		] = 'OTH'
+		# df.loc[
+		# 	(df['Line'] == 'Barrel 4') &
+		# 	(df['Cust.ID'].apply(lambda x: any(cust in str(x) for cust in daftar_custID))),
+		# 	'Kategori'
+		# ] = 'OTH'
 
 
 		df['Kategori'] = df['Kategori'].str.strip().str.upper()

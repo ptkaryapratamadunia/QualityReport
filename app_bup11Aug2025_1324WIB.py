@@ -540,7 +540,7 @@ def cleaning_process(df):
 		df.columns = df.columns.str.strip()
 
 		# Daftar nilai yang diizinkan 26.09.2024
-		allowed_values = ['SAGA','SMP','OTH', 'RACK 1', 'NICKEL', 'HDI','GARMET']
+		allowed_values = ['BUSI','SMP','OTH', 'RACK 1', 'NICKEL', 'HDI','GARMET']
 
 		# Menghapus nilai yang tidak diizinkan
 		df['Kategori'] = df['Kategori'].apply(lambda x: x if x in allowed_values else 'kosong') 
@@ -549,26 +549,10 @@ def cleaning_process(df):
 		# Mengisi kolom Kategori yang kosong berdasarkan kondisi
 		df.loc[(df['Line'] == 'Barrel 4') & (df['Cust.ID'] == 'HDI') & (df['Kategori']=='kosong'), 'Kategori'] = 'HDI'
 		df.loc[(df['Line'] == 'Barrel 4') & (df['Cust.ID'] == 'GARMET') & ((df['Kategori'] == 'OTH') | (df['Kategori'] == 'kosong')), 'Kategori'] = 'GARMET'	#updated condition
-		df.loc[(df['Line'] == 'Barrel 4') & (df['Kategori']=='kosong'), 'Kategori'] = 'SAGA'
-		df.loc[(df['Line'] == 'Rack 1') & (df['Kategori']=='kosong'), 'Kategori'] = 'RACK 1'
+		df.loc[(df['Line'] == 'Barrel 4') & (df['Kategori']=='kosong'), 'Kategori'] = 'BUSI'
 		df.loc[(df['Line'] == 'Rack 1') & (df['Kategori']=='kosong'), 'Kategori'] = 'RACK 1'
 		df.loc[(df['Line'] == 'Nickel') & (df['Kategori']=='kosong'), 'Kategori'] = 'NICKEL'
-		#Daftar Part.ID untuk kategori SMP - added 11Aug2025 Preventive Action operator LUPA input SMP pada kolom Keterangan pada Autocon
-		daftar_SMP = [
-				'DNIAF GAS RIN Q/K',
-				'DNIAF WAS U20/22',
-				'DNIAF GAS RIN X02',
-				'DNIAF GAS RING X',
-				'DNIAF WAS XU 0480',
-				'DNIAF RIN U/X 0112',
-				'DNIAF WAS Q/K',
-				'DNIAF GAS RIN U 0270',
-				'DNIAF RIN Q/K',
-				'DNIAF RIN XU/D16D 0190'
-		]  # daftar Part.ID
-		df.loc[(df['Line'] == 'Barrel 4') & (df['Part.ID'].isin(daftar_SMP)), 'Kategori'] = 'SMP'
-
-
+		
 		df['Kategori'] = df['Kategori'].str.strip().str.upper()
 		
 

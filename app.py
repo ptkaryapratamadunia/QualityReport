@@ -568,6 +568,27 @@ def cleaning_process(df):
 		]  # daftar Part.ID
 		df.loc[(df['Line'] == 'Barrel 4') & (df['Part.ID'].isin(daftar_SMP)), 'Kategori'] = 'SMP'
 
+		#Daftar Cust untuk kategori OTH - added 11Aug2025 Preventive Action operator LUPA input OTH pada kolom Keterangan pada Autocon
+		daftar_custID = [
+				'DPP',
+				'CTA',
+				'MTG',
+				'IPD',
+				'SSY',
+				'HABM',
+				'KW',
+				'IMN',
+				'CHI',
+				'DIL'
+		]  # daftar Cust.ID
+
+		# Update Kategori menjadi 'OTH' jika Cust.ID MENGANDUNG salah satu string dalam daftar_custID dan Line = 'Barrel 4'
+		df.loc[
+			(df['Line'] == 'Barrel 4') &
+			(df['Cust.ID'].apply(lambda x: any(cust in str(x) for cust in daftar_custID))),
+			'Kategori'
+		] = 'OTH'
+
 
 		df['Kategori'] = df['Kategori'].str.strip().str.upper()
 		

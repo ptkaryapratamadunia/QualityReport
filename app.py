@@ -3281,6 +3281,26 @@ def cleaning_process(df):
 				st.write("Tabel Tanggal, PartName, Jenis NG (lot), Tot Inspected (lot), JenisNG (%)")
 				st.dataframe(tabel_harian, use_container_width=True)
 
+				# Tabel rekap by PartName (unique): sum Jenis NG (lot), sum Insp(B/H), mean JenisNG_%
+				tabel_harian_part = tabel_harian[tabel_harian['Date'] != 'TOTAL'].copy()
+				tabel_harian_part[selected_jenisNG] = pd.to_numeric(tabel_harian_part[selected_jenisNG], errors='coerce')
+				tabel_harian_part['Insp(B/H)'] = pd.to_numeric(tabel_harian_part['Insp(B/H)'], errors='coerce')
+				tabel_harian_part['JenisNG_%'] = pd.to_numeric(tabel_harian_part['JenisNG_%'], errors='coerce')
+
+				rekap_part = tabel_harian_part.groupby('PartName').agg({
+					selected_jenisNG: 'sum',
+					'Insp(B/H)': 'sum',
+					'JenisNG_%': 'mean'
+				}).reset_index()
+
+				# Format angka
+				rekap_part[selected_jenisNG] = rekap_part[selected_jenisNG].map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
+				rekap_part['Insp(B/H)'] = rekap_part['Insp(B/H)'].map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
+				rekap_part['JenisNG_%'] = rekap_part['JenisNG_%'].map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
+
+				st.write("Tabel Rekapitulasi by PartName (unique): Jenis NG (lot), Tot Inspected (lot), JenisNG (%)")
+				st.dataframe(rekap_part, use_container_width=True, hide_index=True)
+
 				#Buat Unique PartName dari dataframse tabel_harian (gabung semua partname yg sama dalam satu baris)
 				# tabel_harian2 = tabel_harian[tabel_harian['Date'] != 'TOTAL']
 				# grupby_df = tabel_harian2.groupby('PartName').agg({

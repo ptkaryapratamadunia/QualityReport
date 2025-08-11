@@ -319,14 +319,32 @@ def show_footer():
 		st.write("")
 
 	with kaki_tengah:
-		# kontener_photo=st.container(border=True)
 		# Adjust the file path based on the current directory
 		current_dir = os.path.dirname(os.path.abspath(__file__))
 		e_WeYe = os.path.join(current_dir, 'eweye.png')
-		# Memuat gambar dan mengubahnya menjadi base64
-		# logo_KPD ='logoKPD.png'
 		image_base64 = get_image_as_base64(e_WeYe)
-		st.image(e_WeYe,"©️ 2024 - e-WeYe, All Rights Reserved")
+		st.markdown(
+			f"""
+			<style>
+			.eweye-footer-img {{
+			width: 50px;
+			height: 50px;
+			display: block;
+			margin-left: auto;
+			margin-right: auto;
+			}}
+			@media (max-width: 600px) {{
+			.eweye-footer-img {{
+				width: 30px !important;
+				height: 30px !important;
+			}}
+			}}
+			</style>
+			<img src='data:image/png;base64,{image_base64}' class='eweye-footer-img'/>
+			<div style='text-align:center;font-size:12px;color:grey;'>©️ 2024 | e-WeYe | All Rights Reserved</div>
+			""",
+			unsafe_allow_html=True
+		)
 
 	with kaki_kanan2:
 		st.write("")

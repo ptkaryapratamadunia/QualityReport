@@ -3279,7 +3279,8 @@ def cleaning_process(df):
 						tabel_harian[col] = pd.to_numeric(tabel_harian[col], errors='coerce').map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
 
 				st.write("Tabel Tanggal, PartName, Jenis NG (lot), Tot Inspected (lot), JenisNG (%)")
-				st.dataframe(tabel_harian, use_container_width=True)
+				with st.expander("Klik untuk melihat Tabel Harian", expanded=False):
+					st.dataframe(tabel_harian, use_container_width=True)
 
 				# Tabel rekap by PartName (unique): sum Jenis NG (lot), sum Insp(B/H), mean JenisNG_%
 				tabel_harian_part = tabel_harian[tabel_harian['Date'] != 'TOTAL'].copy()

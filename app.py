@@ -3347,7 +3347,7 @@ def cleaning_process(df):
 				rekap_part = rekap_part[rekap_part[selected_jenisNG] > 0]
 
 				# Sort dari besar ke kecil berdasarkan Jenis NG (lot)
-				rekap_part = rekap_part.sort_values(by=selected_jenisNG, ascending=False)
+				rekap_part = rekap_part.sort_values(by='JenisNG_%', ascending=False)
 
 				# Format angka
 				rekap_part[selected_jenisNG] = rekap_part[selected_jenisNG].map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")

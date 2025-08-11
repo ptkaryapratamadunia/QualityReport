@@ -3293,6 +3293,12 @@ def cleaning_process(df):
 					'JenisNG_%': 'mean'
 				}).reset_index()
 
+				# Filter hanya PartName dengan Jenis NG (lot) > 0
+				rekap_part = rekap_part[rekap_part[selected_jenisNG] > 0]
+
+				# Sort dari besar ke kecil berdasarkan Jenis NG (lot)
+				rekap_part = rekap_part.sort_values(by=selected_jenisNG, ascending=False)
+
 				# Format angka
 				rekap_part[selected_jenisNG] = rekap_part[selected_jenisNG].map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
 				rekap_part['Insp(B/H)'] = rekap_part['Insp(B/H)'].map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")

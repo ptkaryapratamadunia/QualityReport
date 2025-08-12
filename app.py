@@ -87,13 +87,14 @@ st.markdown("""
 
 st.markdown("""
 <div class="navbar-fixed">
-    <a href="#home">🏠 HOME</a>
-    <a href="#summarydata">📊 SUMMARY DATA</a>
-    <a href="#summarydata">🔎 FILTERING</a>
-    <a href="#summarydata">🧪 SUMMARY TRIAL</a>
-	<a href="#paretong">📝 PARETO NG</a>
+    <a href="#home">🏠 Home</a>
+    <a href="#summarydata">📊 Summary Data</a>
+    <a href="#summarydata">🔎 Filtering</a>
+    <a href="#summarydata">🧪 Summary Trial</a>
+	<a href="#paretong">📝 Pareto NG</a>
 	<a href="#horn">🚨 Housing Horn HDI</a>
-    <a href="#home">ℹ️ ABOUT</a>
+	<a href="#stamping">📱 Smallpart</a>		
+    <a href="#home">ℹ️ About</a>
 </div>
 """, unsafe_allow_html=True)
 
@@ -2520,6 +2521,7 @@ def cleaning_process(df):
 			#      NG Plating Smallpart by M/C NO.
 			#--------------------------------------
 			#region
+			
 			df.columns = df.columns.str.strip()
 			# Ensure the 'M/C No.' column is of string type
 			df['M/C No.'] = df['M/C No.'].astype(str)
@@ -2588,6 +2590,7 @@ def cleaning_process(df):
 					),
 					legend_title_text=''
 				)
+				st.markdown('<a name="stamping"></a>', unsafe_allow_html=True)
 				st.plotly_chart(fig) # Display the plot
 
 				st.write('Tabel NG (%) by M/C No. Stamping')

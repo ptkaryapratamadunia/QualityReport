@@ -3027,12 +3027,34 @@ def cleaning_process(df):
 					with st.expander("Preview Data hasil Filtering"):
 						st.dataframe(filtered_df, use_container_width=True, hide_index=True)
 
+					#Rekap berdasarkan PartName (Unique)
+					if not filtered_df.empty:
+						# Buat dictionary agregasi: 'mean' untuk NG_%, 'sum' untuk kolom lain numerik
+						agg_dict = {}
+						for col in selected_columns:
+							if col == 'NG_%':
+								agg_dict[col] = 'mean'
+							elif pd.api.types.is_numeric_dtype(filtered_df[col]):
+								agg_dict[col] = 'sum'
+							else:
+								agg_dict[col] = 'first'
+						rekap_part = filtered_df.groupby('PartName', as_index=False).agg(agg_dict)
+						# Urutkan berdasarkan NG_% descending jika ada
+						if 'NG_%' in rekap_part.columns:
+							rekap_part = rekap_part.sort_values(by='NG_%', ascending=False)
+
+						# Sort dari besar ke kecil berdasarkan NG_%
+						rekap_part = rekap_part.sort_values(by='NG_%', ascending=False)
+
+						with st.expander("Preview Data hasil Grouping"):
+							st.dataframe(rekap_part, use_container_width=True, hide_index=True)
+
 					#Buat tabel grup by Partname (unique)
-					grouped_df = filtered_df.groupby('PartName', as_index=False).agg(agg_dict)
-					grouped_df = grouped_df.sort_values(by='NG_%', ascending=False)
-					
-					with st.expander("Preview Data hasil Grouping"):
-						st.dataframe(grouped_df, use_container_width=True, hide_index=True)
+					# grouped_df = filtered_df.groupby('PartName', as_index=False).agg(agg_dict)
+					# grouped_df = grouped_df.sort_values(by='NG_%', ascending=False)
+
+					# with st.expander("Preview Data hasil Grouping"):
+					# 	st.dataframe(grouped_df, use_container_width=True, hide_index=True)
 
 
 			with Filter_tab3:# Filter data berdasarkan Line untuk grafik harian

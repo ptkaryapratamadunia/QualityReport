@@ -5,6 +5,7 @@
 from math import exp
 from operator import index
 from re import X
+from sqlite3 import Date
 from typing import Text
 from unicodedata import category
 from matplotlib import use
@@ -1630,7 +1631,8 @@ def cleaning_process(df):
 			with st.expander("Klik untuk melihat Tabel Qty Inspected (lot) by Line & Customer", expanded=False):
 				st.write(pt_customer_line2_tranposed)
 
-			st.markdown("---")
+			# st.markdown("---")
+			DateRange(df_ori_pcs)
 			# Terapkan format ke seluruh pivot table
 			pt_kategori_line = pt_kategori_line.map(format_with_comma2)	
 			pt_kategori_line3 = pt_kategori_line3.map(format_with_comma)	

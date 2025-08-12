@@ -91,6 +91,7 @@ st.markdown("""
     <a href="#summarydata">📊 Summary Data</a>
     <a href="#summarydata">🔎 Filtering</a>
     <a href="#summarydata">🧪 Summary Trial</a>
+	<a href="#kategori">⏹️ Summary by Category</a>		
 	<a href="#paretong">📝 Pareto NG</a>
 	<a href="#horn">🚨 Housing Horn HDI</a>
 	<a href="#stamping">📱 Smallpart</a>		
@@ -1751,7 +1752,7 @@ def cleaning_process(df):
 				# sampai Tanggal : {end_date}
 				# """)
 				#---------
-				
+				st.markdown('<a name="kategori"></a>', unsafe_allow_html=True)
 				# Display the plot
 				st.write('Grafik NG% & Qty Inspected by Kategori')
 				st.plotly_chart(fig)

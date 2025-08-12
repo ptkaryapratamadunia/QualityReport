@@ -3474,6 +3474,8 @@ def main():
 		<a href="#horn">🚨 Housing Horn HDI</a>
 		<a href="#stamping">📱 Smallpart</a>		
 		<a href="#home">ℹ️ About</a>
+		<a href="#">| 🧹 Data Cleaner V8.0 | ©️2024 e-WeYe |</a>
+			 
 	</div>
 	""", unsafe_allow_html=True)
 	

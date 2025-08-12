@@ -2976,13 +2976,13 @@ def cleaning_process(df):
 
 				with filter_L:
 					# Mendapatkan unique values dari kolom 'Line'
-					filter_line = df_with_pcs['Line'].unique()
+					filter_line = df_ori_pcs['Line'].unique()
 
 					# Membuat selectbox untuk memilih Line
 					selected_Line = st.selectbox("Pilih Line:", filter_line)
 
 					# Menampilkan tabel berdasarkan filter Line
-					filtered_line_df = df_with_pcs[df_with_pcs['Line'] == selected_Line]
+					filtered_line_df = df_ori_pcs[df_ori_pcs['Line'] == selected_Line]
 
 				with filter_mid:
 					# Mendapatkan unique values dari kolom 'Kategori'
@@ -2996,7 +2996,7 @@ def cleaning_process(df):
 				with filter_R:
 
 					# Mendapatkan daftar semua kolom yang tersedia
-					kolom_tersedia = df_with_pcs.columns.tolist()
+					kolom_tersedia = df_ori_pcs.columns.tolist()
 
 					# Menghapus kolom 'Kategori' dan 'Line' dari daftar kolom yang tersedia
 					kolom_tersedia.remove('Kategori')
@@ -3019,32 +3019,21 @@ def cleaning_process(df):
 				else:
 
 					# Menampilkan tabel berdasarkan filter kategori dan kolom yang dipilih
+					# Urutkan tabel berdasarkan kolom 'NG_%' dari besar ke kecil jika ada di selected_columns
+					if 'NG_%' in selected_columns:
+						filtered_df = filtered_df.sort_values(by='NG_%', ascending=False)
 					filtered_df = filtered_df[selected_columns]
 
 					with st.expander("Preview Data hasil Filtering"):
-						st.write(filtered_df)
+						st.dataframe(filtered_df, use_container_width=True, hide_index=True)
 
-					#pivot table
-					# Pivot tabel dengan kolom PartName, NG%, dan [Selected_columns]
-					pivot_df = filtered_df.pivot_table(
-						index='PartName',
-						columns=None,
-						values=selected_columns,
-						aggfunc=agg_dict
-					)
-
+					#Buat tabel grup by Partname (unique)
+					grouped_df = filtered_df.groupby('PartName', as_index=False).agg(agg_dict)
+					grouped_df = grouped_df.sort_values(by='NG_%', ascending=False)
 					
+					with st.expander("Preview Data hasil Grouping"):
+						st.dataframe(grouped_df, use_container_width=True, hide_index=True)
 
-					with st.expander("Preview Data hasil Pivot"):
-						st.dataframe(pivot_df, use_container_width=True)
-
-					
-
-					# Grouping data by PartName and selected columns
-					# grouped_df = filtered_df.groupby('PartName', as_index=False).agg(agg_dict)
-
-					# with st.expander("Preview Data hasil Grouping"):
-					# 	st.write(grouped_df)
 
 			with Filter_tab3:# Filter data berdasarkan Line untuk grafik harian
 				st.info("Filtering Data berdasarkan Line,Jenis NG dan PartName untuk menampilkan grafik harian")

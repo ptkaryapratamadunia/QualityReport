@@ -3467,7 +3467,6 @@ def main():
 	<div class="navbar-fixed">
 		<a href="#home">🏠 Home</a>
 		<a href="#summarydata">📊 Summary Data | 🔎 Filtering | 🧪 Summary Trial </a>
-		
 		<a href="#kategori">⏹️ Summary by Category</a>		
 		<a href="#paretong">📝 Pareto NG</a>
 		<a href="#horn">🚨 Housing Horn HDI</a>

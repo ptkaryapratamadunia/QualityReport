@@ -32,6 +32,8 @@ import subprocess
 
 st.set_page_config(page_title="Quality Report", page_icon=":bar_chart:", layout="wide")
 
+
+
 # ---- HIDE STREAMLIT STYLE ----
 hide_st_style = """
 <style>
@@ -50,6 +52,49 @@ st.markdown("""
         font-family: 'Nunito'!important;
     }
     </style>
+""", unsafe_allow_html=True)
+
+#NAVBAR
+st.markdown("""
+<style>
+.navbar-fixed {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    z-index: 9999;
+    background: #98A1BC; /* Warna navbar */
+    padding: 0.5rem 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.navbar-fixed a {
+    color: #fff !important;
+    text-decoration: none;
+    margin: 0 18px;
+    font-weight: normal;
+    font-size: 0.8rem;
+    font-family: Nunito, Arial, sans-serif;
+    transition: color 0.2s;
+}
+.navbar-fixed a:hover {
+    color: #FFCC00 !important;
+}
+.stApp {
+    padding-top: 48px !important; /* Agar konten tidak tertutup navbar */
+}
+</style>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+<div class="navbar-fixed">
+    <a href="#home">🏠 HOME</a>
+    <a href="#summarydata">📊 SUMMARY DATA</a>
+    <a href="#summarydata">🔎 FILTERING</a>
+    <a href="#summarydata">🧪 SUMMARY TRIAL</a>
+	<a href="#paretong">📝 PARETO NG</a>
+	<a href="#horn">🚨 Housing Horn HDI</a>
+    <a href="#home">ℹ️ ABOUT</a>
+</div>
 """, unsafe_allow_html=True)
 
 
@@ -765,6 +810,7 @@ def cleaning_process(df):
 
 		with sum_tab1:
 			#SUMMARY DATA
+			st.markdown('<a name="summarydata"></a>', unsafe_allow_html=True)
 			st.subheader('Summary Data')
 			#---------added 24Mar2025 
 			#Change to def 20May 2025
@@ -1747,6 +1793,7 @@ def cleaning_process(df):
 
 		#region : Tampilkan tabel khusus untuk Barrel 4 cust.id 'HDI' dan partname dengan awalan 'HOUSING'**** - 10jUL2025
 			st.markdown("---")
+			st.markdown('<a name="horn"></a>', unsafe_allow_html=True)
 			st.markdown("### Metrics for Housing Horn - PT.HDI - Barrel 4")
 			DateRange(df_ori_pcs)
 			# Filter data: Line = 'Barrel 4', Cust.ID = 'HDI', PartName contains 'HOUSING'
@@ -2033,7 +2080,7 @@ def cleaning_process(df):
 				st.markdown(f"<div style='font-size: 32px; color: orange; font-weight: bold; text-align: center;'>{total_production_LR1}</div>", unsafe_allow_html=True)
 
 			st.markdown("---")
-
+			st.markdown('<a name="paretong"></a>', unsafe_allow_html=True)
 			DateRange(df_ori_pcs)
 			#tampilkan grafik batangnya -- 14Nov2024
 			barisB4, barisR1=st.columns(2)
@@ -3427,9 +3474,13 @@ def main():
 	
 	header()
 
-	tab_top1, tab_top2 = st.tabs(["Home", "About"])
-	with tab_top1:
+	# Anchor untuk HOME - added  12Aug2025  untuk navigasi
+	st.markdown('<a name="home"></a>', unsafe_allow_html=True)	
 
+	tab_top1, tab_top2 = st.tabs(["Home", "About"])
+
+	with tab_top1:
+		
 		upload_kol1, upload_kol2 = st.columns([1, 1])
 		with upload_kol1:#link google drive
 
@@ -3504,6 +3555,7 @@ def main():
 		# print2PDF()
 	
 	with tab_top2:
+		st.markdown('<a name="about"></a>', unsafe_allow_html=True)
 		About()
 
 if __name__ == "__main__":

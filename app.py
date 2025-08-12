@@ -54,50 +54,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-#NAVBAR
-st.markdown("""
-<style>
-.navbar-fixed {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    z-index: 9999;
-    background: #98A1BC; /* Warna navbar */
-    padding: 0.5rem 0;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-}
-.navbar-fixed a {
-    color: #fff !important;
-    text-decoration: none;
-    margin: 0 18px;
-    font-weight: normal;
-    font-size: 0.8rem;
-    font-family: Nunito, Arial, sans-serif;
-    transition: color 0.2s;
-}
-.navbar-fixed a:hover {
-    color: #FFCC00 !important;
-}
-.stApp {
-    padding-top: 48px !important; /* Agar konten tidak tertutup navbar */
-}
-</style>
-""", unsafe_allow_html=True)
 
-st.markdown("""
-<div class="navbar-fixed">
-    <a href="#home">🏠 Home</a>
-    <a href="#summarydata">📊 Summary Data</a>
-    <a href="#summarydata">🔎 Filtering</a>
-    <a href="#summarydata">🧪 Summary Trial</a>
-	<a href="#kategori">⏹️ Summary by Category</a>		
-	<a href="#paretong">📝 Pareto NG</a>
-	<a href="#horn">🚨 Housing Horn HDI</a>
-	<a href="#stamping">📱 Smallpart</a>		
-    <a href="#home">ℹ️ About</a>
-</div>
-""", unsafe_allow_html=True)
 
 
 # Jangan pernah lagi berfikiran untuk merubah tampilan streamlit menjadi Dark MOode, hanya akan membuang waktumu saja!!!! 20May2025
@@ -3474,7 +3431,51 @@ def main():
 	# Jika sudah login, tampilkan konten utama
 	# st.title("Selamat Datang di Aplikasi Data Cleaning")
 	# st.write("Ini adalah halaman utama aplikasi setelah login berhasil.")	
-	
+
+	#NAVBAR - added 12Aug 2025 @home
+	st.markdown("""
+	<style>
+	.navbar-fixed {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100vw;
+		z-index: 9999;
+		background: #98A1BC; /* Warna navbar */
+		padding: 0.5rem 0;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+	}
+	.navbar-fixed a {
+		color: #fff !important;
+		text-decoration: none;
+		margin: 0 18px;
+		font-weight: normal;
+		font-size: 0.8rem;
+		font-family: Nunito, Arial, sans-serif;
+		transition: color 0.2s;
+	}
+	.navbar-fixed a:hover {
+		color: #FFCC00 !important;
+	}
+	.stApp {
+		padding-top: 48px !important; /* Agar konten tidak tertutup navbar */
+	}
+	</style>
+	""", unsafe_allow_html=True)
+
+	st.markdown("""
+	<div class="navbar-fixed">
+		<a href="#home">🏠 Home</a>
+		<a href="#summarydata">📊 Summary Data</a>
+		<a href="#summarydata">🔎 Filtering</a>
+		<a href="#summarydata">🧪 Summary Trial</a>
+		<a href="#kategori">⏹️ Summary by Category</a>		
+		<a href="#paretong">📝 Pareto NG</a>
+		<a href="#horn">🚨 Housing Horn HDI</a>
+		<a href="#stamping">📱 Smallpart</a>		
+		<a href="#home">ℹ️ About</a>
+	</div>
+	""", unsafe_allow_html=True)
 	
 	header()
 

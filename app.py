@@ -1631,8 +1631,9 @@ def cleaning_process(df):
 			with st.expander("Klik untuk melihat Tabel Qty Inspected (lot) by Line & Customer", expanded=False):
 				st.write(pt_customer_line2_tranposed)
 
-			# st.markdown("---")
+			st.markdown("---")
 			DateRange(df_ori_pcs)
+			#Grafik NG (%) Vs Insp (lot) per Kategori
 			# Terapkan format ke seluruh pivot table
 			pt_kategori_line = pt_kategori_line.map(format_with_comma2)	
 			pt_kategori_line3 = pt_kategori_line3.map(format_with_comma)	
@@ -1674,7 +1675,7 @@ def cleaning_process(df):
 
 				# Customize layout
 				fig.update_layout(
-					title='Grafik NG (%) Vs Insp (lot) per Kategori',
+					title='',
 					xaxis=dict(title='Kategori'),
 					yaxis=dict(title='Qty Inspected (lot)', titlefont=dict(color='#077A7D'), tickfont=dict(color='#077A7D')),
 					yaxis2=dict(title='NG (%)', titlefont=dict(color='red'), tickfont=dict(color='red'), overlaying='y', side='right'),
@@ -1705,6 +1706,7 @@ def cleaning_process(df):
 				#---------
 				
 				# Display the plot
+				st.write('Grafik NG% & Qty Inspected by Kategori')
 				st.plotly_chart(fig)
 			
 			with zahra:	#Tabel NG% by Line& Kategori

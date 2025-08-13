@@ -3538,7 +3538,7 @@ def main():
 				<a href="#paretong">📝 Pareto NG</a>
 				<a href="#horn">🚨 Housing Horn HDI</a>
 				<a href="#stamping">📱 Smallpart</a>		
-				<a href="https://lookerstudio.google.com/reporting/c9e60f2f-eacd-4f3e-9126-243e568b98fd">Reporting</a>
+				<a href="https://lookerstudio.google.com/reporting/c9e60f2f-eacd-4f3e-9126-243e568b98fd">📊Reporting</a>
 				<a href="#">| 🧹 Data Cleaner V8.0 | ©️2024 e-WeYe |</a>
 					
 			</div>

@@ -3532,13 +3532,13 @@ def main():
 
 			st.markdown("""
 			<div class="navbar-fixed">
-				<a href="#home">🏠 Home| ℹ️ About</a>
+				<a href="#home">🏠 Home | ℹ️ About</a>
 				<a href="#summarydata">📊 Summary Data|🔎 Filtering|🧪 Summary Trial </a>
 				<a href="#kategori">⏹️ Sum by Category</a>		
 				<a href="#paretong">📝 Pareto NG</a>
 				<a href="#horn">🚨 Housing Horn HDI</a>
 				<a href="#stamping">📱 Smallpart</a>		
-				<a href="https://lookerstudio.google.com/reporting/c9e60f2f-eacd-4f3e-9126-243e568b98fd">📊Reporting</a>
+				<a href="https://lookerstudio.google.com/reporting/c9e60f2f-eacd-4f3e-9126-243e568b98fd">📊 Reporting</a>
 				<a href="#">|🧹 Data Cleaner V8.0</a>
 					
 			</div>

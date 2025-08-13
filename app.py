@@ -3533,7 +3533,7 @@ def main():
 			st.markdown("""
 			<div class="navbar-fixed">
 				<a href="#home">🏠 Home | ℹ️ About</a>
-				<a href="#summarydata">📊 Summary Data|🔎 Filtering|🧪 Summary Trial </a>
+				<a href="#summarydata">📊 Summary Data | 🧪 Summary Trial | 🔎 Filtering</a>
 				<a href="#kategori">⏹️ Sum by Category</a>		
 				<a href="#paretong">📝 Pareto NG</a>
 				<a href="#horn">🚨 Housing Horn HDI</a>

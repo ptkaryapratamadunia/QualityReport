@@ -2651,14 +2651,7 @@ def cleaning_process(df):
 				with trial_kiri:
 				# Summary Trial Graph
 					#grafik summary jenis NG (sumbu Y) vs Qty NG (sumbu X)			
-					# Daftar kolom Jenis NG (pastikan sesuai dengan kolom di dataframe2)
-					jenis_ng_columns = [
-						'Warna(pcs)', 'Buram(pcs)', 'Berbayang(pcs)', 'Kotor(pcs)', 'Tdk Terplating(pcs)', 'Rontok/ Blister(pcs)',
-						'Tipis/ EE No Plating(pcs)', 'Flek Kuning(pcs)', 'Terbakar(pcs)', 'Watermark(pcs)', 'Jig Mark/ Renggang(pcs)',
-						'Lecet/ Scratch(pcs)', 'Seret(pcs)', 'Flek Hitam(pcs)', 'Flek Tangan(pcs)', 'Belang/ Dempet(pcs)', 'Bintik(pcs)',
-						'Kilap(pcs)', 'Tebal(pcs)', 'Flek Putih(pcs)', 'Spark(pcs)', 'Kotor H/ Oval(pcs)', 'Terkikis/ Crack(pcs)',
-						'Dimensi/ Penyok(pcs)'
-					]
+					
 					# Hitung rata-rata NG (%) untuk setiap Jenis NG
 					ng_summary = {}
 					for col in jenis_ng_columns:

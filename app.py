@@ -2997,21 +2997,21 @@ def cleaning_process(df):
 					filtered_line_df = df_ori_pcs[df_ori_pcs['Line'] == selected_Line]
 
 				with filter_mid:
-					# Mendapatkan unique values dari kolom 'Kategori'
-					filter_kategori = filtered_line_df['Kategori'].unique()
+					# Mendapatkan unique values dari kolom 'Kategori' ==> diubah ke Cust.ID 19Aug2025
+					filter_kategori = filtered_line_df['Cust.ID'].unique()
 
 					# Membuat selectbox untuk memilih kategori
-					selected_kategori = st.selectbox("Pilih Kategori:", filter_kategori)
+					selected_kategori = st.selectbox("Pilih Customer:", filter_kategori)
 
 					# Menampilkan tabel berdasarkan filter Kategori
-					filtered_df = filtered_line_df[filtered_line_df['Kategori'] == selected_kategori]
+					filtered_df = filtered_line_df[filtered_line_df['Cust.ID'] == selected_kategori]
 				with filter_R:
 
 					# Mendapatkan daftar semua kolom yang tersedia
 					kolom_tersedia = df_ori_pcs.columns.tolist()
 
-					# Menghapus kolom 'Kategori' dan 'Line' dari daftar kolom yang tersedia
-					kolom_tersedia.remove('Kategori')
+					# Menghapus kolom 'Cust.ID' dan 'Line' dari daftar kolom yang tersedia
+					kolom_tersedia.remove('Cust.ID')
 					kolom_tersedia.remove('Line')
 					kolom_tersedia.remove('% NG')
 

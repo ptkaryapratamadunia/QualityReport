@@ -1913,8 +1913,11 @@ def cleaning_process(df):
 				# Total Production (lot) Line Barrel 4
 				total_production_B4 = df_LB4['Insp(B/H)'].sum()
 				total_production_B4 = format_with_comma2(total_production_B4)
-				st.write("Total Inspected (lot) LB 4:")
-				st.markdown(f"<div style='font-size: 32px; color: orange; font-weight: bold; text-align: center;'>{total_production_B4}</div>", unsafe_allow_html=True)
+				ng_persen = df_LB4['NG_%'].mean()
+				ng_persen = format_with_comma2(ng_persen)
+				st.write("Total Inspected (lot) & NG% LB 4:")
+				st.markdown(f"<div style='font-size: 18px; color: orange; font-weight: bold; text-align: center;'>{total_production_B4}</div>", unsafe_allow_html=True)
+				st.markdown(f"<div style='font-size: 18px; color: orange; font-weight: bold; text-align: center;'>{ng_persen} % </div>", unsafe_allow_html=True)
 				st.markdown("---")
 
 			# Tabel Jenis NG (Lot) - Line Barrel 4 - Parts HDI
@@ -1936,8 +1939,11 @@ def cleaning_process(df):
 			with lb4_hdi_kanan:
 				total_production_HDI = df_HDI['Insp(B/H)'].sum()
 				total_production_HDI = format_with_comma2(total_production_HDI)
-				st.write("Total Inspected (lot) HDI:")
-				st.markdown(f"<div style='font-size: 32px; color: orange; font-weight: bold; text-align: center;'>{total_production_HDI}</div>", unsafe_allow_html=True)
+				ng_persen_HDI = df_HDI['NG_%'].mean()
+				ng_persen_HDI = format_with_comma2(ng_persen_HDI)
+				st.write("Total Inspected (lot) & NG% HDI:")
+				st.markdown(f"<div style='font-size: 18px; color: orange; font-weight: bold; text-align: center;'>{total_production_HDI}</div>", unsafe_allow_html=True)
+				st.markdown(f"<div style='font-size: 18px; color: orange; font-weight: bold; text-align: center;'>{ng_persen_HDI} % </div>", unsafe_allow_html=True)
 				st.markdown("---")
 
 			# Tabel Jenis NG (Lot) - Line Barrel 4 - Small Parts
@@ -1959,8 +1965,11 @@ def cleaning_process(df):
 			with lb4_smp_kanan:
 				total_production_SMP = df_SMP['Insp(B/H)'].sum()
 				total_production_SMP = format_with_comma2(total_production_SMP)
-				st.write("Total Inspected (lot) SMP:")
-				st.markdown(f"<div style='font-size: 32px; color: orange; font-weight: bold; text-align: center;'>{total_production_SMP}</div>", unsafe_allow_html=True)
+				ng_persen_SMP = df_SMP['NG_%'].mean()
+				ng_persen_SMP = format_with_comma2(ng_persen_SMP)
+				st.write("Total Inspected (lot) & NG% SMP:")
+				st.markdown(f"<div style='font-size: 18px; color: orange; font-weight: bold; text-align: center;'>{total_production_SMP}</div>", unsafe_allow_html=True)
+				st.markdown(f"<div style='font-size: 18px; color: orange; font-weight: bold; text-align: center;'>{ng_persen_SMP} % </div>", unsafe_allow_html=True)
 				st.markdown("---")
 
 			# Tabel Jenis NG (Lot) - Line Barrel 4 - RING Part
@@ -2005,7 +2014,7 @@ def cleaning_process(df):
 				if 'NG_%' in df_RingParts.columns:
 					ng_percent_Ring = df_RingParts['NG_%'].mean()
 					ng_percent_Ring = format_with_comma2(ng_percent_Ring)
-					st.write(f"Rata-rata NG (%) untuk RING Parts: {ng_percent_Ring}")
+					# st.write(f"Rata-rata NG (%) untuk RING Parts: {ng_percent_Ring}")
 				else:
 					st.write("Kolom 'NG_%' tidak ditemukan dalam data RING Parts.")
 
@@ -2013,8 +2022,11 @@ def cleaning_process(df):
 			with lb4_ring_kanan:
 				total_production_Ring = df_RingParts['Insp(B/H)'].sum()
 				total_production_Ring = format_with_comma2(total_production_Ring)
-				st.write("Total Inspected (lot) RING:")
-				st.markdown(f"<div style='font-size: 32px; color: orange; font-weight: bold; text-align: center;'>{total_production_Ring}</div>", unsafe_allow_html=True)
+				ng_persen_Ring = df_RingParts['NG_%'].mean()
+				ng_persen_Ring = format_with_comma2(ng_persen_Ring)
+				st.write("Total Inspected (lot) & NG% RING:")
+				st.markdown(f"<div style='font-size: 18px; color: orange; font-weight: bold; text-align: center;'>{total_production_Ring}</div>", unsafe_allow_html=True)
+				st.markdown(f"<div style='font-size: 18px; color: orange; font-weight: bold; text-align: center;'>{ng_persen_Ring} %</div>", unsafe_allow_html=True)	
 				st.markdown("---")
 
 			#LR1
@@ -2031,12 +2043,16 @@ def cleaning_process(df):
 				total_row['Jumlah Total'] = total_row.sum(axis=1)
 				total_row = total_row.map(format_with_comma)
 				st.write("Tabel Jenis NG (lot) - Line Rack 1")
-				st.write(total_row)
+				st.dataframe(total_row)
 			with lr1_kanan:
 				total_production_LR1 = df_LR1['Insp(B/H)'].sum()
 				total_production_LR1 = format_with_comma2(total_production_LR1)
-				st.write("Total Inspected (lot) LR1:")
-				st.markdown(f"<div style='font-size: 32px; color: orange; font-weight: bold; text-align: center;'>{total_production_LR1}</div>", unsafe_allow_html=True)
+				# ng_persen_LR1 = df_LR1['NG_%'].mean()
+				ng_persen_LR1 = (float(total_row['Jumlah Total'].iloc[0].replace(',', '')) / float(total_production_LR1.replace(',', ''))) * 100
+				ng_persen_LR1 = format_with_comma2(ng_persen_LR1)
+				st.write("Total Inspected (lot) & NG% LR1:")
+				st.markdown(f"<div style='font-size: 18px; color: orange; font-weight: bold; text-align: center;'>{total_production_LR1}</div>", unsafe_allow_html=True)
+				st.markdown(f"<div style='font-size: 18px; color: orange; font-weight: bold; text-align: center;'>{ng_persen_LR1} %</div>", unsafe_allow_html=True)
 
 			st.markdown("---")
 			st.markdown('<a name="paretong"></a>', unsafe_allow_html=True)
@@ -2605,9 +2621,30 @@ def cleaning_process(df):
 				}
 				summary_trial = pd.concat([summary_trial, pd.DataFrame([total_row])], ignore_index=True)
 				
-				st.write("Summary Trial Table")
+				st.write("Rekap Data Trial")
 				st.dataframe(summary_trial, use_container_width=True)
 
+				# Daftar kolom Jenis NG (pastikan sesuai dengan kolom di dataframe2)
+				jenis_ng_columns = [
+					'Warna(pcs)', 'Buram(pcs)', 'Berbayang(pcs)', 'Kotor(pcs)', 'Tdk Terplating(pcs)', 'Rontok/ Blister(pcs)',
+					'Tipis/ EE No Plating(pcs)', 'Flek Kuning(pcs)', 'Terbakar(pcs)', 'Watermark(pcs)', 'Jig Mark/ Renggang(pcs)',
+					'Lecet/ Scratch(pcs)', 'Seret(pcs)', 'Flek Hitam(pcs)', 'Flek Tangan(pcs)', 'Belang/ Dempet(pcs)', 'Bintik(pcs)',
+					'Kilap(pcs)', 'Tebal(pcs)', 'Flek Putih(pcs)', 'Spark(pcs)', 'Kotor H/ Oval(pcs)', 'Terkikis/ Crack(pcs)',
+					'Dimensi/ Penyok(pcs)'
+				]
+
+				# Buat tabel dengan kolom PartName dan jenis_ng_columns yang bernilai di atas nol - added @homw C11/18 19Aug2025 21.13WIB
+				ng_summary_df = dataframe2.groupby('PartName')[jenis_ng_columns].sum()
+				# Hapus kolom yang seluruh nilainya nol
+				ng_summary_df = ng_summary_df.loc[:, (ng_summary_df != 0).any(axis=0)]
+				# Hapus baris yang seluruh nilainya nol
+				ng_summary_df = ng_summary_df.loc[(ng_summary_df != 0).any(axis=1)]
+				# Tambahkan baris TOTAL yang merupakan jumlah setiap kolom
+				total_row = ng_summary_df.sum().to_frame().T
+				total_row = total_row.set_index(pd.Index(['TOTAL']))
+				ng_summary_df = pd.concat([ng_summary_df, total_row])
+				st.write("Rekap Data Jenis NG (TRIAL) per Part Name")
+				st.dataframe(ng_summary_df, use_container_width=True)
 
 				trial_kiri, trial_kanan = st.columns(2)
 
@@ -2638,27 +2675,30 @@ def cleaning_process(df):
 					ng_summary_df = ng_summary_df[ng_summary_df['Mean NG (%)'] > 0]
 					# Urutkan dari besar ke kecil
 					ng_summary_df = ng_summary_df.sort_values(by='Mean NG (%)', ascending=False)
+
+					
+					
 					# Plot grafik batang vertikal dengan nilai di ujung grafik
-					fig = px.bar(
-						ng_summary_df,
-						x='Mean NG (%)',
-						y='Jenis NG',
-						orientation='h',
-						title='Summary Jenis NG (TRIAL) - Mean NG (%) per Jenis NG',
-						color_discrete_sequence=['#CD5656'],
-						text=ng_summary_df['Mean NG (%)'].round(2)  # Menampilkan nilai di ujung grafik
-					)
-					fig.update_traces(
-						textposition='inside',
-						hovertemplate='Mean NG (%): %{text}',
-						textfont=dict(color='white', size=14, family='Arial', weight='bold')
-					)
-					fig.update_layout(
-						xaxis_title='Mean NG (%)',
-						yaxis_title='Jenis NG',
-						yaxis=dict(categoryorder='total ascending')
-					)
-					st.plotly_chart(fig)
+					# fig = px.bar(
+					# 	ng_summary_df,
+					# 	x='Mean NG (%)',
+					# 	y='Jenis NG',
+					# 	orientation='h',
+					# 	title='Summary Jenis NG (TRIAL) - Mean NG (%) per Jenis NG',
+					# 	color_discrete_sequence=['#CD5656'],
+					# 	text=ng_summary_df['Mean NG (%)'].round(2)  # Menampilkan nilai di ujung grafik
+					# )
+					# fig.update_traces(
+					# 	textposition='inside',
+					# 	hovertemplate='Mean NG (%): %{text}',
+					# 	textfont=dict(color='white', size=14, family='Arial', weight='bold')
+					# )
+					# fig.update_layout(
+					# 	xaxis_title='Mean NG (%)',
+					# 	yaxis_title='Jenis NG',
+					# 	yaxis=dict(categoryorder='total ascending')
+					# )
+					# st.plotly_chart(fig)
 
 					st.markdown("---")
 					# Hitung total Qty NG (pcs) untuk setiap Jenis NG
@@ -2678,7 +2718,7 @@ def cleaning_process(df):
 						x='Total Qty NG (pcs)',
 						y='Jenis NG',
 						orientation='h',
-						title='Summary Jenis NG (TRIAL) - Total Qty NG (pcs) per Jenis NG',
+						title='Grafik Jenis NG (TRIAL) - Total Qty NG (pcs) per Jenis NG',
 						color_discrete_sequence=['#CD5656'],
 						text=ng_qty_df['Total Qty NG (pcs)'].round(0)  # Menampilkan nilai di ujung grafik
 					)
@@ -2695,25 +2735,25 @@ def cleaning_process(df):
 					st.plotly_chart(fig)
 				with trial_kanan:
 					# Grafik Summary Trial: Bar horizontal, Y=PartName, X=NG (%), tanpa baris TOTAL
-					summary_trial_no_total = summary_trial[summary_trial['PartName'] != 'TOTAL']
-					fig = px.bar(
-						summary_trial_no_total,
-						y='PartName',
-						x='NG (%)',
-						orientation='h',
-						title='NG (%) per PartName (TRIAL)',
-						color='NG (%)',
-						text=summary_trial_no_total['NG (%)'].round(2).astype(str)
-					)
-					fig.update_traces(
-						textposition='inside'
-					)
-					fig.update_layout(
-						xaxis_title='NG (%)',
-						yaxis_title='PartName',
-						yaxis=dict(categoryorder='total ascending')
-					)
-					st.plotly_chart(fig)
+					# summary_trial_no_total = summary_trial[summary_trial['PartName'] != 'TOTAL']
+					# fig = px.bar(
+					# 	summary_trial_no_total,
+					# 	y='PartName',
+					# 	x='NG (%)',
+					# 	orientation='h',
+					# 	title='NG (%) per PartName (TRIAL)',
+					# 	color='NG (%)',
+					# 	text=summary_trial_no_total['NG (%)'].round(2).astype(str)
+					# )
+					# fig.update_traces(
+					# 	textposition='inside'
+					# )
+					# fig.update_layout(
+					# 	xaxis_title='NG (%)',
+					# 	yaxis_title='PartName',
+					# 	yaxis=dict(categoryorder='total ascending')
+					# )
+					# st.plotly_chart(fig)
 					st.markdown("---")
 
 					# Sort summary_trial by 'Qty OK (pcs)' + 'Qty NG (pcs)' descending, so largest total is at top
@@ -2747,7 +2787,7 @@ def cleaning_process(df):
 						orientation='h'  # horizontal bars
 					))
 					fig.update_layout(
-						title='Grafik Summary Trial - Qty OK & Qty NG (pcs) per PartName',
+						title='Grafik Qty OK & Qty NG (pcs) per PartName',
 						yaxis_title='PartName',
 						xaxis_title='Qty (pcs)',
 						barmode='stack',

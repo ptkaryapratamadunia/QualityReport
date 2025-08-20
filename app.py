@@ -622,6 +622,23 @@ def cleaning_process(df):
 		# Mengisi kolom M/C No. berdasarkan kondisi
 		df['M/C No.'] = df['NoJig'].apply(get_mc_no)
 
+		# Mengoreksi otomatis kolom M/C No. berdasarkan Part.ID (mengganti isi meskipun sudah ada)
+		# Background : operator salah input dan data tidak tersedia/ tidak terbaca jelas sehingga berpotensi menimbulkan kesalahan
+		# Added: 20Aug2025 @Home 21.21 WIB
+		partid_mcno_map = {
+			'DNIAF WAS U20/22': '10',
+			'DNIAF GAS RIN X02': '09',
+			'DNIAF GAS RING X': '09',
+			'DNIAF WAS XU 0480': '10',
+			'DNIAF WAS Q/K': '05',
+			'DNIAF GAS RIN U 0270': '03',
+			'DNIAF RIN Q/K': '07',
+			'DNIAF RIN XU/D16D 0190': '14'
+		}
+		df.loc[df['Part.ID'].isin(partid_mcno_map.keys()), 'M/C No.'] = df['Part.ID'].map(partid_mcno_map)
+		
+		df['M/C No.'] = df['M/C No.'].astype(str)       # Mengonversi semua nilai dalam kolom ini menjadi string
+
 		# Mengubah tipe data kolom 'SHift ' menjadi string
 		# df['Shift'] = df['Shift'].astype(str)
 
@@ -629,7 +646,6 @@ def cleaning_process(df):
 		df['Shift'] = 'Shift ' + df['Shift']
 
 		df['NoBarrelHanger']=df['NoBarrelHanger'].astype(str)
-		df['M/C No.'] = df['M/C No.'].astype(str)       # Mengonversi semua nilai dalam kolom ini menjadi string
 		
 		# Menghapus whitespace pada kolom Part.ID dan PartName - added 10March2025
 		df['Part.ID'] = df['Part.ID'].str.strip()

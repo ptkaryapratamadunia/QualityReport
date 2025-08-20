@@ -2633,7 +2633,7 @@ def cleaning_process(df):
 					'Dimensi/ Penyok(pcs)'
 				]
 
-				# Buat tabel dengan kolom PartName dan jenis_ng_columns yang bernilai di atas nol - added @homw C11/18 19Aug2025 21.13WIB
+				# Buat tabel dengan kolom PartName dan jenis_ng_columns yang bernilai di atas nol - added @home C11/18 19Aug2025 21.13WIB
 				ng_summary_df = dataframe2.groupby('PartName')[jenis_ng_columns].sum()
 				# Hapus kolom yang seluruh nilainya nol
 				ng_summary_df = ng_summary_df.loc[:, (ng_summary_df != 0).any(axis=0)]

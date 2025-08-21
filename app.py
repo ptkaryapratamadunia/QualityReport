@@ -777,7 +777,7 @@ def cleaning_process(df):
 			container_html = f""" <div style='border: 2px solid #4CAF50; padding: 2px; border-radius: 5px; text-align: center;'> <h4 style='font-size:12px; margin:0;color:orange;'>Total NG (%)</h4> <p style='font-size:46px; margin:0;'>{NG_persen:,.2f}</p> </div> """
 			st.markdown(container_html, unsafe_allow_html=True)			
 			# bariskanan.metric("Total NG (%)",f"{tot_NG_persen:.2f}")
-
+		st.markdown('<a name="summarydata"></a>', unsafe_allow_html=True)
 		st.markdown("---")
 
 		# -------------------- Start Tab Summary Data ---------------------
@@ -785,7 +785,7 @@ def cleaning_process(df):
 
 		with sum_tab1:
 			#SUMMARY DATA
-			st.markdown('<a name="summarydata"></a>', unsafe_allow_html=True)
+			
 			st.subheader('Summary Data')
 			#---------added 24Mar2025 
 			#Change to def 20May 2025
@@ -1767,8 +1767,8 @@ def cleaning_process(df):
 		#endregion : kolom	untuk tabel BY Line & Kategori	
 
 		#region : Tampilkan tabel khusus untuk Barrel 4 cust.id 'HDI' dan partname dengan awalan 'HOUSING'**** - 10jUL2025
-			st.markdown("---")
 			st.markdown('<a name="horn"></a>', unsafe_allow_html=True)
+			st.markdown("---")
 			st.markdown("### Metrics for Housing Horn - PT.HDI - Barrel 4")
 			DateRange(df_ori_pcs)
 			# Filter data: Line = 'Barrel 4', Cust.ID = 'HDI', PartName contains 'HOUSING'
@@ -1891,7 +1891,7 @@ def cleaning_process(df):
 			else:
 				st.info('Tidak ada data Housing Horn untuk Barrel 4, Cust.ID=HDI, PartName mengandung "HOUSING".')
 		#endregion : Tampilkan tabel khusus untuk Barrel 4 cust.id 'HDI' dan partname dengan awalan 'HOUSING'**** - 10jUL2025
-		
+
 			st.markdown('<a name="leader"></a>', unsafe_allow_html=True)
 			st.markdown("---")
 
@@ -2077,8 +2077,8 @@ def cleaning_process(df):
 		
 		#endregion khusus untuk Leader input ke Grafik Harian
 
-			st.markdown("---")
 			st.markdown('<a name="paretong"></a>', unsafe_allow_html=True)
+			st.markdown("---")
 			DateRange(df_ori_pcs)
 			#tampilkan grafik batangnya -- 14Nov2024
 			barisB4, barisR1=st.columns(2)

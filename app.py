@@ -1897,7 +1897,7 @@ def cleaning_process(df):
 			#---------added 24Mar2025
 			DateRange(df_ori_pcs)	
 			#---------
-
+			st.subheader("Lembar Untuk Panduan LEADER input ke Grafik Harian")
 			#----------------- JUMLAH KOLOM TYPE NG ----------------
 			# Daftar kolom Jenis NG yang ingin dijumlahkan
 			new_columns = [
@@ -2038,7 +2038,7 @@ def cleaning_process(df):
 			with lb4_ring_kanan:
 				total_production_Ring = df_RingParts['Insp(B/H)'].sum()
 				total_production_Ring = format_with_comma2(total_production_Ring)
-				# ng_persen_Ring = df_RingParts['NG_%'].mean()
+				# ng_persen_Ring = df_RingParts['NG_%'].mean() ---> rumus ini tidak mengikutsertakan NG MTL/ SLipMelintir yang dibutuhkan untuk khusus part Ring, 21Aug2025
 				ng_persen_Ring = (float(total_row_RingParts['Jumlah Total'].iloc[0].replace(',', '')) / float(total_production_Ring.replace(',', ''))) * 100
 
 				ng_persen_Ring = format_with_comma2(ng_persen_Ring)

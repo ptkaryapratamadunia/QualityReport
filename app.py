@@ -1891,11 +1891,11 @@ def cleaning_process(df):
 			else:
 				st.info('Tidak ada data Housing Horn untuk Barrel 4, Cust.ID=HDI, PartName mengandung "HOUSING".')
 		#endregion : Tampilkan tabel khusus untuk Barrel 4 cust.id 'HDI' dan partname dengan awalan 'HOUSING'**** - 10jUL2025
-
+			st.markdown('<a name="leader"></a>', unsafe_allow_html=True)
 			st.markdown("---")
 
 		#region: Tampilkan tabel khusus untuk Leader input ke Grafik Harian
-			st.markdown('<a name="leader"></a>', unsafe_allow_html=True)
+			
 			st.subheader("Lembar Untuk Panduan LEADER input ke Grafik Harian")
 			#---------added 24Mar2025
 			DateRange(df_ori_pcs)	

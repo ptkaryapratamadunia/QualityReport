@@ -1893,7 +1893,9 @@ def cleaning_process(df):
 		#endregion : Tampilkan tabel khusus untuk Barrel 4 cust.id 'HDI' dan partname dengan awalan 'HOUSING'**** - 10jUL2025
 
 			st.markdown("---")
-			
+
+		#region: Tampilkan tabel khusus untuk Leader input ke Grafik Harian
+			st.markdown('<a name="leader"></a>', unsafe_allow_html=True)
 			st.subheader("Lembar Untuk Panduan LEADER input ke Grafik Harian")
 			#---------added 24Mar2025
 			DateRange(df_ori_pcs)	
@@ -2071,6 +2073,8 @@ def cleaning_process(df):
 				st.write("Total Inspected (lot) & NG% LR1:")
 				st.markdown(f"<div style='font-size: 18px; color: orange; font-weight: bold; text-align: center;'>{total_production_LR1}</div>", unsafe_allow_html=True)
 				st.markdown(f"<div style='font-size: 18px; color: orange; font-weight: bold; text-align: center;'>{ng_persen_LR1} %</div>", unsafe_allow_html=True)
+		
+		#endregion khusus untuk Leader input ke Grafik Harian
 
 			st.markdown("---")
 			st.markdown('<a name="paretong"></a>', unsafe_allow_html=True)

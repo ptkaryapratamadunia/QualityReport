@@ -3592,6 +3592,7 @@ def main():
 				<a href="#kategori">⏹️ Sum by Category</a>		
 				<a href="#paretong">📝 Pareto NG</a>
 				<a href="#horn">🚨 Housing Horn HDI</a>
+			   <a href="#leader">🙎🏻‍♂️ For Leader</a>
 				<a href="#stamping">📱 Smallpart</a>		
 				<a href="#data_cleaner">🧹 Data Cleaner V8.0</a>
 			</div>

@@ -1652,6 +1652,8 @@ def cleaning_process(df):
 			with st.expander("Klik untuk melihat Tabel Qty Inspected (lot) by Line & Customer", expanded=False):
 				st.write(pt_customer_line2_tranposed)
 
+
+			st.markdown('<a name="kategori"></a>', unsafe_allow_html=True)
 			st.markdown("---")
 			DateRange(df_ori_pcs)
 			#Grafik NG (%) Vs Insp (lot) per Kategori
@@ -1725,7 +1727,7 @@ def cleaning_process(df):
 				# sampai Tanggal : {end_date}
 				# """)
 				#---------
-				st.markdown('<a name="kategori"></a>', unsafe_allow_html=True)
+				
 				# Display the plot
 				st.write('Grafik NG% & Qty Inspected by Kategori')
 				st.plotly_chart(fig)

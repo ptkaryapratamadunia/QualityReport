@@ -1992,7 +1992,7 @@ def cleaning_process(df):
 			lb4_ring_kiri, lb4_ring_kanan = st.columns([4, 1])
 			with lb4_ring_kiri:
 				
-				st.write("Tabel Jenis NG (Lot) - Line Barrel 4 - RING Part")
+				st.write("Tabel Jenis NG (Lot) - Barrel 4 - RING Part")
 				# Filter df untuk hanya menampilkan Jenis yang mengandung 'JK067662-0190, JK067662-0160, JK067662-0112' pada kolom 'PartName' - 11Jun2025
 				df_RingParts = df_LB4[df_LB4['PartName'].str.contains('JK067662-0190|JK067662-0160|JK067662-0112', na=False)]
 				
@@ -2038,7 +2038,9 @@ def cleaning_process(df):
 			with lb4_ring_kanan:
 				total_production_Ring = df_RingParts['Insp(B/H)'].sum()
 				total_production_Ring = format_with_comma2(total_production_Ring)
-				ng_persen_Ring = df_RingParts['NG_%'].mean()
+				# ng_persen_Ring = df_RingParts['NG_%'].mean()
+				ng_persen_Ring = (float(total_row_RingParts['Jumlah Total'].iloc[0].replace(',', '')) / float(total_production_Ring.replace(',', ''))) * 100
+
 				ng_persen_Ring = format_with_comma2(ng_persen_Ring)
 				st.write("Total Inspected (lot) & NG% RING:")
 				st.markdown(f"<div style='font-size: 18px; color: orange; font-weight: bold; text-align: center;'>{total_production_Ring}</div>", unsafe_allow_html=True)

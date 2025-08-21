@@ -2507,7 +2507,7 @@ def cleaning_process(df):
 
 			
 			
-
+			st.markdown('<a name="stamping"></a>', unsafe_allow_html=True)
 			st.markdown("---")
 
 			#---------added 24Mar2025
@@ -2587,7 +2587,7 @@ def cleaning_process(df):
 					),
 					legend_title_text=''
 				)
-				st.markdown('<a name="stamping"></a>', unsafe_allow_html=True)
+				
 				st.plotly_chart(fig) # Display the plot
 
 				st.write('Tabel NG (%) by M/C No. Stamping')

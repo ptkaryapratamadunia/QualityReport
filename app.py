@@ -1893,11 +1893,11 @@ def cleaning_process(df):
 		#endregion : Tampilkan tabel khusus untuk Barrel 4 cust.id 'HDI' dan partname dengan awalan 'HOUSING'**** - 10jUL2025
 
 			st.markdown("---")
-			#groupby dataframe	---------------
+			
+			st.subheader("Lembar Untuk Panduan LEADER input ke Grafik Harian")
 			#---------added 24Mar2025
 			DateRange(df_ori_pcs)	
 			#---------
-			st.subheader("Lembar Untuk Panduan LEADER input ke Grafik Harian")
 			#----------------- JUMLAH KOLOM TYPE NG ----------------
 			# Daftar kolom Jenis NG yang ingin dijumlahkan
 			new_columns = [

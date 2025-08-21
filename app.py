@@ -3488,12 +3488,9 @@ def main():
 	# st.title("Selamat Datang di Aplikasi Data Cleaning")
 	# st.write("Ini adalah halaman utama aplikasi setelah login berhasil.")	
 
-	
-	
-	header()
-
 	# Anchor untuk HOME - added  12Aug2025  untuk navigasi
-	st.markdown('<a name="home"></a>', unsafe_allow_html=True)	
+	st.markdown('<a name="home"></a>', unsafe_allow_html=True)
+	header()	
 
 	tab_top1, tab_top2 = st.tabs(["Home", "About"])
 

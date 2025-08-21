@@ -2589,7 +2589,8 @@ def cleaning_process(df):
 					),
 					legend_title_text=''
 				)
-				st.markdown("<h3 style='text-align: center; color: Blue;'>Performa Produk Stamping (NG %) per M/C No.</h3>", unsafe_allow_html=True)
+				st.markdown("<h5 style='text-align: left; color: Grey;'>Performa Produk Stamping (NG %) per M/C No.</h5>", unsafe_allow_html=True)
+				DateRange(df_ori_pcs)
 				st.plotly_chart(fig) # Display the plot
 
 				st.write('Tabel NG (%) by M/C No. Stamping')

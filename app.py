@@ -2513,7 +2513,7 @@ def cleaning_process(df):
 			st.markdown("---")
 
 			#---------added 24Mar2025
-			DateRange(df_ori_pcs)	
+			# DateRange(df_ori_pcs)	
 			
 			#---------
 			#--------------------------------------

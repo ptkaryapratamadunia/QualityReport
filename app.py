@@ -1891,43 +1891,11 @@ def cleaning_process(df):
 			else:
 				st.info('Tidak ada data Housing Horn untuk Barrel 4, Cust.ID=HDI, PartName mengandung "HOUSING".')
 		#endregion : Tampilkan tabel khusus untuk Barrel 4 cust.id 'HDI' dan partname dengan awalan 'HOUSING'**** - 10jUL2025
+		
 			st.markdown('<a name="leader"></a>', unsafe_allow_html=True)
 			st.markdown("---")
 
 		#region: Tampilkan tabel khusus untuk Leader input ke Grafik Harian
-
-		# Tombol Simpan ke PDF untuk section Leader
-		col_pdf, _ = st.columns([1, 9])
-		with col_pdf:
-			st.markdown("""
-				<button onclick="window.print()" style="
-					background-color: #FF9800;
-					color: white;
-					padding: 8px 18px;
-					border: none;
-					border-radius: 5px;
-					font-size: 16px;
-					font-family: Nunito, Arial, sans-serif;
-					cursor: pointer;
-					margin-top: 16px;
-				">
-					🖨️ Simpan ke PDF (Bagian Leader)
-				</button>
-				<div style="font-size:13px;color:grey;margin-top:4px;">
-					Hanya bagian ini yang akan dicetak ke PDF. Jika tombol tidak berfungsi, gunakan <b>Ctrl+P</b> pada keyboard dan pilih area yang ingin dicetak.
-				</div>
-				<script>
-				// Scroll ke bagian Leader sebelum print
-				document.querySelector('button[onclick="window.print()"]').addEventListener('click', function(e) {
-					var anchor = document.querySelector('a[name="leader"]');
-					if(anchor) {
-						anchor.scrollIntoView({behavior: "smooth"});
-					}
-					setTimeout(function() { window.print(); }, 500);
-				});
-				</script>
-			""", unsafe_allow_html=True)
-
 			
 			st.subheader("Lembar Untuk Panduan LEADER input ke Grafik Harian")
 			#---------added 24Mar2025

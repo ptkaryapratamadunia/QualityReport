@@ -2575,7 +2575,7 @@ def cleaning_process(df):
 
 				# Customize layout
 				fig.update_layout(
-					title='Grafik NG (%) Vs Insp (B/H) per M/C No.',
+					title='',
 					xaxis=dict(title='M/C No.', tickmode='linear', type='category'),
 					yaxis=dict(title='Qty Inspected (Lot)', titlefont=dict(color='green'), tickfont=dict(color='green')),
 					yaxis2=dict(title='NG (%)', titlefont=dict(color='red'), tickfont=dict(color='red'), overlaying='y', side='right'),
@@ -2589,7 +2589,7 @@ def cleaning_process(df):
 					),
 					legend_title_text=''
 				)
-				
+				st.markdown("<h3 style='text-align: center; color: Blue;'>Performa Produk Stamping (NG %) per M/C No.</h3>", unsafe_allow_html=True)
 				st.plotly_chart(fig) # Display the plot
 
 				st.write('Tabel NG (%) by M/C No. Stamping')

@@ -1899,7 +1899,8 @@ def cleaning_process(df):
 
 		#region: Tampilkan tabel khusus untuk Leader input ke Grafik Harian
 			
-			st.subheader("Lembar Untuk Panduan LEADER input ke Grafik Harian")
+			# st.subheader("Lembar Panduan untuk LEADER input ke Grafik Harian")
+			st.markdown("<h4 style='text-align: left; color: Black; font-weight: bold; background-color: #f0f0f0;'>Lembar Panduan untuk LEADER input ke Grafik Harian</h4>", unsafe_allow_html=True)
 			#---------added 24Mar2025
 			DateRange(df_ori_pcs)	
 			#---------
@@ -2590,6 +2591,7 @@ def cleaning_process(df):
 					legend_title_text=''
 				)
 				st.markdown("<h4 style='text-align: left; color: Black;'>Performa Produk Stamping (NG %) per M/C No.</h4>", unsafe_allow_html=True)
+				
 				DateRange(df_ori_pcs)
 				st.plotly_chart(fig) # Display the plot
 

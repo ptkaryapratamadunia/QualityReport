@@ -1900,7 +1900,7 @@ def cleaning_process(df):
 		#region: Tampilkan tabel khusus untuk Leader input ke Grafik Harian
 			
 			# st.subheader("Lembar Panduan untuk LEADER input ke Grafik Harian")
-			st.markdown("<h5 style='text-align: center;padding: 10px; color: Black; font-weight: bold; background-color: #f0f0f0;border-radius: 5px;'>Lembar Panduan untuk LEADER input ke Grafik Harian</h5>", unsafe_allow_html=True)
+			st.markdown("<h5 style='text-align: center;padding: 10px; color: Black; font-weight: bold; background-color: #f0f0f0;border-radius: 8px;'>Lembar Panduan untuk LEADER input ke Grafik Harian</h5>", unsafe_allow_html=True)
 			#---------added 24Mar2025
 			DateRange(df_ori_pcs)	
 			#---------

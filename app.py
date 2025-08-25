@@ -770,7 +770,7 @@ def cleaning_process(df):
 		with bt2: #Total Inspected (lot)
 			# container3=st.container(border=True)
 			# tot_Qty_lot=df['Insp(B/H)'].sum() ---> BEFORE
-			tot_Qty_lot=df['Insp(Lot)'].sum()
+			tot_Qty_lot=df['Insp(Lot)'].sum() #--> AFTER changed to Batch
 			# container3.write(f"Total Inspected (lot)	:{tot_Qty_lot:.0f}")
 			# Create a styled container with a border 
 			container_html = f""" <div style='border: 2px solid #4CAF50; padding: 2px; border-radius: 5px; text-align: center;'> <h4 style='font-size:12px; margin:0;color:orange;'>Total Inspected (lot)</h4> <p style='font-size:46px; margin:0;'>{tot_Qty_lot:,.1f}</p> </div> """
@@ -779,16 +779,18 @@ def cleaning_process(df):
 
 		with bt3: #Total NG (lot)
 			# container=st.container(border=True)
-			tot_NG_lot=df['NG(B/H)'].sum()
+			# tot_NG_lot=df['NG(B/H)'].sum()--> BEFORE
+			tot_NG_lot=df['NG(lot)'].sum()
 			# container.write(f"Tot. NG (lot)  :  {tot_NG_lot:.0f}")
-			container_html = f""" <div style='border: 2px solid #4CAF50; padding: 2px; border-radius: 5px; text-align: center;'> <h4 style='font-size:12px; margin:0;color:orange;'>Total NG (lot)</h4> <p style='font-size:46px; margin:0;'>{tot_NG_lot:,.2f}</p> </div> """
+			container_html = f""" <div style='border: 2px solid #4CAF50; padding: 2px; border-radius: 5px; text-align: center;'> <h4 style='font-size:12px; margin:0;color:orange;'>Total NG (lot)</h4> <p style='font-size:46px; margin:0;'>{tot_NG_lot:,.1f}</p> </div> """
 			st.markdown(container_html, unsafe_allow_html=True)
 			# bt3.metric("Total NG (lot):",f"{tot_NG_lot:.2f}")
 
 		with bariskanan:#Total NG (%)			
 			# container2=st.container(border=True)
 			# tot_NG_persen=df['NG_%'].mean()
-			NG_persen= 100 * df['NG(B/H)'].sum() / df['Insp(B/H)'].sum() if df['Insp(B/H)'].sum() != 0 else 0
+			# NG_persen= 100 * df['NG(B/H)'].sum() / df['Insp(B/H)'].sum() if df['Insp(B/H)'].sum() != 0 else 0 --> BEFORE
+			NG_persen= 100 * df['NG(lot)'].sum() / df['Insp(lot)'].sum() if df['Insp(lot)'].sum() != 0 else 0
 			# container2.write(f"Tot. NG (%)	: {tot_NG_persen:.2f}")
 			container_html = f""" <div style='border: 2px solid #4CAF50; padding: 2px; border-radius: 5px; text-align: center;'> <h4 style='font-size:12px; margin:0;color:orange;'>Total NG (%)</h4> <p style='font-size:46px; margin:0;'>{NG_persen:,.2f}</p> </div> """
 			st.markdown(container_html, unsafe_allow_html=True)			

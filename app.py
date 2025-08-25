@@ -644,8 +644,15 @@ def cleaning_process(df):
 		
 		df['M/C No.'] = df['M/C No.'].astype(str)       # Mengonversi semua nilai dalam kolom ini menjadi string
 
-		#menambah kolom 'Lot' dengan mengisi nilainya dari kolom Insp(B/H) dengan kondisi tertentu yaitu jika kolom Line='Barrel 4' atau 'Nickel' maka Lot=[(insp(B/H)/2)] dan jika Line='Rack 1' maka Lot=Insp(B/H)
-		df['Lot'] = df.apply(lambda row: (row['Insp(B/H)'] / 2) if row['Line'] in ['Barrel 4', 'Nickel'] else row['Insp(B/H)'] if row['Line'] == 'Rack 1' else '', axis=1)
+		#Bismillah - akan merubah satuan LOT dalam pengertian BATCH yang sama untuk semua LINE 25Aug2025
+		#1. menambah kolom 'Lot' dengan mengisi nilainya dari kolom Insp(B/H) dengan kondisi tertentu yaitu jika kolom Line='Barrel 4' atau 'Nickel' maka Lot=[(insp(B/H)/2)] dan jika Line='Rack 1' maka Lot=Insp(B/H)
+		df['Insp(Lot)'] = df.apply(lambda row: (row['Insp(B/H)'] / 2) if row['Line'] in ['Barrel 4', 'Nickel'] else row['Insp(B/H)'] if row['Line'] == 'Rack 1' else '', axis=1)
+
+		#2. menambah kolom 'OK(Lot)' dengan mengisi nilainya dari kolom OK(B/H) dengan kondisi tertentu yaitu jika kolom Line='Barrel 4' atau 'Nickel' maka OK(Lot)=[(OK(B/H)/2)] dan jika Line='Rack 1' maka OK(Lot)=OK(B/H)
+		df['OK(Lot)'] = df.apply(lambda row: (row['OK(B/H)'] / 2) if row['Line'] in ['Barrel 4', 'Nickel'] else row['OK(B/H)'] if row['Line'] == 'Rack 1' else '', axis=1)
+
+		#3. menambah kolom 'NG(Lot)' dengan mengisi nilainya dari kolom NG(B/H) dengan kondisi tertentu yaitu jika kolom Line='Barrel 4' atau 'Nickel' maka NG(Lot)=[(NG(B/H)/2)] dan jika Line='Rack 1' maka NG(Lot)=NG(B/H)
+		df['NG(Lot)'] = df.apply(lambda row: (row['NG(B/H)'] / 2) if row['Line'] in ['Barrel 4', 'Nickel'] else row['NG(B/H)'] if row['Line'] == 'Rack 1' else '', axis=1)
 
 		# Mengubah tipe data kolom 'SHift ' menjadi string
 		# df['Shift'] = df['Shift'].astype(str)

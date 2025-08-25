@@ -745,11 +745,11 @@ def cleaning_process(df):
 		
 		pivot_df_bulan_line_grafik= pd.pivot_table(df, values='NG_%', index='Date', aggfunc='mean')
 		# Membuat tabel pivot Qty NG(Lot) by MONTH and LINE---------------
-		pivot_df_bulan_line2= pd.pivot_table(df, values='Tot_NG', index=['Date'],columns=['Line'], aggfunc='sum',margins=True,margins_name='Total')		
+		pivot_df_bulan_line2= pd.pivot_table(df, values='NG(Lot)', index=['Date'],columns=['Line'], aggfunc='sum',margins=True,margins_name='Total')		
 
 		# Membuat tabel pivot Qty Insp(Lot) by MONTH and LINE---------------
-		pivot_df_bulan_line3= pd.pivot_table(df, values='Insp(B/H)', index='Date',columns='Line', aggfunc='sum',margins=True,margins_name='Total')
-		pivot_df_bulan_line3_grafik= pd.pivot_table(df, values='Insp(B/H)', index='Date', aggfunc='sum')
+		pivot_df_bulan_line3= pd.pivot_table(df, values='Insp(Lot)', index='Date',columns='Line', aggfunc='sum',margins=True,margins_name='Total')
+		pivot_df_bulan_line3_grafik= pd.pivot_table(df, values='Insp(Lot)', index='Date', aggfunc='sum')
 
 		bariskiri,bt1,bt2,bt3,bariskanan=st.columns(5)
 		#Metrics column

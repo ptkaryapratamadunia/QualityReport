@@ -871,6 +871,7 @@ def cleaning_process(df):
 			with kanan:	#Table Qty Inspected (lot) by Line & Month-edited add total row 16Jun2025
 				st.write('Table Qty Inspected (lot) by Line & Month')
 				pivot_df_bulan_line3 = pivot_df_bulan_line3.round(0)
+				pivot_df_bulan_line3 = pivot_df_bulan_line3.map(lambda x: f"{x:,.0f}" if pd.notnull(x) else "")
 				pivot_df_bulan_line3 = pivot_df_bulan_line3.reset_index()
 				# Urutkan, tetap tampilkan baris 'Total'
 				pivot_df_bulan_line3 = pivot_df_bulan_line3.sort_values(
@@ -900,6 +901,7 @@ def cleaning_process(df):
 				)
 				# Bulatkan nilai-nilai ke angka bulat terdekat
 				pt_NGpersen_line_by_shift = pt_NGpersen_line_by_shift.round(2)
+				pt_NGpersen_line_by_shift = pt_NGpersen_line_by_shift.map(lambda x: f"{x:.2f}" if pd.notnull(x) else "")
 				pt_NGpersen_line_by_shift_transposed = pt_NGpersen_line_by_shift.transpose()
 
 				# Hapus baris 'Total' jika ada
@@ -926,6 +928,7 @@ def cleaning_process(df):
 				pt_InspLot_line_by_shift = pd.pivot_table(df, values='Insp(B/H)', index='Line', columns='Shift', aggfunc='sum', margins=True, margins_name='Total')
 				# Bulatkan nilai-nilai ke angka bulat terdekat
 				pt_InspLot_line_by_shift = pt_InspLot_line_by_shift.round(0)
+				pt_InspLot_line_by_shift = pt_InspLot_line_by_shift.map(lambda x: f"{x:,.0f}" if pd.notnull(x) else "")
 				pt_InspLot_line_by_shift_transposed = pt_InspLot_line_by_shift.transpose()
 				# Hapus baris 'Total' jika ada
 				if 'Total' in pt_InspLot_line_by_shift_transposed.index:
@@ -3438,7 +3441,7 @@ def cleaning_process(df):
 				rekap_part['Insp(B/H)'] = rekap_part['Insp(B/H)'].map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
 				rekap_part['JenisNG_%'] = rekap_part['JenisNG_%'].map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
 
-				st.write("Tabel Rekapitulasi by PartName (unique): Jenis NG (lot), Tot Inspected (lot), JenisNG (%)")
+				st.write("Tabel Rekapitulasi by PartName: Jenis NG (lot), Tot Inspected (lot), JenisNG (%)")
 				st.dataframe(rekap_part, use_container_width=True, hide_index=True)
 
 				#Buat Unique PartName dari dataframse tabel_harian (gabung semua partname yg sama dalam satu baris)

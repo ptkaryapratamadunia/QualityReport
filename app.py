@@ -783,7 +783,7 @@ def cleaning_process(df):
 			tot_OK_lot= df['Insp(Lot)'].sum() - df['NG(Lot)'].sum()
 			# container3.write(f"Total Inspected (lot)	:{tot_Qty_lot:.0f}")
 			# Create a styled container with a border 
-			container_html = f""" <div style='border: 2px solid #4CAF50; padding: 2px; border-radius: 5px; text-align: center;'> <h4 style='font-size:12px; margin:0;color:orange;'>Total OK (lot)</h4> <p style='font-size:46px; margin:0;'>{tot_OK_lot:,.1f}</p> </div> """
+			container_html = f""" <div style='border: 2px solid #4CAF50; padding: 2px; border-radius: 5px; text-align: center;'> <h4 style='font-size:12px; margin:0;color:orange;'>Total OK (lot)</h4> <p style='font-size:46px; margin:0;'>{tot_OK_lot:,.2f}</p> </div> """
 			st.markdown(container_html, unsafe_allow_html=True)
 			# bt2.metric("Total Inspected (lot)",f"{tot_Qty_lot:,.0f}")
 
@@ -792,7 +792,7 @@ def cleaning_process(df):
 			# tot_NG_lot=df['NG(B/H)'].sum()--> BEFORE
 			tot_NG_lot=df['NG(Lot)'].sum()
 			# container.write(f"Tot. NG (lot)  :  {tot_NG_lot:.0f}")
-			container_html = f""" <div style='border: 2px solid #4CAF50; padding: 2px; border-radius: 5px; text-align: center;'> <h4 style='font-size:12px; margin:0;color:orange;'>Total NG (lot)</h4> <p style='font-size:46px; margin:0;'>{tot_NG_lot:,.1f}</p> </div> """
+			container_html = f""" <div style='border: 2px solid #4CAF50; padding: 2px; border-radius: 5px; text-align: center;'> <h4 style='font-size:12px; margin:0;color:orange;'>Total NG (lot)</h4> <p style='font-size:46px; margin:0;'>{tot_NG_lot:,.2f}</p> </div> """
 			st.markdown(container_html, unsafe_allow_html=True)
 			# bt3.metric("Total NG (lot):",f"{tot_NG_lot:.2f}")
 

@@ -645,7 +645,7 @@ def cleaning_process(df):
 		df['M/C No.'] = df['M/C No.'].astype(str)       # Mengonversi semua nilai dalam kolom ini menjadi string
 
 		#Bismillah - akan merubah satuan LOT dalam pengertian BATCH yang sama untuk semua LINE 25Aug2025
-		#1. menambah kolom 'Lot' dengan mengisi nilainya dari kolom Insp(B/H) dengan kondisi tertentu yaitu jika kolom Line='Barrel 4' atau 'Nickel' maka Lot=[(insp(B/H)/2)] dan jika Line='Rack 1' maka Lot=Insp(B/H)
+		#1. menambah kolom 'Insp(Lot)' dengan mengisi nilainya dari kolom Insp(B/H) dengan kondisi tertentu yaitu jika kolom Line='Barrel 4' atau 'Nickel' maka Insp(Lot)=[(insp(B/H)/2)] dan jika Line='Rack 1' maka Insp(Lot)=Insp(B/H)
 		df['Insp(Lot)'] = df.apply(lambda row: (row['Insp(B/H)'] / 2) if row['Line'] in ['Barrel 4', 'Nickel'] else row['Insp(B/H)'] if row['Line'] == 'Rack 1' else '', axis=1)
 
 		#2. menambah kolom 'OK(Lot)' dengan mengisi nilainya dari kolom OK(B/H) dengan kondisi tertentu yaitu jika kolom Line='Barrel 4' atau 'Nickel' maka OK(Lot)=[(OK(B/H)/2)] dan jika Line='Rack 1' maka OK(Lot)=OK(B/H)
@@ -769,7 +769,8 @@ def cleaning_process(df):
 
 		with bt2: #Total Inspected (lot)
 			# container3=st.container(border=True)
-			tot_Qty_lot=df['Insp(B/H)'].sum()
+			# tot_Qty_lot=df['Insp(B/H)'].sum() ---> BEFORE
+			tot_Qty_lot=df['Insp(Lot)'].sum()
 			# container3.write(f"Total Inspected (lot)	:{tot_Qty_lot:.0f}")
 			# Create a styled container with a border 
 			container_html = f""" <div style='border: 2px solid #4CAF50; padding: 2px; border-radius: 5px; text-align: center;'> <h4 style='font-size:12px; margin:0;color:orange;'>Total Inspected (lot)</h4> <p style='font-size:46px; margin:0;'>{tot_Qty_lot:,.0f}</p> </div> """

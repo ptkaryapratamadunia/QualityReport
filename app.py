@@ -2863,7 +2863,7 @@ def cleaning_process(df):
 			Filter_tab1,Filter_tab2,Filter_tab3=st.tabs(["Filter by PartName","Multi Filtering Data","Filter Line for Daily Chart"])
 
 			with Filter_tab1:# Filter data berdasarkan PartName
-				st.write("Filtering Data by PartName (Excluding 'TRIAL')")		
+				st.info("Filtering Data by PartName (Excluding 'TRIAL')")		
 				with st.expander("Preview Data Excluding 'TRIAL' (satuan lot dan pcs)"):
 					# df_ori_pcs = dataframe_explorer(df_with_pcs, case=False)
 					st.dataframe(df_with_pcs, use_container_width=True)

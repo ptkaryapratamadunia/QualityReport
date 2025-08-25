@@ -3054,7 +3054,7 @@ def cleaning_process(df):
 						
 			with Filter_tab2:# Filter data berdasarkan Line dan Kategori
 				
-				st.write("Multi Filtering Data")
+				st.info("Multi Filtering Data")
 				DateRange(df_ori_pcs)
 				
 				filter_L, filter_mid, filter_R=st.columns([1,1,3])
@@ -3144,7 +3144,7 @@ def cleaning_process(df):
 
 
 			with Filter_tab3:# Filter data berdasarkan Line untuk grafik harian
-				st.info("Filtering Data berdasarkan Line,Jenis NG dan PartName untuk menampilkan grafik harian")
+				st.info("Filtering Data berdasarkan Line, Jenis NG dan PartName untuk menampilkan grafik harian")
 				df_with_pcs['Date'] = pd.to_datetime(df_with_pcs['Date'], errors='coerce').dt.date  # pastikan hanya tanggal (tanpa waktu)
 				date_min = df_with_pcs['Date'].min()
 				date_max = df_with_pcs['Date'].max()
@@ -3169,6 +3169,7 @@ def cleaning_process(df):
 
 				# Urutkan berdasarkan tanggal
 				daily_plot = daily_plot.sort_values('Date')
+				# daily_plot = daily_plot.round(2).map(format_with_comma2)
 
 				st.write(f" Tabel Data Harian untuk Line: {selected_line}")
 				# Tampilkan tabel data harian
@@ -3419,7 +3420,8 @@ def cleaning_process(df):
 				tabel_harian = pd.concat([tabel_harian, pd.DataFrame([total_row])], ignore_index=True)
 
 				# Format nilai numerik menjadi 2 digit di belakang koma
-				cols_to_format = [selected_jenisNG, 'Insp(B/H)', 'JenisNG_%']
+				tabel_harian = tabel_harian.rename(columns={'Insp(B/H)': 'Qty Inspected (lot)'})
+				cols_to_format = [selected_jenisNG, 'Qty Inspected (lot)', 'JenisNG_%']
 				for col in cols_to_format:
 					if col in tabel_harian.columns:
 						tabel_harian[col] = pd.to_numeric(tabel_harian[col], errors='coerce').map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
@@ -3431,12 +3433,12 @@ def cleaning_process(df):
 				# Tabel rekap by PartName (unique): sum Jenis NG (lot), sum Insp(B/H), mean JenisNG_%
 				tabel_harian_part = tabel_harian[tabel_harian['Date'] != 'TOTAL'].copy()
 				tabel_harian_part[selected_jenisNG] = pd.to_numeric(tabel_harian_part[selected_jenisNG], errors='coerce')
-				tabel_harian_part['Insp(B/H)'] = pd.to_numeric(tabel_harian_part['Insp(B/H)'], errors='coerce')
+				tabel_harian_part['Qty Inspected (lot)'] = pd.to_numeric(tabel_harian_part['Qty Inspected (lot)'], errors='coerce')
 				tabel_harian_part['JenisNG_%'] = pd.to_numeric(tabel_harian_part['JenisNG_%'], errors='coerce')
 
 				rekap_part = tabel_harian_part.groupby('PartName').agg({
 					selected_jenisNG: 'sum',
-					'Insp(B/H)': 'sum',
+					'Qty Inspected (lot)': 'sum',
 					'JenisNG_%': 'mean'
 				}).reset_index()
 
@@ -3446,9 +3448,11 @@ def cleaning_process(df):
 				# Sort dari besar ke kecil berdasarkan Jenis NG (lot)
 				rekap_part = rekap_part.sort_values(by='JenisNG_%', ascending=False)
 
+				# Ganti nama kolom 'Insp(B/H)' menjadi 'Qty Inspected (lot)'
+				rekap_part = rekap_part.rename(columns={'Insp(B/H)': 'Qty Inspected (lot)'})
 				# Format angka
 				rekap_part[selected_jenisNG] = rekap_part[selected_jenisNG].map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
-				rekap_part['Insp(B/H)'] = rekap_part['Insp(B/H)'].map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
+				rekap_part['Qty Inspected (lot)'] = rekap_part['Qty Inspected (lot)'].map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
 				rekap_part['JenisNG_%'] = rekap_part['JenisNG_%'].map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
 
 				st.write("Tabel Rekapitulasi by PartName: Jenis NG (lot), Tot Inspected (lot), JenisNG (%)")

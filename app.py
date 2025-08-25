@@ -870,7 +870,7 @@ def cleaning_process(df):
 					total_row.name = 'Total'
 					pivot_df_bulan_line2 = pd.concat([pivot_df_bulan_line2, pd.DataFrame([total_row])])
 				# Format angka
-				pivot_df_bulan_line2 = pivot_df_bulan_line2.map(format_with_comma2)
+				pivot_df_bulan_line2 = pivot_df_bulan_line2.map(lambda x: f"{x:,.0f}" if pd.notnull(x) else "")
 				st.dataframe(pivot_df_bulan_line2,use_container_width=True)
 
 			with kanan:	#Table Qty Inspected (lot) by Line & Month-edited add total row 16Jun2025
@@ -920,7 +920,7 @@ def cleaning_process(df):
 				
 				pt_NGLot_line_by_shift = pd.pivot_table(df, values='NG(B/H)', index='Line', columns='Shift', aggfunc='sum', margins=True, margins_name='Total')
 				# Bulatkan nilai-nilai ke angka bulat terdekat
-				pt_NGLot_line_by_shift = pt_NGLot_line_by_shift.map(format_with_comma2)
+				pt_NGLot_line_by_shift = pt_NGLot_line_by_shift.map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
 				pt_NGLot_line_by_shift_transposed = pt_NGLot_line_by_shift.transpose()
 				# Hapus baris 'Total' jika ada
 				if 'Total' in pt_NGLot_line_by_shift_transposed.index:

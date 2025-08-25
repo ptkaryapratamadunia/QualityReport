@@ -1751,17 +1751,20 @@ def cleaning_process(df):
 			with colkir: #Tabel Qty Inspected (pcs) by Line & Kategori
 				st.write('Tabel Qty Inspected (pcs)')
 				pt_kategori_line_InspPcs = pt_kategori_line_InspPcs.round(0)
-				st.write(pt_kategori_line_InspPcs)
+				pt_kategori_line_InspPcs = pt_kategori_line_InspPcs.map(lambda x: f"{x:,.0f}" if pd.notnull(x) else "")
+				st.dataframe(pt_kategori_line_InspPcs,use_container_width=True)
 				
 
 			with colteng1:	#Tabel Data Qty NG (pcs) by Line & Kategori	
 				st.write('Tabel Qty NG (pcs) ')
 				pt_kategori_line_NGpcs = pt_kategori_line_NGpcs.round(0)
-				st.write(pt_kategori_line_NGpcs)
-		
+				pt_kategori_line_NGpcs = pt_kategori_line_NGpcs.map(lambda x: f"{x:,.0f}" if pd.notnull(x) else "")
+				st.dataframe(pt_kategori_line_NGpcs,use_container_width=True)
+
 			with colteng2:	#Tabel Qty NG (lot) by Line & Kategori
 				st.write('Tabel Qty NG (lot) ')
-				st.write(pt_kategori_line3)
+				pt_kategori_line3=pt_kategori_line3.map(format_with_comma2)
+				st.dataframe(pt_kategori_line3,use_container_width=True)
 				
 			
 			with colnan: #Tabel Quantity Inspected (lot) by Line & Kategori

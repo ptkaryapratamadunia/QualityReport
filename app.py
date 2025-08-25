@@ -1389,7 +1389,7 @@ def cleaning_process(df):
 			#--------- pivot Qty NG (lot) by Line dan Customer
 			pt_customer_line2=pd.pivot_table(df,values='NG(B/H)',index='Cust.ID',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
 			# Bulatkan nilai-nilai ke angka bulat terdekat
-			pt_customer_line2 = pt_customer_line2.map(format_with_comma)
+			pt_customer_line2 = pt_customer_line2.map(lambda x: f"{x:,.0f}" if pd.notnull(x) else "")
 
 			sikir,sinan=st.columns(2)
 			
@@ -1554,7 +1554,7 @@ def cleaning_process(df):
 			#--------- pivot Qty Inspected (lot) by Line dan Customer
 			pt_customer_line2=pd.pivot_table(df,values='Insp(B/H)',index='Cust.ID',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
 			# Bulatkan nilai-nilai ke angka bulat terdekat
-			pt_customer_line2 = pt_customer_line2.map(format_with_comma2)
+			pt_customer_line2 = pt_customer_line2.map(lambda x: f"{x:,.0f}" if pd.notnull(x) else "")
 
 			# ---------------------------------------
 			# Membuat tabel pivot NG by Kategori and LINE---------------
@@ -1657,8 +1657,9 @@ def cleaning_process(df):
 			
 			st.write('Tabel Qty Inspected (lot) by Line & Customer')
 			pt_customer_line2_tranposed=pt_customer_line2.transpose()
+			# pt_customer_line2_tranposed = pt_customer_line2_tranposed.map(lambda x: f"{x:,.0f}" if pd.notnull(x) else "")
 			with st.expander("Klik untuk melihat Tabel Qty Inspected (lot) by Line & Customer", expanded=False):
-				st.write(pt_customer_line2_tranposed)
+				st.dataframe(pt_customer_line2_tranposed,use_container_width=True)
 
 
 			st.markdown('<a name="kategori"></a>', unsafe_allow_html=True)
@@ -1666,8 +1667,8 @@ def cleaning_process(df):
 			DateRange(df_ori_pcs)
 			#Grafik NG (%) Vs Insp (lot) per Kategori
 			# Terapkan format ke seluruh pivot table
-			pt_kategori_line = pt_kategori_line.map(format_with_comma2)	
-			pt_kategori_line3 = pt_kategori_line3.map(format_with_comma2)	
+			pt_kategori_line = pt_kategori_line.map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
+			pt_kategori_line3 = pt_kategori_line3.map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
 
 			#Grafik model double axis:kiri %NG kanan Qty Inspected - 27Nov2024 @home before PILKADA
 			ibnu,zahra=st.columns([3,1])
@@ -1743,7 +1744,7 @@ def cleaning_process(df):
 			with zahra:	#Tabel NG% by Line& Kategori
 				st.write('NG (%) by Line & Kategori')
 				pt_kategori_line = pt_kategori_line.round(2)
-				pt_kategori_line = pt_kategori_line.map(format_with_comma2)		
+				# pt_kategori_line = pt_kategori_line.map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
 				st.write(pt_kategori_line)
 			
 			#-----------------
@@ -1768,13 +1769,13 @@ def cleaning_process(df):
 
 			with colteng2:	#Tabel Qty NG (lot) by Line & Kategori
 				st.write('Tabel Qty NG (lot) ')
-				pt_kategori_line3=pt_kategori_line3.map(format_with_comma2)
+				# pt_kategori_line3=pt_kategori_line3.apply(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
 				st.dataframe(pt_kategori_line3,use_container_width=True)
 				
 			
 			with colnan: #Tabel Quantity Inspected (lot) by Line & Kategori
 				st.write('Tabel Qty Inspected (lot)')
-				pt_kategori_line2 = pt_kategori_line2.map(format_with_comma2)
+				pt_kategori_line2 = pt_kategori_line2.map(lambda x: f"{x:,.0f}" if pd.notnull(x) else "")
 				st.write(pt_kategori_line2)
 
 		#endregion : kolom	untuk tabel BY Line & Kategori	

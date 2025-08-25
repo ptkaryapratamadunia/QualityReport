@@ -769,7 +769,7 @@ def cleaning_process(df):
 			# st.markdown("""<h6 style="color:blue;" > METRIC SUMMARY  ➡️ </h6>""", unsafe_allow_html=True)
 			# container3=st.container(border=True)
 			# tot_Qty_lot=df['Insp(B/H)'].sum() ---> BEFORE
-			tot_Qty_lot=df['Insp(Lot)'].sum() #--> AFTER changed to Batch
+			tot_Qty_lot=df['Insp(Lot)'].sum() #--> AFTER changed to Batch 25Aug2025
 			# container3.write(f"Total Inspected (lot)	:{tot_Qty_lot:.0f}")
 			# Create a styled container with a border 
 			container_html = f""" <div style='border: 2px solid #4CAF50; padding: 2px; border-radius: 5px; text-align: center;'> <h4 style='font-size:12px; margin:0;color:orange;'>Total Inspected (lot)</h4> <p style='font-size:46px; margin:0;'>{tot_Qty_lot:,.2f}</p> </div> """

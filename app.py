@@ -754,6 +754,7 @@ def cleaning_process(df):
 		bariskiri,bt1,bt2,bt3,bariskanan=st.columns(5)
 		#Metrics column
 		with bariskiri:
+			st.markdown("""<h6 style="color:blue;" > METRIC SUMMARY  ➡️ </h6>""", unsafe_allow_html=True)
 			# Tampilkan tautan unduhan di Streamlit
 			st.download_button(
 				label="Download File Excel",
@@ -763,17 +764,25 @@ def cleaning_process(df):
 				mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 			)
 			# st.success("Jangan lupa selalu bersyukur!")
-		with bt1:
+		with bt1: #Total Inspected (lot)
 			
-			st.markdown("""<h6 style="color:blue;" > METRIC SUMMARY  ➡️ </h6>""", unsafe_allow_html=True)
-
-		with bt2: #Total Inspected (lot)
+			# st.markdown("""<h6 style="color:blue;" > METRIC SUMMARY  ➡️ </h6>""", unsafe_allow_html=True)
 			# container3=st.container(border=True)
 			# tot_Qty_lot=df['Insp(B/H)'].sum() ---> BEFORE
 			tot_Qty_lot=df['Insp(Lot)'].sum() #--> AFTER changed to Batch
 			# container3.write(f"Total Inspected (lot)	:{tot_Qty_lot:.0f}")
 			# Create a styled container with a border 
 			container_html = f""" <div style='border: 2px solid #4CAF50; padding: 2px; border-radius: 5px; text-align: center;'> <h4 style='font-size:12px; margin:0;color:orange;'>Total Inspected (lot)</h4> <p style='font-size:46px; margin:0;'>{tot_Qty_lot:,.1f}</p> </div> """
+			st.markdown(container_html, unsafe_allow_html=True)
+			# bt2.metric("Total Inspected (lot)",f"{tot_Qty_lot:,.0f}")
+
+		with bt2: #Total OK (lot)
+			# container3=st.container(border=True)
+			# tot_Qty_lot=df['Insp(B/H)'].sum() ---> BEFORE
+			tot_OK_lot=df['OK(Lot)'].sum() #--> AFTER changed to Batch
+			# container3.write(f"Total Inspected (lot)	:{tot_Qty_lot:.0f}")
+			# Create a styled container with a border 
+			container_html = f""" <div style='border: 2px solid #4CAF50; padding: 2px; border-radius: 5px; text-align: center;'> <h4 style='font-size:12px; margin:0;color:orange;'>Total OK (lot)</h4> <p style='font-size:46px; margin:0;'>{tot_OK_lot:,.1f}</p> </div> """
 			st.markdown(container_html, unsafe_allow_html=True)
 			# bt2.metric("Total Inspected (lot)",f"{tot_Qty_lot:,.0f}")
 

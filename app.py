@@ -286,6 +286,11 @@ def format_with_comma2(value):
 		return "{:,.2f}".format(value)
 	return value
 
+def format_with_comma3(value):
+	if isinstance(value, (int, float)):
+		return "{:,.0f}".format(value)
+	return value
+
 def print2PDF():
 	# Tombol Print to PDF (letakkan di bagian paling bawah tab, sebelah kiri - 23Jun2025)
 	col_print, _ = st.columns([1, 9])
@@ -1662,7 +1667,7 @@ def cleaning_process(df):
 			#Grafik NG (%) Vs Insp (lot) per Kategori
 			# Terapkan format ke seluruh pivot table
 			pt_kategori_line = pt_kategori_line.map(format_with_comma2)	
-			pt_kategori_line3 = pt_kategori_line3.map(format_with_comma)	
+			pt_kategori_line3 = pt_kategori_line3.map(format_with_comma2)	
 
 			#Grafik model double axis:kiri %NG kanan Qty Inspected - 27Nov2024 @home before PILKADA
 			ibnu,zahra=st.columns([3,1])
@@ -2654,7 +2659,8 @@ def cleaning_process(df):
 					'Qty OK (pcs)': summary_trial['Qty OK (pcs)'].sum()
 				}
 				summary_trial = pd.concat([summary_trial, pd.DataFrame([total_row])], ignore_index=True)
-				
+				summary_trial = summary_trial.round(2).map(format_with_comma2)
+
 				st.write("Rekap Data Trial")
 				st.dataframe(summary_trial, use_container_width=True)
 
@@ -2798,7 +2804,7 @@ def cleaning_process(df):
 						x=summary_trial_sorted['Qty OK (pcs)'],
 						name='Qty OK (pcs)',
 						marker_color='#B0DB9C',
-						text=summary_trial_sorted['Qty OK (pcs)'].apply(lambda x: f'{x:,.0f}'),
+						text=summary_trial_sorted['Qty OK (pcs)'],
 						textposition='inside',
 						hovertemplate='Qty OK (pcs): %{text}',
 						orientation='h'  # horizontal bars
@@ -2808,7 +2814,7 @@ def cleaning_process(df):
 						x=summary_trial_sorted['Qty NG (pcs)'],
 						name='Qty NG (pcs)',
 						marker_color='#F564A9',
-						text=summary_trial_sorted['Qty NG (pcs)'].apply(lambda x: f'{x:,.0f}'),
+						text=summary_trial_sorted['Qty NG (pcs)'],
 						textposition='inside',
 						hovertemplate='Qty NG (pcs): %{text}',
 						orientation='h'  # horizontal bars
@@ -2936,16 +2942,16 @@ def cleaning_process(df):
 						'MTL/ SLipMelintir(pcs)': int(tabel_summary['MTL/ SLipMelintir(pcs)'].sum())
 					}
 					# Format angka dengan titik sebagai pemisah ribuan
-					def format_id_number(x):
-						return f"{x:,}".replace(",", ".") if isinstance(x, int) else x
+					# def format_id_number(x):
+					# 	return f"{x:,}".replace(",", ".") if isinstance(x, int) else x
 
-					tabel_summary['QInspec'] = tabel_summary['QInspec'].apply(lambda x: format_id_number(int(x)))
-					tabel_summary['Qty(NG)'] = tabel_summary['Qty(NG)'].apply(lambda x: format_id_number(int(x)))
-					tabel_summary['OK(pcs)'] = tabel_summary['OK(pcs)'].apply(lambda x: format_id_number(int(x)))
+					tabel_summary['QInspec'] = tabel_summary['QInspec'].map(format_with_comma3)
+					tabel_summary['Qty(NG)'] = tabel_summary['Qty(NG)'].map(format_with_comma3)
+					tabel_summary['OK(pcs)'] = tabel_summary['OK(pcs)'].map(format_with_comma3)
 					# Format juga untuk total_row
-					total_row['QInspec'] = format_id_number(total_row['QInspec'])
-					total_row['Qty(NG)'] = format_id_number(total_row['Qty(NG)'])
-					total_row['OK(pcs)'] = format_id_number(total_row['OK(pcs)'])
+					total_row['QInspec'] = format_with_comma3(total_row['QInspec'])
+					total_row['Qty(NG)'] = format_with_comma3(total_row['Qty(NG)'])
+					total_row['OK(pcs)'] = format_with_comma3(total_row['OK(pcs)'])
 					tabel_summary = pd.concat([tabel_summary, pd.DataFrame([total_row])], ignore_index=True)
 					st.write("Tabel Summary PartName vs NG (%), Qty Inspected (PCS), Qty NG (PCS), Qty OK (PCS)")
 					st.dataframe(tabel_summary, use_container_width=True)
@@ -3101,7 +3107,7 @@ def cleaning_process(df):
 					# Urutkan tabel berdasarkan kolom 'NG_%' dari besar ke kecil jika ada di selected_columns
 					if 'NG_%' in selected_columns:
 						filtered_df = filtered_df.sort_values(by='NG_%', ascending=False)
-					filtered_df = filtered_df[selected_columns]
+					# filtered_df = filtered_df[selected_columns].map(format_with_comma2)
 
 					with st.expander("Preview Data hasil Filtering"):
 						st.dataframe(filtered_df, use_container_width=True, hide_index=True)
@@ -3124,9 +3130,10 @@ def cleaning_process(df):
 
 						# Sort dari besar ke kecil berdasarkan NG_%
 						rekap_part = rekap_part.sort_values(by='NG_%', ascending=False)
+						rekap_part = rekap_part.round(2).map(format_with_comma2)
 
-						with st.expander("Preview Data hasil Grouping"):
-							st.dataframe(rekap_part, use_container_width=True, hide_index=True)
+						st.write("Preview Data hasil Grouping:")
+						st.dataframe(rekap_part, use_container_width=True, hide_index=True)
 
 					#Buat tabel grup by Partname (unique)
 					# grouped_df = filtered_df.groupby('PartName', as_index=False).agg(agg_dict)

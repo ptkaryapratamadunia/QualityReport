@@ -898,7 +898,7 @@ def cleaning_process(df):
 
 			with kanan:	#Table Qty Inspected (lot) by Line & Month-edited add total row 16Jun2025
 				st.write('Table Qty Inspected (lot) by Line & Month')
-				pivot_df_bulan_line3 = pivot_df_bulan_line3.round(0)
+				pivot_df_bulan_line3 = pivot_df_bulan_line3.round(2)
 				pivot_df_bulan_line3 = pivot_df_bulan_line3.map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
 				pivot_df_bulan_line3 = pivot_df_bulan_line3.reset_index()
 				# Urutkan, tetap tampilkan baris 'Total'
@@ -955,7 +955,7 @@ def cleaning_process(df):
 			with col3:	#Qty Inspected Lot by Line and Shift - 26Nov2024
 				pt_InspLot_line_by_shift = pd.pivot_table(df, values='Insp(Lot)', index='Line', columns='Shift', aggfunc='sum', margins=True, margins_name='Total')
 				# Bulatkan nilai-nilai ke angka bulat terdekat
-				pt_InspLot_line_by_shift = pt_InspLot_line_by_shift.round(0)
+				pt_InspLot_line_by_shift = pt_InspLot_line_by_shift.round(2)
 				pt_InspLot_line_by_shift = pt_InspLot_line_by_shift.map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
 				pt_InspLot_line_by_shift_transposed = pt_InspLot_line_by_shift.transpose()
 				# Hapus baris 'Total' jika ada
@@ -1036,15 +1036,15 @@ def cleaning_process(df):
 			with grafik_kanan: #Pie Chart - 26Nov2024 Portion of Qty Inspected by Line
 				# Pie Chart
 				LotInsp_by_Line=(
-					df[["Line","Insp(B/H)"]]
+					df[["Line","Insp(Lot)"]]
 					.groupby(by="Line")
 					.sum()
-					.sort_values(by="Insp(B/H)",ascending=False)
+					.sort_values(by="Insp(Lot)",ascending=False)
 					.reset_index()
 				)
 			
 				# Create a pie chart
-				fig = go.Figure(data=go.Pie(labels=LotInsp_by_Line['Line'], values=LotInsp_by_Line['Insp(B/H)'], marker=dict(colors=['green', 'yellow', 'red', 'blue'])))
+				fig = go.Figure(data=go.Pie(labels=LotInsp_by_Line['Line'], values=LotInsp_by_Line['Insp(Lot)'], marker=dict(colors=['green', 'yellow', 'red', 'blue'])))
 				fig.update_layout(title='Porsion Tot. Inspected(lot) by Line',
 								xaxis_title='Line',
 								yaxis_title='Qty (lot)')

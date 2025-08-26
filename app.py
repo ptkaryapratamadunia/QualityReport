@@ -315,7 +315,7 @@ def print2PDF():
 		""", unsafe_allow_html=True)
 def show_footer():
 
-	
+	#Added Note after Change Lot Barrel to Lot Batch 26Aug2025
 	st.markdown("<div style='text-align: center; font-size: 12px; color: blue;'>Keterangan: Lot = satuan proses produksi setiap batch atau Hanger. | Brl = satuan Barrel = 1/2 Lot atau 1/2 Hanger</div>", unsafe_allow_html=True)
 	#Footer diisi foto ditaruh ditengah
 	st.markdown("---")
@@ -3199,7 +3199,7 @@ def cleaning_process(df):
 
 				# Group by Date (tanpa waktu), hitung rata-rata NG_% dan total Inspected
 				daily_ng = df_daily.groupby('Date', as_index=False)['NG_%'].mean()
-				daily_lot = df_daily.groupby('Date', as_index=False)['Insp(B/H)'].sum()
+				daily_lot = df_daily.groupby('Date', as_index=False)['Insp(Lot)'].sum()
 
 				# Gabungkan data ke satu DataFrame
 				daily_plot = pd.merge(daily_ng, daily_lot, on='Date', how='outer')
@@ -3231,11 +3231,11 @@ def cleaning_process(df):
 					# Bar chart untuk Total_lot (Insp(B/H)) di axis primer
 					fig.add_trace(go.Bar(
 						x=daily_plot['Date_str'],
-						y=daily_plot['Insp(B/H)'],
+						y=daily_plot['Insp(Lot)'],
 						name='Total Inspected (Lot)',
 						marker_color='#819A91',
 						yaxis='y1',
-						text=daily_plot['Insp(B/H)'].round(0).astype(int).astype(str),
+						text=daily_plot['Insp(Lot)'].round(2).astype(float).astype(str),
 						textposition='inside'
 					))
 
@@ -3432,14 +3432,14 @@ def cleaning_process(df):
 				# selected_jenisNG sudah didefinisikan di step sebelumnya
 				tabel_harian = df_partname_filtered.groupby(['Date', 'PartName'], as_index=False).agg({
 					selected_jenisNG: 'sum',
-					'Insp(B/H)': 'sum'
+					'Insp(Lot)': 'sum'
 				})
 
 				# Hitung JenisNG_% (handle pembagi 0)
 				tabel_harian['JenisNG_%'] = np.where(
-					tabel_harian['Insp(B/H)'] == 0,
+					tabel_harian['Insp(Lot)'] == 0,
 					0,
-					(tabel_harian[selected_jenisNG] / tabel_harian['Insp(B/H)']) * 100
+					(tabel_harian[selected_jenisNG] / tabel_harian['Insp(Lot)']) * 100
 				)
 
 				# Format kolom tanggal
@@ -3453,13 +3453,13 @@ def cleaning_process(df):
 					'Date': 'TOTAL',
 					'PartName': '',
 					selected_jenisNG: tabel_harian[selected_jenisNG].sum(),
-					'Insp(B/H)': tabel_harian['Insp(B/H)'].sum(),
-					'JenisNG_%': (tabel_harian[selected_jenisNG].sum() / tabel_harian['Insp(B/H)'].sum() * 100) if tabel_harian['Insp(B/H)'].sum() != 0 else 0
+					'Insp(Lot)': tabel_harian['Insp(Lot)'].sum(),
+					'JenisNG_%': (tabel_harian[selected_jenisNG].sum() / tabel_harian['Insp(Lot)'].sum() * 100) if tabel_harian['Insp(Lot)'].sum() != 0 else 0
 				}
 				tabel_harian = pd.concat([tabel_harian, pd.DataFrame([total_row])], ignore_index=True)
 
 				# Format nilai numerik menjadi 2 digit di belakang koma
-				tabel_harian = tabel_harian.rename(columns={'Insp(B/H)': 'Qty Inspected (lot)'})
+				tabel_harian = tabel_harian.rename(columns={'Insp(Lot)': 'Qty Inspected (lot)'})
 				cols_to_format = [selected_jenisNG, 'Qty Inspected (lot)', 'JenisNG_%']
 				for col in cols_to_format:
 					if col in tabel_harian.columns:
@@ -3488,7 +3488,7 @@ def cleaning_process(df):
 				rekap_part = rekap_part.sort_values(by='JenisNG_%', ascending=False)
 
 				# Ganti nama kolom 'Insp(B/H)' menjadi 'Qty Inspected (lot)'
-				rekap_part = rekap_part.rename(columns={'Insp(B/H)': 'Qty Inspected (lot)'})
+				rekap_part = rekap_part.rename(columns={'Insp(Lot)': 'Qty Inspected (lot)'})
 				# Format angka
 				rekap_part[selected_jenisNG] = rekap_part[selected_jenisNG].map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
 				rekap_part['Qty Inspected (lot)'] = rekap_part['Qty Inspected (lot)'].map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")

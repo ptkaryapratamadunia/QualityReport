@@ -943,8 +943,8 @@ def cleaning_process(df):
 				pt_NGpersen_line_by_shift_transposed = pt_NGpersen_line_by_shift.transpose()
 
 				# Hapus baris 'Total' jika ada
-				if 'Total' in pt_NGpersen_line_by_shift_transposed.index:
-					pt_NGpersen_line_by_shift_transposed = pt_NGpersen_line_by_shift_transposed.drop('Total', axis=0)
+				# if 'Total' in pt_NGpersen_line_by_shift_transposed.index:
+				# 	pt_NGpersen_line_by_shift_transposed = pt_NGpersen_line_by_shift_transposed.drop('Total', axis=0)
 
 				st.write('NG (%) by Line & Shift')
 				st.dataframe(pt_NGpersen_line_by_shift_transposed, use_container_width=True)
@@ -956,8 +956,8 @@ def cleaning_process(df):
 				pt_NGLot_line_by_shift = pt_NGLot_line_by_shift.map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
 				pt_NGLot_line_by_shift_transposed = pt_NGLot_line_by_shift.transpose()
 				# Hapus baris 'Total' jika ada
-				if 'Total' in pt_NGLot_line_by_shift_transposed.index:
-					pt_NGLot_line_by_shift_transposed = pt_NGLot_line_by_shift_transposed.drop('Total', axis=0)
+				# if 'Total' in pt_NGLot_line_by_shift_transposed.index:
+				# 	pt_NGLot_line_by_shift_transposed = pt_NGLot_line_by_shift_transposed.drop('Total', axis=0)
 
 				st.write('Qty NG(lot) by Line-Shift')
 				st.dataframe(pt_NGLot_line_by_shift_transposed,use_container_width=True)
@@ -969,8 +969,8 @@ def cleaning_process(df):
 				pt_InspLot_line_by_shift = pt_InspLot_line_by_shift.map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
 				pt_InspLot_line_by_shift_transposed = pt_InspLot_line_by_shift.transpose()
 				# Hapus baris 'Total' jika ada
-				if 'Total' in pt_InspLot_line_by_shift_transposed.index:
-					pt_InspLot_line_by_shift_transposed = pt_InspLot_line_by_shift_transposed.drop('Total', axis=0)
+				# if 'Total' in pt_InspLot_line_by_shift_transposed.index:
+				# 	pt_InspLot_line_by_shift_transposed = pt_InspLot_line_by_shift_transposed.drop('Total', axis=0)
 
 				st.write('Qty Insp(lot) by Line-Shift')
 				st.dataframe(pt_InspLot_line_by_shift_transposed,use_container_width=True)	

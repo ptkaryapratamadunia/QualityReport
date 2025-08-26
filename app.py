@@ -169,11 +169,10 @@ def About():
 	st.markdown("""
 		<p style="margin-top:-10px;margin-bottom:0px;font-size:14px">
 		Definisi satuan dalam aplikasi ini:<br><br>
-		1. Satuan lot ada 2 definisi :<br>
-		&nbsp;&nbsp;&nbsp;&nbsp;a. Line Barrel (LB4 dan LNi), definisi lot adalah satuan yang mewakili jumlah part dalam 1 box atau 1 barrel atau 1 Kanban. Jumlah part dalam 1 box atau 1 barrel atau satu Kanban berbeda-beda untuk setiap part tergantung standar loadingnya.<br>
-		&nbsp;&nbsp;&nbsp;&nbsp;b. Line Rack, definisi lot adalah satuan yang mewakili jumlah part dari 1 batch proses atau 1 hanger proses. Setiap 1 hanger berisi jumlah part yang berbeda-beda tergantung dari standar loading setiap part.<br><br>
-		2. Satuan pc/pcs adalah satuan yang mewakili satu atau beberapa jumlah part.<br><br>
-		3. Prosentase (%) adalah hasil dari perhitungan pembagian antara jumlah total NG (lot) dibagi dengan jumlah total hasil inspeksi (lot) dikalikan 100% <br><br>
+		1. Satuan Lot adalah satuan yang mewakili 1 batch proses produksi, atau bisa digunakan istialah Hanger<br>
+		2. Satuan Brl adalah satuan yang mewakili 1 Barrel di Line Barrel 4 dan Line Nickel. 1 Barrel = 1/2 Lot = 1/2 Hanger
+		3. Satuan pc/pcs adalah satuan yang mewakili satu atau beberapa jumlah part.<br><br>
+		4. Prosentase (%) adalah hasil dari perhitungan pembagian antara jumlah total NG (lot) dibagi dengan jumlah total hasil inspeksi (lot) dikalikan 100% <br><br>
 		
 		</p>
 	""", unsafe_allow_html=True)

@@ -316,17 +316,18 @@ def print2PDF():
 def show_footer():
 
 	
+	st.markdown("<div style='text-align: center; font-size: 12px; color: blue;'>Keterangan: Lot = satuan proses produksi setiap batch atau Hanger. | Brl = satuan Barrel = 1/2 Lot atau 1/2 Hanger</div>", unsafe_allow_html=True)
 	#Footer diisi foto ditaruh ditengah
 	st.markdown("---")
 
 
-	kaki_kiri,kaki_kiri2, kaki_tengah,kaki_kanan2, kaki_kanan=st.columns((2,2,1,2,2))
+	kaki_kiri, kaki_tengah, kaki_kanan=st.columns((2,1,2))
 
 	with kaki_kiri:
 		st.write("")
 
-	with kaki_kiri2:
-		st.write("")
+	# with kaki_kiri2:
+	# 	st.write("")
 
 	with kaki_tengah:
 		# Adjust the file path based on the current directory
@@ -356,8 +357,8 @@ def show_footer():
 			unsafe_allow_html=True
 		)
 
-	with kaki_kanan2:
-		st.write("")
+	# with kaki_kanan2:
+	# 	st.write("")
 
 	with kaki_kanan:
 		st.write("")

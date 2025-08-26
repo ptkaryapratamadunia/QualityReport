@@ -1971,14 +1971,14 @@ def cleaning_process(df):
 				df_LB4 = df[df['Line'] == 'Barrel 4']
 				# Menjumlahkan kolom-kolom yang diinginkan (lot)
 				total_rowB4 = df_LB4[new_columns].sum().to_frame().T
-				total_rowB4['index'] = 'Total_NG(lot)'
+				total_rowB4['index'] = 'Total_NG(Brl)'
 				total_rowB4.set_index('index', inplace=True)
 				# Hanya tampilkan kolom dengan nilai > 0
 				total_rowB4 = total_rowB4.loc[:, (total_rowB4 != 0).any(axis=0)]
 				# Tambahkan kolom 'Jumlah Total' yang merupakan jumlah dari semua kolom yang tampil
 				total_rowB4['Jumlah Total'] = total_rowB4.sum(axis=1)
 				total_rowB4 = total_rowB4.map(format_with_comma)
-				st.write("Tabel Jenis NG (Lot) - Line Barrel 4 - All Parts")
+				st.write("Tabel Jenis NG (Brl) - Line Barrel 4 - All Parts")
 				st.dataframe(total_rowB4, use_container_width=True)
 			with lb4_kanan:  # Tabel Qty Inspected (lot) - Line Barrel 4
 				# Total Production (lot) Line Barrel 4
@@ -1986,7 +1986,7 @@ def cleaning_process(df):
 				total_production_B4 = format_with_comma2(total_production_B4)
 				ng_persen = df_LB4['NG_%'].mean()
 				ng_persen = format_with_comma2(ng_persen)
-				st.write("Total Inspected (lot) & NG% LB 4:")
+				st.write("Total Inspected (Brl) & NG% LB 4:")
 				st.markdown(f"<div style='font-size: 18px; color: orange; font-weight: bold; text-align: center;'>{total_production_B4}</div>", unsafe_allow_html=True)
 				st.markdown(f"<div style='font-size: 18px; color: orange; font-weight: bold; text-align: center;'>{ng_persen} % </div>", unsafe_allow_html=True)
 				st.markdown("---")
@@ -1994,12 +1994,12 @@ def cleaning_process(df):
 			# Tabel Jenis NG (Lot) - Line Barrel 4 - Parts HDI
 			lb4_hdi_kiri, lb4_hdi_kanan = st.columns([4, 1])
 			with lb4_hdi_kiri:
-				st.write("Tabel Jenis NG (Lot) - Line Barrel 4 - Parts HDI")
+				st.write("Tabel Jenis NG (Brl) - Line Barrel 4 - Parts HDI")
 				# Filter df untuk hanya menampilkan Jenis yang mengandung 'HDI' pada kolom 'Cust.ID' - 10Jun2025 
 				df_HDI = df_LB4[df_LB4['Cust.ID'].str.contains('HDI', na=False)]
 				# Menjumlahkan kolom-kolom yang diinginkan (lot)
 				total_row_HDI = df_HDI[new_columns].sum().to_frame().T
-				total_row_HDI['index'] = 'Total_NG(lot)'
+				total_row_HDI['index'] = 'Total_NG(Brl)'
 				total_row_HDI.set_index('index', inplace=True)
 				# Hanya tampilkan kolom dengan nilai > 0
 				total_row_HDI = total_row_HDI.loc[:, (total_row_HDI != 0).any(axis=0)]
@@ -2012,7 +2012,7 @@ def cleaning_process(df):
 				total_production_HDI = format_with_comma2(total_production_HDI)
 				ng_persen_HDI = df_HDI['NG_%'].mean()
 				ng_persen_HDI = format_with_comma2(ng_persen_HDI)
-				st.write("Total Inspected (lot) & NG% HDI:")
+				st.write("Total Inspected (Brl) & NG% HDI:")
 				st.markdown(f"<div style='font-size: 18px; color: orange; font-weight: bold; text-align: center;'>{total_production_HDI}</div>", unsafe_allow_html=True)
 				st.markdown(f"<div style='font-size: 18px; color: orange; font-weight: bold; text-align: center;'>{ng_persen_HDI} % </div>", unsafe_allow_html=True)
 				st.markdown("---")
@@ -2020,12 +2020,12 @@ def cleaning_process(df):
 			# Tabel Jenis NG (Lot) - Line Barrel 4 - Small Parts
 			lb4_smp_kiri, lb4_smp_kanan = st.columns([4, 1])
 			with lb4_smp_kiri:
-				st.write("Tabel Jenis NG (Lot) - Line Barrel 4 - Small Parts")
+				st.write("Tabel Jenis NG (Brl) - Line Barrel 4 - Small Parts")
 				# Filter df untuk hanya menampilkan Jenis yang mengandung 'SMP' pada kolom 'Kategori' - 10Jun2025
 				df_SMP = df_LB4[df_LB4['Kategori'].str.contains('SMP', na=False)]
 				# Menjumlahkan kolom-kolom yang diinginkan (lot)
 				total_row_SMP = df_SMP[new_columns].sum().to_frame().T
-				total_row_SMP['index'] = 'Total_NG(lot)'
+				total_row_SMP['index'] = 'Total_NG(Brl)'
 				total_row_SMP.set_index('index', inplace=True)
 				# Hanya tampilkan kolom dengan nilai > 0
 				total_row_SMP = total_row_SMP.loc[:, (total_row_SMP != 0).any(axis=0)]
@@ -2038,7 +2038,7 @@ def cleaning_process(df):
 				total_production_SMP = format_with_comma2(total_production_SMP)
 				ng_persen_SMP = df_SMP['NG_%'].mean()
 				ng_persen_SMP = format_with_comma2(ng_persen_SMP)
-				st.write("Total Inspected (lot) & NG% SMP:")
+				st.write("Total Inspected (Brl) & NG% SMP:")
 				st.markdown(f"<div style='font-size: 18px; color: orange; font-weight: bold; text-align: center;'>{total_production_SMP}</div>", unsafe_allow_html=True)
 				st.markdown(f"<div style='font-size: 18px; color: orange; font-weight: bold; text-align: center;'>{ng_persen_SMP} % </div>", unsafe_allow_html=True)
 				st.markdown("---")
@@ -2047,7 +2047,7 @@ def cleaning_process(df):
 			lb4_ring_kiri, lb4_ring_kanan = st.columns([4, 1])
 			with lb4_ring_kiri:
 				
-				st.write("Tabel Jenis NG (Lot) - Barrel 4 - RING Part")
+				st.write("Tabel Jenis NG (Brl) - Barrel 4 - RING Part")
 				# Filter df untuk hanya menampilkan Jenis yang mengandung 'JK067662-0190, JK067662-0160, JK067662-0112' pada kolom 'PartName' - 11Jun2025
 				df_RingParts = df_LB4[df_LB4['PartName'].str.contains('JK067662-0190|JK067662-0160|JK067662-0112', na=False)]
 				
@@ -2070,7 +2070,7 @@ def cleaning_process(df):
 
 				# Menjumlahkan kolom-kolom yang diinginkan (lot)
 				total_row_RingParts = df_RingParts[ng_cols].sum().to_frame().T
-				total_row_RingParts['index'] = 'Total_NG(lot)'
+				total_row_RingParts['index'] = 'Total_NG(Brl)'
 				total_row_RingParts.set_index('index', inplace=True)
 				# Hanya tampilkan kolom dengan nilai > 0
 				total_row_RingParts = total_row_RingParts.loc[:, (total_row_RingParts != 0).any(axis=0)]
@@ -2097,7 +2097,7 @@ def cleaning_process(df):
 				ng_persen_Ring = (float(total_row_RingParts['Jumlah Total'].iloc[0].replace(',', '')) / float(total_production_Ring.replace(',', ''))) * 100
 
 				ng_persen_Ring = format_with_comma2(ng_persen_Ring)
-				st.write("Total Inspected (lot) & NG% RING:")
+				st.write("Total Inspected (Brl) & NG% RING:")
 				st.markdown(f"<div style='font-size: 18px; color: orange; font-weight: bold; text-align: center;'>{total_production_Ring}</div>", unsafe_allow_html=True)
 				st.markdown(f"<div style='font-size: 18px; color: orange; font-weight: bold; text-align: center;'>{ng_persen_Ring} %</div>", unsafe_allow_html=True)	
 				st.markdown("---")
@@ -2158,7 +2158,7 @@ def cleaning_process(df):
 					text='Total NG (lot)'
 				)
 				fig.update_traces(textposition='inside')
-				fig.update_layout(yaxis_title="Defect Type", xaxis_title="Total NG (lot)", yaxis_tickangle=0)
+				fig.update_layout(yaxis_title="Defect Type", xaxis_title="Total NG (Brl)", yaxis_tickangle=0)
 				st.plotly_chart(fig)
 
 				
@@ -2209,10 +2209,10 @@ def cleaning_process(df):
 				))
 
 				fig.update_layout(
-					title='Pareto Chart: Total NG (lot) per Defect Type - Line Barrel 4',
+					title='Pareto Chart: Total NG (Brl) per Defect Type - Line Barrel 4',
 					xaxis=dict(title='Defect Type'),
 					yaxis=dict(
-						title='Total NG (lot)',
+						title='Total NG (Brl)',
 						showgrid=True,
 						zeroline=True
 					),

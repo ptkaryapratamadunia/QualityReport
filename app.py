@@ -2577,15 +2577,15 @@ def cleaning_process(df):
 			# Apply filter to exclude rows where 'M/C No.' is null, empty, or '00'
 			df_filtered = df[(df['M/C No.'].notnull()) & (df['M/C No.'] != '') & (df['M/C No.'] != '00')]
 			# Filter out rows where 'Insp(B/H)' or 'NG_%' is 0
-			df_filtered = df_filtered[(df_filtered['Insp(B/H)'] > 0) & (df_filtered['NG_%'] > 0)]
+			df_filtered = df_filtered[(df_filtered['Insp(Lot)'] > 0) & (df_filtered['NG_%'] > 0)]
 			
 			if df_filtered.empty:
 				st.warning('Data M/C No. tidak tersedia, karena data Barrel 4 juga tidak tersedia.')
 			else:
 				pt_MesinNo = pd.pivot_table(df_filtered, 
-									values=['NG_%', 'Insp(B/H)'], 
+									values=['NG_%', 'Insp(Lot)'], 
 									index='M/C No.', 
-									aggfunc={'NG_%': 'mean', 'Insp(B/H)': 'sum'}, 
+									aggfunc={'NG_%': 'mean', 'Insp(Lot)': 'sum'}, 
 									margins=True, 
 									margins_name='Total')
 				
@@ -2602,10 +2602,10 @@ def cleaning_process(df):
 				# Add Insp(B/H) bar trace with value inside the bar, colored by M/C No.
 				fig.add_trace(go.Bar(
 					x=pt_MesinNo['M/C No.'],
-					y=pt_MesinNo['Insp(B/H)'],
-					name='Insp(B/H)',
+					y=pt_MesinNo['Insp(Lot)'],
+					name='Insp(Lot)',
 					marker_color=bar_colors,
-					text=pt_MesinNo['Insp(B/H)'].apply(lambda x: f'{x:,.0f}'),
+					text=pt_MesinNo['Insp(Lot)'].apply(lambda x: f'{x:,.2f}'),
 					textposition='inside'
 				))
 
@@ -2639,7 +2639,7 @@ def cleaning_process(df):
 					),
 					legend_title_text=''
 				)
-				st.markdown("<h4 style='text-align: left; color: Black;'>Performa Produk Stamping (NG %) per M/C No.</h4>", unsafe_allow_html=True)
+				st.markdown("<h4 style='text-align: left; color: Black;'>Performa Produk Stamping Qty Inspected (Lot) Vs (NG %) per M/C No.</h4>", unsafe_allow_html=True)
 				
 				DateRange(df_ori_pcs)
 				st.plotly_chart(fig) # Display the plot
@@ -2650,7 +2650,7 @@ def cleaning_process(df):
 					total_row = {
 						'M/C No.': 'Total',
 						'NG_%': pt_MesinNo['NG_%'].mean(),
-						'Insp(B/H)': pt_MesinNo['Insp(B/H)'].sum()
+						'Insp(Lot)': pt_MesinNo['Insp(Lot)'].sum()
 					}
 					pt_MesinNo = pd.concat([pt_MesinNo, pd.DataFrame([total_row])], ignore_index=True)
 

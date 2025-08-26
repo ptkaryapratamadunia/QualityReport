@@ -1413,8 +1413,8 @@ def cleaning_process(df):
 			pt_customer_line = pt_customer_line.round(2)
 			pt_customer_line_transposed = pt_customer_line.transpose()
 			with st.expander("Klik untuk melihat Tabel NG (%) by Line & Customer", expanded=False):				
-				st.write(pt_customer_line_transposed)
-			
+				st.dataframe(pt_customer_line_transposed, use_container_width=True)
+
 			st.markdown("---")
 
 			DateRange(df_ori_pcs)
@@ -1422,7 +1422,8 @@ def cleaning_process(df):
 			#--------- pivot Qty NG (lot) by Line dan Customer
 			pt_customer_line2=pd.pivot_table(df,values='NG(Lot)',index='Cust.ID',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
 			# Bulatkan nilai-nilai ke angka bulat terdekat
-			pt_customer_line2 = pt_customer_line2.map(lambda x: f"{x:,.0f}" if pd.notnull(x) else "")
+			pt_customer_line2 = pt_customer_line2.round(2)
+			pt_customer_line2 = pt_customer_line2.map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
 
 			sikir,sinan=st.columns(2)
 			
@@ -1503,20 +1504,20 @@ def cleaning_process(df):
 			
 			with sinan:#Grafik NG(lot) by Cust.ID Blue Rack 1
 				df_byLineR1 = df[df['Line'] == 'Rack 1']
-				df_byLineR1 = df_byLineR1[df_byLineR1['NG(B/H)'] > 0]
+				df_byLineR1 = df_byLineR1[df_byLineR1['NG(Lot)'] > 0]
 
 				NG_by_Cust = (
-					df_byLineR1[["Cust.ID", "NG(B/H)"]]
+					df_byLineR1[["Cust.ID", "NG(Lot)"]]
 					.groupby(by="Cust.ID")
 					.sum()
-					.sort_values(by="NG(B/H)", ascending=False)
+					.sort_values(by="NG(Lot)", ascending=False)
 					.reset_index()
 				)
 
 				# Hitung cumulative %
-				NG_by_Cust['Cumulative'] = NG_by_Cust['NG(B/H)'].cumsum()
-				NG_by_Cust['Cumulative %'] = 100 * NG_by_Cust['Cumulative'] / NG_by_Cust['NG(B/H)'].sum()
-				NG_by_Cust['Cumulative % Label'] = NG_by_Cust['Cumulative %'].round(1).astype(str) + '%'
+				NG_by_Cust['Cumulative'] = NG_by_Cust['NG(Lot)'].cumsum()
+				NG_by_Cust['Cumulative %'] = 100 * NG_by_Cust['Cumulative'] / NG_by_Cust['NG(Lot)'].sum()
+				NG_by_Cust['Cumulative % Label'] = NG_by_Cust['Cumulative %'].round(2).astype(str) + '%'
 
 				# Buat grafik Pareto
 				fig = go.Figure()
@@ -1524,11 +1525,11 @@ def cleaning_process(df):
 				# Bar chart
 				fig.add_trace(go.Bar(
 					x=NG_by_Cust['Cust.ID'],
-					y=NG_by_Cust['NG(B/H)'],
+					y=NG_by_Cust['NG(Lot)'],
 					name='Qty NG (Lot)',
 					marker_color="#0B1D51",
 					yaxis='y1',
-					text=NG_by_Cust['NG(B/H)'].round(2),
+					text=NG_by_Cust['NG(Lot)'].round(2),
 					textposition='inside'
 				))
 
@@ -1577,24 +1578,25 @@ def cleaning_process(df):
 
 			st.write('Tabel Qty NG (lot) by Line & Customer')
 			pt_customer_line2_tranposed=pt_customer_line2.transpose()
+			
 			with st.expander("Klik untuk melihat Tabel Qty NG (lot) by Line & Customer", expanded=False):
-				st.write(pt_customer_line2_tranposed)
+				st.dataframe(pt_customer_line2_tranposed,use_container_width=True)
 
 			st.markdown("---")
 
 			DateRange(df_ori_pcs)
 			
 			#--------- pivot Qty Inspected (lot) by Line dan Customer
-			pt_customer_line2=pd.pivot_table(df,values='Insp(B/H)',index='Cust.ID',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
+			pt_customer_line2=pd.pivot_table(df,values='Insp(Lot)',index='Cust.ID',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
 			# Bulatkan nilai-nilai ke angka bulat terdekat
-			pt_customer_line2 = pt_customer_line2.map(lambda x: f"{x:,.0f}" if pd.notnull(x) else "")
+			pt_customer_line2 = pt_customer_line2.map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
 
 			# ---------------------------------------
 			# Membuat tabel pivot NG by Kategori and LINE---------------
 
 			pt_kategori_line=pd.pivot_table(df,values='NG_%',index='Kategori',columns='Line',aggfunc='mean',margins=True,margins_name='Total')
-			pt_kategori_line2=pd.pivot_table(df,values='Insp(B/H)',index='Kategori',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
-			pt_kategori_line3=pd.pivot_table(df,values='Tot_NG',index='Kategori',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
+			pt_kategori_line2=pd.pivot_table(df,values='Insp(Lot)',index='Kategori',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
+			pt_kategori_line3=pd.pivot_table(df,values='NG(Lot)',index='Kategori',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
 
 			#pt by kategori pcs 
 			pt_kategori_line_NGpcs=pd.pivot_table(df,values='Qty(NG)',index='Kategori',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
@@ -1625,7 +1627,7 @@ def cleaning_process(df):
 						y=NG_by_Line['NG_%'],
 						marker_color='#B0DB9C',
 						text=NG_by_Line['NG_%'].round(2).astype(str),  # Tampilkan nilai di dalam batang
-						textposition='inside'  # Posisi teks di dalam batang
+						textposition='outside'  # Posisi teks di dalam batang
 					))
 
 					fig.update_layout(
@@ -1638,20 +1640,20 @@ def cleaning_process(df):
 				
 			with chart_tengah:	#Grafik batang Qty NG(Lot) by Line Grey
 				NGLot_by_Line=(
-						df[["Line","NG(B/H)"]]
+						df[["Line","NG(Lot)"]]
 						.groupby(by="Line")
 						.sum()
-						.sort_values(by="NG(B/H)",ascending=False)
+						.sort_values(by="NG(Lot)",ascending=False)
 						.reset_index()
 				)
 				
 				# Buat grafik batang interaktif dengan nilai di dalam batang
 				fig = go.Figure(data=go.Bar(
 					x=NGLot_by_Line['Line'],
-					y=NGLot_by_Line['NG(B/H)'],
+					y=NGLot_by_Line['NG(Lot)'],
 					marker_color='#FBDB93',
-					text=NGLot_by_Line['NG(B/H)'].round(2).astype(str),  # Tampilkan nilai di dalam batang
-					textposition='inside'  # Posisi teks di dalam batang
+					text=NGLot_by_Line['NG(Lot)'].round(2).astype(str),  # Tampilkan nilai di dalam batang
+					textposition='outside'  # Posisi teks di luar batang
 				))
 
 				fig.update_layout(
@@ -1664,20 +1666,20 @@ def cleaning_process(df):
 			
 			with chart_kanan: #Grafik batang Qty Inspected Lot by Line Grey
 					InspLot_by_Line=(
-							df[["Line","Insp(B/H)"]]
+							df[["Line","Insp(Lot)"]]
 							.groupby(by="Line")
 							.sum()
-							.sort_values(by="Insp(B/H)",ascending=False)
+							.sort_values(by="Insp(Lot)",ascending=False)
 							.reset_index()
 					)
 					
 					# Buat grafik batang interaktif dengan nilai di dalam batang
 					fig = go.Figure(data=go.Bar(
 						x=InspLot_by_Line['Line'],
-						y=InspLot_by_Line['Insp(B/H)'],
+						y=InspLot_by_Line['Insp(Lot)'],
 						marker_color='#254D70',
-						text=InspLot_by_Line['Insp(B/H)'].round(2).astype(str),  # Tampilkan nilai di dalam batang
-						textposition='inside'  # Posisi teks di dalam batang
+						text=InspLot_by_Line['Insp(Lot)'].round(2).astype(str),  # Tampilkan nilai di dalam batang
+						textposition='outside'  # Posisi teks di luar batang
 					))
 
 					fig.update_layout(
@@ -1701,6 +1703,7 @@ def cleaning_process(df):
 			#Grafik NG (%) Vs Insp (lot) per Kategori
 			# Terapkan format ke seluruh pivot table
 			pt_kategori_line = pt_kategori_line.map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
+			pt_kategori_line2 = pt_kategori_line2.map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
 			pt_kategori_line3 = pt_kategori_line3.map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
 
 			#Grafik model double axis:kiri %NG kanan Qty Inspected - 27Nov2024 @home before PILKADA
@@ -1708,20 +1711,20 @@ def cleaning_process(df):
 			
 			with ibnu:	#Grafik NG% by Line& Kategori
 				# Hitung agregasi untuk setiap kategori
-				NG_by_kategori = df.groupby('Kategori').agg({'NG_%': 'mean', 'Insp(B/H)': 'sum'}).reset_index()
+				NG_by_kategori = df.groupby('Kategori').agg({'NG_%': 'mean', 'Insp(Lot)': 'sum'}).reset_index()
 
 				# Create a figure with one subplot
 				fig = go.Figure()
 
-				# Add Insp(B/H) bar trace with value labels inside the bars
+				# Add Insp(Lot) bar trace with value labels inside the bars
 				fig.add_trace(go.Bar(
 					x=NG_by_kategori['Kategori'],
-					y=NG_by_kategori['Insp(B/H)'],
-					name='Insp(B/H)',
+					y=NG_by_kategori['Insp(Lot)'],
+					name='Insp(Lot)',
 					marker_color='#077A7D',
 					yaxis='y1',
-					text=NG_by_kategori['Insp(B/H)'].apply(lambda x: f'{x:,.0f}'),
-					textposition='inside'  # Position text inside the bars
+					text=NG_by_kategori['Insp(Lot)'].apply(lambda x: f'{x:,.2f}'),
+					textposition='outside'  # Position text inside the bars
 				))
 
 				# Add NG_% line trace with value labels above the markers (colored RED)
@@ -1778,8 +1781,8 @@ def cleaning_process(df):
 				st.write('NG (%) by Line & Kategori')
 				pt_kategori_line = pt_kategori_line.round(2)
 				# pt_kategori_line = pt_kategori_line.map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
-				st.write(pt_kategori_line)
-			
+				st.dataframe(pt_kategori_line,use_container_width=True)
+
 			#-----------------
 			st.markdown("---")
 
@@ -1808,8 +1811,8 @@ def cleaning_process(df):
 			
 			with colnan: #Tabel Quantity Inspected (lot) by Line & Kategori
 				st.write('Tabel Qty Inspected (lot)')
-				pt_kategori_line2 = pt_kategori_line2.map(lambda x: f"{x:,.0f}" if pd.notnull(x) else "")
-				st.write(pt_kategori_line2)
+				# pt_kategori_line2 = pt_kategori_line2.map(lambda x: f"{x:,.0f}" if pd.notnull(x) else "")
+				st.dataframe(pt_kategori_line2,use_container_width=True)
 
 		#endregion : kolom	untuk tabel BY Line & Kategori	
 

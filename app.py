@@ -1008,7 +1008,7 @@ def cleaning_process(df):
 					y=data_grafik2['Insp(Lot)'],
 					name='Insp(Lot)',
 					marker_color='#8A784E',
-					text=data_grafik2['Insp(Lot)'].round(0).astype(int).astype(str),  # Show value labels
+					text=data_grafik2['Insp(Lot)'].round(2).astype(float).astype(str),  # Show value labels
 					textposition='inside'
 				))
 

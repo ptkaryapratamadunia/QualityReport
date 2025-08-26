@@ -2,7 +2,7 @@
 # 03 Oct 2024 start build - dedicated to PT. KPD
 # 08 Oct 2024 start deploy : qualityreportkpd.streamlit.app atau s.id/kpdqualitydatacleaner
 
-from math import exp
+from math import exp, pi
 from operator import index
 from re import X
 from sqlite3 import Date
@@ -798,9 +798,9 @@ def cleaning_process(df):
 
 		with bariskanan:#Total NG (%)			
 			# container2=st.container(border=True)
-			# tot_NG_persen=df['NG_%'].mean()
+			NG_persen=df['NG_%'].mean()
 			# NG_persen= 100 * df['NG(B/H)'].sum() / df['Insp(B/H)'].sum() if df['Insp(B/H)'].sum() != 0 else 0 --> BEFORE
-			NG_persen= 100 * df['NG(Lot)'].sum() / df['Insp(Lot)'].sum() if df['Insp(Lot)'].sum() != 0 else 0
+			# NG_persen= 100 * df['NG(Lot)'].sum() / df['Insp(Lot)'].sum() if df['Insp(Lot)'].sum() != 0 else 0 #--> AFTER changed to Batch 25Aug2025
 			# container2.write(f"Tot. NG (%)	: {tot_NG_persen:.2f}")
 			container_html = f""" <div style='border: 2px solid #4CAF50; padding: 2px; border-radius: 5px; text-align: center;'> <h4 style='font-size:12px; margin:0;color:orange;'>Total NG (%)</h4> <p style='font-size:46px; margin:0;'>{NG_persen:,.2f}</p> </div> """
 			st.markdown(container_html, unsafe_allow_html=True)			
@@ -831,50 +831,60 @@ def cleaning_process(df):
 			kiri,tengah,kanan=st.columns(3)
 			with kiri:	#Table NG (%) by Line & Month-edited use formula  16Jun2025
 				st.write('Table NG (%) by Line & Month')
-				# pivot_df_bulan_line = pivot_df_bulan_line.round(2)
-				# pivot_df_bulan_line = pivot_df_bulan_line.reset_index()
-				# pivot_df_bulan_line = pivot_df_bulan_line[pivot_df_bulan_line['Date'] != 'Total']
-				# pivot_df_bulan_line = pivot_df_bulan_line.sort_values(by='Date', key=lambda x: pd.to_datetime(x, format='%b-%Y')).set_index('Date')
-				# st.write(pivot_df_bulan_line)
+				pivot_df_bulan_line = pivot_df_bulan_line.round(2)
+				pivot_df_bulan_line = pivot_df_bulan_line.reset_index()
+				# Urutkan, tetap tampilkan baris 'Total'
+				pivot_df_bulan_line = pivot_df_bulan_line.sort_values(
+					by='Date', 
+					key=lambda x: pd.to_datetime(x.where(x != 'Total', '2100-01'), format='%b-%Y', errors='coerce')
+				).set_index('Date')
+				# Hitung baris Total (mean semua baris kecuali 'Total' jika sudah ada)
+				if 'Total' not in pivot_df_bulan_line.index:
+					total_row = pivot_df_bulan_line.loc[pivot_df_bulan_line.index != 'Total'].mean(numeric_only=True)
+					total_row.name = 'Total'
+					pivot_df_bulan_line = pd.concat([pivot_df_bulan_line, pd.DataFrame([total_row])])
+				pivot_df_bulan_line = pivot_df_bulan_line.round(2)
+				pivot_df_bulan_line = pivot_df_bulan_line.map(lambda x: f"{x:.2f}" if pd.notnull(x) else "")
+				st.dataframe(pivot_df_bulan_line,use_container_width=True)
 				
 				# Buat tabel NG (%) bulanan untuk masing-masing Line
-				df['Date'] = pd.to_datetime(df['Date'], errors='coerce')
-				df['MonthYear'] = df['Date'].dt.strftime('%b-%Y')
+				# df['Date'] = pd.to_datetime(df['Date'], errors='coerce')
+				# df['MonthYear'] = df['Date'].dt.strftime('%b-%Y')
 
-				# Hitung NG (%) per bulan untuk setiap Line
-				ng_bulanan = (
-					df.groupby('MonthYear').apply(
-						lambda g: pd.Series({
-							'NG B4 (%)': 100 * g.loc[g['Line'] == 'Barrel 4', 'NG(B/H)'].sum() / g.loc[g['Line'] == 'Barrel 4', 'Insp(B/H)'].sum() if g.loc[g['Line'] == 'Barrel 4', 'Insp(B/H)'].sum() != 0 else np.nan,
-							'NG Ni (%)': 100 * g.loc[g['Line'] == 'Nickel', 'NG(B/H)'].sum() / g.loc[g['Line'] == 'Nickel', 'Insp(B/H)'].sum() if g.loc[g['Line'] == 'Nickel', 'Insp(B/H)'].sum() != 0 else np.nan,
-							'NG R1 (%)': 100 * g.loc[g['Line'] == 'Rack 1', 'NG(B/H)'].sum() / g.loc[g['Line'] == 'Rack 1', 'Insp(B/H)'].sum() if g.loc[g['Line'] == 'Rack 1', 'Insp(B/H)'].sum() != 0 else np.nan,
-						})
-					)
-				).reset_index().rename(columns={'MonthYear': 'Date'})
+				# # Hitung NG (%) per bulan untuk setiap Line
+				# ng_bulanan = (
+				# 	df.groupby('MonthYear').apply(
+				# 		lambda g: pd.Series({
+				# 			'NG B4 (%)': 100 * g.loc[g['Line'] == 'Barrel 4', 'NG(Lot)'].sum() / g.loc[g['Line'] == 'Barrel 4', 'Insp(Lot)'].sum() if g.loc[g['Line'] == 'Barrel 4', 'Insp(Lot)'].sum() != 0 else np.nan,
+				# 			'NG Ni (%)': 100 * g.loc[g['Line'] == 'Nickel', 'NG(Lot)'].sum() / g.loc[g['Line'] == 'Nickel', 'Insp(Lot)'].sum() if g.loc[g['Line'] == 'Nickel', 'Insp(Lot)'].sum() != 0 else np.nan,
+				# 			'NG R1 (%)': 100 * g.loc[g['Line'] == 'Rack 1', 'NG(Lot)'].sum() / g.loc[g['Line'] == 'Rack 1', 'Insp(Lot)'].sum() if g.loc[g['Line'] == 'Rack 1', 'Insp(Lot)'].sum() != 0 else np.nan,
+				# 		})
+				# 	)
+				# ).reset_index().rename(columns={'MonthYear': 'Date'})
 
-				# Hapus baris yang semua nilainya NaN (selain kolom Date)
-				ng_bulanan = ng_bulanan.dropna(subset=['NG B4 (%)', 'NG Ni (%)', 'NG R1 (%)'], how='all')
+				# # Hapus baris yang semua nilainya NaN (selain kolom Date)
+				# ng_bulanan = ng_bulanan.dropna(subset=['NG B4 (%)', 'NG Ni (%)', 'NG R1 (%)'], how='all')
 
-				# Hapus kolom yang seluruh nilainya NaN (selain kolom Date)
-				cols_to_check = ['NG B4 (%)', 'NG Ni (%)', 'NG R1 (%)']
-				cols_to_drop = [col for col in cols_to_check if ng_bulanan[col].isna().all()]
-				ng_bulanan = ng_bulanan.drop(columns=cols_to_drop)
+				# # Hapus kolom yang seluruh nilainya NaN (selain kolom Date)
+				# cols_to_check = ['NG B4 (%)', 'NG Ni (%)', 'NG R1 (%)']
+				# cols_to_drop = [col for col in cols_to_check if ng_bulanan[col].isna().all()]
+				# ng_bulanan = ng_bulanan.drop(columns=cols_to_drop)
 
-				# Tambahkan baris TotAverage hanya jika ada data
-				avg_dict = {'Date': 'TotAverage'}
-				for col in cols_to_check:
-					if col in ng_bulanan.columns:
-						avg_dict[col] = f"{ng_bulanan[col].mean(skipna=True):.2f}" if pd.notnull(ng_bulanan[col].mean(skipna=True)) else ""
-				if len(avg_dict) > 1:
-					ng_bulanan = pd.concat([ng_bulanan, pd.DataFrame([avg_dict])], ignore_index=True)
+				# # Tambahkan baris TotAverage hanya jika ada data
+				# avg_dict = {'Date': 'TotAverage'}
+				# for col in cols_to_check:
+				# 	if col in ng_bulanan.columns:
+				# 		avg_dict[col] = f"{ng_bulanan[col].mean(skipna=True):.2f}" if pd.notnull(ng_bulanan[col].mean(skipna=True)) else ""
+				# if len(avg_dict) > 1:
+				# 	ng_bulanan = pd.concat([ng_bulanan, pd.DataFrame([avg_dict])], ignore_index=True)
 
-				# Format angka 2 digit di belakang koma, kosongkan jika NaN
-				for col in cols_to_check:
-					if col in ng_bulanan.columns:
-						ng_bulanan[col] = pd.to_numeric(ng_bulanan[col], errors='coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "")
+				# # Format angka 2 digit di belakang koma, kosongkan jika NaN
+				# for col in cols_to_check:
+				# 	if col in ng_bulanan.columns:
+				# 		ng_bulanan[col] = pd.to_numeric(ng_bulanan[col], errors='coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "")
 
-				# Tampilkan tabel tanpa kolom index (hide_index=True)
-				st.dataframe(ng_bulanan, use_container_width=True, hide_index=True)
+				# # Tampilkan tabel tanpa kolom index (hide_index=True)
+				# st.dataframe(ng_bulanan, use_container_width=True, hide_index=True)
 			with tengah:	#Table Qty NG (lot) by Line & Month-edited add total row 16Jun2025
 				st.write('Table Qty NG (lot) by Line & Month')
 				# Ubah kolom selain 'Date' ke numerik agar bisa dijumlahkan
@@ -1017,7 +1027,7 @@ def cleaning_process(df):
 					title='Grafik NG% & Qty Inspected by Month',
 					xaxis=dict(title='Month', type='category'),
 					yaxis=dict(title='Qty Inspected (Lot)', titlefont=dict(color='grey'), tickfont=dict(color='grey')),
-					yaxis2=dict(title='NG%', titlefont=dict(color='blue'), tickfont=dict(color='blue'), overlaying='y', side='right', anchor='x'),
+					yaxis2=dict(title='NG%', titlefont=dict(color='red'), tickfont=dict(color='red'), overlaying='y', side='right', anchor='x'),
 					paper_bgcolor='rgba(0,0,0,0)',
 					plot_bgcolor='rgba(0,0,0,0)',
 					legend=dict(
@@ -1068,7 +1078,7 @@ def cleaning_process(df):
 					data_grafik = data_grafik.sort_values(by='Date')
 					data_grafik['Date'] = data_grafik['Date'].dt.strftime('%b-%Y')
 
-					data_grafik2 = pd.pivot_table(df_barrel4, values='Insp(B/H)', index='Date', aggfunc='sum').reset_index()
+					data_grafik2 = pd.pivot_table(df_barrel4, values='Insp(Lot)', index='Date', aggfunc='sum').reset_index()
 					data_grafik2['Date'] = pd.to_datetime(data_grafik2['Date'], format='%b-%Y')
 					data_grafik2 = data_grafik2.sort_values(by='Date')
 					data_grafik2['Date'] = data_grafik2['Date'].dt.strftime('%b-%Y')
@@ -1094,10 +1104,10 @@ def cleaning_process(df):
 					# Add Insp(B/H) line trace (overlay on same y-axis)
 					fig.add_trace(go.Bar(  # Use Scatter for line chart
 						x=data_grafik2['Date'],
-						y=data_grafik2['Insp(B/H)'],
-						name='Insp(B/H)',
+						y=data_grafik2['Insp(Lot)'],
+						name='Insp(Lot)',
 						marker_color='#521C0D',
-						text=data_grafik2['Insp(B/H)'].round(0).astype(int).astype(str),  # Show value labels
+						text=data_grafik2['Insp(Lot)'].round(0).astype(int).astype(str),  # Show value labels
 						textposition='outside'
 					))
 

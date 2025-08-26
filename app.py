@@ -1833,9 +1833,9 @@ def cleaning_process(df):
 				total_ok_pcs = df_housing['OK(pcs)'].sum() if 'OK(pcs)' in df_housing.columns else 0
 				total_ng_pcs = df_housing['Qty(NG)'].sum() if 'Qty(NG)' in df_housing.columns else 0
 				total_insp_pcs = df_housing['QInspec'].sum() if 'QInspec' in df_housing.columns else 0
-				total_ok_lot = df_housing['OK(B/H)'].sum() if 'OK(B/H)' in df_housing.columns else 0
-				total_ng_lot = df_housing['NG(B/H)'].sum() if 'NG(B/H)' in df_housing.columns else 0
-				total_insp_lot = df_housing['Insp(B/H)'].sum() if 'Insp(B/H)' in df_housing.columns else 0
+				total_ok_lot = df_housing['OK(Lot)'].sum() if 'OK(Lot)' in df_housing.columns else 0
+				total_ng_lot = df_housing['NG(Lot)'].sum() if 'NG(Lot)' in df_housing.columns else 0
+				total_insp_lot = df_housing['Insp(Lot)'].sum() if 'Insp(Lot)' in df_housing.columns else 0
 				ng_percent = df_housing['NG_%'].mean() if 'NG_%' in df_housing.columns else 0
 
 				metrik1, metrik2, metrik3, metrik4, metrik5, metrik6, metrik7 = st.columns(7)
@@ -1888,13 +1888,13 @@ def cleaning_process(df):
 				pivot_pcs = pd.concat([pivot_pcs, pd.DataFrame([total_row_pcs])], ignore_index=True)
 
 				# --- Pivot Table LOT ---
-				for col in ['OK(B/H)', 'Insp(B/H)', 'NG(B/H)', 'MTL/ SLipMelintir']:
+				for col in ['OK(Lot)', 'Insp(Lot)', 'NG(Lot)', 'MTL/ SLipMelintir']:
 					if col not in df_housing.columns:
 						df_housing[col] = 0
 
 				pivot_lot = df_housing.pivot_table(
 					index='PartName',
-					values=['OK(B/H)', 'Insp(B/H)', 'NG(B/H)', 'MTL/ SLipMelintir'],
+					values=['OK(Lot)', 'Insp(Lot)', 'NG(Lot)', 'MTL/ SLipMelintir'],
 					aggfunc='sum',
 					fill_value=0
 				).reset_index()
@@ -1902,19 +1902,19 @@ def cleaning_process(df):
 				ng_persen_lot = df_housing.groupby('PartName')['NG_%'].mean().reset_index().rename(columns={'NG_%': 'NG (%)'})
 				pivot_lot = pd.merge(pivot_lot, ng_persen_lot, on='PartName', how='left')
 				pivot_lot = pivot_lot.rename(columns={
-					'OK(B/H)': 'OK (lot)',
-					'Insp(B/H)': 'Tot.Insp (lot)',
-					'NG(B/H)': 'NG (lot)',
-					'MTL/ SLipMelintir': 'NGM (lot)'
+					'OK(Lot)': 'OK (Lot)',
+					'Insp(Lot)': 'Tot.Insp (Lot)',
+					'NG(Lot)': 'NG (Lot)',
+					'MTL/ SLipMelintir': 'NGM (Brl)'
 				})
 
 				# Tambahkan baris TOTAL untuk LOT
 				total_row_lot = {
 					'PartName': 'TOTAL',
-					'OK (lot)': pivot_lot['OK (lot)'].sum(),
-					'NG (lot)': pivot_lot['NG (lot)'].sum(),
-					'NGM (lot)': pivot_lot['NGM (lot)'].sum(),
-					'Tot.Insp (lot)': pivot_lot['Tot.Insp (lot)'].sum(),
+					'OK (Lot)': pivot_lot['OK (Lot)'].sum(),
+					'NG (Lot)': pivot_lot['NG (Lot)'].sum(),
+					'NGM (Brl)': pivot_lot['NGM (Brl)'].sum(),
+					'Tot.Insp (Lot)': pivot_lot['Tot.Insp (Lot)'].sum(),
 					'NG (%)': pivot_lot['NG (%)'].mean()
 				}
 				pivot_lot = pd.concat([pivot_lot, pd.DataFrame([total_row_lot])], ignore_index=True)
@@ -1922,15 +1922,16 @@ def cleaning_process(df):
 				# Format angka
 				for col in ['OK (pcs)', 'Tot.Insp (pcs)', 'NG (pcs)', 'NGM (pcs)']:
 					pivot_pcs[col] = pd.to_numeric(pivot_pcs[col], errors='coerce').map(lambda x: f"{x:,.0f}" if pd.notnull(x) else "")
-				for col in ['OK (lot)', 'Tot.Insp (lot)', 'NG (lot)', 'NGM (lot)']:
+				for col in ['OK (Lot)', 'Tot.Insp (Lot)', 'NG (Lot)', 'NGM (Brl)']:
 					pivot_lot[col] = pd.to_numeric(pivot_lot[col], errors='coerce').map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
 				for col in ['NG (%)']:
 					pivot_pcs[col] = pd.to_numeric(pivot_pcs[col], errors='coerce').map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
+				for col in ['NG (%)']:
 					pivot_lot[col] = pd.to_numeric(pivot_lot[col], errors='coerce').map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
 
 				# Urutkan kolom: OK, NG, NGM, Tot.Insp, NG (%)
 				ordered_pcs_cols = ['PartName', 'OK (pcs)', 'NG (pcs)', 'NGM (pcs)', 'Tot.Insp (pcs)', 'NG (%)']
-				ordered_lot_cols = ['PartName', 'OK (lot)', 'NG (lot)', 'NGM (lot)', 'Tot.Insp (lot)', 'NG (%)']
+				ordered_lot_cols = ['PartName', 'OK (Lot)', 'NG (Lot)', 'NGM (Brl)', 'Tot.Insp (Lot)', 'NG (%)']
 				pivot_pcs = pivot_pcs[[col for col in ordered_pcs_cols if col in pivot_pcs.columns]]
 				pivot_lot = pivot_lot[[col for col in ordered_lot_cols if col in pivot_lot.columns]]
 

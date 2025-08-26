@@ -941,7 +941,7 @@ def cleaning_process(df):
 				
 			with col2:	#Qty NG Lot by Line and Shift - 26Nov2024
 				
-				pt_NGLot_line_by_shift = pd.pivot_table(df, values='NG(B/H)', index='Line', columns='Shift', aggfunc='sum', margins=True, margins_name='Total')
+				pt_NGLot_line_by_shift = pd.pivot_table(df, values='NG(Lot)', index='Line', columns='Shift', aggfunc='sum', margins=True, margins_name='Total')
 				# Bulatkan nilai-nilai ke angka bulat terdekat
 				pt_NGLot_line_by_shift = pt_NGLot_line_by_shift.map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
 				pt_NGLot_line_by_shift_transposed = pt_NGLot_line_by_shift.transpose()
@@ -953,7 +953,7 @@ def cleaning_process(df):
 				st.dataframe(pt_NGLot_line_by_shift_transposed,use_container_width=True)
 
 			with col3:	#Qty Inspected Lot by Line and Shift - 26Nov2024
-				pt_InspLot_line_by_shift = pd.pivot_table(df, values='Insp(B/H)', index='Line', columns='Shift', aggfunc='sum', margins=True, margins_name='Total')
+				pt_InspLot_line_by_shift = pd.pivot_table(df, values='Insp(Lot)', index='Line', columns='Shift', aggfunc='sum', margins=True, margins_name='Total')
 				# Bulatkan nilai-nilai ke angka bulat terdekat
 				pt_InspLot_line_by_shift = pt_InspLot_line_by_shift.round(0)
 				pt_InspLot_line_by_shift = pt_InspLot_line_by_shift.map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
@@ -1005,10 +1005,10 @@ def cleaning_process(df):
 				# Add Insp(B/H) bar trace with value labels
 				fig.add_trace(go.Bar(
 					x=data_grafik2['Date'],
-					y=data_grafik2['Insp(B/H)'],
-					name='Insp(B/H)',
+					y=data_grafik2['Insp(Lot)'],
+					name='Insp(Lot)',
 					marker_color='#8A784E',
-					text=data_grafik2['Insp(B/H)'].round(0).astype(int).astype(str),  # Show value labels
+					text=data_grafik2['Insp(Lot)'].round(0).astype(int).astype(str),  # Show value labels
 					textposition='inside'
 				))
 
@@ -1136,7 +1136,7 @@ def cleaning_process(df):
 					data_grafik = data_grafik.sort_values(by='Date')
 					data_grafik['Date'] = data_grafik['Date'].dt.strftime('%b-%Y')
 
-					data_grafik2 = pd.pivot_table(df_rack1, values='Insp(B/H)', index='Date', aggfunc='sum').reset_index()
+					data_grafik2 = pd.pivot_table(df_rack1, values='Insp(Lot)', index='Date', aggfunc='sum').reset_index()
 					data_grafik2['Date'] = pd.to_datetime(data_grafik2['Date'], format='%b-%Y')
 					data_grafik2 = data_grafik2.sort_values(by='Date')
 					data_grafik2['Date'] = data_grafik2['Date'].dt.strftime('%b-%Y')
@@ -1162,10 +1162,10 @@ def cleaning_process(df):
 					# Add Insp(B/H) line trace (overlay on same y-axis)
 					fig.add_trace(go.Bar(  # Use Scatter for line chart
 						x=data_grafik2['Date'],
-						y=data_grafik2['Insp(B/H)'],
-						name='Insp(B/H)',
+						y=data_grafik2['Insp(Lot)'],
+						name='Insp(Lot)',
 						marker_color='#F2C078',
-						text=data_grafik2['Insp(B/H)'].round(0).astype(int).astype(str),  # Show value labels
+						text=data_grafik2['Insp(Lot)'].round(0).astype(int).astype(str),  # Show value labels
 						textposition='outside'
 					))
 
@@ -1200,15 +1200,15 @@ def cleaning_process(df):
 
 			with pie_kiri:
 				Insp_by_Cust=(
-						df[["Cust.ID","Insp(B/H)"]]
+						df[["Cust.ID","Insp(Lot)"]]
 						.groupby(by="Cust.ID")
 						.sum()
-						.sort_values(by="Insp(B/H)",ascending=False)
+						.sort_values(by="Insp(Lot)",ascending=False)
 						.reset_index()
 				)
 				
 				# Create a pie chart
-				fig = go.Figure(data=go.Pie(labels=Insp_by_Cust['Cust.ID'], values=Insp_by_Cust['Insp(B/H)'], marker=dict(colors=['green', 'yellow', 'red', 'blue'])))
+				fig = go.Figure(data=go.Pie(labels=Insp_by_Cust['Cust.ID'], values=Insp_by_Cust['Insp(Lot)'], marker=dict(colors=['green', 'yellow', 'red', 'blue'])))
 
 				fig.update_layout(title='Porsion Qty Inspected(lot) by Customer',
 								xaxis_title='Cust.ID',
@@ -1218,15 +1218,15 @@ def cleaning_process(df):
 
 			with pie_kanan:
 				Insp_by_Kategori=(
-						df[["Kategori","Insp(B/H)"]]
+						df[["Kategori","Insp(Lot)"]]
 						.groupby(by="Kategori")
 						.sum()
-						.sort_values(by="Insp(B/H)",ascending=False)
+						.sort_values(by="Insp(Lot)",ascending=False)
 						.reset_index()
 				)
 				
 				# Create a pie chart
-				fig = go.Figure(data=go.Pie(labels=Insp_by_Kategori['Kategori'], values=Insp_by_Kategori['Insp(B/H)'], marker=dict(colors=['green', 'yellow', 'red', 'blue'])))
+				fig = go.Figure(data=go.Pie(labels=Insp_by_Kategori['Kategori'], values=Insp_by_Kategori['Insp(Lot)'], marker=dict(colors=['green', 'yellow', 'red', 'blue'])))
 
 				fig.update_layout(title='Porsion Tot. Inspected(lot) by Kategori',
 								xaxis_title='Kategori',
@@ -1410,7 +1410,7 @@ def cleaning_process(df):
 			DateRange(df_ori_pcs)
 
 			#--------- pivot Qty NG (lot) by Line dan Customer
-			pt_customer_line2=pd.pivot_table(df,values='NG(B/H)',index='Cust.ID',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
+			pt_customer_line2=pd.pivot_table(df,values='NG(Lot)',index='Cust.ID',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
 			# Bulatkan nilai-nilai ke angka bulat terdekat
 			pt_customer_line2 = pt_customer_line2.map(lambda x: f"{x:,.0f}" if pd.notnull(x) else "")
 
@@ -1419,19 +1419,19 @@ def cleaning_process(df):
 			with sikir: #Grafik kolom Qty NG(lot) B4 by Cust.ID Ungu 09Jun25 show value inside bar
 			
 				df_byLine = df[df['Line'] == 'Barrel 4']
-				df_byLine = df_byLine[df_byLine['NG(B/H)'] > 0]
+				df_byLine = df_byLine[df_byLine['NG(Lot)'] > 0]
 
 				NG_by_custid = (
-					df_byLine[["Cust.ID", "NG(B/H)"]]
+					df_byLine[["Cust.ID", "NG(Lot)"]]
 					.groupby(by="Cust.ID")
 					.sum()
-					.sort_values(by="NG(B/H)", ascending=False)
+					.sort_values(by="NG(Lot)", ascending=False)
 					.reset_index()
 				)
 
 				# Hitung cumulative %
-				NG_by_custid['Cumulative'] = NG_by_custid['NG(B/H)'].cumsum()
-				NG_by_custid['Cumulative %'] = 100 * NG_by_custid['Cumulative'] / NG_by_custid['NG(B/H)'].sum()
+				NG_by_custid['Cumulative'] = NG_by_custid['NG(Lot)'].cumsum()
+				NG_by_custid['Cumulative %'] = 100 * NG_by_custid['Cumulative'] / NG_by_custid['NG(Lot)'].sum()
 				NG_by_custid['Cumulative % Label'] = NG_by_custid['Cumulative %'].round(1).astype(str) + '%'
 
 				# Buat grafik Pareto
@@ -1440,11 +1440,11 @@ def cleaning_process(df):
 				# Bar chart
 				fig.add_trace(go.Bar(
 					x=NG_by_custid['Cust.ID'],
-					y=NG_by_custid['NG(B/H)'],
+					y=NG_by_custid['NG(Lot)'],
 					name='Qty NG (Lot)',
 					marker_color="#7F70AA",
 					yaxis='y1',
-					text=NG_by_custid['NG(B/H)'].round(2),
+					text=NG_by_custid['NG(Lot)'].round(2),
 					textposition='inside'
 				))
 

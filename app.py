@@ -170,8 +170,8 @@ def About():
 		<p style="margin-top:-10px;margin-bottom:0px;font-size:14px">
 		Definisi satuan dalam aplikasi ini:<br><br>
 		1. Satuan 'Lot' adalah satuan yang mewakili 1 batch proses produksi, atau bisa disebut juga 'Hanger'<br>
-		2. Satuan 'Brl' adalah satuan yang mewakili 1 Barrel di Line Barrel 4 dan Line Nickel. 1 Barrel = 1/2 Lot = 1/2 Hanger
-		3. Satuan 'pc/pcs' adalah satuan yang mewakili satu atau beberapa jumlah part.<br><br>
+		2. Satuan 'Brl' adalah satuan yang mewakili 1 Barrel di Line Barrel 4 dan Line Nickel. 1 Barrel = 1/2 Lot = 1/2 Hanger<br>
+		3. Satuan 'pc/pcs' adalah satuan yang mewakili satu atau beberapa jumlah part.<br>
 		4. Prosentase (%) adalah hasil dari perhitungan pembagian antara jumlah total NG (lot) dibagi dengan jumlah total hasil inspeksi (lot) dikalikan 100% <br><br>
 		
 		</p>

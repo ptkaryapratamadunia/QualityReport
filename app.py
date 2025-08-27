@@ -3168,7 +3168,7 @@ def cleaning_process(df):
 					filter_kategori = filtered_line_df['Cust.ID'].unique()
 
 					# Membuat selectbox untuk memilih kategori
-					selected_kategori = st.multiselect("Pilih Customer:", filter_kategori)
+					selected_kategori = st.selectbox("Pilih Customer:", filter_kategori)
 
 					# Menampilkan tabel berdasarkan filter Kategori
 					filtered_df = filtered_line_df[filtered_line_df['Cust.ID'] == selected_kategori]

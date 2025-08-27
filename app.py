@@ -2414,7 +2414,7 @@ def cleaning_process(df):
 					.sort_values(by="NG_%", ascending=False)
 					.reset_index()
 				)
-				# Filter nilai yang lebih besar dari 0.5
+				# Filter nilai yang lebih besar dari 0
 				NG_by_part = NG_by_part[NG_by_part['NG_%'] > 0]
 
 				# Hitung cumulative %

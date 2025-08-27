@@ -2085,7 +2085,7 @@ def cleaning_process(df):
 				total_sum = total_row_RingParts_df['Total_NG(Brl)'].replace(',', '', regex=True).astype(float).sum()
 				total_row_RingParts_df = pd.concat([
 					total_row_RingParts_df,
-					pd.DataFrame([{'Jenis NG': 'TOTAL', 'Total_NG(Brl)': format_with_comma3(total_sum)}])
+					pd.DataFrame([{'Jenis NG': 'TOTAL', 'Total_NG(Brl)': format_with_comma2(total_sum)}])
 				], ignore_index=True)
 				
 				# Pastikan baris TOTAL ada di paling bawah
@@ -2115,10 +2115,11 @@ def cleaning_process(df):
 				except Exception:
 					ng_persen_Ring = 0
 
-				ng_persen_Ring = format_with_comma2(ng_persen_Ring)
+				ng_persen_Ring = format_with_comma(ng_persen_Ring)
 			
 				st.markdown(f"<div style='font-size: 18px; color: orange; font-weight: bold; text-align: center;'>Total Insp(Brl): {total_production_Ring}</div>", unsafe_allow_html=True)
 				st.markdown(f"<div style='font-size: 18px; color: orange; font-weight: bold; text-align: center;'>Total NG: {ng_persen_Ring} %</div>", unsafe_allow_html=True)	
+				
 			with lb4_kanan2: #Rack 1
 				df_LR1 = df[df['Line'] == 'Rack 1']
 				# Menjumlahkan kolom-kolom yang diinginkan (lot)

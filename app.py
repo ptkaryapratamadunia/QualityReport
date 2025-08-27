@@ -2180,6 +2180,8 @@ def cleaning_process(df):
 				total_row_df_B4_filtered = total_row_df_B4[total_row_df_B4['Total NG (lot)'] > 0 ] 
 				# Sort values from smallest to largest
 				total_row_df_B4_sorted = total_row_df_B4_filtered.sort_values(by='Total NG (lot)', ascending=True)
+				total_row_df_B4_sorted['Total NG (lot)'] = total_row_df_B4_sorted['Total NG (lot)'].round(2)
+				total_row_df_B4_sorted['Total NG (lot)'] = total_row_df_B4_sorted['Total NG (lot)'].map(format_with_comma2)
 				# Plot using plotly for interactivity, show value inside bar
 				fig = px.bar(
 					total_row_df_B4_sorted,

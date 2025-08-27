@@ -3158,7 +3158,7 @@ def cleaning_process(df):
 					filter_line = df_ori_pcs['Line'].unique()
 
 					# Membuat selectbox untuk memilih Line
-					selected_Line = st.multiselect("Pilih Line:", filter_line)
+					selected_Line = st.selectbox("Pilih Line:", filter_line)
 
 					# Menampilkan tabel berdasarkan filter Line
 					filtered_line_df = df_ori_pcs[df_ori_pcs['Line'] == selected_Line]

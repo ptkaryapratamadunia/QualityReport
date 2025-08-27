@@ -1939,7 +1939,8 @@ def cleaning_process(df):
 				with st.expander("Klik untuk melihat details Data Housing Horn (lot) - PT. HDI - Barrel 4", expanded=False):
 					st.dataframe(pivot_lot, use_container_width=True)
 				with st.expander("Klik untuk melihat details Data Housing Horn (pcs) - PT. HDI - Barrel 4", expanded=False):
-					st.dataframe(pivot_pcs, use_container_width=True)
+					st.table(pivot_pcs)
+					# st.dataframe(pivot_pcs, use_container_width=True)
 			else:
 				st.info('Tidak ada data Housing Horn untuk Barrel 4, Cust.ID=HDI, PartName mengandung "HOUSING".')
 		#endregion : Tampilkan tabel khusus untuk Barrel 4 cust.id 'HDI' dan partname dengan awalan 'HOUSING'**** - 10jUL2025

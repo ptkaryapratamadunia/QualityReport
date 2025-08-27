@@ -2116,7 +2116,7 @@ def cleaning_process(df):
 				except Exception:
 					ng_persen_Ring = 0
 
-				ng_persen_Ring = format_with_comma(ng_persen_Ring)
+				ng_persen_Ring = format_with_comma2(ng_persen_Ring)
 			
 				st.markdown(f"<div style='font-size: 18px; color: orange; font-weight: bold; text-align: center;'>Total Insp(Brl): {total_production_Ring}</div>", unsafe_allow_html=True)
 				st.markdown(f"<div style='font-size: 18px; color: orange; font-weight: bold; text-align: center;'>Total NG: {ng_persen_Ring} %</div>", unsafe_allow_html=True)	

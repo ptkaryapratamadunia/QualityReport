@@ -2043,7 +2043,9 @@ def cleaning_process(df):
 				# Gabungkan kembali, TOTAL di bawah
 				total_row_HDI_df_display = pd.concat([total_row_HDI_df_no_total, total_row_HDI_df_total], ignore_index=True)
 				# Tampilkan tabel seluruh baris tanpa scroll (gunakan st.table agar semua baris tampil)
-				st.table(total_row_HDI_df_display)
+				st.table(total_row_HDI_df_display.style.set_table_styles([
+							{'selector': 'th, td', 'props': [('font-family', 'Nunito'), ('font-size', '12px')]}
+						]))
 
 				total_production_HDI = df_HDI['Insp(B/H)'].sum()
 				total_production_HDI = format_with_comma3(total_production_HDI)

@@ -11,6 +11,7 @@ from unicodedata import category
 from matplotlib import use
 from matplotlib.hatch import SmallCircles
 from referencing import Anchor
+from scipy.__config__ import show
 import streamlit as st
 
 import pandas as pd
@@ -1964,93 +1965,92 @@ def cleaning_process(df):
 				# 'MTL/ SLipMelintir'
 			]
 
-			#LB4
-
-			lb4_kiri, lb4_kanan = st.columns([4, 1])  # Kolom kiri 4x lebih lebar dari kanan
+			lb4_kiri, lb4_kanan,lb4_kiri2, lb4_kanan2 = st.columns([1,1, 1, 1])  
 			with lb4_kiri:  # Tabel Jenis NG (Lot) - Line Barrel 4 - All Parts
 				df_LB4 = df[df['Line'] == 'Barrel 4']
 				# Menjumlahkan kolom-kolom yang diinginkan (lot)
-				total_rowB4 = df_LB4[new_columns].sum().to_frame().T
-				total_rowB4['index'] = 'Total_NG(Brl)'
-				total_rowB4.set_index('index', inplace=True)
-				# Hanya tampilkan kolom dengan nilai > 0
-				total_rowB4 = total_rowB4.loc[:, (total_rowB4 != 0).any(axis=0)]
-				# Tambahkan kolom 'Jumlah Total' yang merupakan jumlah dari semua kolom yang tampil
-				total_rowB4['Jumlah Total'] = total_rowB4.sum(axis=1)
-				total_rowB4 = total_rowB4.map(format_with_comma)
-				st.write("Tabel Jenis NG (Brl) - Line Barrel 4 - All Parts")
-				st.dataframe(total_rowB4, use_container_width=True)
-			with lb4_kanan:  # Tabel Qty Inspected (lot) - Line Barrel 4
+				total_rowB4 = df_LB4[new_columns].sum()
+				# Buat DataFrame vertikal: index = Jenis NG, kolom = 'Total_NG(Brl)'
+				total_rowB4_df = pd.DataFrame({
+					'Jenis NG': total_rowB4.index,
+					'Total_NG(Brl)': total_rowB4.values
+				})
+				# Filter hanya nilai > 0
+				total_rowB4_df = total_rowB4_df[total_rowB4_df['Total_NG(Brl)'] > 0]
+				# Urutkan dari besar ke kecil
+				total_rowB4_df = total_rowB4_df.sort_values(by='Total_NG(Brl)', ascending=False)
+				# Format angka
+				total_rowB4_df['Total_NG(Brl)'] = total_rowB4_df['Total_NG(Brl)'].map(format_with_comma2)
+				# Tambahkan baris TOTAL di akhir
+				total_sum = total_rowB4_df['Total_NG(Brl)'].replace(',', '', regex=True).astype(float).sum()
+				total_rowB4_df = pd.concat([
+					total_rowB4_df,
+					pd.DataFrame([{'Jenis NG': 'TOTAL', 'Total_NG(Brl)': format_with_comma2(total_sum)}])
+				], ignore_index=True)
+				st.write("B4 - All Parts")
+				# Pastikan baris TOTAL ada di paling bawah
+				total_rowB4_df_no_total = total_rowB4_df[total_rowB4_df['Jenis NG'] != 'TOTAL']
+				total_rowB4_df_total = total_rowB4_df[total_rowB4_df['Jenis NG'] == 'TOTAL']
+				# Gabungkan kembali, TOTAL di bawah
+				total_rowB4_df_display = pd.concat([total_rowB4_df_no_total, total_rowB4_df_total], ignore_index=True)
+				# Tampilkan tabel seluruh baris tanpa scroll, hanya kolom 'Jenis NG' dan 'Total_NG(Brl)', tanpa kolom index
+				st.table(total_rowB4_df_display[['Jenis NG', 'Total_NG(Brl)']].style.hide(axis="index"))
+
 				# Total Production (lot) Line Barrel 4
 				total_production_B4 = df_LB4['Insp(B/H)'].sum()
-				total_production_B4 = format_with_comma2(total_production_B4)
+				total_production_B4 = format_with_comma3(total_production_B4)
 				ng_persen = df_LB4['NG_%'].mean()
 				ng_persen = format_with_comma2(ng_persen)
-				st.write("Total Inspected (Brl) & NG% LB 4:")
-				st.markdown(f"<div style='font-size: 18px; color: orange; font-weight: bold; text-align: center;'>{total_production_B4}</div>", unsafe_allow_html=True)
-				st.markdown(f"<div style='font-size: 18px; color: orange; font-weight: bold; text-align: center;'>{ng_persen} % </div>", unsafe_allow_html=True)
-				st.markdown("---")
-
-			# Tabel Jenis NG (Lot) - Line Barrel 4 - Parts HDI
-			lb4_hdi_kiri, lb4_hdi_kanan = st.columns([4, 1])
-			with lb4_hdi_kiri:
-				st.write("Tabel Jenis NG (Brl) - Line Barrel 4 - Parts HDI")
+				
+				st.markdown(f"<div style='font-size: 18px; color: orange; font-weight: bold; text-align: center;'>Total Insp(Brl): {total_production_B4}</div>", unsafe_allow_html=True)
+				st.markdown(f"<div style='font-size: 18px; color: orange; font-weight: bold; text-align: center;'>Total NG%: {ng_persen} % </div>", unsafe_allow_html=True)
+				# st.markdown("---")
+			with lb4_kanan:  # HDI
+				st.write("B4 - HDI Parts (All Type)")
 				# Filter df untuk hanya menampilkan Jenis yang mengandung 'HDI' pada kolom 'Cust.ID' - 10Jun2025 
 				df_HDI = df_LB4[df_LB4['Cust.ID'].str.contains('HDI', na=False)]
 				# Menjumlahkan kolom-kolom yang diinginkan (lot)
-				total_row_HDI = df_HDI[new_columns].sum().to_frame().T
-				total_row_HDI['index'] = 'Total_NG(Brl)'
-				total_row_HDI.set_index('index', inplace=True)
-				# Hanya tampilkan kolom dengan nilai > 0
-				total_row_HDI = total_row_HDI.loc[:, (total_row_HDI != 0).any(axis=0)]
-				# Tambahkan kolom 'Jumlah Total' yang merupakan jumlah dari semua kolom yang tampil
-				total_row_HDI['Jumlah Total'] = total_row_HDI.sum(axis=1)
-				total_row_HDI = total_row_HDI.map(format_with_comma)
-				st.write(total_row_HDI)
-			with lb4_hdi_kanan:
+				total_row_HDI = df_HDI[new_columns].sum()
+				# Buat DataFrame vertikal: index = Jenis NG, kolom = 'Total_NG(Brl)'
+				total_row_HDI_df = pd.DataFrame({
+					'Jenis NG': total_row_HDI.index,
+					'Total_NG(Brl)': total_row_HDI.values
+				})
+				# Filter hanya nilai > 0
+				total_row_HDI_df = total_row_HDI_df[total_row_HDI_df['Total_NG(Brl)'] > 0]
+				# Urutkan dari besar ke kecil
+				total_row_HDI_df = total_row_HDI_df.sort_values(by='Total_NG(Brl)', ascending=False)
+				# Format angka
+				total_row_HDI_df['Total_NG(Brl)'] = total_row_HDI_df['Total_NG(Brl)'].map(format_with_comma2)
+				# Tambahkan baris TOTAL di akhir
+				total_sum = total_row_HDI_df['Total_NG(Brl)'].replace(',', '', regex=True).astype(float).sum()
+				total_row_HDI_df = pd.concat([
+					total_row_HDI_df,
+					pd.DataFrame([{'Jenis NG': 'TOTAL', 'Total_NG(Brl)': format_with_comma2(total_sum)}])
+				], ignore_index=True)
+				# Tampilkan tabel vertikal seluruh baris hingga Total di akhir, tanpa scroll
+				
+				# Pastikan baris TOTAL ada di paling bawah
+				total_row_HDI_df_no_total = total_row_HDI_df[total_row_HDI_df['Jenis NG'] != 'TOTAL']
+				total_row_HDI_df_total = total_row_HDI_df[total_row_HDI_df['Jenis NG'] == 'TOTAL']
+				# Gabungkan kembali, TOTAL di bawah
+				total_row_HDI_df_display = pd.concat([total_row_HDI_df_no_total, total_row_HDI_df_total], ignore_index=True)
+				# Tampilkan tabel seluruh baris tanpa scroll (gunakan st.table agar semua baris tampil)
+				st.table(total_row_HDI_df_display)
+
 				total_production_HDI = df_HDI['Insp(B/H)'].sum()
-				total_production_HDI = format_with_comma2(total_production_HDI)
+				total_production_HDI = format_with_comma3(total_production_HDI)
 				ng_persen_HDI = df_HDI['NG_%'].mean()
 				ng_persen_HDI = format_with_comma2(ng_persen_HDI)
-				st.write("Total Inspected (Brl) & NG% HDI:")
-				st.markdown(f"<div style='font-size: 18px; color: orange; font-weight: bold; text-align: center;'>{total_production_HDI}</div>", unsafe_allow_html=True)
-				st.markdown(f"<div style='font-size: 18px; color: orange; font-weight: bold; text-align: center;'>{ng_persen_HDI} % </div>", unsafe_allow_html=True)
-				st.markdown("---")
-
-			# Tabel Jenis NG (Lot) - Line Barrel 4 - Small Parts
-			lb4_smp_kiri, lb4_smp_kanan = st.columns([4, 1])
-			with lb4_smp_kiri:
-				st.write("Tabel Jenis NG (Brl) - Line Barrel 4 - Small Parts")
-				# Filter df untuk hanya menampilkan Jenis yang mengandung 'SMP' pada kolom 'Kategori' - 10Jun2025
-				df_SMP = df_LB4[df_LB4['Kategori'].str.contains('SMP', na=False)]
-				# Menjumlahkan kolom-kolom yang diinginkan (lot)
-				total_row_SMP = df_SMP[new_columns].sum().to_frame().T
-				total_row_SMP['index'] = 'Total_NG(Brl)'
-				total_row_SMP.set_index('index', inplace=True)
-				# Hanya tampilkan kolom dengan nilai > 0
-				total_row_SMP = total_row_SMP.loc[:, (total_row_SMP != 0).any(axis=0)]
-				# Tambahkan kolom 'Jumlah Total' yang merupakan jumlah dari semua kolom yang tampil
-				total_row_SMP['Jumlah Total'] = total_row_SMP.sum(axis=1)
-				total_row_SMP = total_row_SMP.map(format_with_comma)
-				st.write(total_row_SMP)
-			with lb4_smp_kanan:
-				total_production_SMP = df_SMP['Insp(B/H)'].sum()
-				total_production_SMP = format_with_comma2(total_production_SMP)
-				ng_persen_SMP = df_SMP['NG_%'].mean()
-				ng_persen_SMP = format_with_comma2(ng_persen_SMP)
-				st.write("Total Inspected (Brl) & NG% SMP:")
-				st.markdown(f"<div style='font-size: 18px; color: orange; font-weight: bold; text-align: center;'>{total_production_SMP}</div>", unsafe_allow_html=True)
-				st.markdown(f"<div style='font-size: 18px; color: orange; font-weight: bold; text-align: center;'>{ng_persen_SMP} % </div>", unsafe_allow_html=True)
-				st.markdown("---")
-
-			# Tabel Jenis NG (Lot) - Line Barrel 4 - RING Part
-			lb4_ring_kiri, lb4_ring_kanan = st.columns([4, 1])
-			with lb4_ring_kiri:
 				
-				st.write("Tabel Jenis NG (Brl) - Barrel 4 - RING Part")
+				st.markdown(f"<div style='font-size: 18px; color: orange; font-weight: bold; text-align: center;'>Total Insp(Brl): {total_production_HDI}</div>", unsafe_allow_html=True)
+				st.markdown(f"<div style='font-size: 18px; color: orange; font-weight: bold; text-align: center;'>Total NG%: {ng_persen_HDI} % </div>", unsafe_allow_html=True)
+				
+			with lb4_kiri2:  # Ring Parts
+				st.write("B4 - RING Parts")
 				# Filter df untuk hanya menampilkan Jenis yang mengandung 'JK067662-0190, JK067662-0160, JK067662-0112' pada kolom 'PartName' - 11Jun2025
 				df_RingParts = df_LB4[df_LB4['PartName'].str.contains('JK067662-0190|JK067662-0160|JK067662-0112', na=False)]
-				
+
 				# Gabungkan semua variasi kolom 'MTL/ SLipMelintir' (dengan spasi berbeda) menjadi satu kolom
 				mtl_variants = [col for col in df_RingParts.columns if col.strip().lower() == 'mtl/ slipmelintir']
 				if len(mtl_variants) > 1:
@@ -2069,64 +2069,95 @@ def cleaning_process(df):
 					ng_cols.append(main_col)
 
 				# Menjumlahkan kolom-kolom yang diinginkan (lot)
-				total_row_RingParts = df_RingParts[ng_cols].sum().to_frame().T
-				total_row_RingParts['index'] = 'Total_NG(Brl)'
-				total_row_RingParts.set_index('index', inplace=True)
-				# Hanya tampilkan kolom dengan nilai > 0
-				total_row_RingParts = total_row_RingParts.loc[:, (total_row_RingParts != 0).any(axis=0)]
-				# Tambahkan kolom 'Jumlah Total' di paling kanan dan hitung jumlah seluruh kolom data (tanpa 'Jumlah Total' itu sendiri)
-				total_row_RingParts['Jumlah Total'] = total_row_RingParts.sum(axis=1)
-				cols = [col for col in total_row_RingParts.columns if col != 'Jumlah Total'] + ['Jumlah Total']
-				total_row_RingParts = total_row_RingParts[cols]
-				total_row_RingParts = total_row_RingParts.map(format_with_comma)
-				st.write(total_row_RingParts)
+				total_row_RingParts = df_RingParts[ng_cols].sum()
+				# Buat DataFrame vertikal: index = Jenis NG, kolom = 'Total_NG(Brl)'
+				total_row_RingParts_df = pd.DataFrame({
+					'Jenis NG': total_row_RingParts.index,
+					'Total_NG(Brl)': total_row_RingParts.values
+				})
+				# Filter hanya nilai > 0
+				total_row_RingParts_df = total_row_RingParts_df[total_row_RingParts_df['Total_NG(Brl)'] > 0]
+				# Urutkan dari besar ke kecil
+				total_row_RingParts_df = total_row_RingParts_df.sort_values(by='Total_NG(Brl)', ascending=False)
+				# Format angka
+				total_row_RingParts_df['Total_NG(Brl)'] = total_row_RingParts_df['Total_NG(Brl)'].map(format_with_comma2)
+				# Tambahkan baris TOTAL di akhir
+				total_sum = total_row_RingParts_df['Total_NG(Brl)'].replace(',', '', regex=True).astype(float).sum()
+				total_row_RingParts_df = pd.concat([
+					total_row_RingParts_df,
+					pd.DataFrame([{'Jenis NG': 'TOTAL', 'Total_NG(Brl)': format_with_comma3(total_sum)}])
+				], ignore_index=True)
+				
+				# Pastikan baris TOTAL ada di paling bawah
+				total_row_RingParts_df_no_total = total_row_RingParts_df[total_row_RingParts_df['Jenis NG'] != 'TOTAL']
+				total_row_RingParts_df_total = total_row_RingParts_df[total_row_RingParts_df['Jenis NG'] == 'TOTAL']
+				# Gabungkan kembali, TOTAL di bawah
+				total_row_RingParts_df_display = pd.concat([total_row_RingParts_df_no_total, total_row_RingParts_df_total], ignore_index=True)
+				# Tampilkan tabel seluruh baris tanpa scroll, hanya kolom 'Jenis NG' dan 'Total_NG(Brl)', tanpa kolom index
+				st.table(total_row_RingParts_df_display[['Jenis NG', 'Total_NG(Brl)']].style.hide(axis="index"))
 
-				#hitung total rata-rata NG (%) untuk RING Parts
+				# hitung total rata-rata NG (%) untuk RING Parts
 				if 'NG_%' in df_RingParts.columns:
 					ng_percent_Ring = df_RingParts['NG_%'].mean()
 					ng_percent_Ring = format_with_comma2(ng_percent_Ring)
-					# st.write(f"Rata-rata NG (%) untuk RING Parts: {ng_percent_Ring}")
 				else:
 					st.write("Kolom 'NG_%' tidak ditemukan dalam data RING Parts.")
 
-				
-			with lb4_ring_kanan:
 				total_production_Ring = df_RingParts['Insp(B/H)'].sum()
-				total_production_Ring = format_with_comma2(total_production_Ring)
+				total_production_Ring = format_with_comma3(total_production_Ring)
 				# ng_persen_Ring = df_RingParts['NG_%'].mean() ---> rumus ini tidak mengikutsertakan NG MTL/ SLipMelintir yang dibutuhkan untuk khusus part Ring, 21Aug2025
-				ng_persen_Ring = (float(total_row_RingParts['Jumlah Total'].iloc[0].replace(',', '')) / float(total_production_Ring.replace(',', ''))) * 100
+				jumlah_total_str = str(total_row_RingParts['Jumlah Total'].iloc[0]) if 'Jumlah Total' in total_row_RingParts else "0"
+				total_production_str = str(total_production_Ring)
+				try:
+					jumlah_total_float = float(jumlah_total_str.replace(',', ''))
+					total_production_float = float(total_production_str.replace(',', ''))
+					ng_persen_Ring = (jumlah_total_float / total_production_float) * 100 if total_production_float != 0 else 0
+				except Exception:
+					ng_persen_Ring = 0
 
 				ng_persen_Ring = format_with_comma2(ng_persen_Ring)
-				st.write("Total Inspected (Brl) & NG% RING:")
-				st.markdown(f"<div style='font-size: 18px; color: orange; font-weight: bold; text-align: center;'>{total_production_Ring}</div>", unsafe_allow_html=True)
-				st.markdown(f"<div style='font-size: 18px; color: orange; font-weight: bold; text-align: center;'>{ng_persen_Ring} %</div>", unsafe_allow_html=True)	
-				st.markdown("---")
-
-			#LR1
-			lr1_kiri, lr1_kanan = st.columns([4, 1])
-			with lr1_kiri:
+			
+				st.markdown(f"<div style='font-size: 18px; color: orange; font-weight: bold; text-align: center;'>Total Insp(Brl): {total_production_Ring}</div>", unsafe_allow_html=True)
+				st.markdown(f"<div style='font-size: 18px; color: orange; font-weight: bold; text-align: center;'>Total NG: {ng_persen_Ring} %</div>", unsafe_allow_html=True)	
+			with lb4_kanan2: #Rack 1
 				df_LR1 = df[df['Line'] == 'Rack 1']
 				# Menjumlahkan kolom-kolom yang diinginkan (lot)
-				total_row = df_LR1[new_columns].sum().to_frame().T
-				total_row['index'] = 'Total_NG(lot)'
-				total_row.set_index('index', inplace=True)
-				# Hanya tampilkan kolom dengan nilai > 0
-				total_row = total_row.loc[:, (total_row != 0).any(axis=0)]
-				# Tambahkan kolom 'Jumlah Total' yang merupakan jumlah dari semua kolom yang tampil
-				total_row['Jumlah Total'] = total_row.sum(axis=1)
-				total_row = total_row.map(format_with_comma)
-				st.write("Tabel Jenis NG (lot) - Line Rack 1")
-				st.dataframe(total_row)
-			with lr1_kanan:
+				total_row_LR1 = df_LR1[new_columns].sum()
+				# Buat DataFrame vertikal: index = Jenis NG, kolom = 'Total_NG(lot)'
+				total_row_LR1_df = pd.DataFrame({
+					'Jenis NG': total_row_LR1.index,
+					'Total_NG(lot)': total_row_LR1.values
+				})
+				# Filter hanya nilai > 0
+				total_row_LR1_df = total_row_LR1_df[total_row_LR1_df['Total_NG(lot)'] > 0]
+				# Urutkan dari besar ke kecil
+				total_row_LR1_df = total_row_LR1_df.sort_values(by='Total_NG(lot)', ascending=False)
+				# Format angka
+				total_row_LR1_df['Total_NG(lot)'] = total_row_LR1_df['Total_NG(lot)'].map(format_with_comma2)
+				# Tambahkan baris TOTAL di akhir
+				total_sum = total_row_LR1_df['Total_NG(lot)'].replace(',', '', regex=True).astype(float).sum()
+				total_row_LR1_df = pd.concat([
+					total_row_LR1_df,
+					pd.DataFrame([{'Jenis NG': 'TOTAL', 'Total_NG(lot)': format_with_comma2(total_sum)}])
+				], ignore_index=True)
+				st.write("R1 - All Parts")
+				# Pastikan baris TOTAL ada di paling bawah
+				total_row_LR1_df_no_total = total_row_LR1_df[total_row_LR1_df['Jenis NG'] != 'TOTAL']
+				total_row_LR1_df_total = total_row_LR1_df[total_row_LR1_df['Jenis NG'] == 'TOTAL']
+				# Gabungkan kembali, TOTAL di bawah
+				total_row_LR1_df_display = pd.concat([total_row_LR1_df_no_total, total_row_LR1_df_total], ignore_index=True)
+				# Tampilkan tabel seluruh baris tanpa scroll, hanya kolom 'Jenis NG' dan 'Total_NG(lot)', tanpa kolom index
+				st.table(total_row_LR1_df_display[['Jenis NG', 'Total_NG(lot)']].style.hide(axis="index"))
+
 				total_production_LR1 = df_LR1['Insp(B/H)'].sum()
 				total_production_LR1 = format_with_comma2(total_production_LR1)
 				# ng_persen_LR1 = df_LR1['NG_%'].mean()
-				ng_persen_LR1 = (float(total_row['Jumlah Total'].iloc[0].replace(',', '')) / float(total_production_LR1.replace(',', ''))) * 100
+				ng_persen_LR1 = (float(total_row_LR1_df['Total_NG(lot)'][total_row_LR1_df['Jenis NG'] == 'TOTAL'].iloc[0].replace(',', '')) / float(total_production_LR1.replace(',', ''))) * 100
 				ng_persen_LR1 = format_with_comma2(ng_persen_LR1)
-				st.write("Total Inspected (lot) & NG% LR1:")
-				st.markdown(f"<div style='font-size: 18px; color: orange; font-weight: bold; text-align: center;'>{total_production_LR1}</div>", unsafe_allow_html=True)
-				st.markdown(f"<div style='font-size: 18px; color: orange; font-weight: bold; text-align: center;'>{ng_persen_LR1} %</div>", unsafe_allow_html=True)
-		
+				
+				st.markdown(f"<div style='font-size: 18px; color: orange; font-weight: bold; text-align: center;'>Total Insp(Lot): {total_production_LR1}</div>", unsafe_allow_html=True)
+				st.markdown(f"<div style='font-size: 18px; color: orange; font-weight: bold; text-align: center;'>Total NG%: {ng_persen_LR1} %</div>", unsafe_allow_html=True)
+
 		#endregion khusus untuk Leader input ke Grafik Harian
 
 			st.markdown('<a name="paretong"></a>', unsafe_allow_html=True)
@@ -2238,7 +2269,10 @@ def cleaning_process(df):
 				st.plotly_chart(fig, use_container_width=True)
 			
 			with barisR1:	#baris kanan Grafik Vertical Bar R1 PARETO
-			
+
+				# Calculate total_row for Rack 1 (similar to Barrel 4)
+				total_row = df_LR1[new_columns].sum()
+
 				# Convert the total_row to a DataFrame for plotting 
 				total_row_df = total_row.transpose().reset_index() 
 				total_row_df.columns = ['Defect Type', 'Total NG (lot)'] 

@@ -1999,9 +1999,9 @@ def cleaning_process(df):
 				# Gabungkan kembali, TOTAL di bawah
 				total_rowB4_df_display = pd.concat([total_rowB4_df_no_total, total_rowB4_df_total], ignore_index=True)
 				# Tampilkan tabel seluruh baris tanpa scroll, hanya kolom 'Jenis NG' dan 'Total_NG(Brl)', tanpa kolom index
-					st.table(total_rowB4_df_display.style.set_table_styles([
-								{'selector': 'th, td', 'props': [('font-family', 'Nunito'), ('font-size', '12px')]}
-							]))
+				st.table(total_rowB4_df_display.style.set_table_styles([
+							{'selector': 'th, td', 'props': [('font-family', 'Nunito'), ('font-size', '12px')]}
+						]))
 
 				# Total Production (lot) Line Barrel 4
 				total_production_B4 = df_LB4['Insp(B/H)'].sum()

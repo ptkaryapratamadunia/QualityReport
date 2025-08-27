@@ -3146,7 +3146,7 @@ def cleaning_process(df):
 						st.plotly_chart(fig)
 						# st.markdown("""---""")
 						
-			with Filter_tab2:# Filter data berdasarkan Line dan Kategori
+			with Filter_tab2:# Filter data berdasarkan Line dan Customer
 				
 				st.info("Multi Filtering Data")
 				DateRange(df_ori_pcs)
@@ -3158,7 +3158,7 @@ def cleaning_process(df):
 					filter_line = df_ori_pcs['Line'].unique()
 
 					# Membuat selectbox untuk memilih Line
-					selected_Line = st.selectbox("Pilih Line:", filter_line)
+					selected_Line = st.multiselect("Pilih Line:", filter_line)
 
 					# Menampilkan tabel berdasarkan filter Line
 					filtered_line_df = df_ori_pcs[df_ori_pcs['Line'] == selected_Line]
@@ -3168,7 +3168,7 @@ def cleaning_process(df):
 					filter_kategori = filtered_line_df['Cust.ID'].unique()
 
 					# Membuat selectbox untuk memilih kategori
-					selected_kategori = st.selectbox("Pilih Customer:", filter_kategori)
+					selected_kategori = st.multiselect("Pilih Customer:", filter_kategori)
 
 					# Menampilkan tabel berdasarkan filter Kategori
 					filtered_df = filtered_line_df[filtered_line_df['Cust.ID'] == selected_kategori]

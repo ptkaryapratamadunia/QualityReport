@@ -2480,8 +2480,8 @@ def cleaning_process(df):
 				st.plotly_chart(fig, use_container_width=True)
 
 				with st.expander("KLik untuk melihat Tabel NG (%) by Part Name Line Barrel 4", expanded=False):
-					NG_by_part = NG_by_part.map(format_with_comma)
-					st.write(NG_by_part)
+					NG_by_part = NG_by_part.map(format_with_comma2)
+					st.dataframe(NG_by_part,use_container_width=True)
 				
 			with sinan2:	#sisi kanan Grafik Batang Vertikal by PartName R1
 			
@@ -2613,7 +2613,7 @@ def cleaning_process(df):
 				with st.expander("KLik untuk melihat Tabel Qty (pcs) by Part Name Line Rack 1", expanded=False):
 					st.write(List_Qty_R1)
 
-			
+		
 			
 			st.markdown('<a name="stamping"></a>', unsafe_allow_html=True)
 			st.markdown("---")

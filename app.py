@@ -1965,7 +1965,7 @@ def cleaning_process(df):
 				# 'MTL/ SLipMelintir'
 			]
 
-			lb4_kiri, lb4_kanan,lb4_kiri2, lb4_kanan2 = st.columns([1,1, 1, 1])  
+			lb4_kiri, lb4_kanan,lb4_kiri2, lb4_kanan2 = st.columns([1,1, 1, 1])  #change to vertical table form 27Aug2025
 			with lb4_kiri:  # Tabel Jenis NG (Lot) - Line Barrel 4 - All Parts
 				df_LB4 = df[df['Line'] == 'Barrel 4']
 				# Menjumlahkan kolom-kolom yang diinginkan (lot)

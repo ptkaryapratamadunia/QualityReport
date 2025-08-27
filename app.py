@@ -3158,20 +3158,20 @@ def cleaning_process(df):
 					filter_line = df_ori_pcs['Line'].unique()
 
 					# Membuat selectbox untuk memilih Line
-					selected_Line = st.selectbox("Pilih Line:", filter_line)
+					selected_Line = st.multiselect("Pilih Line:", filter_line)
 
 					# Menampilkan tabel berdasarkan filter Line
-					filtered_line_df = df_ori_pcs[df_ori_pcs['Line'] == selected_Line]
+					filtered_line_df = df_ori_pcs[df_ori_pcs['Line'].isin(selected_Line)] #df_ori_pcs[df_ori_pcs['Line'] == selected_Line]
 
 				with filter_mid:
 					# Mendapatkan unique values dari kolom 'Kategori' ==> diubah ke Cust.ID 19Aug2025
 					filter_kategori = filtered_line_df['Cust.ID'].unique()
 
 					# Membuat selectbox untuk memilih kategori
-					selected_kategori = st.selectbox("Pilih Customer:", filter_kategori)
+					selected_kategori = st.multiselect("Pilih Customer:", filter_kategori)
 
 					# Menampilkan tabel berdasarkan filter Kategori
-					filtered_df = filtered_line_df[filtered_line_df['Cust.ID'] == selected_kategori]
+					filtered_df = filtered_line_df[filtered_line_df['Cust.ID'].isin(selected_kategori)]
 				with filter_R:
 
 					# Mendapatkan daftar semua kolom yang tersedia

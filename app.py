@@ -2106,12 +2106,13 @@ def cleaning_process(df):
 				total_production_Ring = df_RingParts['Insp(B/H)'].sum()
 				total_production_Ring = format_with_comma3(total_production_Ring)
 				# ng_persen_Ring = df_RingParts['NG_%'].mean() ---> rumus ini tidak mengikutsertakan NG MTL/ SLipMelintir yang dibutuhkan untuk khusus part Ring, 21Aug2025
-				jumlah_total_str = str(total_row_RingParts['Jumlah Total'].iloc[0]) if 'Jumlah Total' in total_row_RingParts else "0"
+				# Ambil nilai TOTAL dari kolom 'Total_NG(Brl)' (baris 'TOTAL')
+				total_ng_brl_str = str(total_row_RingParts_df_display.loc[total_row_RingParts_df_display['Jenis NG'] == 'TOTAL', 'Total_NG(Brl)'].iloc[0]) if not total_row_RingParts_df_display[total_row_RingParts_df_display['Jenis NG'] == 'TOTAL'].empty else "0"
 				total_production_str = str(total_production_Ring)
 				try:
-					jumlah_total_float = float(jumlah_total_str.replace(',', ''))
+					total_ng_brl_float = float(total_ng_brl_str.replace(',', ''))
 					total_production_float = float(total_production_str.replace(',', ''))
-					ng_persen_Ring = (jumlah_total_float / total_production_float) * 100 if total_production_float != 0 else 0
+					ng_persen_Ring = (total_ng_brl_float / total_production_float) * 100 if total_production_float != 0 else 0
 				except Exception:
 					ng_persen_Ring = 0
 
@@ -2119,7 +2120,7 @@ def cleaning_process(df):
 			
 				st.markdown(f"<div style='font-size: 18px; color: orange; font-weight: bold; text-align: center;'>Total Insp(Brl): {total_production_Ring}</div>", unsafe_allow_html=True)
 				st.markdown(f"<div style='font-size: 18px; color: orange; font-weight: bold; text-align: center;'>Total NG: {ng_persen_Ring} %</div>", unsafe_allow_html=True)	
-				
+
 			with lb4_kanan2: #Rack 1
 				df_LR1 = df[df['Line'] == 'Rack 1']
 				# Menjumlahkan kolom-kolom yang diinginkan (lot)

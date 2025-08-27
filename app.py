@@ -1937,6 +1937,11 @@ def cleaning_process(df):
 				pivot_lot = pivot_lot[[col for col in ordered_lot_cols if col in pivot_lot.columns]]
 
 				with st.expander("Klik untuk melihat details Data Housing Horn (lot) - PT. HDI - Barrel 4", expanded=False):
+					st.table(
+						pivot_lot.style.set_table_styles([
+							{'selector': 'th, td', 'props': [('font-family', 'Nunito'), ('font-size', '12px')]}
+						])
+					)
 					st.dataframe(pivot_lot, use_container_width=True)
 				with st.expander("Klik untuk melihat details Data Housing Horn (pcs) - PT. HDI - Barrel 4", expanded=False):
 					st.table(

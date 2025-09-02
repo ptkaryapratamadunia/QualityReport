@@ -1959,7 +1959,7 @@ def cleaning_process(df):
 							{'selector': 'th, td', 'props': [('font-family', 'Nunito'), ('font-size', '12px')]}
 						])
 					)
-					st.dataframe(pivot_lot, use_container_width=True)
+					# st.dataframe(pivot_lot, use_container_width=True)
 				with st.expander("Klik untuk melihat details Data Housing Horn (pcs) - PT. HDI - Barrel 4", expanded=False):
 					st.table(
 						pivot_pcs.style.set_table_styles([
@@ -3218,30 +3218,43 @@ def cleaning_process(df):
 					# Urutkan tabel berdasarkan kolom 'NG_%' dari besar ke kecil jika ada di selected_columns
 					if 'NG_%' in selected_columns:
 						filtered_df = filtered_df.sort_values(by='NG_%', ascending=False)
-					# filtered_df = filtered_df[selected_columns].map(format_with_comma2)
+					# Hanya tampilkan kolom yang dipilih
+					filtered_df = filtered_df[selected_columns]
+					# Format angka
+					filtered_df = filtered_df.map(format_with_comma2)
 
 					with st.expander("Preview Data hasil Filtering"):
 						st.dataframe(filtered_df, use_container_width=True, hide_index=True)
 
-					#Rekap berdasarkan PartName (Unique)
+
+					# Rekap berdasarkan PartName (Unique)
 					if not filtered_df.empty:
-						# Buat dictionary agregasi: 'mean' untuk NG_%, 'sum' untuk kolom lain numerik
-						agg_dict = {}
+						# Buat dictionary agregasi: 'mean' untuk NG_%, 'sum' untuk kolom numerik lain
+						agg_dict_group = {}
 						for col in selected_columns:
 							if col == 'NG_%':
-								agg_dict[col] = 'mean'
-							elif pd.api.types.is_numeric_dtype(filtered_df[col]):
-								agg_dict[col] = 'sum'
-							else:
-								agg_dict[col] = 'first'
-						rekap_part = filtered_df.groupby('PartName', as_index=False).agg(agg_dict)
+								agg_dict_group[col] = 'mean'
+							elif col != 'PartName':
+								agg_dict_group[col] = 'sum'
+
+						# Pastikan kolom numerik bertipe numerik sebelum agregasi
+						for col in selected_columns:
+							if agg_dict_group.get(col) in ['mean', 'sum']:
+								filtered_df[col] = pd.to_numeric(filtered_df[col].replace('', 0), errors='coerce')
+
+						# Group by PartName, aggregate sesuai agg_dict_group
+						rekap_part = filtered_df.groupby('PartName', as_index=False).agg(agg_dict_group)
+
+						# Format hasil agregasi: NG_% 2 digit, kolom sum dengan koma ribuan
+						for col in rekap_part.columns:
+							if col == 'NG_%':
+								rekap_part[col] = pd.to_numeric(rekap_part[col], errors='coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "")
+							elif col != 'PartName' and pd.api.types.is_numeric_dtype(rekap_part[col]):
+								rekap_part[col] = pd.to_numeric(rekap_part[col], errors='coerce').map(lambda x: f"{x:,.0f}" if pd.notnull(x) else "")
+
 						# Urutkan berdasarkan NG_% descending jika ada
 						if 'NG_%' in rekap_part.columns:
 							rekap_part = rekap_part.sort_values(by='NG_%', ascending=False)
-
-						# Sort dari besar ke kecil berdasarkan NG_%
-						rekap_part = rekap_part.sort_values(by='NG_%', ascending=False)
-						rekap_part = rekap_part.round(2).map(format_with_comma2)
 
 						st.write("Preview Data hasil Grouping:")
 						st.dataframe(rekap_part, use_container_width=True, hide_index=True)

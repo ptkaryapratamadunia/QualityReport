@@ -429,8 +429,9 @@ def cleaning_process(df):
 		df.rename(columns={'ItemCode': 'Part.ID'}, inplace=True)              		# Mengganti nama kolom 'ItemCode' menjadi 'Part.ID'
 		df.rename(columns={'Description': 'PartName'}, inplace=True)     			# Mengganti nama kolom 'Description' menjadi 'PartName'
 		#df.rename(columns={'OK(B/H)': 'OK(Lot)'}, inplace=True)     				# Mengganti nama kolom 
-		df.rename(columns={'Keterangan': 'Kategori'}, inplace=True)                 # Mengganti nama kolom 'Keterangan' menjadi 'Kategori'
-		
+		# df.rename(columns={'Keterangan': 'Kategori'}, inplace=True)                 # Mengganti nama kolom 'Keterangan' menjadi 'Kategori' dinonaktifkan 17Sept2025
+		df['Kategori']=None															#menambah kolom Kategori utk mengelompokkan jenis produk 17Sept2025	
+
 		df["NG(pcs)"]=(df['Qty(NG)']- df['Y'])										#menambah kolom NG(pcs) krn ada permintaan menggunakan satuan pcs start 06Nov2024
 		# df["Month"] = pd.to_datetime(df["Date"]).dt.month               			# menambah kolom 'Month' hasil ekstrasi dari kolom 'Date
 		# df["Year"] = pd.to_datetime(df["Date"]).dt.year                			# menambah kolom 'Month' hasil ekstrasi dari kolom 'Date
@@ -441,8 +442,8 @@ def cleaning_process(df):
 		df.drop(columns=['DocNo'], inplace=True)
 		df.drop(columns=['Qty(NG)'], inplace=True)									#kolom ini dihapus krn nilainya belum dikurangin NGM atau kolom Y, diganti mjd kolom NG(pcs)
 		df.rename(columns={'NG(pcs)': 'Qty(NG)'}, inplace=True)						#agar tdk report menghapus hingga ke bawah, kolom asli Qty(NG) dikembalikan dengan nilai baru
-		
-		
+
+		df['Keterangan'] = df['Keterangan'].str.strip()								#membersihkan spasi di awal dan akhir teks
 		df['Kategori'] = df['Kategori'].astype(str)       # Mengonversi semua nilai dalam kolom ini menjadi string
 		df['Shift'] = df['Shift'].astype(str)       # Mengonversi semua nilai dalam kolom ini menjadi string
 		df['NoCard'] = df['NoCard'].astype(str)       # Mengonversi semua nilai dalam kolom ini menjadi string
@@ -585,12 +586,42 @@ def cleaning_process(df):
 			'Kategori'
 		] = 'OTH'
 		# Update Kategori berdasarkan kondisi tertentu
-		df.loc[(df['Line'] == 'Barrel 4') & (df['Cust.ID'] == 'HDI') & ((df['Kategori']=='OTH') | (df['Kategori'] == 'kosong')), 'Kategori'] = 'HDI'
-		df.loc[(df['Line'] == 'Barrel 4') & (df['Cust.ID'] == 'GARMET') & ((df['Kategori'] == 'OTH') | (df['Kategori'] == 'kosong')), 'Kategori'] = 'GARMET'	#updated condition
-		df.loc[(df['Line'] == 'Barrel 4') & (df['Kategori']=='kosong'), 'Kategori'] = 'SAGA'
-		df.loc[(df['Line'] == 'Rack 1') & (df['Kategori']=='kosong'), 'Kategori'] = 'RACK 1'
+		df.loc[
+			(df['Line'] == 'Barrel 4') & 
+			(df['Cust.ID'] == 'HDI') & 
+			# ((df['Kategori']=='OTH') | (df['Kategori'] == 'kosong') &
+			(~df['NoCard'].str.contains("TRIAL", na=False)), #ditambah untuk menfilter data Trial tetap muncul di Kategori sebagai keterangan, 17Sept2025
+			'Kategori'
+		] = 'HDI'
 		
-		df.loc[(df['Line'] == 'Nickel') & (df['Kategori']=='kosong'), 'Kategori'] = 'NICKEL'
+		df.loc[
+			(df['Line'] == 'Barrel 4') & 
+			(df['Cust.ID'] == 'GARMET') & 
+		 	((df['Kategori'] == 'OTH') | (df['Kategori'] == 'kosong')) &
+			(~df['NoCard'].str.contains("TRIAL", na=False)), 
+			'Kategori'
+		] = 'GARMET'	#updated condition
+
+		df.loc[(df['Line'] == 'Barrel 4') & 
+			(df['Kategori']=='kosong') &
+    		(~df['NoCard'].str.contains("TRIAL", na=False)),
+			'Kategori'
+		] = 'SAGA'
+
+		df.loc[(df['Line'] == 'Rack 1') & 
+			(df['Kategori']=='kosong') &
+			(~df['NoCard'].str.contains("TRIAL", na=False)),
+			'Kategori'	
+		] = 'RACK 1'
+		
+		df.loc[(df['Line'] == 'Nickel') & 
+			(df['Kategori']=='kosong') &
+			(~df['NoCard'].str.contains("TRIAL", na=False)),
+			'Kategori'
+		] = 'NICKEL'
+
+
+
 		#Daftar Part.ID untuk kategori SMP - added 11Aug2025 Preventive Action operator LUPA input SMP pada kolom Keterangan pada Autocon
 		daftar_SMP = [
 				'DNIAF GAS RIN Q/K',
@@ -2749,6 +2780,7 @@ def cleaning_process(df):
 			if not dataframe2.empty:
 			
 				summary_trial = dataframe2.groupby(['PartName', 'Line']).agg({
+					'Keterangan': 'first', 	#added 17Sept2025
 					'NG_%': 'mean',
 					'QInspec': 'sum',
 					'Qty(NG)': 'sum'

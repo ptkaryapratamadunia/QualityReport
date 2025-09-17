@@ -430,7 +430,7 @@ def cleaning_process(df):
 		df.rename(columns={'Description': 'PartName'}, inplace=True)     			# Mengganti nama kolom 'Description' menjadi 'PartName'
 		#df.rename(columns={'OK(B/H)': 'OK(Lot)'}, inplace=True)     				# Mengganti nama kolom 
 		# df.rename(columns={'Keterangan': 'Kategori'}, inplace=True)                 # Mengganti nama kolom 'Keterangan' menjadi 'Kategori' dinonaktifkan 17Sept2025
-		df['Kategori']=None															#menambah kolom Kategori utk mengelompokkan jenis produk 17Sept2025	
+		df['Kategori']=None															#menambah kolom Kategori utk mengelompokkan  17Sept2025	
 
 		df["NG(pcs)"]=(df['Qty(NG)']- df['Y'])										#menambah kolom NG(pcs) krn ada permintaan menggunakan satuan pcs start 06Nov2024
 		# df["Month"] = pd.to_datetime(df["Date"]).dt.month               			# menambah kolom 'Month' hasil ekstrasi dari kolom 'Date

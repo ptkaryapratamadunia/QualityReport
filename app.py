@@ -2805,7 +2805,12 @@ def cleaning_process(df):
 				summary_trial = summary_trial.round(2).map(format_with_comma2)
 
 				st.write("Rekap Data Trial")
-				st.dataframe(summary_trial, use_container_width=True)
+				# st.dataframe(summary_trial, use_container_width=True)
+				# st.table(summary_trial.style.set_table_styles([
+				# 			{'selector': 'th, td', 'props': [('font-family', 'Nunito'), ('font-size', '8px')]}
+				# 		]))
+				st.table(summary_trial)
+				
 
 				# Daftar kolom Jenis NG (pastikan sesuai dengan kolom di dataframe2)
 				jenis_ng_columns = [
@@ -2828,6 +2833,7 @@ def cleaning_process(df):
 				ng_summary_df = pd.concat([ng_summary_df, total_row])
 				st.write("Rekap Data Jenis NG (TRIAL) per Part Name")
 				st.dataframe(ng_summary_df, use_container_width=True)
+				# st.table(ng_summary_df)
 
 				trial_kiri, trial_kanan = st.columns(2)
 

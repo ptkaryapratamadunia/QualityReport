@@ -427,7 +427,8 @@ def cleaning_process(df):
 		df['Cust.ID'] = df['Cust.ID'].str.strip().str.upper()						#cust id huruf besar semua
 		
 		df.rename(columns={'ItemCode': 'Part.ID'}, inplace=True)              		# Mengganti nama kolom 'ItemCode' menjadi 'Part.ID'
-		df.rename(columns={'Description': 'PartName'}, inplace=True)     			# Mengganti nama kolom 'Description' menjadi 'PartName'
+		df.rename(columns={'Description': 'PartName'}, inplace=True) 
+		df.rename(columns={'NoBarrelHanger': 'NoBH_NoLotMTL'}, inplace=True)    			# Mengganti nama kolom 'NoBarrelHanger' menjadi 'NoBH_NoLotMTL'
 		#df.rename(columns={'OK(B/H)': 'OK(Lot)'}, inplace=True)     				# Mengganti nama kolom 
 		# df.rename(columns={'Keterangan': 'Kategori'}, inplace=True)                 # Mengganti nama kolom 'Keterangan' menjadi 'Kategori' dinonaktifkan 17Sept2025
 		df['Kategori']=None															#menambah kolom Kategori utk mengelompokkan  17Sept2025	
@@ -707,7 +708,7 @@ def cleaning_process(df):
 		# Manambahkan string 'Shift' pada kolom 'Shift' - added 10March2025 because of Looker Studio detected as number
 		df['Shift'] = 'Shift ' + df['Shift']
 
-		df['NoBarrelHanger']=df['NoBarrelHanger'].astype(str)
+		df['NoBH_NoLotMTL']=df['NoBH_NoLotMTL'].astype(str)
 		
 		# Menghapus whitespace pada kolom Part.ID dan PartName - added 10March2025
 		df['Part.ID'] = df['Part.ID'].str.strip()
@@ -760,9 +761,9 @@ def cleaning_process(df):
 		file_kolom=load_standard_columns()
 
 		# Dapatkan urutan kolom dari df
-		kolom_std = file_kolom
+		# kolom_std = file_kolom
 		# Susun ulang df2 agar kolomnya mengikuti df1
-		df_4_ekspor = df_4_ekspor[kolom_std]
+		# df_4_ekspor = df_4_ekspor[file_kolom]
 
 		#simpan di memori dan harus di-download
 		# Simpan DataFrame ke file Excel dalam memori
@@ -775,8 +776,8 @@ def cleaning_process(df):
 		#Cara lain menyimpan di memori pickle
 
 		# Simpan DataFrame ke file pickle
-		with open('df_cache.pkl', 'wb') as f:
-			pickle.dump(df_4_ekspor, f)
+		# with open('df_cache.pkl', 'wb') as f:
+		# 	pickle.dump(df_4_ekspor, f)
 
 		#------------------ view di 2 kolom
 		# Membuat tabel pivot NG% by MONTH and LINE---------------
@@ -812,7 +813,17 @@ def cleaning_process(df):
 				file_name='File_after_Cleaning.xlsx',
 				mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 			)
-			# st.success("Jangan lupa selalu bersyukur!")
+			# if st.download_button(
+			# 	label="Download File Excel",
+			# 	data=output,
+			# 	help="Klik untuk mendownload file hasil Cleaning",
+			# 	file_name='File_after_Cleaning.xlsx',
+			# 	mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+			# ):
+			# 	placeholder = st.empty()
+			# 	placeholder.success("File Berhasil diunduh!")
+			# 	time.sleep(8)
+			# 	placeholder.empty()
 		with bt1: #Total Inspected (lot)
 			
 			# st.markdown("""<h6 style="color:blue;" > METRIC SUMMARY  ➡️ </h6>""", unsafe_allow_html=True)

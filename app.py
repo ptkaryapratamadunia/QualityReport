@@ -2779,7 +2779,7 @@ def cleaning_process(df):
 			# Summary Trial Table
 			if not dataframe2.empty:
 			
-				summary_trial = dataframe2.groupby(['PartName', 'Line']).agg({
+				summary_trial = dataframe2.groupby(['PartName','Cust.ID','Line']).agg({
 					'Keterangan': 'first', 	#added 17Sept2025
 					'NG_%': 'mean',
 					'QInspec': 'sum',
@@ -2795,6 +2795,7 @@ def cleaning_process(df):
 				# Tambahkan baris TOTAL
 				total_row = {
 					'PartName': 'TOTAL',
+					'Cust.ID': '',
 					'Line': '',
 					'NG (%)': summary_trial['NG (%)'].mean(),
 					'Qty Inspected (pcs)': summary_trial['Qty Inspected (pcs)'].sum(),

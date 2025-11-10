@@ -722,7 +722,7 @@ def cleaning_process(df):
 			
 		#Data setelah dirapihkan (cleaning)
 		#dataframe awal
-		with st.expander("Preview Data setelah dirapihkan (Full - include 'TRIAL')"):
+		with st.expander("Preview Data setelah dibersihkan dan dirapihkan (Full - include 'TRIAL')"):
 			df_ori_pcs = dataframe_explorer(df, case=False)
 			st.dataframe(df_ori_pcs, use_container_width=True)
 
@@ -734,12 +734,14 @@ def cleaning_process(df):
 		with tabel_expander_kiri:
 			# Tampilkan preview DataFrame1 (tanpa "TRIAL")
 			with st.expander("Preview Data setelah dirapihkan (tanpa 'TRIAL')"):
+				dataframe1 = dataframe_explorer(dataframe1, case=False) #ternyata baris expander yang bikin bisa di-nest - added 10Nov2025
 				st.dataframe(dataframe1, use_container_width=True)
 
 		with tabel_expander_kanan:
 
 			# Tampilkan preview DataFrame2 (hanya baris dengan "TRIAL")
 			with st.expander("Preview Data 'TRIAL'"):
+				dataframe2 = dataframe_explorer(dataframe2, case=False) #ternyata baris expander yang bikin bisa di-nest - added 10Nov2025
 				st.dataframe(dataframe2, use_container_width=True)
 
 	#endregion
@@ -3025,7 +3027,7 @@ def cleaning_process(df):
 			with Filter_tab1:# Filter data berdasarkan PartName
 				st.info("Filtering Data by PartName (Excluding 'TRIAL')")		
 				with st.expander("Preview Data Excluding 'TRIAL' (satuan lot dan pcs)"):
-					# df_ori_pcs = dataframe_explorer(df_with_pcs, case=False)
+					# df_with_pcs = dataframe_explorer(df_with_pcs, case=False)
 					st.dataframe(df_with_pcs, use_container_width=True)
 
 				#filter untuk menampilkan data sesuai dengan PartName

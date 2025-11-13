@@ -734,14 +734,15 @@ def cleaning_process(df):
 		with tabel_expander_kiri:
 			# Tampilkan preview DataFrame1 (tanpa "TRIAL")
 			with st.expander("Preview Data setelah dirapihkan (tanpa 'TRIAL')"):
-				dataframe1 = dataframe_explorer(dataframe1, case=False) #ternyata baris expander yang bikin bisa di-nest - added 10Nov2025
+				# dataframe1 = dataframe_explorer(dataframe1, case=False) #ternyata baris expander yang bikin bisa di-nest - added 10Nov2025
+				# dataframe_explorer menyebabkab error, tidak boleh dipakai lebih dari 1x dengan dataframe yang mirip - dibatalkan 13Nov2025
 				st.dataframe(dataframe1, use_container_width=True)
 
 		with tabel_expander_kanan:
 
 			# Tampilkan preview DataFrame2 (hanya baris dengan "TRIAL")
 			with st.expander("Preview Data 'TRIAL'"):
-				dataframe2 = dataframe_explorer(dataframe2, case=False) #ternyata baris expander yang bikin bisa di-nest - added 10Nov2025
+				# dataframe2 = dataframe_explorer(dataframe2, case=False) #ternyata baris expander yang bikin bisa di-nest - added 10Nov2025
 				st.dataframe(dataframe2, use_container_width=True)
 
 	#endregion

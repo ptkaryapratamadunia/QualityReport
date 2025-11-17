@@ -568,7 +568,8 @@ def cleaning_process(df):
 		df.columns = df.columns.str.strip()
 
 		# Daftar nilai yang diizinkan 26.09.2024
-		allowed_values = ['SAGA','SMP','OTH', 'RACK 1', 'NICKEL', 'HDI','GARMET']
+		# allowed_values = ['SAGA','SMP','OTH', 'RACK 1', 'NICKEL', 'HDI','GARMET']
+		allowed_values = ['SAGA','SMP','OTH', 'RACK 1', 'GARMET NI','OTH NI' 'HDI','GARMET'] #update 17 Nov2025 'NICKEL' diubah jadi 'GARMET NI' dan 'OTH NI'
 
 		# Menghapus nilai yang tidak diizinkan
 		df['Kategori'] = df['Kategori'].apply(lambda x: x if x in allowed_values else 'kosong') 
@@ -615,13 +616,25 @@ def cleaning_process(df):
 			'Kategori'	
 		] = 'RACK 1'
 		
+		# df.loc[(df['Line'] == 'Nickel') & 
+		# 	(df['Kategori']=='kosong') &
+		# 	(~df['NoCard'].str.contains("TRIAL", na=False)),
+		# 	'Kategori'
+		# ] = 'NICKEL'
+
 		df.loc[(df['Line'] == 'Nickel') & 
 			(df['Kategori']=='kosong') &
-			(~df['NoCard'].str.contains("TRIAL", na=False)),
+			(~df['NoCard'].str.contains("TRIAL", na=False)) &
+			(df['Cust.ID'].str.contains("DNIAF", na=False)),
 			'Kategori'
-		] = 'NICKEL'
+		] = 'GARMET NI'	#updated condition 17Nov2025
 
-
+		df.loc[(df['Line'] == 'Nickel') & 
+			(df['Kategori']=='kosong') &
+			(~df['NoCard'].str.contains("TRIAL", na=False)) &
+			(~df['Cust.ID'].str.contains("DNIAF", na=False)),
+			'Kategori'
+		] = 'OTH NI' #updated condition 17Nov2025
 
 		#Daftar Part.ID untuk kategori SMP - added 11Aug2025 Preventive Action operator LUPA input SMP pada kolom Keterangan pada Autocon
 		daftar_SMP = [

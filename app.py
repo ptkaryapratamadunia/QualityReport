@@ -286,7 +286,7 @@ def header():
 def load_standard_columns():
     # Kolom standar untuk Looker Studio
     kolom = [
-        'Line','Date','Shift','NoJig','M/C No.','NoCard','Std Load','NoBarrelHanger','NoBak','Cust.ID','Part.ID','PartName','OK(pcs)','Qty(NG)','QInspec','Insp(B/H)','OK(B/H)','NG(B/H)','% NG','NG_%','Warna','Buram','Berbayang','Kotor','Tdk Terplating','Rontok/ Blister','Tipis/ EE No Plating','Flek Kuning','Terbakar','Watermark','Jig Mark/ Renggang','Lecet/ Scratch','Seret','Flek Hitam','Flek Tangan','Belang/ Dempet','Bintik','Kilap','Tebal','Flek Putih','Spark','Kotor H/ Oval','Terkikis/ Crack','Dimensi/ Penyok','MTL/ SLipMelintir','Kategori'
+        'Line','Date','Shift','NoJig','M/C No.','NoCard','Std Load','NoBH_NoLotMTL','NoBak','Cust.ID','Part.ID','PartName','OK(pcs)','Qty(NG)','QInspec','Insp(B/H)','OK(B/H)','NG(B/H)','% NG','NG_%','Warna','Buram','Berbayang','Kotor','Tdk Terplating','Rontok/ Blister','Tipis/ EE No Plating','Flek Kuning','Terbakar','Watermark','Jig Mark/ Renggang','Lecet/ Scratch','Seret','Flek Hitam','Flek Tangan','Belang/ Dempet','Bintik','Kilap','Tebal','Flek Putih','Spark','Kotor H/ Oval','Terkikis/ Crack','Dimensi/ Penyok','MTL/ SLipMelintir','Kategori'
     ]
     return kolom
 
@@ -777,9 +777,9 @@ def cleaning_process(df):
 		file_kolom=load_standard_columns()
 
 		# Dapatkan urutan kolom dari df
-		# kolom_std = file_kolom
+		kolom_std = file_kolom
 		# Susun ulang df2 agar kolomnya mengikuti df1
-		# df_4_ekspor = df_4_ekspor[file_kolom]
+		df_4_ekspor = df_4_ekspor[kolom_std]
 
 		#simpan di memori dan harus di-download
 		# Simpan DataFrame ke file Excel dalam memori

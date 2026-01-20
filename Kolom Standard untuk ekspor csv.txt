@@ -1,0 +1,5 @@
+Line,Date,Shift,NoJig,M/C No.,NoCard,Std Load,NoBarrelHanger,NoBak,Cust.ID,Part.ID,PartName,OK(pcs),Qty(NG),QInspec,Insp(B/H),OK(B/H),NG(B/H),% NG,NG_%,Warna,Buram,Berbayang,Kotor,Tdk Terplating,Rontok/ Blister,Tipis/ EE No Plating,Flek Kuning,Terbakar,Watermark,Jig Mark/ Renggang,Lecet/ Scratch,Seret,Flek Hitam,Flek Tangan,Belang/ Dempet,Bintik,Kilap,Tebal,Flek Putih,Spark,Kotor H/ Oval,Terkikis/ Crack,Dimensi/ Penyok,MTL/ SLipMelintir,Kategori
+
+Format/ Type Data:
+Date: yyyy-mm-dd hh:mm:ss
+M/C No.,NoCard, NoBarrelHanger,NoBak

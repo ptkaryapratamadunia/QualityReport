@@ -127,7 +127,7 @@ def login_page():
 		username = st.text_input("Username", key="username")
 		password = st.text_input("Password", type="password", key="password")
 		if st.button("Login"):
-			if username == "kpd" and password == "kpd888":
+			if username == "kpd" and password == "888kpd888":
 				st.session_state["logged_in"] = True
 				# Reload halaman dengan mengatur ulang parameter URL
 				st.query_params.clear()
@@ -219,6 +219,8 @@ def About():
 			 	✔️ Filter bisa di-reset dengan mengklik tombol reset X di atas item filter <br>	
 			 </h6><br><br> 
 			 <span style="color:Brown">e-WeYe @2024 - All Rights Reserved</span>
+			 <br><br>
+			 <span style="color:Brown">Data Cleaner Pro => https://quality.karyapratamadunia.com/tools/datacleaner</span>
 			 """, unsafe_allow_html=True)	
 def header():	
 	# heading

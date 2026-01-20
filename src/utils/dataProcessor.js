@@ -110,6 +110,7 @@ const cleanData = (data) => {
     'docno': 'DocNo',
     'nojig': 'NoJig',
     'nocard': 'NoCard',
+    'cardno': 'NoCard',
     'std load': 'Std Load',
     'nobarrelhanger': 'NoBH_NoLotMTL',
     'nobak': 'NoBak',
@@ -199,13 +200,18 @@ const cleanData = (data) => {
     // Process NG Columns (PCS to LOT conversion)
     let totNG = 0
     let totNGPcs = 0
+    let totalAllDefectsPcs = 0  // Sum of ALL defect types (including MTL)
+    
     ngColumns.forEach(col => {
         let val = Number(row[col]) || 0
         
         // 1. Create (pcs) column
         row[col + '(pcs)'] = val
         
-        // 2. Convert to Lot (divide by Std Load)
+        // 2. Add to total of all defects (including MTL) for Qty(NG) calculation
+        totalAllDefectsPcs += val
+        
+        // 3. Convert to Lot (divide by Std Load)
         if (row['Std Load'] > 0) {
             val = val / row['Std Load']
         } else {
@@ -213,13 +219,18 @@ const cleanData = (data) => {
         }
         row[col] = val
         
-        // 3. Sum to Tot_NG
+        // 4. Sum to Tot_NG (Lot values, excluding MTL)
         // Exclude 'MTL/ SLipMelintir' from Tot_NG as per app.py
         if (col !== 'MTL/ SLipMelintir') {
             totNG += val
-            totNGPcs += row[col + '(pcs)']
         }
     })
+    
+    // Calculate Qty(NG) following app.py formula: Total Jenis NG (pcs) - MTL (pcs)
+    // This explicitly subtracts MTL from the total, matching app.py's approach
+    const mtlPcs = Number(row['MTL/ SLipMelintir(pcs)']) || 0
+    totNGPcs = totalAllDefectsPcs - mtlPcs
+    
     row['Tot_NG'] = totNG
 
     // Calculate NG_%
@@ -232,6 +243,17 @@ const cleanData = (data) => {
     // Update NG(B/H) and Qty(NG) to match the calculated sum (excluding MTL)
     row['NG(B/H)'] = totNG
     row['Qty(NG)'] = totNGPcs
+    
+    // Debug for SMP category
+    if (row['Kategori'] === 'SMP' && Math.random() < 0.05) {  // Log ~5% of SMP rows
+        console.log('ROW LEVEL - SMP:', {
+            partId: row['Part.ID'],
+            totalAllDefects: totalAllDefectsPcs,
+            mtl: mtlPcs,
+            qtyNG: totNGPcs,
+            calculated: totalAllDefectsPcs - mtlPcs
+        })
+    }
 
     // Kategori Logic
     let kategori = String(row['Kategori'] || '').trim().toUpperCase()
@@ -379,8 +401,9 @@ const cleanData = (data) => {
   // Filter out TRIAL - REMOVED to support Info Trial
   // Instead, we ensure isTrial flag is set (it was calculated earlier but we need to make sure it's on the row)
   processed = processed.map(row => {
-      const noCard = String(row['NoCard'] || '').toUpperCase()
-      row.isTrial = noCard.includes('TRIAL')
+      const noCard = String(row['NoCard'] || row['CardNo'] || '').toUpperCase()
+      const keterangan = String(row['Keterangan'] || '').toUpperCase()
+      row.isTrial = noCard.includes('TRIAL') || keterangan.includes('TRIAL')
       return row
   })
 
@@ -388,7 +411,7 @@ const cleanData = (data) => {
 }
 
 const calculateMetrics = (allData) => {
-  const data = allData.filter(r => !r.isTrial)
+  const data = allData.filter(r => !r.isTrial && r.Kategori !== 'kosong')
   const totalInsp = data.reduce((sum, row) => sum + (Number(row['Insp(Lot)']) || 0), 0)
   const totalNG = data.reduce((sum, row) => sum + (Number(row['NG(Lot)']) || 0), 0)
   const totalOK = totalInsp - totalNG
@@ -406,7 +429,7 @@ const calculateMetrics = (allData) => {
 }
 
 const prepareChartsData = (allData) => {
-  const data = allData.filter(r => !r.isTrial)
+  const data = allData.filter(r => !r.isTrial && r.Kategori !== 'kosong')
   // 1. Monthly Trend
   const monthlyData = {}
   data.forEach(row => {
@@ -998,6 +1021,7 @@ const prepareSummaryTables = (data) => {
         }
 
         data.forEach(row => {
+            if (row.isTrial || row.Kategori === 'kosong') return
             const key = row[groupByField]
             if (!key || key === 'Unknown') return
             
@@ -1094,6 +1118,7 @@ const prepareSummaryTables = (data) => {
     }
 
     // 4. Category Table Data (Qty Inspected, Qty NG in both pcs and lot, NG %)
+    // Note: row['Qty(NG)'] is already calculated correctly in cleanData as: Total Defects (pcs) - MTL (pcs)
     const categoryTableData = {}
     
     data.forEach(row => {
@@ -1110,14 +1135,27 @@ const prepareSummaryTables = (data) => {
                 qtyNgLot: 0
             }
         }
+        
+        // Simply sum the values that are already correctly calculated per row
         categoryTableData[category].qtyInspectedPcs += row['QInspec']
-        categoryTableData[category].qtyNgPcs += row['Qty(NG)']
+        categoryTableData[category].qtyNgPcs += row['Qty(NG)']  // Already = Total Defects - MTL per row
         categoryTableData[category].qtyInspectedLot += row['Insp(Lot)']
         categoryTableData[category].qtyNgLot += row['NG(Lot)']
     })
 
+    // Debug logging for SMP category
+    if (categoryTableData['SMP']) {
+        console.log('=== SMP Category Debug (Simplified) ===')
+        console.log('Qty NG (pcs) [sum of row Qty(NG)]:', categoryTableData['SMP'].qtyNgPcs)
+        console.log('========================================')
+    }
+
     const categoryTableArray = Object.values(categoryTableData).map(item => ({
-        ...item,
+        category: item.category,
+        qtyInspectedPcs: item.qtyInspectedPcs,
+        qtyNgPcs: item.qtyNgPcs,
+        qtyInspectedLot: item.qtyInspectedLot,
+        qtyNgLot: item.qtyNgLot,
         ngPercent: item.qtyInspectedLot > 0 ? (item.qtyNgLot / item.qtyInspectedLot) * 100 : 0
     }))
 
@@ -1308,6 +1346,9 @@ const prepareTrialData = (allData) => {
               inspPcs: 0,
               ngPcs: 0,
               okPcs: 0,
+              inspLot: 0,
+              ngLot: 0,
+              okLot: 0,
               ngPercentSum: 0,
               ngPercentCount: 0
           }
@@ -1315,6 +1356,9 @@ const prepareTrialData = (allData) => {
       rekapByKey[key].inspPcs += Number(row['QInspec']) || 0
       rekapByKey[key].ngPcs += Number(row['Qty(NG)']) || 0
       rekapByKey[key].okPcs += Number(row['OK(pcs)']) || 0
+      rekapByKey[key].inspLot += Number(row['Insp(Lot)']) || 0
+      rekapByKey[key].ngLot += Number(row['NG(Lot)']) || 0
+      rekapByKey[key].okLot += Number(row['OK(Lot)']) || 0
       
       if (row['NG_%'] !== undefined && row['NG_%'] !== null) {
           rekapByKey[key].ngPercentSum += Number(row['NG_%'])
@@ -1330,7 +1374,10 @@ const prepareTrialData = (allData) => {
       ngPercent: item.ngPercentCount > 0 ? item.ngPercentSum / item.ngPercentCount : 0,
       inspPcs: item.inspPcs,
       ngPcs: item.ngPcs,
-      okPcs: item.okPcs
+      okPcs: item.okPcs,
+      inspLot: item.inspLot,
+      ngLot: item.ngLot,
+      okLot: item.okLot
   }))
 
   // Calculate totals for rekap
@@ -1342,7 +1389,10 @@ const prepareTrialData = (allData) => {
       ngPercent: ngPercent,
       inspPcs: rekapRows.reduce((sum, r) => sum + r.inspPcs, 0),
       ngPcs: rekapRows.reduce((sum, r) => sum + r.ngPcs, 0),
-      okPcs: rekapRows.reduce((sum, r) => sum + r.okPcs, 0)
+      okPcs: rekapRows.reduce((sum, r) => sum + r.okPcs, 0),
+      inspLot: rekapRows.reduce((sum, r) => sum + r.inspLot, 0),
+      ngLot: rekapRows.reduce((sum, r) => sum + r.ngLot, 0),
+      okLot: rekapRows.reduce((sum, r) => sum + r.okLot, 0)
   }
 
   // 4. Rekap Data Jenis NG (TRIAL) per Part Name - ONLY non-zero defect types

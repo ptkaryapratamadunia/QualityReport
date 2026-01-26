@@ -54,7 +54,20 @@ try {
 
 
         // Karena password sudah di enkripsi di database, gunakan password_verify()
-        if ($inputPassword == $user['password']) {
+        // Kita gunakan OR untuk mendukung kedua kemungkinan: Hash (seharusnya) atau Plain Text (legacy/error)
+        if (password_verify($inputPassword, $user['password']) || $inputPassword == $user['password']) {
+
+            // Batasi Hak Akses: Hanya Top Admin atau Manager
+            $userRole = isset($user['role']) ? trim($user['role']) : '';
+
+            if ($userRole !== 'Top Admin' && $userRole !== 'Manager') {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Anda tidak mendapatkan hak Akses. Silahkan hubungi Administrator. (Your Role: ' . $userRole . ')'
+                ]);
+                exit();
+            }
+
             // Login Berhasil
             // Hapus password dari object user sebelum dikirim kembali ke client
             unset($user['password']);

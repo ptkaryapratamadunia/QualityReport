@@ -1121,10 +1121,20 @@ const prepareSummaryTables = (data) => {
     // Note: row['Qty(NG)'] is already calculated correctly in cleanData as: Total Defects (pcs) - MTL (pcs)
     const categoryTableData = {}
     
+    // Variables for Global Average NG % Calculation (to match other tables)
+    let globalSumNGPercent = 0;
+    let globalCount = 0;
+
     data.forEach(row => {
         if (row.isTrial) return
         const category = row['Kategori'] || 'Unknown'
         if (category === 'kosong') return
+
+        // Accumulate for Global Average NG%
+        if (row['NG_%'] !== undefined && row['NG_%'] !== null) {
+            globalSumNGPercent += Number(row['NG_%'])
+            globalCount += 1
+        }
 
         if (!categoryTableData[category]) {
             categoryTableData[category] = {
@@ -1171,7 +1181,8 @@ const prepareSummaryTables = (data) => {
         return acc
     }, { category: 'Total', qtyInspectedPcs: 0, qtyNgPcs: 0, qtyInspectedLot: 0, qtyNgLot: 0 })
 
-    totalCategory.ngPercent = totalCategory.qtyInspectedLot > 0 ? (totalCategory.qtyNgLot / totalCategory.qtyInspectedLot) * 100 : 0
+    // Use Global Average for Total NG% to match other tables
+    totalCategory.ngPercent = globalCount > 0 ? (globalSumNGPercent / globalCount) : 0
     
     categoryTableArray.push(totalCategory)
     

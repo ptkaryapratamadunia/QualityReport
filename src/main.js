@@ -185,7 +185,7 @@ const renderDashboard = () => {
             <div id="sidebarTitle">
 			<div class="pb-4 border-b border-glass-border">
                 <h1 class="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent whitespace-nowrap">Data Cleaner <span class="text-italic text-yellow-300">Pro</span></h1>
-                <p class="text-xs text-slate-500 mt-1">Clean & Clear Your Data! <span class="text-xs text-slate-500 mt-1">Ver: 8.71</span></p>
+                <p class="text-xs text-slate-500 mt-1">Clean & Clear Your Data! <span class="text-xs text-slate-500 mt-1">Ver: 8.73</span></p>
 			</div>
             </div>
             <div class="flex items-center space-x-2 flex-shrink-0" id="sidebarToggleGroup">
@@ -343,6 +343,9 @@ const renderDashboard = () => {
 								: ""
 						}
             
+                <div class="mb-2 px-4 text-xs font-semibold text-blue-600 dark:text-blue-300 text-center">
+                    [ ${state.currentUser?.username || 'User'} ]
+                </div>
                 <button id="logoutBtn" class="w-full flex items-center px-4 py-2 text-slate-500 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
                 <span class="mr-2">Log Out</span>
                 </button>
@@ -1915,6 +1918,9 @@ const renderSummaryTables = () => {
 				return `
               <tr class="${rowClass}">
                   <td class="py-3 px-4 ${nameClass}">${row.category}</td>
+				  <td class="text-red-600 dark:text-red-500 font-semibold py-3 px-4">${row.ngPercent.toFixed(
+					2
+				)}</td>
                   <td class="py-3 px-4 ${textClass}">${row.qtyInspectedPcs.toLocaleString(
 					"en-US",
 					{ minimumFractionDigits: 0, maximumFractionDigits: 0 }
@@ -1931,9 +1937,7 @@ const renderSummaryTables = () => {
 					"en-US",
 					{ minimumFractionDigits: 2, maximumFractionDigits: 2 }
 				)}</td>
-                  <td class="text-red-600 dark:text-red-500 font-semibold py-3 px-4">${row.ngPercent.toFixed(
-					2
-				)}</td>
+                  
               </tr>
           `;
 			})
@@ -2089,11 +2093,11 @@ const renderSummaryTables = () => {
                       <thead class="text-sm text-slate-500 dark:text-slate-400 font-bold uppercase bg-slate-200 dark:bg-slate-800/30">
                           <tr>
                               <th class="py-3 px-4">Kategori</th>
+                              <th class="py-3 px-4 text-red-600 dark:text-red-500">NG (%)</th>
                               <th class="py-3 px-4">Qty Inspected (pcs)</th>
                               <th class="py-3 px-4 text-red-600 dark:text-red-500">QTY NG (pcs)</th>
                               <th class="py-3 px-4">Qty Inspected (lot)</th>
                               <th class="py-3 px-4 text-red-600 dark:text-red-500">Qty NG (lot)</th>
-                              <th class="py-3 px-4 text-red-600 dark:text-red-500">NG (%)</th>
                           </tr>
                       </thead>
                       <tbody>
@@ -3040,11 +3044,11 @@ const renderHousingHorn = () => {
                 <thead class="text-sm text-slate-700 dark:text-slate-400 font-bold uppercase bg-slate-100 dark:bg-slate-800/50 sticky top-0">
                     <tr>
                         <th class="py-3 px-4">PartName</th>
+                        <th class="py-3 px-4 text-red-600 dark:text-red-500 text-right">NG (%)</th>
                         <th class="py-3 px-4 text-right">OK ${suffix}</th>
                         <th class="py-3 px-4 text-red-600 dark:text-red-500 text-right">NG ${suffix}</th>
                         <th class="py-3 px-4 text-right">NGM ${suffix}</th>
                         <th class="py-3 px-4 text-right">Tot.Insp ${suffix}</th>
-                        <th class="py-3 px-4 text-red-600 dark:text-red-500 text-right">NG (%)</th>
                     </tr>
                 </thead>
                 <tbody class="text-slate-700 dark:text-slate-300">
@@ -3053,6 +3057,9 @@ const renderHousingHorn = () => {
 												(row) => `
                         <tr class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
                             <td class="py-3 px-4">${row.partName}</td>
+                            <td class="py-3 px-4 text-red-600 dark:text-red-500 text-right">${row.ngPercent.toFixed(
+															2
+														)}</td>
                             <td class="py-3 px-4 text-right">${formatVal(
 															row[okKey]
 														)}</td>
@@ -3065,15 +3072,15 @@ const renderHousingHorn = () => {
                             <td class="py-3 px-4 text-right">${formatVal(
 															row[inspKey]
 														)}</td>
-                            <td class="py-3 px-4 text-red-600 dark:text-red-500 text-right">${row.ngPercent.toFixed(
-															2
-														)}</td>
                         </tr>
                     `
 											)
 											.join("")}
                     <tr class="bg-slate-100 dark:bg-slate-700/30 font-bold border-t-2 border-slate-200 dark:border-slate-600">
                         <td class="py-3 px-4 text-slate-900 dark:text-white">TOTAL</td>
+                        <td class="py-3 px-4 text-red-600 dark:text-red-500 text-right">${hhData.metrics.ngPercent.toFixed(
+													2
+												)}</td>
                         <td class="py-3 px-4 text-slate-900 dark:text-white text-right">${formatVal(
 													metricOk
 												)}</td>
@@ -3083,9 +3090,6 @@ const renderHousingHorn = () => {
                         <td class="py-3 px-4 text-slate-900 dark:text-white text-right">0</td>
                         <td class="py-3 px-4 text-slate-900 dark:text-white text-right">${formatVal(
 													metricInsp
-												)}</td>
-                        <td class="py-3 px-4 text-red-600 dark:text-red-500 text-right">${hhData.metrics.ngPercent.toFixed(
-													2
 												)}</td>
                     </tr>
                 </tbody>
@@ -5121,11 +5125,11 @@ const renderDefectByPartNameTable = () => {
 
 	// Build header - PartName first, then defects, then Total NG
 	let headerHTML = '<th class="py-3 px-4 font-semibold text-center">#</th>';
-	headerHTML += '<th class="py-3 px-4 font-semibold">PartName</th>';
+	headerHTML += '<th class="py-3 px-4 font-semibold text-center">PartName</th>';
 	activeDefects.forEach((defect) => {
-		headerHTML += `<th class="py-3 px-4 font-semibold">${defect}(pcs)</th>`;
+		headerHTML += `<th class="py-3 px-4 font-semibold text-center">${defect}(pcs)</th>`;
 	});
-	headerHTML += '<th class="py-3 px-4 font-semibold">Total NG</th>';
+	headerHTML += '<th class="py-3 px-4 font-semibold text-center">Total NG</th>';
 
 	headerRow.innerHTML = headerHTML;
 
@@ -5154,7 +5158,7 @@ const renderDefectByPartNameTable = () => {
 
 		activeDefects.forEach((defect) => {
 			const value = data[defect] || 0;
-			rowHTML += `<td class="py-3 px-4 text-slate-600 dark:text-white text-right">${value}</td>`;
+			rowHTML += `<td class="py-3 px-4 text-slate-600 dark:text-white text-center">${value}</td>`;
 
 			if (!columnTotals[defect]) {
 				columnTotals[defect] = 0;
@@ -5162,7 +5166,7 @@ const renderDefectByPartNameTable = () => {
 			columnTotals[defect] += value;
 		});
 
-		rowHTML += `<td class="py-3 px-4 text-slate-600 dark:text-white font-bold text-right">${rowTotalNG}</td>`;
+		rowHTML += `<td class="py-3 px-4 text-slate-600 dark:text-white font-bold text-center">${rowTotalNG}</td>`;
 		rowHTML += `</tr>`;
 	});
 
@@ -5174,12 +5178,12 @@ const renderDefectByPartNameTable = () => {
 	rowHTML += `<td class="py-3 px-4 text-slate-600 dark:text-white">TOTAL</td>`;
 
 	activeDefects.forEach((defect) => {
-		rowHTML += `<td class="py-3 px-4 text-slate-600 dark:text-white text-right">${
+		rowHTML += `<td class="py-3 px-4 text-slate-600 dark:text-white text-center">${
 			columnTotals[defect] || 0
 		}</td>`;
 	});
 
-	rowHTML += `<td class="py-3 px-4 text-slate-600 dark:text-white font-bold text-right">${grandTotalNG}</td>`;
+	rowHTML += `<td class="py-3 px-4 text-slate-600 dark:text-white font-bold text-center">${grandTotalNG}</td>`;
 	rowHTML += `</tr>`;
 
 	tbody.innerHTML = rowHTML;
@@ -5255,12 +5259,12 @@ const renderSummaryByPartNameTable = () => {
 									data.custId
 								}</td>
                 <td class="py-3 px-4 text-slate-600 dark:text-white">${partName}</td>
-                <td class="py-3 px-4 text-slate-600 dark:text-white text-right">${avgNgPercent.toFixed(
+                <td class="py-3 px-4 text-red-600 dark:text-red-600 text-right">${avgNgPercent.toFixed(
 									4
 								)}</td>
                 <td class="py-3 px-4 text-slate-600 dark:text-white text-right">${data.qInspec.toLocaleString()}</td>
                 <td class="py-3 px-4 text-green-400 text-right">${data.okPcs.toLocaleString()}</td>
-                <td class="py-3 px-4 text-red-400 text-right font-bold">${data.qtyNg.toLocaleString()}</td>
+                <td class="py-3 px-4 text-red-600 text-right font-bold">${data.qtyNg.toLocaleString()}</td>
                 <td class="py-3 px-4 text-slate-600 dark:text-white text-right">${
 									data.mtlCount
 								}</td>
@@ -5275,14 +5279,14 @@ const renderSummaryByPartNameTable = () => {
 						}</td>
             <td class="py-3 px-4 text-slate-600 dark:text-white">-</td>
             <td class="py-3 px-4 text-slate-600 dark:text-white">TOTAL</td>
-            <td class="py-3 px-4 text-slate-600 dark:text-white text-right">${(totals.count >
-						0
+            <td class="py-3 px-4 text-red-600 dark:text-red-600 text-right">${(totals.count >
+						0	
 							? totals.sumNgPercent / totals.count
 							: 0
 						).toFixed(4)}</td>
             <td class="py-3 px-4 text-slate-600 dark:text-white text-right">${totals.qInspec.toLocaleString()}</td>
             <td class="py-3 px-4 text-slate-600 dark:text-white text-right">${totals.okPcs.toLocaleString()}</td>
-            <td class="py-3 px-4 text-slate-600 dark:text-white text-right">${totals.qtyNg.toLocaleString()}</td>
+            <td class="py-3 px-4 text-red-600 dark:text-red-600 text-right">${totals.qtyNg.toLocaleString()}</td>
             <td class="py-3 px-4 text-slate-600 dark:text-white text-right">${
 							totals.mtlCount
 						}</td>
@@ -6093,10 +6097,10 @@ const renderFiltering = () => {
                                         <th class="py-3 px-4 font-semibold text-center">#</th>
                                         <th class="py-3 px-4 font-semibold">Cust.ID</th>
                                         <th class="py-3 px-4 font-semibold">PartName</th>
-                                        <th class="py-3 px-4 font-semibold text-right">NG_%</th>
+                                        <th class="py-3 px-4 font-semibold text-right text-red-500">NG_%</th>
                                         <th class="py-3 px-4 font-semibold text-right">QInspec</th>
                                         <th class="py-3 px-4 font-semibold text-right">OK(pcs)</th>
-                                        <th class="py-3 px-4 font-semibold text-right">Qty(NG)</th>
+                                        <th class="py-3 px-4 font-semibold text-right text-red-500">Qty(NG)</th>
                                         <th class="py-3 px-4 font-semibold text-right">MTL/St.IjinMelintir(pcs)</th>
                                     </tr>
                                 </thead>
@@ -7628,6 +7632,9 @@ const renderDefectPartTables = () => {
                     <td class="py-2 px-3 text-slate-700 dark:text-slate-300">${
 											row.partName
 										}</td>
+										<td class="py-2 px-3 text-slate-600 dark:text-slate-400 text-right font-medium">${row.ngPercent.toFixed(
+											2
+										)}%</td>
                     <td class="py-2 px-3 text-slate-600 dark:text-slate-400 text-right">${row.defectPcs.toLocaleString()}</td>
                     <td class="py-2 px-3 text-slate-600 dark:text-slate-400 text-right">${row.defectLot.toFixed(
 											2
@@ -7636,9 +7643,7 @@ const renderDefectPartTables = () => {
                     <td class="py-2 px-3 text-slate-600 dark:text-slate-400 text-right">${row.inspLot.toFixed(
 											2
 										)}</td>
-                    <td class="py-2 px-3 text-slate-600 dark:text-slate-400 text-right font-medium">${row.ngPercent.toFixed(
-											2
-										)}%</td>
+                    
                 </tr>
             `
 				)
@@ -7661,6 +7666,9 @@ const renderDefectPartTables = () => {
                     <td class="py-3 px-4 text-slate-900 dark:text-slate-300 font-medium">${
 											row.partName
 										}</td>
+										<td class="py-3 px-4 text-slate-600 dark:text-slate-400 text-right font-medium">${row.ngPercent.toFixed(
+											2
+										)}%</td>
                     <td class="py-3 px-4 text-slate-600 dark:text-slate-400 text-right border-l-2 border-blue-500/30">${row.defectPcs.toLocaleString()}</td>
                     <td class="py-3 px-4 text-slate-600 dark:text-slate-400 text-right border-r-2 border-blue-500/30">${row.inspPcs.toLocaleString()}</td>
                     <td class="py-3 px-4 text-slate-600 dark:text-slate-400 text-right">${row.defectLot.toFixed(
@@ -7669,9 +7677,7 @@ const renderDefectPartTables = () => {
                     <td class="py-3 px-4 text-slate-600 dark:text-slate-400 text-right border-r-2 border-blue-500/30">${row.inspLot.toFixed(
 											2
 										)}</td>
-                    <td class="py-3 px-4 text-slate-600 dark:text-slate-400 text-right font-medium">${row.ngPercent.toFixed(
-											2
-										)}%</td>
+                    
                 </tr>
             `
 				)
@@ -7723,30 +7729,30 @@ const exportHousingHornToCSV = (hhData, tableType) => {
 		filename = `Housing_Horn_LOT_${new Date().toISOString().split('T')[0]}.csv`;
 
 		// Headers
-		csvContent = "PartName,OK (lot),NG (lot),NGM (lot),Tot.Insp (lot),NG (%)\n";
+		csvContent = "PartName,NG (%),OK (lot),NG (lot),NGM (lot),Tot.Insp (lot)\n";
 
 		// Data rows
 		hhData.tableDataLot.forEach(row => {
-			csvContent += `"${row.partName}",${row.okLot.toFixed(2)},${row.ngLot.toFixed(2)},${row.ngmLot.toFixed(2)},${row.totInspLot.toFixed(2)},${row.ngPercent.toFixed(2)}\n`;
+			csvContent += `"${row.partName}",${row.ngPercent.toFixed(2)},${row.okLot.toFixed(2)},${row.ngLot.toFixed(2)},${row.ngmLot.toFixed(2)},${row.totInspLot.toFixed(2)}\n`;
 		});
 
 		// Total row
-		csvContent += `"TOTAL",${hhData.metrics.okLot.toFixed(2)},${hhData.metrics.ngLot.toFixed(2)},0,${hhData.metrics.inspLot.toFixed(2)},${hhData.metrics.ngPercent.toFixed(2)}\n`;
+		csvContent += `"TOTAL",${hhData.metrics.ngPercent.toFixed(2)},${hhData.metrics.okLot.toFixed(2)},${hhData.metrics.ngLot.toFixed(2)},0,${hhData.metrics.inspLot.toFixed(2)}\n`;
 
 	} else if (tableType === "pcs") {
 		// Export PCS table
 		filename = `Housing_Horn_PCS_${new Date().toISOString().split('T')[0]}.csv`;
 
 		// Headers
-		csvContent = "PartName,OK (pcs),NG (pcs),NGM (pcs),Tot.Insp (pcs),NG (%)\n";
+		csvContent = "PartName,NG (%),OK (pcs),NG (pcs),NGM (pcs),Tot.Insp (pcs)\n";
 
 		// Data rows
 		hhData.tableDataPcs.forEach(row => {
-			csvContent += `"${row.partName}",${row.okPcs},${row.ngPcs},${row.ngmPcs},${row.totInspPcs},${row.ngPercent.toFixed(2)}\n`;
+			csvContent += `"${row.partName}",${row.ngPercent.toFixed(2)},${row.okPcs},${row.ngPcs},${row.ngmPcs},${row.totInspPcs}\n`;
 		});
 
 		// Total row
-		csvContent += `"TOTAL",${hhData.metrics.okPcs},${hhData.metrics.ngPcs},0,${hhData.metrics.inspPcs},${hhData.metrics.ngPercent.toFixed(2)}\n`;
+		csvContent += `"TOTAL",${hhData.metrics.ngPercent.toFixed(2)},${hhData.metrics.okPcs},${hhData.metrics.ngPcs},0,${hhData.metrics.inspPcs}\n`;
 	}
 
 	downloadCSV(csvContent, filename);

@@ -67,6 +67,34 @@ try {
                 ]);
                 exit();
             }
+            
+            // ✅ === CATAT LOGIN KE LOG_BOOK 28 Jan 2026 ===
+            try {
+                // Ambil IP Address
+                $ip = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+
+                // Ambil User-Agent (browser/device)
+                $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
+
+                // Nama aplikasi 
+                $appName = "DataCleanerPro"; 
+
+                // Insert ke log_login
+                $logStmt = $conn->prepare("
+                    INSERT INTO log_login (username, app_name, ip_address, user_agent)
+                    VALUES (:username, :app_name, :ip, :user_agent)
+                ");
+                $logStmt->bindParam(':username', $inputUsername);
+                $logStmt->bindParam(':app_name', $appName);
+                $logStmt->bindParam(':ip', $ip);
+                $logStmt->bindParam(':user_agent', $userAgent);
+                $logStmt->execute();
+
+            } catch (Exception $logErr) {
+                // Opsional: log error ke file, tapi jangan tampilkan ke user
+                error_log("Log login gagal: " . $logErr->getMessage());
+                // Lanjutkan meski logging gagal — jangan hentikan login
+            }
 
             // Login Berhasil
             // Hapus password dari object user sebelum dikirim kembali ke client

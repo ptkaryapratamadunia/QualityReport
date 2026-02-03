@@ -1,13 +1,13 @@
-import "./style.css";
-import { Chart } from "chart.js/auto";
-import ChartDataLabels from "chartjs-plugin-datalabels";
-import * as XLSX from "xlsx";
-import { processExcelFile } from "./utils/dataProcessor";
+import './style.css';
+import { Chart } from 'chart.js/auto';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+import * as XLSX from 'xlsx';
+import { processExcelFile } from './utils/dataProcessor';
 
 // State Management
 const state = {
 	isLoggedIn: false,
-	currentTab: "summary", // summary, trial, filter
+	currentTab: 'summary', // summary, trial, filter
 	data: null,
 	processedData: null,
 	metrics: null,
@@ -17,14 +17,14 @@ const state = {
 	dateRange: { start: null, end: null },
 	charts: {}, // Store chart instances
 	trialData: null,
-	selectedLine: "All Line", // Line filter for charts
+	selectedLine: 'All Line', // Line filter for charts
 };
 
 // Register Chart.js plugins
 Chart.register(ChartDataLabels);
 
 // DOM Elements
-const app = document.querySelector("#app");
+const app = document.querySelector('#app');
 
 // Helper to get week number
 const getWeekNumber = (d) => {
@@ -70,18 +70,19 @@ const renderLogin = () => {
     </div>
   `;
 
-	document.getElementById("loginForm").addEventListener("submit", async (e) => {
+	document.getElementById('loginForm').addEventListener('submit', async (e) => {
 		e.preventDefault();
 		const username = e.target.username.value;
 		const password = e.target.password.value;
 		const submitBtn = e.target.querySelector('button[type="submit"]');
-		const errorDiv = document.getElementById("loginError");
+		const errorDiv = document.getElementById('loginError');
 		const originalBtnText = submitBtn.innerText;
 
 		// UI Loading State
 		submitBtn.disabled = true;
-		submitBtn.innerHTML = '<span class="animate-spin inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full mr-2"></span>Sign In...';
-		errorDiv.classList.add("hidden");
+		submitBtn.innerHTML =
+			'<span class="animate-spin inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full mr-2"></span>Sign In...';
+		errorDiv.classList.add('hidden');
 
 		try {
 			// Mencoba login ke backend PHP
@@ -94,10 +95,10 @@ const renderLogin = () => {
 				body: JSON.stringify({ username, password }),
 			});
 
-			const contentType = response.headers.get("content-type");
-			if (!contentType || !contentType.includes("application/json")) {
+			const contentType = response.headers.get('content-type');
+			if (!contentType || !contentType.includes('application/json')) {
 				// Jika response bukan JSON (misal 404 html atau text file content dari vite serve)
-				throw new Error("Server response is not JSON. Are you running PHP?");
+				throw new Error('Server response is not JSON. Are you running PHP?');
 			}
 
 			const result = await response.json();
@@ -108,21 +109,25 @@ const renderLogin = () => {
 				state.currentUser = result.user;
 				renderDashboard();
 			} else {
-				errorDiv.textContent = result.message || "Invalid username or password";
-				errorDiv.classList.remove("hidden");
+				errorDiv.textContent = result.message || 'Invalid username or password';
+				errorDiv.classList.remove('hidden');
 			}
 		} catch (error) {
 			// Handle Development Mode (Vite doesn't run PHP)
 			if (
-				(window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") &&
-				(error.message.includes("not JSON") || error.message.includes("Unexpected token"))
+				(window.location.hostname === 'localhost' ||
+					window.location.hostname === '127.0.0.1') &&
+				(error.message.includes('not JSON') ||
+					error.message.includes('Unexpected token'))
 			) {
-				console.warn("Dev Mode: PHP backend not detected. Using Local Fallback.");
+				console.warn(
+					'Dev Mode: PHP backend not detected. Using Local Fallback.',
+				);
 
 				// Fallback Login Logic
-				if (username === "kpd" && password === "888kpd") {
+				if (username === 'kpd' && password === '888kpd') {
 					state.isLoggedIn = true;
-					state.currentUser = { username: "kpd", role: "Developer" }; // Mock User
+					state.currentUser = { username: 'kpd', role: 'Developer' }; // Mock User
 					renderDashboard();
 					return;
 				} else {
@@ -132,15 +137,16 @@ const renderLogin = () => {
 						Use dev credentials: <b>kpd</b> / <b>888kpd</b><br>
 						<span class='text-xs'>To test DB, deploy to server.</span>
 					`;
-					errorDiv.classList.remove("hidden");
+					errorDiv.classList.remove('hidden');
 				}
 				return; // Stop execution here for dev fallback
 			}
 
 			// Real Error Handling
-			console.error("Login Error:", error);
-			errorDiv.textContent = "Connection Error. Please check your network or server configuration.";
-			errorDiv.classList.remove("hidden");
+			console.error('Login Error:', error);
+			errorDiv.textContent =
+				'Connection Error. Please check your network or server configuration.';
+			errorDiv.classList.remove('hidden');
 		} finally {
 			submitBtn.disabled = false;
 			submitBtn.innerHTML = originalBtnText; // Restore button text
@@ -152,28 +158,51 @@ const renderLogin = () => {
 const renderDashboard = () => {
 	app.innerHTML = `
     <div class="min-h-screen flex flex-col md:flex-row relative">
-      <!-- Mobile Header & Burger -->
-      <div class="md:hidden flex items-center justify-between p-4 glass-panel m-4 mb-0 sticky top-0 z-30">
-        <div class="flex items-center space-x-2">
-            <div class="w-8 h-8 flex items-center justify-center overflow-hidden">
-                <img src="logokpd.svg" alt="Logo KPD" class="w-12" />
-            </div>
-            <span class="text-xs font-bold text-blue-400">PT. KARYAPRATAMA DUNIA</span>
-            <!-- Mobile Theme Toggle -->
-            <button class="themeToggleBtn p-1.5 rounded-lg text-slate-400 hover:text-blue-500 transition-all flex items-center justify-center">
-                <svg class="themeSunIcon w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                </svg>
-                <svg class="themeMoonIcon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
-                </svg>
-            </button>
-        </div>
-        <button id="burgerBtn" class="text-slate-800 dark:text-white p-2 hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg transition-colors">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-            </svg>
-        </button>
+      <!-- Mobile Header & Burger & DateRange Wrapper -->
+      <div class="md:hidden fixed top-0 left-0 right-0 z-30 w-full pointer-events-none">
+          <div class="pointer-events-auto">
+              <!-- Mobile Header -->
+              <div class="flex items-center justify-between p-4 glass-panel m-4 mb-0">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 flex items-center justify-center overflow-hidden">
+                        <img src="logokpd.svg" alt="Logo KPD" class="w-12" />
+                    </div>
+                    <span class="text-xs font-bold text-blue-400">PT. KARYAPRATAMA DUNIA</span>
+                    <!-- Mobile Theme Toggle -->
+                    <button class="themeToggleBtn p-1.5 rounded-lg text-slate-400 hover:text-blue-500 transition-all flex items-center justify-center">
+                        <svg class="themeSunIcon w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                        <svg class="themeMoonIcon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                        </svg>
+                    </button>
+                </div>
+                <button id="burgerBtn" class="text-slate-800 dark:text-white p-2 hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+              </div>
+
+              <!-- Mobile Date Range Info (Sticky under Header) -->
+              <div class="z-20 mx-4 -mt-1 mb-2 ${
+								state.processedData ? '' : 'hidden'
+							}">
+                <div class="bg-blue-50/90 dark:bg-slate-800/90 backdrop-blur-md border-x border-b border-blue-100 dark:border-slate-700 rounded-b-lg shadow-sm px-3 py-1.5 text-center transform transition-all">
+                     <div class="flex items-center justify-center gap-2 text-xs text-slate-600 dark:text-slate-300">
+                         <svg class="w-3 h-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                         <span>
+                             Periode: <span class="font-bold text-blue-600 dark:text-blue-400">${
+																state.dateRange.start || '-'
+															}</span> - <span class="font-bold text-blue-600 dark:text-blue-400">${
+																state.dateRange.end || '-'
+															}</span>
+                         </span>
+                     </div>
+                </div>
+              </div>
+          </div>
       </div>
 
       <!-- Overlay -->
@@ -185,7 +214,7 @@ const renderDashboard = () => {
             <div id="sidebarTitle">
 			<div class="pb-4 border-b border-glass-border">
                 <h1 class="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent whitespace-nowrap">Data Cleaner <span class="text-italic text-yellow-300">Pro</span></h1>
-                <p class="text-xs text-slate-500 mt-1">Clean & Clear Your Data! <span class="text-xs text-slate-500 mt-1">Ver: 8.73</span></p>
+                <p class="text-xs text-slate-500 mt-1">Clean & Clear Your Data! <span class="text-xs text-slate-500 mt-1">Ver: 8.76</span></p>
 			</div>
             </div>
             <div class="flex items-center space-x-2 flex-shrink-0" id="sidebarToggleGroup">
@@ -206,7 +235,7 @@ const renderDashboard = () => {
         
         <nav class="space-y-2 flex-1 overflow-y-auto min-h-0 scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-700 scrollbar-track-transparent pr-2" id="sidebarContent">
         <button class="w-full flex justify-between items-center px-4 py-3 rounded-lg bg-blue-50 dark:bg-blue-600/20 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-500/30 font-medium transition-all mb-2 group ${
-					state.processedData ? "" : "hidden"
+					state.processedData ? '' : 'hidden'
 				}" id="dashboardBtn">
             <span>Dashboard</span>
             <svg id="dashboardChevron" class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -229,7 +258,7 @@ const renderDashboard = () => {
           
           <!-- Info Trial Menu -->
           <button class="w-full flex justify-between items-center px-4 py-3 rounded-lg bg-blue-50 dark:bg-blue-600/20 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-500/30 font-medium transition-all mb-2 mt-4 group ${
-						state.processedData ? "" : "hidden"
+						state.processedData ? '' : 'hidden'
 					}" id="infoTrialBtn">
             <span>Info Trial</span>
             <svg id="infoTrialChevron" class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -246,7 +275,7 @@ const renderDashboard = () => {
           
           <!-- Filtering Menu -->
           <button class="w-full flex justify-between items-center px-4 py-3 rounded-lg bg-blue-50 dark:bg-blue-600/20 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-500/30 font-medium transition-all mb-2 mt-4 group ${
-						state.processedData ? "" : "hidden"
+						state.processedData ? '' : 'hidden'
 					}" id="filteringBtn">
             <span>Filtering</span>
             <svg id="filteringChevron" class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -263,7 +292,7 @@ const renderDashboard = () => {
           
           <!-- Link Folder Section (in Sidebar) -->
           <div class="mt-4 px-2 ${
-						state.processedData ? "hidden" : ""
+						state.processedData ? 'hidden' : ''
 					}" id="sidebarLinkSection">
             <div class="glass-panel p-3 border-l-2 border-yellow-500">
               <div class="flex items-start space-x-2">
@@ -287,7 +316,7 @@ const renderDashboard = () => {
           
           <!-- Upload Section (in Sidebar) -->
           <div class="mt-3 px-2 ${
-						state.processedData ? "hidden" : ""
+						state.processedData ? 'hidden' : ''
 					}" id="sidebarUploadSection">
             <div class="glass-panel p-3 border-2 border-dashed border-slate-300 dark:border-slate-600 hover:border-blue-500 transition-colors cursor-pointer text-center group" id="sidebarDropZone">
               <input type="file" id="sidebarFileInput" class="hidden" accept=".xlsx, .xls" multiple>
@@ -314,17 +343,17 @@ const renderDashboard = () => {
             <h3 class="text-xs font-semibold text-yellow-600 dark:text-yellow-500 tracking-wider mb-3">File yang diupload:</h3>
             <div class="space-y-2" id="fileListContainer">
                 ${
-									state.fileMetadata.length > 0
-										? state.fileMetadata
-												.map(
-													(file) => `
+									state.fileMetadata.length > 0 ?
+										state.fileMetadata
+											.map(
+												(file) => `
                     <div class="text-xs text-yellow-700 dark:text-yellow-200 truncate" title="${file.name}">
                         ${file.name}
                     </div>
-                `
-												)
-												.join("")
-										: '<div class="text-xs text-slate-400 dark:text-slate-500">Belum ada file</div>'
+                `,
+											)
+											.join('')
+									:	'<div class="text-xs text-slate-400 dark:text-slate-500">Belum ada file</div>'
 								}
             </div>
           </div>
@@ -333,23 +362,27 @@ const renderDashboard = () => {
         <div class="mt-auto px-2 pb-2" id="sidebarFooter">
           <div class="pt-4 border-t border-glass-border">
             ${
-							state.processedData
-								? `
+							state.processedData ?
+								`
+            <button id="sidebarResetBtn" class="w-full flex items-center justify-center px-4 py-2 mb-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors shadow-lg shadow-red-900/20 group">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6M12 9v6M4 7h16M4 17h16"></path></svg>
+                <span class="font-medium text-xs">Reset</span>
+            </button>
             <button id="sidebarDownloadBtn" class="w-full flex items-center justify-center px-4 py-2 mb-4 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors shadow-lg shadow-green-900/20 group">
                 <svg class="w-5 h-5 mr-2 group-hover:animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                 <span class="font-medium text-xs">Download Cleaned Data</span>
             </button>
             `
-								: ""
+							:	''
 						}
             
                 <div class="mb-2 px-4 text-xs font-semibold text-blue-600 dark:text-blue-300 text-center">
-                    [ ${state.currentUser?.username || 'User'} ]
+                    Login username : [ ${state.currentUser?.username || 'User'} ]
                 </div>
-                <button id="logoutBtn" class="w-full flex items-center px-4 py-2 text-slate-500 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
-                <span class="mr-2">Log Out</span>
+                <button id="logoutBtn" class="bg-slate-500/10 w-full flex justify-center px-4 py-2 text-slate-500 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
+                <span class="font-medium text-xs">Log Out</span>
                 </button>
-                <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">&copy;2025 e-WeYe | All rights reserved</p>
+                <p class="w-full text-center text-xs text-slate-400 dark:text-slate-500 mt-1">&copy;2025 e-WeYe | All rights reserved</p>
                 
                 <!-- Mobile Only Footer Image -->
                 <div class="md:hidden flex justify-center w-full mt-4 mb-4">
@@ -369,31 +402,54 @@ const renderDashboard = () => {
       </aside>
 
       <!-- Main Content -->
-      <main class="flex-1 p-4 md:p-6 overflow-y-auto h-screen pt-4 md:pt-6">
+      <main class="flex-1 p-4 md:p-6 overflow-y-auto h-screen pt-36 md:pt-24">
         <!-- Header -->
-        <header class="flex justify-between items-center mb-8 hidden md:flex">
-          <div>
-            <h2 class="text-5xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent whitespace-nowrap">Quality Dashboard</h2>
-            <div class="flex items-center space-x-4 mt-1">
-                <p class="text-slate-500 dark:text-slate-400 text-xl">Quality Performance of Plating Line</p>
+		<header id="mainHeader" class="flex justify-between items-center px-6 py-4 hidden md:flex fixed p-6 mb-4 top-0 right-0 left-64 z-50 glass-panel m-4 rounded-lg shadow-md">
+		<div>
+			<h2 class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent whitespace-nowrap">
+			Quality Dashboard
+			</h2>
+			<div class="flex items-center space-x-4 mt-1">
+			<p class="text-slate-500 dark:text-slate-400 text-sm md:text-base">
+				Quality Performance of Plating Line
+			</p>
+			</div>
+		</div>
+
+        <!-- Center Date Range Info (Injected) -->
+        <div class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 ${
+					state.processedData ? '' : 'hidden'
+				}">
+            <div class="flex items-center gap-3 bg-white/50 dark:bg-slate-800/50 backdrop-blur-md px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm transition-all hover:bg-white/80 dark:hover:bg-slate-800/80">
+                 <div class="p-1.5 bg-blue-100 dark:bg-blue-900/30 rounded-lg text-blue-600 dark:text-blue-400">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                 </div>
+                 <span class="text-xs text-slate-600 dark:text-slate-300 whitespace-nowrap">
+                     Periode: <span class="font-bold text-blue-600 dark:text-blue-400">${
+												state.dateRange.start || '-'
+											}</span> - <span class="font-bold text-blue-600 dark:text-blue-400">${
+												state.dateRange.end || '-'
+											}</span>
+                 </span>
             </div>
-          </div>
-          <div class="flex items-center space-x-3">
-             <!-- Desktop Theme Toggle -->
-             <button class="themeToggleBtn p-2 rounded-lg text-slate-400 hover:text-blue-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all flex items-center justify-center">
-                <svg class="themeSunIcon w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                </svg>
-                <svg class="themeMoonIcon w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
-                </svg>
-             </button>
-             <span class="text-sm font-bold text-blue-600 dark:text-blue-400">PT. KARYAPRATAMA DUNIA</span>
-             <div class="w-10 h-10 flex items-center justify-center overflow-hidden">
-                <img src="logokpd.svg" alt="Logo KPD" class="w-12" />
-             </div>
-          </div>
-        </header>
+        </div>
+
+		<div class="flex items-center space-x-3">
+			<!-- Desktop Theme Toggle -->
+			<button class="themeToggleBtn p-2 rounded-lg text-slate-400 hover:text-blue-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all flex items-center justify-center">
+			<svg class="themeSunIcon w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+			</svg>
+			<svg class="themeMoonIcon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+			</svg>
+			</button>
+			<span class="text-sm font-bold text-blue-600 dark:text-blue-400">PT. KARYAPRATAMA DUNIA</span>
+			<div class="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center overflow-hidden">
+			<img src="logokpd.svg" alt="Logo KPD" class="w-8 md:w-10" />
+			</div>
+		</div>
+		</header>
 
         <!-- Mobile Header Title (Only visible on mobile) -->
          <div class="mb-6 md:hidden">
@@ -402,8 +458,8 @@ const renderDashboard = () => {
          </div>
 
         <!-- Waiting Message -->
-        <div id="waitingMessage" class="mb-8 ${
-					state.processedData ? "hidden" : ""
+        <div id="waitingMessage" class="mt-24 mb-8 ${
+					state.processedData ? 'hidden' : ''
 				}">
           <div class="glass-panel p-8 text-center">
             <div class="text-slate-500 dark:text-slate-400 text-lg">
@@ -411,13 +467,14 @@ const renderDashboard = () => {
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
               </svg>
               <p class="font-medium">Menunggu File diunggah...</p>
+              <p class="font-medium">Silahkan upload melalui Menu Sidebar (Desktop) atau Tombol Menu 'Burger' di kanan atas (Mobile)</p>
             </div>
           </div>
         </div>
 
         <!-- Dashboard Content -->
         <div id="dashboardContent" class="${
-					state.processedData ? "" : "hidden"
+					state.processedData ? '' : 'hidden'
 				} space-y-6">
           
           <!-- Success Modal (Hidden by default) -->
@@ -429,19 +486,11 @@ const renderDashboard = () => {
                 </div>
                 <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-2">Upload Berhasil!</h3>
                 <p class="text-slate-600 dark:text-slate-300">Tunggu...</p>
-                <p class="text-slate-600 dark:text-slate-300">File sedang diproses Cleaning...</p>
+                <p class="text-slate-600 dark:text-slate-300">Dashboard siap disajikan...</p>
             </div>
           </div>
           
-          <!-- Date Range Info -->
-          <div class="text-slate-800 dark:text-white text-sm">
-             Dari data original yang di-upload berisi data dari periode Tanggal: <span class="font-bold text-blue-600 dark:text-blue-400">${
-								state.dateRange.start || "-"
-							}</span> sampai Tanggal : <span class="font-bold text-blue-600 dark:text-blue-400">${
-		state.dateRange.end || "-"
-	}</span>
-          </div>
-
+          
           <!-- Metrics Grid -->
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" id="metricsGrid">
             <!-- Metrics will be injected here -->
@@ -558,7 +607,7 @@ const renderDashboard = () => {
   `;
 
 	// Event Listeners
-	document.getElementById("logoutBtn").addEventListener("click", () => {
+	document.getElementById('logoutBtn').addEventListener('click', () => {
 		state.isLoggedIn = false;
 		state.data = null;
 		state.processedData = null;
@@ -566,259 +615,264 @@ const renderDashboard = () => {
 	});
 
 	// Sidebar Toggle Logic
-	const sidebar = document.getElementById("sidebar");
-	const overlay = document.getElementById("sidebarOverlay");
-	const burgerBtn = document.getElementById("burgerBtn");
-	const closeSidebarBtn = document.getElementById("closeSidebarBtn");
+	const sidebar = document.getElementById('sidebar');
+	const overlay = document.getElementById('sidebarOverlay');
+	const burgerBtn = document.getElementById('burgerBtn');
+	const closeSidebarBtn = document.getElementById('closeSidebarBtn');
 
 	const toggleSidebar = () => {
-		const isClosed = sidebar.classList.contains("-translate-x-full");
+		const isClosed = sidebar.classList.contains('-translate-x-full');
 		if (isClosed) {
-			sidebar.classList.remove("-translate-x-full");
-			overlay.classList.remove("hidden");
+			sidebar.classList.remove('-translate-x-full');
+			overlay.classList.remove('hidden');
 			// Small delay to allow display:block to apply before opacity transition
-			setTimeout(() => overlay.classList.remove("opacity-0"), 10);
+			setTimeout(() => overlay.classList.remove('opacity-0'), 10);
 		} else {
-			sidebar.classList.add("-translate-x-full");
-			overlay.classList.add("opacity-0");
-			setTimeout(() => overlay.classList.add("hidden"), 300);
+			sidebar.classList.add('-translate-x-full');
+			overlay.classList.add('opacity-0');
+			setTimeout(() => overlay.classList.add('hidden'), 300);
 		}
 	};
 
-	burgerBtn?.addEventListener("click", toggleSidebar);
-	closeSidebarBtn?.addEventListener("click", toggleSidebar);
-	overlay?.addEventListener("click", toggleSidebar);
+	burgerBtn?.addEventListener('click', toggleSidebar);
+	closeSidebarBtn?.addEventListener('click', toggleSidebar);
+	overlay?.addEventListener('click', toggleSidebar);
 
 	// Desktop Sidebar Toggle
-	const desktopToggleBtn = document.getElementById("desktopToggleSidebar");
-	const sidebarContent = document.getElementById("sidebarContent");
-	const sidebarTitle = document.getElementById("sidebarTitle");
-	const sidebarFooter = document.getElementById("sidebarFooter");
-	const toggleIcon = document.getElementById("toggleIcon");
-	const sidebarHeader = document.getElementById("sidebarHeader");
-	const sidebarToggleGroup = document.getElementById("sidebarToggleGroup");
-	const sidebarCollapsedFooter = document.getElementById("sidebarCollapsedFooter");
+	const desktopToggleBtn = document.getElementById('desktopToggleSidebar');
+	const sidebarContent = document.getElementById('sidebarContent');
+	const sidebarTitle = document.getElementById('sidebarTitle');
+	const sidebarFooter = document.getElementById('sidebarFooter');
+	const toggleIcon = document.getElementById('toggleIcon');
+	const sidebarHeader = document.getElementById('sidebarHeader');
+	const sidebarToggleGroup = document.getElementById('sidebarToggleGroup');
+	const sidebarCollapsedFooter = document.getElementById(
+		'sidebarCollapsedFooter',
+	);
+	const header = document.getElementById('mainHeader');
 
-	desktopToggleBtn?.addEventListener("click", () => {
-		const isCollapsed = sidebar.classList.contains("!w-16");
+	desktopToggleBtn?.addEventListener('click', () => {
+		const wasCollapsed = sidebar.classList.contains('!w-16'); // Status SEBELUM klik
 
-		if (isCollapsed) {
+		if (wasCollapsed) {
 			// Expand sidebar
-			sidebar.classList.remove("!w-16", "items-center"); // Remove items-center if added
-			sidebar.classList.add("!w-64");
-			// Restore padding
-			sidebar.classList.replace("p-2", "p-4");
+			sidebar.classList.remove('!w-16', 'items-center');
+			sidebar.classList.add('!w-64');
+			sidebar.classList.replace('p-2', 'p-4');
 
-			sidebarContent?.classList.remove("hidden");
-			sidebarTitle?.classList.remove("hidden");
-			sidebarFooter?.classList.remove("hidden");
-			sidebarCollapsedFooter?.classList.add("hidden");
+			sidebarContent?.classList.remove('hidden');
+			sidebarTitle?.classList.remove('hidden');
+			sidebarFooter?.classList.remove('hidden');
+			sidebarCollapsedFooter?.classList.add('hidden');
 
-			// Restore Header Layout - ensure we revert to original row layout
-			sidebarHeader?.classList.remove("flex-col", "justify-center", "mb-4");
-			sidebarHeader?.classList.add("justify-between", "mb-8");
+			// Restore Header Layout
+			sidebarHeader?.classList.remove('flex-col', 'justify-center', 'mb-4');
+			sidebarHeader?.classList.add('justify-between', 'mb-8');
 
-			// Restore Toggle Group Layout
-			sidebarToggleGroup?.classList.remove("flex-col", "space-y-6");
-			sidebarToggleGroup?.classList.add("space-x-2");
+			sidebarToggleGroup?.classList.remove('flex-col', 'space-y-6');
+			sidebarToggleGroup?.classList.add('space-x-2');
 
-			// Change icon to left arrow (collapse)
 			toggleIcon.innerHTML =
 				'<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>';
 		} else {
 			// Collapse sidebar
-			sidebar.classList.remove("!w-64");
-			sidebar.classList.add("!w-16", "items-center"); // Add items-center to center content in narrow sidebar
-			// Reduce padding to give more space
-			sidebar.classList.replace("p-4", "p-2");
+			sidebar.classList.remove('!w-64');
+			sidebar.classList.add('!w-16', 'items-center');
+			sidebar.classList.replace('p-4', 'p-2');
 
-			sidebarContent?.classList.add("hidden");
-			sidebarTitle?.classList.add("hidden");
-			sidebarFooter?.classList.add("hidden");
-			sidebarCollapsedFooter?.classList.remove("hidden");
+			sidebarContent?.classList.add('hidden');
+			sidebarTitle?.classList.add('hidden');
+			sidebarFooter?.classList.add('hidden');
+			sidebarCollapsedFooter?.classList.remove('hidden');
 
-			// Modify Header Layout for vertical stacking
-			sidebarHeader?.classList.remove("justify-between", "mb-8");
-			sidebarHeader?.classList.add("flex-col", "justify-center", "mb-4");
+			// Modify Header Layout
+			sidebarHeader?.classList.remove('justify-between', 'mb-8');
+			sidebarHeader?.classList.add('flex-col', 'justify-center', 'mb-4');
 
-			// Modify Toggle Group for vertical stacking
-			sidebarToggleGroup?.classList.remove("space-x-2");
-			sidebarToggleGroup?.classList.add("flex-col", "space-y-6");
+			sidebarToggleGroup?.classList.remove('space-x-2');
+			sidebarToggleGroup?.classList.add('flex-col', 'space-y-6');
 
-			// Change icon to right arrow (expand)
 			toggleIcon.innerHTML =
 				'<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>';
 		}
+
+		// ✅ Perbarui posisi header setelah perubahan kelas
+		const isNowCollapsed = sidebar.classList.contains('!w-16');
+		const sidebarWidth = isNowCollapsed ? '4rem' : '16rem';
+		header.style.left = sidebarWidth;
+
+		// ✅ Tambahkan transisi halus (opsional)
+		header.style.transition = 'left 0.3s ease-in-out';
 	});
 
 	// Navigation Logic
 	const switchView = (viewName) => {
-		const dashboardContent = document.getElementById("dashboardContent");
-		const infoTrialContent = document.getElementById("infoTrialContent");
-		const filteringContent = document.getElementById("filteringContent");
+		const dashboardContent = document.getElementById('dashboardContent');
+		const infoTrialContent = document.getElementById('infoTrialContent');
+		const filteringContent = document.getElementById('filteringContent');
 
-		if (viewName === "dashboard") {
-			dashboardContent?.classList.remove("hidden");
-			infoTrialContent?.classList.add("hidden");
-			filteringContent?.classList.add("hidden");
-		} else if (viewName === "info-trial") {
-			dashboardContent?.classList.add("hidden");
-			infoTrialContent?.classList.remove("hidden");
-			filteringContent?.classList.add("hidden");
-		} else if (viewName === "filtering") {
-			dashboardContent?.classList.add("hidden");
-			infoTrialContent?.classList.add("hidden");
-			filteringContent?.classList.remove("hidden");
+		if (viewName === 'dashboard') {
+			dashboardContent?.classList.remove('hidden');
+			infoTrialContent?.classList.add('hidden');
+			filteringContent?.classList.add('hidden');
+		} else if (viewName === 'info-trial') {
+			dashboardContent?.classList.add('hidden');
+			infoTrialContent?.classList.remove('hidden');
+			filteringContent?.classList.add('hidden');
+		} else if (viewName === 'filtering') {
+			dashboardContent?.classList.add('hidden');
+			infoTrialContent?.classList.add('hidden');
+			filteringContent?.classList.remove('hidden');
 		}
 	};
 
-	const scrollToSection = (id, view = "dashboard") => {
+	const scrollToSection = (id, view = 'dashboard') => {
 		switchView(view);
 		// Small delay to allow display:block to apply
 		setTimeout(() => {
 			const element = document.getElementById(id);
 			if (element) {
-				element.scrollIntoView({ behavior: "smooth", block: "start" });
+				element.scrollIntoView({ behavior: 'smooth', block: 'start' });
 				// On mobile, close sidebar after click
 				if (window.innerWidth < 768) toggleSidebar();
 			}
 		}, 50);
 	};
 
-	document.getElementById("dashboardBtn")?.addEventListener("click", () => {
-		const sidebarTabs = document.getElementById("sidebarTabs");
-		const dashboardChevron = document.getElementById("dashboardChevron");
+	document.getElementById('dashboardBtn')?.addEventListener('click', () => {
+		const sidebarTabs = document.getElementById('sidebarTabs');
+		const dashboardChevron = document.getElementById('dashboardChevron');
 
-		sidebarTabs?.classList.toggle("hidden");
-		dashboardChevron?.classList.toggle("rotate-180");
+		sidebarTabs?.classList.toggle('hidden');
+		dashboardChevron?.classList.toggle('rotate-180');
 
 		// Also switch to dashboard view if clicked
-		switchView("dashboard");
+		switchView('dashboard');
 	});
 
-	document.getElementById("infoTrialBtn")?.addEventListener("click", () => {
-		const infoTrialTabs = document.getElementById("infoTrialTabs");
-		const infoTrialChevron = document.getElementById("infoTrialChevron");
+	document.getElementById('infoTrialBtn')?.addEventListener('click', () => {
+		const infoTrialTabs = document.getElementById('infoTrialTabs');
+		const infoTrialChevron = document.getElementById('infoTrialChevron');
 
-		infoTrialTabs?.classList.toggle("hidden");
-		infoTrialChevron?.classList.toggle("rotate-180");
+		infoTrialTabs?.classList.toggle('hidden');
+		infoTrialChevron?.classList.toggle('rotate-180');
 
 		// Switch to info trial view and scroll to top
-		switchView("info-trial");
+		switchView('info-trial');
 		// Small delay to allow view switch, then scroll to top
 		setTimeout(() => {
-			const infoTrialContent = document.getElementById("infoTrialContent");
+			const infoTrialContent = document.getElementById('infoTrialContent');
 			if (infoTrialContent) {
-				infoTrialContent.scrollIntoView({ behavior: "smooth", block: "start" });
+				infoTrialContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
 			}
 			// On mobile, close sidebar after click
 			if (window.innerWidth < 768) toggleSidebar();
 		}, 100);
 	});
 
-	document.getElementById("filteringBtn")?.addEventListener("click", () => {
-		const filteringTabs = document.getElementById("filteringTabs");
-		const filteringChevron = document.getElementById("filteringChevron");
+	document.getElementById('filteringBtn')?.addEventListener('click', () => {
+		const filteringTabs = document.getElementById('filteringTabs');
+		const filteringChevron = document.getElementById('filteringChevron');
 
-		filteringTabs?.classList.toggle("hidden");
-		filteringChevron?.classList.toggle("rotate-180");
+		filteringTabs?.classList.toggle('hidden');
+		filteringChevron?.classList.toggle('rotate-180');
 
 		// Switch to filtering view if clicked
-		switchView("filtering");
+		switchView('filtering');
 	});
 
 	// Dashboard Sub-menus
 	document
-		.getElementById("nav-metrics")
-		?.addEventListener("click", () =>
-			scrollToSection("metricsGrid", "dashboard")
+		.getElementById('nav-metrics')
+		?.addEventListener('click', () =>
+			scrollToSection('metricsGrid', 'dashboard'),
 		);
 	document
-		.getElementById("nav-charts")
-		?.addEventListener("click", () =>
-			scrollToSection("chartsArea", "dashboard")
+		.getElementById('nav-charts')
+		?.addEventListener('click', () =>
+			scrollToSection('chartsArea', 'dashboard'),
 		);
 	document
-		.getElementById("nav-summary")
-		?.addEventListener("click", () =>
-			scrollToSection("summaryTablesArea", "dashboard")
+		.getElementById('nav-summary')
+		?.addEventListener('click', () =>
+			scrollToSection('summaryTablesArea', 'dashboard'),
 		);
 	document
-		.getElementById("nav-category-chart")
-		?.addEventListener("click", () =>
-			scrollToSection("categoryChartArea", "dashboard")
+		.getElementById('nav-category-chart')
+		?.addEventListener('click', () =>
+			scrollToSection('categoryChartArea', 'dashboard'),
 		);
 	document
-		.getElementById("nav-category-table")
-		?.addEventListener("click", () =>
-			scrollToSection("categoryTableArea", "dashboard")
+		.getElementById('nav-category-table')
+		?.addEventListener('click', () =>
+			scrollToSection('categoryTableArea', 'dashboard'),
 		);
 	document
-		.getElementById("nav-pareto")
-		?.addEventListener("click", () =>
-			scrollToSection("paretoChartArea", "dashboard")
+		.getElementById('nav-pareto')
+		?.addEventListener('click', () =>
+			scrollToSection('paretoChartArea', 'dashboard'),
 		);
 	document
-		.getElementById("nav-performa-stamping")
-		?.addEventListener("click", () =>
-			scrollToSection("mcNoChartArea", "dashboard")
+		.getElementById('nav-performa-stamping')
+		?.addEventListener('click', () =>
+			scrollToSection('mcNoChartArea', 'dashboard'),
 		);
 	document
-		.getElementById("nav-rekap-horn")
-		?.addEventListener("click", () =>
-			scrollToSection("housingHornArea", "dashboard")
+		.getElementById('nav-rekap-horn')
+		?.addEventListener('click', () =>
+			scrollToSection('housingHornArea', 'dashboard'),
 		);
 	document
-		.getElementById("nav-rekap")
-		?.addEventListener("click", () =>
-			scrollToSection("rekapArea", "dashboard")
+		.getElementById('nav-rekap')
+		?.addEventListener('click', () =>
+			scrollToSection('rekapArea', 'dashboard'),
 		);
 
 	// Info Trial Sub-menus
 	document
-		.getElementById("nav-rekap-trial")
-		?.addEventListener("click", () =>
-			scrollToSection("trialRekapSection", "info-trial")
+		.getElementById('nav-rekap-trial')
+		?.addEventListener('click', () =>
+			scrollToSection('trialRekapSection', 'info-trial'),
 		);
 	document
-		.getElementById("nav-defect-type")
-		?.addEventListener("click", () =>
-			scrollToSection("trialDefectRekapSection", "info-trial")
+		.getElementById('nav-defect-type')
+		?.addEventListener('click', () =>
+			scrollToSection('trialDefectRekapSection', 'info-trial'),
 		);
 	document
-		.getElementById("nav-chart-trial")
-		?.addEventListener("click", () =>
-			scrollToSection("trialChartsSection", "info-trial")
+		.getElementById('nav-chart-trial')
+		?.addEventListener('click', () =>
+			scrollToSection('trialChartsSection', 'info-trial'),
 		);
 
 	// Filtering Sub-menus
 	document
-		.getElementById("nav-filter-partname")
-		?.addEventListener("click", () => {
-			switchView("filtering");
+		.getElementById('nav-filter-partname')
+		?.addEventListener('click', () => {
+			switchView('filtering');
 			// Small delay to ensure the view has switched before clicking the tab
 			setTimeout(() => {
-				const filterTab1 = document.getElementById("filterTab1");
+				const filterTab1 = document.getElementById('filterTab1');
 				filterTab1?.click(); // Activate PartName tab
 				// On mobile, close sidebar after click
 				if (window.innerWidth < 768) toggleSidebar();
 			}, 100);
 		});
-	document.getElementById("nav-filter-multi")?.addEventListener("click", () => {
-		switchView("filtering");
+	document.getElementById('nav-filter-multi')?.addEventListener('click', () => {
+		switchView('filtering');
 		// Small delay to ensure the view has switched before clicking the tab
 		setTimeout(() => {
-			const filterTab2 = document.getElementById("filterTab2");
+			const filterTab2 = document.getElementById('filterTab2');
 			filterTab2?.click(); // Activate Multi Filter tab
 			// On mobile, close sidebar after click
 			if (window.innerWidth < 768) toggleSidebar();
 		}, 100);
 	});
-	document.getElementById("nav-filter-daily")?.addEventListener("click", () => {
-		switchView("filtering");
+	document.getElementById('nav-filter-daily')?.addEventListener('click', () => {
+		switchView('filtering');
 		// Small delay to ensure the view has switched before clicking the tab
 		setTimeout(() => {
-			const filterTab3 = document.getElementById("filterTab3");
+			const filterTab3 = document.getElementById('filterTab3');
 			filterTab3?.click(); // Activate Daily Chart tab
 			// On mobile, close sidebar after click
 			if (window.innerWidth < 768) toggleSidebar();
@@ -826,68 +880,72 @@ const renderDashboard = () => {
 	});
 
 	// Sidebar Upload Section Event Listeners
-	const sidebarDropZone = document.getElementById("sidebarDropZone");
-	const sidebarFileInput = document.getElementById("sidebarFileInput");
+	const sidebarDropZone = document.getElementById('sidebarDropZone');
+	const sidebarFileInput = document.getElementById('sidebarFileInput');
 
-	sidebarDropZone?.addEventListener("click", () => sidebarFileInput.click());
+	sidebarDropZone?.addEventListener('click', () => sidebarFileInput.click());
 
-	sidebarDropZone?.addEventListener("dragover", (e) => {
+	sidebarDropZone?.addEventListener('dragover', (e) => {
 		e.preventDefault();
-		sidebarDropZone.classList.add("border-blue-500", "bg-blue-600/5");
+		sidebarDropZone.classList.add('border-blue-500', 'bg-blue-600/5');
 	});
 
-	sidebarDropZone?.addEventListener("dragleave", () => {
-		sidebarDropZone.classList.remove("border-blue-500", "bg-blue-600/5");
+	sidebarDropZone?.addEventListener('dragleave', () => {
+		sidebarDropZone.classList.remove('border-blue-500', 'bg-blue-600/5');
 	});
 
-	sidebarDropZone?.addEventListener("drop", (e) => {
+	sidebarDropZone?.addEventListener('drop', (e) => {
 		e.preventDefault();
-		sidebarDropZone.classList.remove("border-blue-500", "bg-blue-600/5");
+		sidebarDropZone.classList.remove('border-blue-500', 'bg-blue-600/5');
 		const files = e.dataTransfer.files;
 		if (files.length) handleFileUpload(files);
 	});
 
-	sidebarFileInput?.addEventListener("change", (e) => {
+	sidebarFileInput?.addEventListener('change', (e) => {
 		if (e.target.files.length) handleFileUpload(e.target.files);
 	});
 
 	document
-		.getElementById("sidebarDownloadBtn")
-		?.addEventListener("click", () => downloadCleanedData("csv"));
+		.getElementById('sidebarDownloadBtn')
+		?.addEventListener('click', () => downloadCleanedData('csv'));
+
+	document
+		.getElementById('sidebarResetBtn')
+		?.addEventListener('click', () => resetAppState());
 
 	// Theme Toggle Logic
-	const themeToggleBtns = document.querySelectorAll(".themeToggleBtn");
-	const themeSunIcons = document.querySelectorAll(".themeSunIcon");
-	const themeMoonIcons = document.querySelectorAll(".themeMoonIcon");
+	const themeToggleBtns = document.querySelectorAll('.themeToggleBtn');
+	const themeSunIcons = document.querySelectorAll('.themeSunIcon');
+	const themeMoonIcons = document.querySelectorAll('.themeMoonIcon');
 
 	// Check initial theme
-	const savedTheme = localStorage.getItem("theme");
+	const savedTheme = localStorage.getItem('theme');
 	const isDark =
-		savedTheme === "dark" ||
-		(!savedTheme && document.documentElement.classList.contains("dark"));
+		savedTheme === 'dark' ||
+		(!savedTheme && document.documentElement.classList.contains('dark'));
 
 	const updateThemeUI = (dark) => {
 		if (dark) {
-			document.documentElement.classList.add("dark");
-			localStorage.setItem("theme", "dark");
-			themeSunIcons.forEach(icon => icon.classList.remove("hidden"));
-			themeMoonIcons.forEach(icon => icon.classList.add("hidden"));
+			document.documentElement.classList.add('dark');
+			localStorage.setItem('theme', 'dark');
+			themeSunIcons.forEach((icon) => icon.classList.remove('hidden'));
+			themeMoonIcons.forEach((icon) => icon.classList.add('hidden'));
 			// Chart colors global override
-			Chart.defaults.color = "#94a3b8"; // Slate 400
-			Chart.defaults.borderColor = "rgba(255, 255, 255, 0.1)";
+			Chart.defaults.color = '#94a3b8'; // Slate 400
+			Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.1)';
 		} else {
-			document.documentElement.classList.remove("dark");
-			localStorage.setItem("theme", "light");
-			themeSunIcons.forEach(icon => icon.classList.add("hidden"));
-			themeMoonIcons.forEach(icon => icon.classList.remove("hidden"));
+			document.documentElement.classList.remove('dark');
+			localStorage.setItem('theme', 'light');
+			themeSunIcons.forEach((icon) => icon.classList.add('hidden'));
+			themeMoonIcons.forEach((icon) => icon.classList.remove('hidden'));
 			// Chart colors global override for light mode
-			Chart.defaults.color = "#475569"; // Slate 600
-			Chart.defaults.borderColor = "rgba(0, 0, 0, 0.1)";
+			Chart.defaults.color = '#475569'; // Slate 600
+			Chart.defaults.borderColor = 'rgba(0, 0, 0, 0.1)';
 		}
 
-		const textColor = dark ? "#94a3b8" : "#475569";
-		const gridColor = dark ? "#334155" : "rgba(0, 0, 0, 0.1)";
-		const titleColor = dark ? "#ffffff" : "#1e293b";
+		const textColor = dark ? '#94a3b8' : '#475569';
+		const gridColor = dark ? '#334155' : 'rgba(0, 0, 0, 0.1)';
+		const titleColor = dark ? '#ffffff' : '#1e293b';
 
 		// Update charts if they exist
 		Object.values(state.charts).forEach((chart) => {
@@ -900,10 +958,10 @@ const renderDashboard = () => {
 						if (scale.grid) scale.grid.color = gridColor;
 						// Update axis title color specifically
 						if (scale.title) {
-							if (scaleId === "y1") {
-								scale.title.color = "#ef4444"; // Always Red for Ratio
-							} else if (scaleId === "y") {
-								scale.title.color = "#0d9488"; // Always Teal for Quantity
+							if (scaleId === 'y1') {
+								scale.title.color = '#ef4444'; // Always Red for Ratio
+							} else if (scaleId === 'y') {
+								scale.title.color = '#0d9488'; // Always Teal for Quantity
 							} else {
 								scale.title.color = textColor;
 							}
@@ -927,12 +985,13 @@ const renderDashboard = () => {
 				// Update Datalabels
 				if (chart.options.plugins.datalabels) {
 					// Check if color is a function (e.g. for mixed charts)
-					if (typeof chart.options.plugins.datalabels.color !== "function") {
-						chart.options.plugins.datalabels.color = dark ? "#ffffff" : "#1e293b";
+					if (typeof chart.options.plugins.datalabels.color !== 'function') {
+						chart.options.plugins.datalabels.color =
+							dark ? '#ffffff' : '#1e293b';
 					}
 				}
 
-				chart.update("none");
+				chart.update('none');
 			}
 		});
 	};
@@ -940,24 +999,25 @@ const renderDashboard = () => {
 	// Initialize
 	updateThemeUI(isDark);
 
-	themeToggleBtns.forEach(btn => {
-		btn.addEventListener("click", () => {
-			const isCurrentlyDark = document.documentElement.classList.contains("dark");
+	themeToggleBtns.forEach((btn) => {
+		btn.addEventListener('click', () => {
+			const isCurrentlyDark =
+				document.documentElement.classList.contains('dark');
 			updateThemeUI(!isCurrentlyDark);
 		});
 	});
 };
 
 const handleFileUpload = async (files) => {
-	const loadingSpinner = document.getElementById("sidebarLoadingSpinner");
-	loadingSpinner?.classList.remove("hidden");
+	const loadingSpinner = document.getElementById('sidebarLoadingSpinner');
+	loadingSpinner?.classList.remove('hidden');
 
 	try {
 		const result = await processExcelFile(files);
 
 		if (!result.cleanedData || result.cleanedData.length === 0) {
 			throw new Error(
-				"No valid data found in the Excel file. Please check column headers."
+				'No valid data found in the Excel file. Please check column headers.',
 			);
 		}
 
@@ -984,22 +1044,145 @@ const handleFileUpload = async (files) => {
 		renderFiltering();
 
 		// Show Success Modal
-		const modal = document.getElementById("successModal");
+		const modal = document.getElementById('successModal');
 		if (modal) {
-			modal.classList.remove("hidden");
+			modal.classList.remove('hidden');
 			setTimeout(() => {
-				modal.classList.add("hidden");
+				modal.classList.add('hidden');
 			}, 3000);
 		}
 	} catch (error) {
-		console.error("Error processing file:", error);
-		alert(`Error processing file: ${error.message || "Unknown error"}`);
-		loadingSpinner?.classList.add("hidden");
+		console.error('Error processing file:', error);
+		alert(`Error processing file: ${error.message || 'Unknown error'}`);
+		loadingSpinner?.classList.add('hidden');
 	}
 };
 
+const resetAppState = () => {
+	try {
+		Object.values(state.charts).forEach((chart) => {
+			if (chart && typeof chart.destroy === 'function') {
+				chart.destroy();
+			}
+		});
+		state.charts = {};
+	} catch {}
+
+	state.data = null;
+	state.processedData = null;
+	state.metrics = null;
+	state.chartsData = null;
+	state.summaryTables = null;
+	state.fileMetadata = [];
+	state.dateRange = { start: null, end: null };
+	state.trialData = null;
+	state.selectedLine = 'All Line';
+
+	if (typeof clearMultiFilter === 'function') {
+		clearMultiFilter();
+	}
+
+	// Reset all filtering sections (By PartName, Multi Filter, Periodical)
+	if (typeof clearAllFilteringState === 'function') {
+		clearAllFilteringState();
+	} else {
+		// Fallback inline reset if function is not defined yet
+		try {
+			// Hide visible containers
+			document
+				.getElementById('filterResultsContainer')
+				?.classList.add('hidden');
+			document
+				.getElementById('multiFilterResultsContainer')
+				?.classList.add('hidden');
+			document
+				.getElementById('defectDailyChartContainer')
+				?.classList.add('hidden');
+			document
+				.getElementById('defectDailyTableContainer')
+				?.classList.add('hidden');
+		} catch {}
+		// Reset filteringState values to defaults
+		filteringState.includeTrialData = true;
+		filteringState.selectedPartNames = [];
+		filteringState.filteredData = [];
+		filteringState.selectedLine = 'Barrel 4';
+		filteringState.selectedDefectType = null;
+		filteringState.selectedTimeframe = 'Daily';
+		filteringState.selectedPartNamesForDefect = [];
+		filteringState.dailyData = [];
+		filteringState.dailyDefectData = [];
+		filteringState.dailyDefectPartData = [];
+		filteringState.partNameSelectedTimeframe = 'Monthly';
+		filteringState.partNamePeriodicalData = [];
+		filteringState.multiFilterSelectedTimeframe = 'Daily';
+		filteringState.multiFilterPeriodicalData = [];
+		filteringState.multiFilterLines = [];
+		filteringState.multiFilterCustomers = [];
+		filteringState.multiFilterExcludedPartNames = [];
+		filteringState.multiFilterColumns = ['PartName', 'NG_%'];
+		filteringState.multiFilterStartDate = null;
+		filteringState.multiFilterEndDate = null;
+		filteringState.multiFilteredData = [];
+		filteringState.multiGroupedData = [];
+		filteringState.activeMultiGroupDefects = [];
+		filteringState.activeMultiGroupExtras = [];
+	}
+
+	renderDashboard();
+};
+
+// Dedicated helper to reset all filtering-related state and UI
+const clearAllFilteringState = () => {
+	try {
+		// Destroy any charts created by filtering features
+		if (state.charts.partNamePeriodicalChart) {
+			state.charts.partNamePeriodicalChart.destroy();
+			state.charts.partNamePeriodicalChart = null;
+		}
+		if (state.charts.multiFilterPeriodicalChart) {
+			state.charts.multiFilterPeriodicalChart.destroy();
+			state.charts.multiFilterPeriodicalChart = null;
+		}
+	} catch {}
+
+	// Hide containers if present
+	document.getElementById('filterResultsContainer')?.classList.add('hidden');
+	document
+		.getElementById('multiFilterResultsContainer')
+		?.classList.add('hidden');
+	document.getElementById('defectDailyChartContainer')?.classList.add('hidden');
+	document.getElementById('defectDailyTableContainer')?.classList.add('hidden');
+
+	// Reset filteringState values to defaults
+	filteringState.includeTrialData = true;
+	filteringState.selectedPartNames = [];
+	filteringState.filteredData = [];
+	filteringState.selectedLine = 'Barrel 4';
+	filteringState.selectedDefectType = null;
+	filteringState.selectedTimeframe = 'Daily';
+	filteringState.selectedPartNamesForDefect = [];
+	filteringState.dailyData = [];
+	filteringState.dailyDefectData = [];
+	filteringState.dailyDefectPartData = [];
+	filteringState.partNameSelectedTimeframe = 'Monthly';
+	filteringState.partNamePeriodicalData = [];
+	filteringState.multiFilterSelectedTimeframe = 'Daily';
+	filteringState.multiFilterPeriodicalData = [];
+	filteringState.multiFilterLines = [];
+	filteringState.multiFilterCustomers = [];
+	filteringState.multiFilterExcludedPartNames = [];
+	filteringState.multiFilterColumns = ['PartName', 'NG_%'];
+	filteringState.multiFilterStartDate = null;
+	filteringState.multiFilterEndDate = null;
+	filteringState.multiFilteredData = [];
+	filteringState.multiGroupedData = [];
+	filteringState.activeMultiGroupDefects = [];
+	filteringState.activeMultiGroupExtras = [];
+};
+
 const renderMetrics = () => {
-	const metricsGrid = document.getElementById("metricsGrid");
+	const metricsGrid = document.getElementById('metricsGrid');
 	const { totalInsp, totalOK, totalNG, ngPercent } = state.metrics;
 
 	const createMetricCard = (title, value, color) => `
@@ -1011,42 +1194,42 @@ const renderMetrics = () => {
 
 	metricsGrid.innerHTML = `
     ${createMetricCard(
-			"Total Inspected (Lot)",
-			totalInsp.toLocaleString("en-US", {
+			'Total Inspected (Lot)',
+			totalInsp.toLocaleString('en-US', {
 				minimumFractionDigits: 2,
 				maximumFractionDigits: 2,
 			}),
-			"text-slate-800 dark:text-white"
+			'text-slate-800 dark:text-white',
 		)}
     ${createMetricCard(
-			"Total OK (Lot)",
-			totalOK.toLocaleString("en-US", {
+			'Total OK (Lot)',
+			totalOK.toLocaleString('en-US', {
 				minimumFractionDigits: 2,
 				maximumFractionDigits: 2,
 			}),
-			"text-green-600 dark:text-green-400"
+			'text-green-600 dark:text-green-400',
 		)}
     ${createMetricCard(
-			"Total NG (Lot)",
-			totalNG.toLocaleString("en-US", {
+			'Total NG (Lot)',
+			totalNG.toLocaleString('en-US', {
 				minimumFractionDigits: 2,
 				maximumFractionDigits: 2,
 			}),
-			"text-red-600 dark:text-red-400"
+			'text-red-600 dark:text-red-400',
 		)}
     ${createMetricCard(
-			"Total NG (%)",
-			ngPercent.toLocaleString("en-US", {
+			'Total NG (%)',
+			ngPercent.toLocaleString('en-US', {
 				minimumFractionDigits: 2,
 				maximumFractionDigits: 2,
-			}) + "%",
-			"text-red-600 dark:text-red-400"
+			}) + '%',
+			'text-red-600 dark:text-red-400',
 		)}
   `;
 };
 
 const renderCharts = () => {
-	const chartsArea = document.getElementById("chartsArea");
+	const chartsArea = document.getElementById('chartsArea');
 	chartsArea.innerHTML = `
     <div class="glass-panel p-6 col-span-1 lg:col-span-2">
       <div class="flex justify-between items-center mb-4">
@@ -1055,16 +1238,16 @@ const renderCharts = () => {
           <label class="text-slate-600 dark:text-slate-300 text-sm">Filter by Line:</label>
           <select id="lineFilter" class="bg-white dark:bg-slate-700 text-slate-800 dark:text-white px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 focus:border-blue-500 focus:outline-none text-sm">
             <option value="All Line" ${
-							state.selectedLine === "All Line" ? "selected" : ""
+							state.selectedLine === 'All Line' ? 'selected' : ''
 						}>All Line</option>
             <option value="Barrel 4" ${
-							state.selectedLine === "Barrel 4" ? "selected" : ""
+							state.selectedLine === 'Barrel 4' ? 'selected' : ''
 						}>Barrel 4</option>
             <option value="Rack 1" ${
-							state.selectedLine === "Rack 1" ? "selected" : ""
+							state.selectedLine === 'Rack 1' ? 'selected' : ''
 						}>Rack 1</option>
             <option value="Nickel" ${
-							state.selectedLine === "Nickel" ? "selected" : ""
+							state.selectedLine === 'Nickel' ? 'selected' : ''
 						}>Nickel</option>
           </select>
         </div>
@@ -1085,62 +1268,67 @@ const renderCharts = () => {
 	Object.values(state.charts).forEach((chart) => chart.destroy());
 
 	// Monthly Trend Chart
-	const ctx1 = document.getElementById("monthlyTrendChart").getContext("2d");
+	const ctx1 = document.getElementById('monthlyTrendChart').getContext('2d');
 	state.charts.monthly = new Chart(ctx1, {
 		data: state.chartsData.monthlyTrend,
 		options: {
 			responsive: true,
 			maintainAspectRatio: false,
-			interaction: { mode: "index", intersect: false },
+			interaction: { mode: 'index', intersect: false },
 			plugins: {
 				legend: {
 					labels: {
-						color: document.documentElement.classList.contains("dark")
-							? "#94a3b8"
-							: "#475569",
+						color:
+							document.documentElement.classList.contains('dark') ?
+								'#94a3b8'
+							:	'#475569',
 					},
 				},
 				datalabels: {
-					anchor: "end",
-					align: "top",
-					color: document.documentElement.classList.contains("dark")
-						? "#fff"
-						: "#1e293b",
-					font: { weight: "bold", size: 10 },
+					anchor: 'end',
+					align: 'top',
+					color:
+						document.documentElement.classList.contains('dark') ?
+							'#fff'
+						:	'#1e293b',
+					font: { weight: 'bold', size: 10 },
 					formatter: (value) => {
-						return typeof value === "number" ? value.toFixed(2) : value;
+						return typeof value === 'number' ? value.toFixed(2) : value;
 					},
 				},
 			},
 			scales: {
 				y: {
-					type: "linear",
+					type: 'linear',
 					display: true,
-					position: "left",
+					position: 'left',
 					grid: {
-						color: document.documentElement.classList.contains("dark")
-							? "#334155"
-							: "rgba(0, 0, 0, 0.1)",
+						color:
+							document.documentElement.classList.contains('dark') ?
+								'#334155'
+							:	'rgba(0, 0, 0, 0.1)',
 					},
 					ticks: {
-						color: document.documentElement.classList.contains("dark")
-							? "#94a3b8"
-							: "#475569",
+						color:
+							document.documentElement.classList.contains('dark') ?
+								'#94a3b8'
+							:	'#475569',
 					},
 				},
 				y1: {
-					type: "linear",
+					type: 'linear',
 					display: true,
-					position: "right",
+					position: 'right',
 					grid: { drawOnChartArea: false },
-					ticks: { color: "#ef4444" },
+					ticks: { color: '#ef4444' },
 				},
 				x: {
 					grid: { display: false },
 					ticks: {
-						color: document.documentElement.classList.contains("dark")
-							? "#94a3b8"
-							: "#475569",
+						color:
+							document.documentElement.classList.contains('dark') ?
+								'#94a3b8'
+							:	'#475569',
 					},
 				},
 			},
@@ -1148,34 +1336,36 @@ const renderCharts = () => {
 	});
 
 	// Customer Pie Chart
-	const ctx2 = document.getElementById("customerPieChart").getContext("2d");
+	const ctx2 = document.getElementById('customerPieChart').getContext('2d');
 	state.charts.customer = new Chart(ctx2, {
-		type: "pie",
+		type: 'pie',
 		data: state.chartsData.customerPie,
 		options: {
 			responsive: true,
 			maintainAspectRatio: false,
 			plugins: {
 				legend: {
-					position: "right",
+					position: 'right',
 					labels: {
-						color: document.documentElement.classList.contains("dark")
-							? "#94a3b8"
-							: "#475569",
+						color:
+							document.documentElement.classList.contains('dark') ?
+								'#94a3b8'
+							:	'#475569',
 					},
 				},
 				datalabels: {
-					color: document.documentElement.classList.contains("dark")
-						? "#fff"
-						: "#1e293b",
-					font: { weight: "bold" },
+					color:
+						document.documentElement.classList.contains('dark') ?
+							'#fff'
+						:	'#1e293b',
+					font: { weight: 'bold' },
 					formatter: (value, ctx) => {
 						let sum = 0;
 						let dataArr = ctx.chart.data.datasets[0].data;
 						dataArr.map((data) => {
 							sum += data;
 						});
-						let percentage = ((value * 100) / sum).toFixed(1) + "%";
+						let percentage = ((value * 100) / sum).toFixed(1) + '%';
 						return percentage;
 					},
 				},
@@ -1184,34 +1374,36 @@ const renderCharts = () => {
 	});
 
 	// Line Pie Chart
-	const ctx3 = document.getElementById("linePieChart").getContext("2d");
+	const ctx3 = document.getElementById('linePieChart').getContext('2d');
 	state.charts.line = new Chart(ctx3, {
-		type: "pie",
+		type: 'pie',
 		data: state.chartsData.linePie,
 		options: {
 			responsive: true,
 			maintainAspectRatio: false,
 			plugins: {
 				legend: {
-					position: "right",
+					position: 'right',
 					labels: {
-						color: document.documentElement.classList.contains("dark")
-							? "#94a3b8"
-							: "#475569",
+						color:
+							document.documentElement.classList.contains('dark') ?
+								'#94a3b8'
+							:	'#475569',
 					},
 				},
 				datalabels: {
-					color: document.documentElement.classList.contains("dark")
-						? "#fff"
-						: "#1e293b",
-					font: { weight: "bold" },
+					color:
+						document.documentElement.classList.contains('dark') ?
+							'#fff'
+						:	'#1e293b',
+					font: { weight: 'bold' },
 					formatter: (value, ctx) => {
 						let sum = 0;
 						let dataArr = ctx.chart.data.datasets[0].data;
 						dataArr.map((data) => {
 							sum += data;
 						});
-						let percentage = ((value * 100) / sum).toFixed(1) + "%";
+						let percentage = ((value * 100) / sum).toFixed(1) + '%';
 						return percentage;
 					},
 				},
@@ -1220,7 +1412,7 @@ const renderCharts = () => {
 	});
 
 	// Category Trend Chart
-	const categoryChartContainer = document.getElementById("categoryChartArea");
+	const categoryChartContainer = document.getElementById('categoryChartArea');
 	if (categoryChartContainer) {
 		categoryChartContainer.innerHTML = `
         <div class="glass-panel p-6">
@@ -1229,85 +1421,90 @@ const renderCharts = () => {
         </div>
       `;
 
-		const ctx4 = document.getElementById("categoryTrendChart").getContext("2d");
+		const ctx4 = document.getElementById('categoryTrendChart').getContext('2d');
 		state.charts.category = new Chart(ctx4, {
 			data: state.chartsData.categoryTrend,
 			options: {
 				responsive: true,
 				maintainAspectRatio: false,
-				interaction: { mode: "index", intersect: false },
+				interaction: { mode: 'index', intersect: false },
 				plugins: {
 					legend: {
 						labels: {
-							color: document.documentElement.classList.contains("dark")
-								? "#94a3b8"
-								: "#475569",
+							color:
+								document.documentElement.classList.contains('dark') ?
+									'#94a3b8'
+								:	'#475569',
 						},
 					},
 					datalabels: {
-						anchor: "end",
-						align: "top",
+						anchor: 'end',
+						align: 'top',
 						color: (context) => {
 							const isDark =
-								document.documentElement.classList.contains("dark");
-							return context.dataset.type === "line"
-								? "#ef4444"
-								: isDark
-								? "#fff"
-								: "#1e293b";
+								document.documentElement.classList.contains('dark');
+							return (
+								context.dataset.type === 'line' ? '#ef4444'
+								: isDark ? '#fff'
+								: '#1e293b'
+							);
 						},
-						font: { weight: "bold", size: 10 },
+						font: { weight: 'bold', size: 10 },
 						formatter: (value) => {
-							return typeof value === "number" ? value.toFixed(2) : value;
+							return typeof value === 'number' ? value.toFixed(2) : value;
 						},
 					},
 				},
 				scales: {
 					y: {
-						type: "linear",
+						type: 'linear',
 						display: true,
-						position: "left",
+						position: 'left',
 						title: {
 							display: true,
-							text: "Qty Inspected (lot)",
-							color: "#0d9488",
+							text: 'Qty Inspected (lot)',
+							color: '#0d9488',
 						},
 						grid: {
-							color: document.documentElement.classList.contains("dark")
-								? "rgba(255, 255, 255, 0.1)"
-								: "rgba(0, 0, 0, 0.1)",
+							color:
+								document.documentElement.classList.contains('dark') ?
+									'rgba(255, 255, 255, 0.1)'
+								:	'rgba(0, 0, 0, 0.1)',
 						},
 						ticks: {
-							color: document.documentElement.classList.contains("dark")
-								? "#94a3b8"
-								: "#475569",
+							color:
+								document.documentElement.classList.contains('dark') ?
+									'#94a3b8'
+								:	'#475569',
 						},
 					},
 					y1: {
-						type: "linear",
+						type: 'linear',
 						display: true,
-						position: "right",
+						position: 'right',
 						title: {
 							display: true,
-							text: "NG (%)",
-							color: "#ef4444",
+							text: 'NG (%)',
+							color: '#ef4444',
 						},
 						grid: { drawOnChartArea: false },
-						ticks: { color: "#ef4444" },
+						ticks: { color: '#ef4444' },
 					},
 					x: {
 						title: {
 							display: true,
-							text: "Kategori",
-							color: document.documentElement.classList.contains("dark")
-								? "#fff"
-								: "#1e293b",
+							text: 'Kategori',
+							color:
+								document.documentElement.classList.contains('dark') ?
+									'#fff'
+								:	'#1e293b',
 						},
 						grid: { display: false },
 						ticks: {
-							color: document.documentElement.classList.contains("dark")
-								? "#94a3b8"
-								: "#475569",
+							color:
+								document.documentElement.classList.contains('dark') ?
+									'#94a3b8'
+								:	'#475569',
 						},
 					},
 				},
@@ -1316,9 +1513,9 @@ const renderCharts = () => {
 	}
 
 	// Add event listener for line filter
-	const lineFilterSelect = document.getElementById("lineFilter");
+	const lineFilterSelect = document.getElementById('lineFilter');
 	if (lineFilterSelect) {
-		lineFilterSelect.addEventListener("change", (e) => {
+		lineFilterSelect.addEventListener('change', (e) => {
 			state.selectedLine = e.target.value;
 			updateChartsWithLineFilter();
 		});
@@ -1327,17 +1524,19 @@ const renderCharts = () => {
 
 const updateChartsWithLineFilter = () => {
 	// Filter data based on selected line
-	let filteredData = state.processedData.filter((r) => !r.isTrial && r.Kategori !== 'kosong');
+	let filteredData = state.processedData.filter(
+		(r) => !r.isTrial && r.Kategori !== 'kosong',
+	);
 
-	if (state.selectedLine !== "All Line") {
-		filteredData = filteredData.filter((r) => r["Line"] === state.selectedLine);
+	if (state.selectedLine !== 'All Line') {
+		filteredData = filteredData.filter((r) => r['Line'] === state.selectedLine);
 	}
 
 	// 1. Update Monthly Trend Chart
 	const monthlyData = {};
 	filteredData.forEach((row) => {
-		const key = row["MonthYear"];
-		if (key === "Unknown") return;
+		const key = row['MonthYear'];
+		if (key === 'Unknown') return;
 
 		if (!monthlyData[key]) {
 			monthlyData[key] = {
@@ -1345,40 +1544,40 @@ const updateChartsWithLineFilter = () => {
 				ng: 0,
 				sumNGPercent: 0,
 				count: 0,
-				date: row["DateObj"],
+				date: row['DateObj'],
 			};
 		}
-		monthlyData[key].insp += row["Insp(Lot)"];
-		monthlyData[key].ng += row["NG(Lot)"];
+		monthlyData[key].insp += row['Insp(Lot)'];
+		monthlyData[key].ng += row['NG(Lot)'];
 
-		if (row["NG_%"] !== undefined && row["NG_%"] !== null) {
-			monthlyData[key].sumNGPercent += Number(row["NG_%"]);
+		if (row['NG_%'] !== undefined && row['NG_%'] !== null) {
+			monthlyData[key].sumNGPercent += Number(row['NG_%']);
 			monthlyData[key].count += 1;
 		}
 	});
 
 	const sortedMonths = Object.keys(monthlyData).sort(
-		(a, b) => monthlyData[a].date - monthlyData[b].date
+		(a, b) => monthlyData[a].date - monthlyData[b].date,
 	);
 
 	// Update monthly chart data
 	state.charts.monthly.data.labels = sortedMonths;
 	state.charts.monthly.data.datasets[0].data = sortedMonths.map(
-		(m) => monthlyData[m].insp
+		(m) => monthlyData[m].insp,
 	);
 	state.charts.monthly.data.datasets[1].data = sortedMonths.map((m) =>
-		monthlyData[m].count > 0
-			? monthlyData[m].sumNGPercent / monthlyData[m].count
-			: 0
+		monthlyData[m].count > 0 ?
+			monthlyData[m].sumNGPercent / monthlyData[m].count
+		:	0,
 	);
 	state.charts.monthly.update();
 
 	// 2. Update Customer Pie Chart
 	const customerData = {};
 	filteredData.forEach((row) => {
-		const key = row["Cust.ID"];
+		const key = row['Cust.ID'];
 		if (!customerData[key]) customerData[key] = 0;
-		customerData[key] += row["Insp(Lot)"];
+		customerData[key] += row['Insp(Lot)'];
 	});
 
 	state.charts.customer.data.labels = Object.keys(customerData);
@@ -1388,9 +1587,9 @@ const updateChartsWithLineFilter = () => {
 	// 3. Update Line Pie Chart
 	const lineData = {};
 	filteredData.forEach((row) => {
-		const key = row["Line"];
+		const key = row['Line'];
 		if (!lineData[key]) lineData[key] = 0;
-		lineData[key] += row["Insp(Lot)"];
+		lineData[key] += row['Insp(Lot)'];
 	});
 
 	state.charts.line.data.labels = Object.keys(lineData);
@@ -1398,53 +1597,90 @@ const updateChartsWithLineFilter = () => {
 	state.charts.line.update();
 };
 
-const downloadCleanedData = (type = "xlsx") => {
+const downloadCleanedData = (type = 'xlsx') => {
 	if (!state.processedData || state.processedData.length === 0) {
-		alert("No data available to download");
+		alert('No data available to download');
 		return;
 	}
 
 	const exportColumns = [
-		"Line", "Date", "Shift", "NoJig", "M/C No.", "NoCard", "Std Load",
-		"NoBarrelHanger", "NoBak", "Cust.ID", "Part.ID", "PartName",
-		"OK(pcs)", "Qty(NG)", "QInspec", "Insp(B/H)", "OK(B/H)", "NG(B/H)",
-		"% NG", "NG_%", "Warna", "Buram", "Berbayang", "Kotor", "Tdk Terplating",
-		"Rontok/ Blister", "Tipis/ EE No Plating", "Flek Kuning", "Terbakar",
-		"Watermark", "Jig Mark/ Renggang", "Lecet/ Scratch", "Seret", "Flek Hitam",
-		"Flek Tangan", "Belang/ Dempet", "Bintik", "Kilap", "Tebal", "Flek Putih",
-		"Spark", "Kotor H/ Oval", "Terkikis/ Crack", "Dimensi/ Penyok",
-		"MTL/ SLipMelintir", "Kategori",
+		'Line',
+		'Date',
+		'Shift',
+		'NoJig',
+		'M/C No.',
+		'NoCard',
+		'Std Load',
+		'NoBarrelHanger',
+		'NoBak',
+		'Cust.ID',
+		'Part.ID',
+		'PartName',
+		'OK(pcs)',
+		'Qty(NG)',
+		'QInspec',
+		'Insp(B/H)',
+		'OK(B/H)',
+		'NG(B/H)',
+		'% NG',
+		'NG_%',
+		'Warna',
+		'Buram',
+		'Berbayang',
+		'Kotor',
+		'Tdk Terplating',
+		'Rontok/ Blister',
+		'Tipis/ EE No Plating',
+		'Flek Kuning',
+		'Terbakar',
+		'Watermark',
+		'Jig Mark/ Renggang',
+		'Lecet/ Scratch',
+		'Seret',
+		'Flek Hitam',
+		'Flek Tangan',
+		'Belang/ Dempet',
+		'Bintik',
+		'Kilap',
+		'Tebal',
+		'Flek Putih',
+		'Spark',
+		'Kotor H/ Oval',
+		'Terkikis/ Crack',
+		'Dimensi/ Penyok',
+		'MTL/ SLipMelintir',
+		'Kategori',
 	];
 
-	const nonTrialData = state.processedData.filter(row => !row.isTrial);
+	const nonTrialData = state.processedData.filter((row) => !row.isTrial);
 
 	if (nonTrialData.length === 0) {
-		alert("No non-trial data available to download");
+		alert('No non-trial data available to download');
 		return;
 	}
 
 	const formatDateExtended = (date) => {
-		if (!date || isNaN(new Date(date).getTime())) return "";
+		if (!date || isNaN(new Date(date).getTime())) return '';
 		const d = new Date(date);
-		const pad = (n) => n.toString().padStart(2, "0");
+		const pad = (n) => n.toString().padStart(2, '0');
 		return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(
-			d.getHours()
+			d.getHours(),
 		)}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
 	};
 
 	const mappedData = nonTrialData.map((row) => {
 		const newRow = {};
 		exportColumns.forEach((header) => {
-			if (header === "NoBarrelHanger") {
-				newRow[header] = String(row["NoBH_NoLotMTL"] || "");
-			} else if (header === "% NG") {
-				newRow[header] = row["NG_%"] || 0;
-			} else if (header === "Date") {
-				newRow[header] = formatDateExtended(row["DateObj"] || row["Date"]);
-			} else if (["M/C No.", "NoCard", "NoBak"].includes(header)) {
-				newRow[header] = row[header] !== undefined ? String(row[header]) : "";
+			if (header === 'NoBarrelHanger') {
+				newRow[header] = String(row['NoBH_NoLotMTL'] || '');
+			} else if (header === '% NG') {
+				newRow[header] = row['NG_%'] || 0;
+			} else if (header === 'Date') {
+				newRow[header] = formatDateExtended(row['DateObj'] || row['Date']);
+			} else if (['M/C No.', 'NoCard', 'NoBak'].includes(header)) {
+				newRow[header] = row[header] !== undefined ? String(row[header]) : '';
 			} else {
-				newRow[header] = row[header] !== undefined ? row[header] : "";
+				newRow[header] = row[header] !== undefined ? row[header] : '';
 			}
 		});
 		return newRow;
@@ -1453,35 +1689,39 @@ const downloadCleanedData = (type = "xlsx") => {
 	const ws = XLSX.utils.json_to_sheet(mappedData, { header: exportColumns });
 
 	// Force types and formats for specific columns
-	const range = XLSX.utils.decode_range(ws["!ref"]);
+	const range = XLSX.utils.decode_range(ws['!ref']);
 	for (let R = range.s.r + 1; R <= range.e.r; ++R) {
 		exportColumns.forEach((header, C) => {
 			const address = XLSX.utils.encode_cell({ r: R, c: C });
 			if (!ws[address]) return;
 
-			if (["M/C No.", "NoCard", "NoBarrelHanger", "NoBak", "Date"].includes(header)) {
-				ws[address].t = "s"; // Force as String
+			if (
+				['M/C No.', 'NoCard', 'NoBarrelHanger', 'NoBak', 'Date'].includes(
+					header,
+				)
+			) {
+				ws[address].t = 's'; // Force as String
 			}
 		});
 	}
 
 	const wb = XLSX.utils.book_new();
-	XLSX.utils.book_append_sheet(wb, ws, "Cleaned Data");
+	XLSX.utils.book_append_sheet(wb, ws, 'Cleaned Data');
 
-	const timestamp = new Date().toISOString().split("T")[0];
+	const timestamp = new Date().toISOString().split('T')[0];
 	// Export as XLSX to ensure Excel respects types and formatting
 	XLSX.writeFile(wb, `File_after_Cleaning_CleanerPro_${timestamp}.xlsx`);
 };
 
 const createSummaryTableHTML = (title, tableData, metricKey, formatFn) => {
 	const { rows, grandTotal } = tableData;
-	const headers = ["Date/Shift", "B4", "Ni", "R1", "Total"];
+	const headers = ['Date/Shift', 'B4', 'Ni', 'R1', 'Total'];
 
 	const tableRows = rows
 		.map((row) => {
-			const b4 = row.lines["Barrel 4"][metricKey];
-			const ni = row.lines["Nickel"][metricKey];
-			const r1 = row.lines["Rack 1"][metricKey];
+			const b4 = row.lines['Barrel 4'][metricKey];
+			const ni = row.lines['Nickel'][metricKey];
+			const r1 = row.lines['Rack 1'][metricKey];
 			const tot = row.total[metricKey];
 
 			return `
@@ -1490,41 +1730,41 @@ const createSummaryTableHTML = (title, tableData, metricKey, formatFn) => {
 								row.name
 							}</td>
               <td class="py-3 px-4 text-xs text-slate-600 dark:text-slate-400">${formatFn(
-								b4
+								b4,
 							)}</td>
               <td class="py-3 px-4 text-xs text-slate-600 dark:text-slate-400">${formatFn(
-								ni
+								ni,
 							)}</td>
               <td class="py-3 px-4 text-xs text-slate-600 dark:text-slate-400">${formatFn(
-								r1
+								r1,
 							)}</td>
               <td class="py-3 px-4 text-xs text-slate-900 dark:text-white font-bold">${formatFn(
-								tot
+								tot,
 							)}</td>
           </tr>
       `;
 		})
-		.join("");
+		.join('');
 
-	const gtB4 = grandTotal.lines["Barrel 4"][metricKey];
-	const gtNi = grandTotal.lines["Nickel"][metricKey];
-	const gtR1 = grandTotal.lines["Rack 1"][metricKey];
+	const gtB4 = grandTotal.lines['Barrel 4'][metricKey];
+	const gtNi = grandTotal.lines['Nickel'][metricKey];
+	const gtR1 = grandTotal.lines['Rack 1'][metricKey];
 	const gtTot = grandTotal.total[metricKey];
 
 	const footerRow = `
       <tr class="bg-blue-50 dark:bg-slate-700/30 font-bold">
           <td class="py-3 px-4 text-xs text-slate-900 dark:text-white">Total</td>
           <td class="py-3 px-4 text-xs text-slate-900 dark:text-white">${formatFn(
-						gtB4
+						gtB4,
 					)}</td>
           <td class="py-3 px-4 text-xs text-slate-900 dark:text-white">${formatFn(
-						gtNi
+						gtNi,
 					)}</td>
           <td class="py-3 px-4 text-xs text-slate-900 dark:text-white">${formatFn(
-						gtR1
+						gtR1,
 					)}</td>
           <td class="py-3 px-4 text-xs text-slate-900 dark:text-white">${formatFn(
-						gtTot
+						gtTot,
 					)}</td>
       </tr>
   `;
@@ -1541,9 +1781,9 @@ const createSummaryTableHTML = (title, tableData, metricKey, formatFn) => {
                           ${headers
 														.map(
 															(h) =>
-																`<th class="py-3 px-4 font-semibold">${h}</th>`
+																`<th class="py-3 px-4 font-semibold">${h}</th>`,
 														)
-														.join("")}
+														.join('')}
                       </tr>
                   </thead>
                   <tbody>
@@ -1559,7 +1799,7 @@ const createSummaryTableHTML = (title, tableData, metricKey, formatFn) => {
 };
 
 const renderLineMonthlyCharts = () => {
-	const container = document.getElementById("lineMonthlyChartsArea");
+	const container = document.getElementById('lineMonthlyChartsArea');
 	if (!container || !state.summaryTables || !state.summaryTables.byMonth)
 		return;
 
@@ -1567,7 +1807,7 @@ const renderLineMonthlyCharts = () => {
 
 	// Prepare data for each line
 	const labels = rows.map((row) => row.name); // Month-Year labels
-	const lines = ["Barrel 4", "Rack 1", "Nickel"];
+	const lines = ['Barrel 4', 'Rack 1', 'Nickel'];
 
 	// Create title section with description
 	const titleHTML = `
@@ -1587,12 +1827,12 @@ const renderLineMonthlyCharts = () => {
         <div class="glass-panel p-6">
           <h3 class="text-slate-900 dark:text-white font-medium mb-4 text-center">Line ${line}</h3>
           <div class="h-80">
-            <canvas id="lineMonthlyChart-${line.replace(/\s+/g, "-")}"></canvas>
+            <canvas id="lineMonthlyChart-${line.replace(/\s+/g, '-')}"></canvas>
           </div>
         </div>
-      `
+      `,
 				)
-				.join("")}
+				.join('')}
     </div>
   `;
 
@@ -1600,8 +1840,8 @@ const renderLineMonthlyCharts = () => {
 
 	// Render each chart
 	lines.forEach((line) => {
-		const canvasId = `lineMonthlyChart-${line.replace(/\s+/g, "-")}`;
-		const ctx = document.getElementById(canvasId)?.getContext("2d");
+		const canvasId = `lineMonthlyChart-${line.replace(/\s+/g, '-')}`;
+		const ctx = document.getElementById(canvasId)?.getContext('2d');
 		if (!ctx) return;
 
 		// Extract data for this line
@@ -1618,7 +1858,7 @@ const renderLineMonthlyCharts = () => {
 		const suggestedMaxNG = maxNG * 1.1;
 
 		// Create chart
-		const chartKey = `lineMonthly_${line.replace(/\s+/g, "_")}`;
+		const chartKey = `lineMonthly_${line.replace(/\s+/g, '_')}`;
 
 		// Destroy existing chart if any
 		if (state.charts[chartKey]) {
@@ -1626,35 +1866,36 @@ const renderLineMonthlyCharts = () => {
 		}
 
 		state.charts[chartKey] = new Chart(ctx, {
-			type: "bar",
+			type: 'bar',
 			data: {
 				labels: labels,
 				datasets: [
 					{
-						label: "Qty Inspected (lot)",
+						label: 'Qty Inspected (lot)',
 						data: qtyInspected,
-						backgroundColor: "#0d9488", // Teal
-						borderColor: "#0d9488",
+						backgroundColor: '#0d9488', // Teal
+						borderColor: '#0d9488',
 						borderWidth: 1,
-						yAxisID: "y",
+						yAxisID: 'y',
 						order: 2,
 						barThickness: 30,
 						datalabels: {
-							anchor: "end",
-							align: "top",
-							color: document.documentElement.classList.contains("dark")
-								? "#fff"
-								: "#07090eff",
-							font: { weight: "bold", size: 9 },
+							anchor: 'end',
+							align: 'top',
+							color:
+								document.documentElement.classList.contains('dark') ?
+									'#fff'
+								:	'#07090eff',
+							font: { weight: 'bold', size: 9 },
 							formatter: (value) => value.toFixed(2),
 						},
 					},
 					{
-						label: "NG Ratio (%)",
+						label: 'NG Ratio (%)',
 						data: ngRatio,
-						type: "line",
-						borderColor: "#ef4444", // Red
-						backgroundColor: "#ef4444",
+						type: 'line',
+						borderColor: '#ef4444', // Red
+						backgroundColor: '#ef4444',
 						borderWidth: 2,
 						pointRadius: (context) => {
 							// Make points larger for very small values to ensure visibility
@@ -1669,21 +1910,21 @@ const renderLineMonthlyCharts = () => {
 							// Different color for very small values
 							const value = context.parsed?.y || 0;
 							if (value > 0 && value < 0.1) {
-								return "#fbbf24"; // Yellow for very small values
+								return '#fbbf24'; // Yellow for very small values
 							}
-							return "#ef4444"; // Red for normal values
+							return '#ef4444'; // Red for normal values
 						},
-						pointBorderColor: "#fff",
+						pointBorderColor: '#fff',
 						pointBorderWidth: 2,
 						pointStyle: (context) => {
 							// Use triangle for very small values to make them stand out
 							const value = context.parsed?.y || 0;
 							if (value > 0 && value < 0.1) {
-								return "triangle";
+								return 'triangle';
 							}
-							return "circle";
+							return 'circle';
 						},
-						yAxisID: "y1",
+						yAxisID: 'y1',
 						order: 1,
 						tension: 0.4,
 						spanGaps: false,
@@ -1691,7 +1932,7 @@ const renderLineMonthlyCharts = () => {
 							align: (context) => {
 								const value = context.dataset.data[context.dataIndex];
 								// Position label higher for very small values
-								return value > 0 && value < 0.1 ? "end" : "top";
+								return value > 0 && value < 0.1 ? 'end' : 'top';
 							},
 							offset: (context) => {
 								const value = context.dataset.data[context.dataIndex];
@@ -1701,9 +1942,9 @@ const renderLineMonthlyCharts = () => {
 							color: (context) => {
 								const value = context.dataset.data[context.dataIndex];
 								// Yellow text for very small values
-								return value > 0 && value < 0.1 ? "#fbbf24" : "#ef4444";
+								return value > 0 && value < 0.1 ? '#fbbf24' : '#ef4444';
 							},
-							font: { weight: "bold", size: 9 },
+							font: { weight: 'bold', size: 9 },
 							formatter: (value) => value.toFixed(2),
 						},
 					},
@@ -1713,16 +1954,17 @@ const renderLineMonthlyCharts = () => {
 				responsive: true,
 				maintainAspectRatio: false,
 				interaction: {
-					mode: "index",
+					mode: 'index',
 					intersect: false,
 				},
 				plugins: {
 					legend: {
-						position: "bottom",
+						position: 'bottom',
 						labels: {
-							color: document.documentElement.classList.contains("dark")
-								? "#94a3b8"
-								: "#475569",
+							color:
+								document.documentElement.classList.contains('dark') ?
+									'#94a3b8'
+								:	'#475569',
 							font: { size: 11 },
 							padding: 10,
 						},
@@ -1730,24 +1972,25 @@ const renderLineMonthlyCharts = () => {
 					title: {
 						display: true,
 						text: `Qty Inps (lot) Vs NG (%) - Line ${line}`,
-						color: document.documentElement.classList.contains("dark")
-							? "#ffffff"
-							: "#1e293b",
-						font: { size: 13, weight: "bold" },
+						color:
+							document.documentElement.classList.contains('dark') ?
+								'#ffffff'
+							:	'#1e293b',
+						font: { size: 13, weight: 'bold' },
 					},
 					tooltip: {
-						mode: "index",
+						mode: 'index',
 						intersect: false,
 						callbacks: {
 							label: function (context) {
-								let label = context.dataset.label || "";
+								let label = context.dataset.label || '';
 								if (label) {
-									label += ": ";
+									label += ': ';
 								}
 								if (context.parsed.y !== null) {
 									label += context.parsed.y.toFixed(2);
-									if (context.dataset.yAxisID === "y1") {
-										label += "%";
+									if (context.dataset.yAxisID === 'y1') {
+										label += '%';
 									}
 								}
 								return label;
@@ -1757,51 +2000,53 @@ const renderLineMonthlyCharts = () => {
 				},
 				scales: {
 					y: {
-						type: "linear",
+						type: 'linear',
 						display: true,
-						position: "left",
+						position: 'left',
 						beginAtZero: true,
 						suggestedMax: suggestedMaxQty,
 						title: {
 							display: true,
-							text: "Qty Inspected (lot)",
-							color: "#0d9488",
-							font: { size: 11, weight: "bold" },
+							text: 'Qty Inspected (lot)',
+							color: '#0d9488',
+							font: { size: 11, weight: 'bold' },
 						},
 						grid: {
-							color: document.documentElement.classList.contains("dark")
-								? "#334155"
-								: "rgba(0, 0, 0, 0.1)",
+							color:
+								document.documentElement.classList.contains('dark') ?
+									'#334155'
+								:	'rgba(0, 0, 0, 0.1)',
 							drawOnChartArea: true,
 						},
 						ticks: {
-							color: document.documentElement.classList.contains("dark")
-								? "#94a3b8"
-								: "#475569",
+							color:
+								document.documentElement.classList.contains('dark') ?
+									'#94a3b8'
+								:	'#475569',
 							font: { size: 10 },
 						},
 					},
 					y1: {
-						type: "linear",
+						type: 'linear',
 						display: true,
-						position: "right",
+						position: 'right',
 						beginAtZero: true,
 						min: 0,
 						suggestedMax: suggestedMaxNG,
 						title: {
 							display: true,
-							text: "NG (%)",
-							color: "#ef4444",
-							font: { size: 11, weight: "bold" },
+							text: 'NG (%)',
+							color: '#ef4444',
+							font: { size: 11, weight: 'bold' },
 						},
 						grid: {
 							drawOnChartArea: false,
 						},
 						ticks: {
-							color: "#ef4444",
+							color: '#ef4444',
 							font: { size: 10 },
 							callback: function (value) {
-								return value.toFixed(1) + "%";
+								return value.toFixed(1) + '%';
 							},
 						},
 						afterBuildTicks: function (axis) {
@@ -1814,17 +2059,19 @@ const renderLineMonthlyCharts = () => {
 					x: {
 						title: {
 							display: true,
-							text: "Month-Year",
-							color: document.documentElement.classList.contains("dark")
-								? "#94a3b8"
-								: "#475569",
+							text: 'Month-Year',
+							color:
+								document.documentElement.classList.contains('dark') ?
+									'#94a3b8'
+								:	'#475569',
 							font: { size: 11 },
 						},
 						grid: { display: false },
 						ticks: {
-							color: document.documentElement.classList.contains("dark")
-								? "#94a3b8"
-								: "#475569",
+							color:
+								document.documentElement.classList.contains('dark') ?
+									'#94a3b8'
+								:	'#475569',
 							font: { size: 10 },
 							maxRotation: 45,
 							minRotation: 0,
@@ -1837,125 +2084,128 @@ const renderLineMonthlyCharts = () => {
 };
 
 const renderSummaryTables = () => {
-	const container = document.getElementById("summaryTablesArea");
+	const container = document.getElementById('summaryTablesArea');
 	if (!container || !state.summaryTables) return;
 
 	const { byMonth, byShift } = state.summaryTables;
 
-	const fmtPct = (val) => (typeof val === "number" ? val.toFixed(2) : val);
+	const fmtPct = (val) => (typeof val === 'number' ? val.toFixed(2) : val);
 	const fmtNum = (val) =>
-		typeof val === "number"
-			? val.toLocaleString("en-US", {
-					minimumFractionDigits: 2,
-					maximumFractionDigits: 2,
-			  })
-			: val;
+		typeof val === 'number' ?
+			val.toLocaleString('en-US', {
+				minimumFractionDigits: 2,
+				maximumFractionDigits: 2,
+			})
+		:	val;
 
 	container.innerHTML = `
       <div class="grid grid-cols-1 gap-6">
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
               ${createSummaryTableHTML(
-								"Table NG (%) by Line & Month",
+								'Table NG (%) by Line & Month',
 								byMonth,
-								"ngPercent",
-								fmtPct
+								'ngPercent',
+								fmtPct,
 							)}
               ${createSummaryTableHTML(
-								"Table Qty NG (lot) by Line & Month",
+								'Table Qty NG (lot) by Line & Month',
 								byMonth,
-								"ng",
-								fmtNum
+								'ng',
+								fmtNum,
 							)}
               ${createSummaryTableHTML(
-								"Table Qty Inspected (lot) by Line & Month",
+								'Table Qty Inspected (lot) by Line & Month',
 								byMonth,
-								"insp",
-								fmtNum
+								'insp',
+								fmtNum,
 							)}
           </div>
           
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
               ${createSummaryTableHTML(
-								"NG (%) by Line & Shift",
+								'NG (%) by Line & Shift',
 								byShift,
-								"ngPercent",
-								fmtPct
+								'ngPercent',
+								fmtPct,
 							)}
               ${createSummaryTableHTML(
-								"Qty NG(lot) by Line-Shift",
+								'Qty NG(lot) by Line-Shift',
 								byShift,
-								"ng",
-								fmtNum
+								'ng',
+								fmtNum,
 							)}
               ${createSummaryTableHTML(
-								"Qty Insp(lot) by Line-Shift",
+								'Qty Insp(lot) by Line-Shift',
 								byShift,
-								"insp",
-								fmtNum
+								'insp',
+								fmtNum,
 							)}
           </div>
       </div>
   `;
 
 	// Render Category Table
-	const categoryContainer = document.getElementById("categoryTableArea");
+	const categoryContainer = document.getElementById('categoryTableArea');
 	if (categoryContainer && state.summaryTables.categoryTableArray) {
 		const catData = state.summaryTables.categoryTableArray;
 
 		const catRows = catData
 			.map((row) => {
-				const isTotal = row.category === "Total";
-				const rowClass = isTotal
-					? "bg-blue-100 dark:bg-slate-700/30 font-bold"
-					: "border-b border-slate-200 dark:border-slate-700/50 hover:bg-blue-50 dark:hover:bg-slate-700/30 transition-colors";
-				const textClass = isTotal
-					? "text-slate-900 dark:text-white"
-					: "text-slate-600 dark:text-slate-400";
-				const nameClass = isTotal
-					? "text-slate-900 dark:text-white"
-					: "text-slate-700 dark:text-slate-300 font-medium";
+				const isTotal = row.category === 'Total';
+				const rowClass =
+					isTotal ?
+						'bg-blue-100 dark:bg-slate-700/30 font-bold'
+					:	'border-b border-slate-200 dark:border-slate-700/50 hover:bg-blue-50 dark:hover:bg-slate-700/30 transition-colors';
+				const textClass =
+					isTotal ?
+						'text-slate-900 dark:text-white'
+					:	'text-slate-600 dark:text-slate-400';
+				const nameClass =
+					isTotal ?
+						'text-slate-900 dark:text-white'
+					:	'text-slate-700 dark:text-slate-300 font-medium';
 
 				return `
               <tr class="${rowClass}">
                   <td class="py-3 px-4 ${nameClass}">${row.category}</td>
 				  <td class="text-red-600 dark:text-red-500 font-semibold py-3 px-4">${row.ngPercent.toFixed(
-					2
-				)}</td>
+						2,
+					)}</td>
                   <td class="py-3 px-4 ${textClass}">${row.qtyInspectedPcs.toLocaleString(
-					"en-US",
-					{ minimumFractionDigits: 0, maximumFractionDigits: 0 }
-				)}</td>
+										'en-US',
+										{ minimumFractionDigits: 0, maximumFractionDigits: 0 },
+									)}</td>
                   <td class="text-red-600 dark:text-red-500 font-semibold py-3 px-4">${row.qtyNgPcs.toLocaleString(
-					"en-US",
-					{ minimumFractionDigits: 0, maximumFractionDigits: 0 }
-				)}</td>
+										'en-US',
+										{ minimumFractionDigits: 0, maximumFractionDigits: 0 },
+									)}</td>
                   <td class="py-3 px-4 ${textClass}">${row.qtyInspectedLot.toLocaleString(
-					"en-US",
-					{ minimumFractionDigits: 2, maximumFractionDigits: 2 }
-				)}</td>
+										'en-US',
+										{ minimumFractionDigits: 2, maximumFractionDigits: 2 },
+									)}</td>
                   <td class="text-red-600 dark:text-red-500 font-semibold py-3 px-4">${row.qtyNgLot.toLocaleString(
-					"en-US",
-					{ minimumFractionDigits: 2, maximumFractionDigits: 2 }
-				)}</td>
+										'en-US',
+										{ minimumFractionDigits: 2, maximumFractionDigits: 2 },
+									)}</td>
                   
               </tr>
           `;
 			})
-			.join("");
+			.join('');
 
 		// Category Line Tables
-		let categoryLineTablesHTML = "";
+		let categoryLineTablesHTML = '';
 		if (state.summaryTables.categoryLineTables) {
 			const { rows, grandTotal } = state.summaryTables.categoryLineTables;
 
 			const createCatLineTable = (title, metricKey, formatFn) => {
-				const headers = ["Kategori", "B4", "Ni", "R1", "Total"];
+				const headers = ['Kategori', 'B4', 'Ni', 'R1', 'Total'];
 
 				const tableRows = rows
 					.map((row) => {
-						const b4 = row.lines["Barrel 4"][metricKey];
-						const ni = row.lines["Nickel"][metricKey];
-						const r1 = row.lines["Rack 1"][metricKey];
+						const b4 = row.lines['Barrel 4'][metricKey];
+						const ni = row.lines['Nickel'][metricKey];
+						const r1 = row.lines['Rack 1'][metricKey];
 						const tot = row.total[metricKey];
 
 						return `
@@ -1964,41 +2214,41 @@ const renderSummaryTables = () => {
 														row.category
 													}</td>
                           <td class="py-3 px-4 text-xs text-slate-600 dark:text-slate-400">${formatFn(
-														b4
+														b4,
 													)}</td>
                           <td class="py-3 px-4 text-xs text-slate-600 dark:text-slate-400">${formatFn(
-														ni
+														ni,
 													)}</td>
                           <td class="py-3 px-4 text-xs text-slate-600 dark:text-slate-400">${formatFn(
-														r1
+														r1,
 													)}</td>
                           <td class="py-3 px-4 text-xs text-slate-900 dark:text-white">${formatFn(
-														tot
+														tot,
 													)}</td>
                       </tr>
                   `;
 					})
-					.join("");
+					.join('');
 
-				const gtB4 = grandTotal.lines["Barrel 4"][metricKey];
-				const gtNi = grandTotal.lines["Nickel"][metricKey];
-				const gtR1 = grandTotal.lines["Rack 1"][metricKey];
+				const gtB4 = grandTotal.lines['Barrel 4'][metricKey];
+				const gtNi = grandTotal.lines['Nickel'][metricKey];
+				const gtR1 = grandTotal.lines['Rack 1'][metricKey];
 				const gtTot = grandTotal.total[metricKey];
 
 				const footerRow = `
                   <tr class="bg-blue-50 dark:bg-slate-700/30 font-bold">
                       <td class="py-3 px-4 text-xs text-slate-900 dark:text-white">Total</td>
                       <td class="py-3 px-4 text-xs text-slate-900 dark:text-white">${formatFn(
-												gtB4
+												gtB4,
 											)}</td>
                       <td class="py-3 px-4 text-xs text-slate-900 dark:text-white">${formatFn(
-												gtNi
+												gtNi,
 											)}</td>
                       <td class="py-3 px-4 text-xs text-slate-900 dark:text-white">${formatFn(
-												gtR1
+												gtR1,
 											)}</td>
                       <td class="py-3 px-4 text-xs text-slate-900 dark:text-white">${formatFn(
-												gtTot
+												gtTot,
 											)}</td>
                   </tr>
               `;
@@ -2018,9 +2268,9 @@ const renderSummaryTables = () => {
                                       ${headers
 																				.map(
 																					(h) =>
-																						`<th class="py-3 px-4 font-semibold">${h}</th>`
+																						`<th class="py-3 px-4 font-semibold">${h}</th>`,
 																				)
-																				.join("")}
+																				.join('')}
                                   </tr>
                               </thead>
                               <tbody>
@@ -2040,19 +2290,19 @@ const renderSummaryTables = () => {
               <div class="border-2 border-orange-500/50 rounded-lg p-4 mt-6">
                   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                       ${createCatLineTable(
-												"Tabel Qty Inspected (pcs)",
-												"inspPcs",
+												'Tabel Qty Inspected (pcs)',
+												'inspPcs',
 												(v) =>
-													v.toLocaleString("en-US", {
+													v.toLocaleString('en-US', {
 														minimumFractionDigits: 0,
 														maximumFractionDigits: 0,
-													})
+													}),
 											)}
-                      ${createCatLineTable("Tabel Qty NG (pcs)", "ngPcs", (v) =>
-												v.toLocaleString("en-US", {
+                      ${createCatLineTable('Tabel Qty NG (pcs)', 'ngPcs', (v) =>
+												v.toLocaleString('en-US', {
 													minimumFractionDigits: 0,
 													maximumFractionDigits: 0,
-												})
+												}),
 											)}
                   </div>
               </div>
@@ -2060,20 +2310,20 @@ const renderSummaryTables = () => {
               <!-- LOT Tables (Green Border) -->
               <div class="border-2 border-green-500/50 rounded-lg p-4 mt-6">
                   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                      ${createCatLineTable("Tabel Qty NG (lot)", "ngLot", (v) =>
-												v.toLocaleString("en-US", {
+                      ${createCatLineTable('Tabel Qty NG (lot)', 'ngLot', (v) =>
+												v.toLocaleString('en-US', {
 													minimumFractionDigits: 2,
 													maximumFractionDigits: 2,
-												})
+												}),
 											)}
                       ${createCatLineTable(
-												"Tabel Qty Inspected (lot)",
-												"inspLot",
+												'Tabel Qty Inspected (lot)',
+												'inspLot',
 												(v) =>
-													v.toLocaleString("en-US", {
+													v.toLocaleString('en-US', {
 														minimumFractionDigits: 2,
 														maximumFractionDigits: 2,
-													})
+													}),
 											)}
                   </div>
               </div>
@@ -2111,47 +2361,50 @@ const renderSummaryTables = () => {
 
 		// Add Event Listeners for Export Buttons
 		setTimeout(() => {
-			const catBtn = document.getElementById("exportCategoryTableBtn");
+			const catBtn = document.getElementById('exportCategoryTableBtn');
 			if (catBtn) {
-				catBtn.addEventListener("click", () => {
+				catBtn.addEventListener('click', () => {
 					exportCategoryTableToCSV(state.summaryTables.categoryTableArray);
 				});
 			}
 
 			// Listeners for Category Line Tables
 			const lineTableMetrics = [
-				{ key: "inspPcs", title: "Tabel Qty Inspected (pcs)" },
-				{ key: "ngPcs", title: "Tabel Qty NG (pcs)" },
-				{ key: "ngLot", title: "Tabel Qty NG (lot)" },
-				{ key: "inspLot", title: "Tabel Qty Inspected (lot)" }
+				{ key: 'inspPcs', title: 'Tabel Qty Inspected (pcs)' },
+				{ key: 'ngPcs', title: 'Tabel Qty NG (pcs)' },
+				{ key: 'ngLot', title: 'Tabel Qty NG (lot)' },
+				{ key: 'inspLot', title: 'Tabel Qty Inspected (lot)' },
 			];
 
-			lineTableMetrics.forEach(metric => {
+			lineTableMetrics.forEach((metric) => {
 				const btn = document.getElementById(`export-btn-${metric.key}`);
 				if (btn) {
-					btn.addEventListener("click", () => {
-						 exportCategoryLineTableToCSV(state.summaryTables.categoryLineTables, metric.key, metric.title);
+					btn.addEventListener('click', () => {
+						exportCategoryLineTableToCSV(
+							state.summaryTables.categoryLineTables,
+							metric.key,
+							metric.title,
+						);
 					});
 				}
 			});
 		}, 0);
-
 	}
 };
 
 const renderParetoCharts = () => {
-	const container = document.getElementById("paretoChartArea");
+	const container = document.getElementById('paretoChartArea');
 	if (!container || !state.chartsData || !state.chartsData.paretoData) return;
 
 	const paretoData = state.chartsData.paretoData;
-	const lines = ["Barrel 4", "Rack 1"]; // Only these two as per request/image
+	const lines = ['Barrel 4', 'Rack 1']; // Only these two as per request/image
 
 	// Clear previous content
-	container.innerHTML = "";
+	container.innerHTML = '';
 
 	// Create Grid Container
-	const gridDiv = document.createElement("div");
-	gridDiv.className = "grid grid-cols-1 lg:grid-cols-2 gap-6";
+	const gridDiv = document.createElement('div');
+	gridDiv.className = 'grid grid-cols-1 lg:grid-cols-2 gap-6';
 	container.appendChild(gridDiv);
 
 	lines.forEach((line) => {
@@ -2163,63 +2416,64 @@ const renderParetoCharts = () => {
 		const cumulative = data.map((d) => d.cumulativePct);
 
 		// Create Chart Card
-		const card = document.createElement("div");
-		card.className = "glass-panel p-6";
+		const card = document.createElement('div');
+		card.className = 'glass-panel p-6';
 
-		const title = document.createElement("h3");
-		title.className = "text-slate-800 dark:text-white font-medium mb-4";
+		const title = document.createElement('h3');
+		title.className = 'text-slate-800 dark:text-white font-medium mb-4';
 		title.textContent = `Pareto Chart: Total NG (lot) per Defect Type - Line ${line}`;
 		card.appendChild(title);
 
-		const canvasContainer = document.createElement("div");
-		canvasContainer.className = "h-80";
-		const canvas = document.createElement("canvas");
-		canvas.id = `paretoChart-${line.replace(/\s+/g, "-")}`;
+		const canvasContainer = document.createElement('div');
+		canvasContainer.className = 'h-80';
+		const canvas = document.createElement('canvas');
+		canvas.id = `paretoChart-${line.replace(/\s+/g, '-')}`;
 		canvasContainer.appendChild(canvas);
 		card.appendChild(canvasContainer);
 
 		gridDiv.appendChild(card);
 
 		// Render Chart
-		const ctx = canvas.getContext("2d");
+		const ctx = canvas.getContext('2d');
 
 		// Colors based on line (matching app.py roughly)
-		const barColorHex = line === "Barrel 4" ? "#637cceff" : "#fda4af";
+		const barColorHex = line === 'Barrel 4' ? '#637cceff' : '#fda4af';
 
 		new Chart(ctx, {
-			type: "bar",
+			type: 'bar',
 			data: {
 				labels: labels,
 				datasets: [
 					{
-						label: "Total NG (lot)",
+						label: 'Total NG (lot)',
 						data: counts,
 						backgroundColor: barColorHex,
 						order: 2,
-						yAxisID: "y",
+						yAxisID: 'y',
 						datalabels: {
-							anchor: "end",
-							align: "top",
-							color: document.documentElement.classList.contains("dark")
-								? "#fff"
-								: "#1e293b",
+							anchor: 'end',
+							align: 'top',
+							color:
+								document.documentElement.classList.contains('dark') ?
+									'#fff'
+								:	'#1e293b',
 							formatter: (val) => val.toFixed(2),
 						},
 					},
 					{
-						label: "Cumulative %",
+						label: 'Cumulative %',
 						data: cumulative,
-						type: "line",
-						borderColor: "#f59e0b", // Orange
-						backgroundColor: "#f59e0b",
+						type: 'line',
+						borderColor: '#f59e0b', // Orange
+						backgroundColor: '#f59e0b',
 						borderWidth: 2,
 						pointRadius: 4,
-						yAxisID: "y1",
+						yAxisID: 'y1',
 						order: 1,
 						datalabels: {
-							align: "top",
-							color: "#f59e0b",
-							formatter: (val) => val.toFixed(1) + "%",
+							align: 'top',
+							color: '#f59e0b',
+							formatter: (val) => val.toFixed(1) + '%',
 						},
 					},
 				],
@@ -2230,68 +2484,75 @@ const renderParetoCharts = () => {
 				plugins: {
 					legend: {
 						labels: {
-							color: document.documentElement.classList.contains("dark")
-								? "#ffffffff"
-								: "#475569",
+							color:
+								document.documentElement.classList.contains('dark') ?
+									'#ffffffff'
+								:	'#475569',
 						},
 					},
 					tooltip: {
-						mode: "index",
+						mode: 'index',
 						intersect: false,
 					},
 				},
 				scales: {
 					y: {
-						type: "linear",
+						type: 'linear',
 						display: true,
-						position: "left",
+						position: 'left',
 						title: {
 							display: true,
-							text: "Total NG (lot)",
-							color: document.documentElement.classList.contains("dark")
-								? "#94a3b8"
-								: "#475569",
+							text: 'Total NG (lot)',
+							color:
+								document.documentElement.classList.contains('dark') ?
+									'#94a3b8'
+								:	'#475569',
 						},
 						grid: {
-							color: document.documentElement.classList.contains("dark")
-								? "#334155"
-								: "rgba(0,0,0,0.1)",
+							color:
+								document.documentElement.classList.contains('dark') ?
+									'#334155'
+								:	'rgba(0,0,0,0.1)',
 						},
 						ticks: {
-							color: document.documentElement.classList.contains("dark")
-								? "#94a3b8"
-								: "#475569",
+							color:
+								document.documentElement.classList.contains('dark') ?
+									'#94a3b8'
+								:	'#475569',
 						},
 					},
 					y1: {
-						type: "linear",
+						type: 'linear',
 						display: true,
-						position: "right",
+						position: 'right',
 						title: {
 							display: true,
-							text: "Cumulative %",
-							color: document.documentElement.classList.contains("dark")
-								? "#94a3b8"
-								: "#475569",
+							text: 'Cumulative %',
+							color:
+								document.documentElement.classList.contains('dark') ?
+									'#94a3b8'
+								:	'#475569',
 						},
 						min: 0,
 						max: 110,
 						grid: { display: false },
 						ticks: {
-							color: document.documentElement.classList.contains("dark")
-								? "#94a3b8"
-								: "#475569",
+							color:
+								document.documentElement.classList.contains('dark') ?
+									'#94a3b8'
+								:	'#475569',
 							callback: function (value) {
-								return value + "%";
+								return value + '%';
 							},
 						},
 					},
 					x: {
 						grid: { display: false },
 						ticks: {
-							color: document.documentElement.classList.contains("dark")
-								? "#94a3b8"
-								: "#475569",
+							color:
+								document.documentElement.classList.contains('dark') ?
+									'#94a3b8'
+								:	'#475569',
 						},
 					},
 				},
@@ -2301,19 +2562,19 @@ const renderParetoCharts = () => {
 };
 
 const renderParetoCustCharts = () => {
-	const container = document.getElementById("paretoCustChartArea");
+	const container = document.getElementById('paretoCustChartArea');
 	if (!container || !state.chartsData || !state.chartsData.paretoCustData)
 		return;
 
 	const paretoCustData = state.chartsData.paretoCustData;
-	const lines = ["Barrel 4", "Rack 1"];
+	const lines = ['Barrel 4', 'Rack 1'];
 
 	// Clear previous content
-	container.innerHTML = "";
+	container.innerHTML = '';
 
 	// Create Grid Container
-	const gridDiv = document.createElement("div");
-	gridDiv.className = "grid grid-cols-1 lg:grid-cols-2 gap-6";
+	const gridDiv = document.createElement('div');
+	gridDiv.className = 'grid grid-cols-1 lg:grid-cols-2 gap-6';
 	container.appendChild(gridDiv);
 
 	lines.forEach((line) => {
@@ -2325,69 +2586,70 @@ const renderParetoCustCharts = () => {
 		const cumulative = data.map((d) => d.cumulativePct);
 
 		// Create Chart Card
-		const card = document.createElement("div");
-		card.className = "glass-panel p-6";
+		const card = document.createElement('div');
+		card.className = 'glass-panel p-6';
 
-		const title = document.createElement("h3");
-		title.className = "text-slate-800 dark:text-white font-medium mb-4";
+		const title = document.createElement('h3');
+		title.className = 'text-slate-800 dark:text-white font-medium mb-4';
 		title.textContent = `Pareto Chart: Qty NG (lot) per Cust.ID - ${line}`;
 		card.appendChild(title);
 
-		const canvasContainer = document.createElement("div");
-		canvasContainer.className = "h-80";
-		const canvas = document.createElement("canvas");
-		canvas.id = `paretoCustChart-${line.replace(/\s+/g, "-")}`;
+		const canvasContainer = document.createElement('div');
+		canvasContainer.className = 'h-80';
+		const canvas = document.createElement('canvas');
+		canvas.id = `paretoCustChart-${line.replace(/\s+/g, '-')}`;
 		canvasContainer.appendChild(canvas);
 		card.appendChild(canvasContainer);
 
 		gridDiv.appendChild(card);
 
 		// Render Chart
-		const ctx = canvas.getContext("2d");
+		const ctx = canvas.getContext('2d');
 
 		// Colors: Dark Blue for bars, Orange for line
-		const barColorHex = "#1e3a8a"; // blue-900 like
+		const barColorHex = '#1e3a8a'; // blue-900 like
 
 		new Chart(ctx, {
-			type: "bar",
+			type: 'bar',
 			data: {
 				labels: labels,
 				datasets: [
 					{
-						label: "Qty NG (Lot)",
+						label: 'Qty NG (Lot)',
 						data: counts,
 						backgroundColor: (ctx) => {
 							// Gradient for bars
 							const gradient = ctx.chart.ctx.createLinearGradient(0, 0, 0, 400);
-							gradient.addColorStop(0, "#6366f1"); // Indigo 500
-							gradient.addColorStop(1, "#1e1b4b"); // Indigo 950
+							gradient.addColorStop(0, '#6366f1'); // Indigo 500
+							gradient.addColorStop(1, '#1e1b4b'); // Indigo 950
 							return gradient;
 						},
 						order: 2,
-						yAxisID: "y",
+						yAxisID: 'y',
 						datalabels: {
-							anchor: "end",
-							align: "top",
-							color: document.documentElement.classList.contains("dark")
-								? "#fff"
-								: "#1e293b",
+							anchor: 'end',
+							align: 'top',
+							color:
+								document.documentElement.classList.contains('dark') ?
+									'#fff'
+								:	'#1e293b',
 							formatter: (val) => val.toFixed(2),
 						},
 					},
 					{
-						label: "Cumulative %",
+						label: 'Cumulative %',
 						data: cumulative,
-						type: "line",
-						borderColor: "#f59e0b", // Orange
-						backgroundColor: "#f59e0b",
+						type: 'line',
+						borderColor: '#f59e0b', // Orange
+						backgroundColor: '#f59e0b',
 						borderWidth: 2,
 						pointRadius: 4,
-						yAxisID: "y1",
+						yAxisID: 'y1',
 						order: 1,
 						datalabels: {
-							align: "top",
-							color: "#f59e0b",
-							formatter: (val) => val.toFixed(1) + "%",
+							align: 'top',
+							color: '#f59e0b',
+							formatter: (val) => val.toFixed(1) + '%',
 						},
 					},
 				],
@@ -2398,75 +2660,83 @@ const renderParetoCustCharts = () => {
 				plugins: {
 					legend: {
 						labels: {
-							color: document.documentElement.classList.contains("dark")
-								? "#94a3b8"
-								: "#475569",
+							color:
+								document.documentElement.classList.contains('dark') ?
+									'#94a3b8'
+								:	'#475569',
 						},
 					},
 					tooltip: {
-						mode: "index",
+						mode: 'index',
 						intersect: false,
 					},
 				},
 				scales: {
 					y: {
-						type: "linear",
+						type: 'linear',
 						display: true,
-						position: "left",
+						position: 'left',
 						title: {
 							display: true,
-							text: "Qty NG (Lot)",
-							color: document.documentElement.classList.contains("dark")
-								? "#94a3b8"
-								: "#475569",
+							text: 'Qty NG (Lot)',
+							color:
+								document.documentElement.classList.contains('dark') ?
+									'#94a3b8'
+								:	'#475569',
 						},
 						grid: {
-							color: document.documentElement.classList.contains("dark")
-								? "#334155"
-								: "rgba(0,0,0,0.1)",
+							color:
+								document.documentElement.classList.contains('dark') ?
+									'#334155'
+								:	'rgba(0,0,0,0.1)',
 						},
 						ticks: {
-							color: document.documentElement.classList.contains("dark")
-								? "#94a3b8"
-								: "#475569",
+							color:
+								document.documentElement.classList.contains('dark') ?
+									'#94a3b8'
+								:	'#475569',
 						},
 					},
 					y1: {
-						type: "linear",
+						type: 'linear',
 						display: true,
-						position: "right",
+						position: 'right',
 						title: {
 							display: true,
-							text: "Cumulative %",
-							color: document.documentElement.classList.contains("dark")
-								? "#94a3b8"
-								: "#475569",
+							text: 'Cumulative %',
+							color:
+								document.documentElement.classList.contains('dark') ?
+									'#94a3b8'
+								:	'#475569',
 						},
 						min: 0,
 						max: 110,
 						grid: { display: false },
 						ticks: {
-							color: document.documentElement.classList.contains("dark")
-								? "#94a3b8"
-								: "#475569",
+							color:
+								document.documentElement.classList.contains('dark') ?
+									'#94a3b8'
+								:	'#475569',
 							callback: function (value) {
-								return value + "%";
+								return value + '%';
 							},
 						},
 					},
 					x: {
 						title: {
 							display: true,
-							text: "Cust.ID",
-							color: document.documentElement.classList.contains("dark")
-								? "#fff"
-								: "#1e293b",
+							text: 'Cust.ID',
+							color:
+								document.documentElement.classList.contains('dark') ?
+									'#fff'
+								:	'#1e293b',
 						},
 						grid: { display: false },
 						ticks: {
-							color: document.documentElement.classList.contains("dark")
-								? "#94a3b8"
-								: "#475569",
+							color:
+								document.documentElement.classList.contains('dark') ?
+									'#94a3b8'
+								:	'#475569',
 						},
 					},
 				},
@@ -2476,19 +2746,19 @@ const renderParetoCustCharts = () => {
 };
 
 const renderParetoPartCharts = () => {
-	const container = document.getElementById("paretoPartChartArea");
+	const container = document.getElementById('paretoPartChartArea');
 	if (!container || !state.chartsData || !state.chartsData.paretoPartData)
 		return;
 
 	const paretoPartData = state.chartsData.paretoPartData;
-	const lines = ["Barrel 4", "Rack 1"]; // Both lines as requested
+	const lines = ['Barrel 4', 'Rack 1']; // Both lines as requested
 
 	// Clear previous content
-	container.innerHTML = "";
+	container.innerHTML = '';
 
 	// Create Grid Container (Single column for vertical stacking)
-	const gridDiv = document.createElement("div");
-	gridDiv.className = "grid grid-cols-1 gap-6";
+	const gridDiv = document.createElement('div');
+	gridDiv.className = 'grid grid-cols-1 gap-6';
 	container.appendChild(gridDiv);
 
 	lines.forEach((line) => {
@@ -2503,67 +2773,68 @@ const renderParetoPartCharts = () => {
 		const cumulative = topData.map((d) => d.cumulativePct);
 
 		// Create Chart Card
-		const card = document.createElement("div");
-		card.className = "glass-panel p-6";
+		const card = document.createElement('div');
+		card.className = 'glass-panel p-6';
 
-		const title = document.createElement("h3");
-		title.className = "text-slate-800 dark:text-white font-medium mb-4";
+		const title = document.createElement('h3');
+		title.className = 'text-slate-800 dark:text-white font-medium mb-4';
 		// Update title based on line
-		const lineLabel = line === "Barrel 4" ? "LB4" : "LR1";
+		const lineLabel = line === 'Barrel 4' ? 'LB4' : 'LR1';
 		title.textContent = `Pareto Chart: NG (%) per Part Name - ${lineLabel}`;
 		card.appendChild(title);
 
-		const canvasContainer = document.createElement("div");
-		canvasContainer.className = "h-96"; // Taller for better visibility of x-axis labels
-		const canvas = document.createElement("canvas");
-		canvas.id = `paretoPartChart-${line.replace(/\s+/g, "-")}`;
+		const canvasContainer = document.createElement('div');
+		canvasContainer.className = 'h-96'; // Taller for better visibility of x-axis labels
+		const canvas = document.createElement('canvas');
+		canvas.id = `paretoPartChart-${line.replace(/\s+/g, '-')}`;
 		canvasContainer.appendChild(canvas);
 		card.appendChild(canvasContainer);
 
 		gridDiv.appendChild(card);
 
 		// Render Chart
-		const ctx = canvas.getContext("2d");
+		const ctx = canvas.getContext('2d');
 
 		// Different colors for different lines
-		const barColor = line === "Barrel 4" ? "#5eead4" : "#c084fc"; // Teal for B4, Purple for R1
+		const barColor = line === 'Barrel 4' ? '#5eead4' : '#c084fc'; // Teal for B4, Purple for R1
 
 		new Chart(ctx, {
-			type: "bar",
+			type: 'bar',
 			data: {
 				labels: labels,
 				datasets: [
 					{
-						label: "NG (%)",
+						label: 'NG (%)',
 						data: counts,
 						backgroundColor: barColor,
 						order: 2,
-						yAxisID: "y",
+						yAxisID: 'y',
 						datalabels: {
-							anchor: "end",
-							align: "top",
-							color: document.documentElement.classList.contains("dark")
-								? "#fff"
-								: "#1e293b",
+							anchor: 'end',
+							align: 'top',
+							color:
+								document.documentElement.classList.contains('dark') ?
+									'#fff'
+								:	'#1e293b',
 							font: { size: 10 },
 							formatter: (val) => val.toFixed(2),
 						},
 					},
 					{
-						label: "Cumulative %",
+						label: 'Cumulative %',
 						data: cumulative,
-						type: "line",
-						borderColor: "#f59e0b", // Orange
-						backgroundColor: "#f59e0b",
+						type: 'line',
+						borderColor: '#f59e0b', // Orange
+						backgroundColor: '#f59e0b',
 						borderWidth: 2,
 						pointRadius: 4,
-						yAxisID: "y1",
+						yAxisID: 'y1',
 						order: 1,
 						datalabels: {
-							align: "top",
-							color: "#f59e0b",
+							align: 'top',
+							color: '#f59e0b',
 							font: { size: 10 },
-							formatter: (val) => val.toFixed(1) + "%",
+							formatter: (val) => val.toFixed(1) + '%',
 						},
 					},
 				],
@@ -2574,75 +2845,83 @@ const renderParetoPartCharts = () => {
 				plugins: {
 					legend: {
 						labels: {
-							color: document.documentElement.classList.contains("dark")
-								? "#94a3b8"
-								: "#475569",
+							color:
+								document.documentElement.classList.contains('dark') ?
+									'#94a3b8'
+								:	'#475569',
 						},
 					},
 					tooltip: {
-						mode: "index",
+						mode: 'index',
 						intersect: false,
 					},
 				},
 				scales: {
 					y: {
-						type: "linear",
+						type: 'linear',
 						display: true,
-						position: "left",
+						position: 'left',
 						title: {
 							display: true,
-							text: "NG (%)",
-							color: document.documentElement.classList.contains("dark")
-								? "#94a3b8"
-								: "#475569",
+							text: 'NG (%)',
+							color:
+								document.documentElement.classList.contains('dark') ?
+									'#94a3b8'
+								:	'#475569',
 						},
 						grid: {
-							color: document.documentElement.classList.contains("dark")
-								? "#334155"
-								: "rgba(0,0,0,0.1)",
+							color:
+								document.documentElement.classList.contains('dark') ?
+									'#334155'
+								:	'rgba(0,0,0,0.1)',
 						},
 						ticks: {
-							color: document.documentElement.classList.contains("dark")
-								? "#94a3b8"
-								: "#475569",
+							color:
+								document.documentElement.classList.contains('dark') ?
+									'#94a3b8'
+								:	'#475569',
 						},
 					},
 					y1: {
-						type: "linear",
+						type: 'linear',
 						display: true,
-						position: "right",
+						position: 'right',
 						title: {
 							display: true,
-							text: "Cumulative %",
-							color: document.documentElement.classList.contains("dark")
-								? "#94a3b8"
-								: "#475569",
+							text: 'Cumulative %',
+							color:
+								document.documentElement.classList.contains('dark') ?
+									'#94a3b8'
+								:	'#475569',
 						},
 						min: 0,
 						max: 110,
 						grid: { display: false },
 						ticks: {
-							color: document.documentElement.classList.contains("dark")
-								? "#94a3b8"
-								: "#475569",
+							color:
+								document.documentElement.classList.contains('dark') ?
+									'#94a3b8'
+								:	'#475569',
 							callback: function (value) {
-								return value + "%";
+								return value + '%';
 							},
 						},
 					},
 					x: {
 						title: {
 							display: true,
-							text: "PartName",
-							color: document.documentElement.classList.contains("dark")
-								? "#fff"
-								: "#1e293b",
+							text: 'PartName',
+							color:
+								document.documentElement.classList.contains('dark') ?
+									'#fff'
+								:	'#1e293b',
 						},
 						grid: { display: false },
 						ticks: {
-							color: document.documentElement.classList.contains("dark")
-								? "#94a3b8"
-								: "#475569",
+							color:
+								document.documentElement.classList.contains('dark') ?
+									'#94a3b8'
+								:	'#475569',
 							maxRotation: 45,
 							minRotation: 45,
 						},
@@ -2654,63 +2933,63 @@ const renderParetoPartCharts = () => {
 };
 
 const renderMcNoChart = () => {
-	const container = document.getElementById("mcNoChartArea");
+	const container = document.getElementById('mcNoChartArea');
 	if (!container || !state.chartsData || !state.chartsData.mcNoData) return;
 
 	const mcNoData = state.chartsData.mcNoData;
 
 	// Clear previous content
-	container.innerHTML = "";
+	container.innerHTML = '';
 
 	// Create main container
-	const mainDiv = document.createElement("div");
-	mainDiv.className = "glass-panel p-6";
+	const mainDiv = document.createElement('div');
+	mainDiv.className = 'glass-panel p-6';
 
 	// Title
-	const title = document.createElement("h3");
-	title.className = "text-slate-800 dark:text-white font-medium mb-1";
+	const title = document.createElement('h3');
+	title.className = 'text-slate-800 dark:text-white font-medium mb-1';
 	title.textContent =
-		"Performa Produk Stamping | Qty Inspected/Lot vs (NG %) per M/C No.";
+		'Performa Produk Stamping | Qty Inspected/Lot vs (NG %) per M/C No.';
 	mainDiv.appendChild(title);
 
 	// Subtitle showing period (if available)
 	if (state.dateRange && state.dateRange.start && state.dateRange.end) {
-		const subtitle = document.createElement("p");
-		subtitle.className = "text-slate-600 dark:text-slate-400 text-sm mb-4";
+		const subtitle = document.createElement('p');
+		subtitle.className = 'text-slate-600 dark:text-slate-400 text-sm mb-4';
 		subtitle.textContent = `Periode dari Tanggal: ${state.dateRange.start} sampai Tanggal: ${state.dateRange.end}`;
 		mainDiv.appendChild(subtitle);
 	}
 
 	// Chart container
-	const canvasContainer = document.createElement("div");
-	canvasContainer.className = "h-96 mb-6";
-	const canvas = document.createElement("canvas");
-	canvas.id = "mcNoChart";
+	const canvasContainer = document.createElement('div');
+	canvasContainer.className = 'h-96 mb-6';
+	const canvas = document.createElement('canvas');
+	canvas.id = 'mcNoChart';
 	canvasContainer.appendChild(canvas);
 	mainDiv.appendChild(canvasContainer);
 
 	// Table container
-	const tableTitle = document.createElement("h4");
+	const tableTitle = document.createElement('h4');
 	tableTitle.className =
-		"text-slate-800 dark:text-white font-medium text-sm mb-3";
-	tableTitle.textContent = "Tabel NG (%) by M/C No. Stamping";
+		'text-slate-800 dark:text-white font-medium text-sm mb-3';
+	tableTitle.textContent = 'Tabel NG (%) by M/C No. Stamping';
 	mainDiv.appendChild(tableTitle);
 
-	const tableContainer = document.createElement("div");
-	tableContainer.className = "overflow-x-auto";
+	const tableContainer = document.createElement('div');
+	tableContainer.className = 'overflow-x-auto';
 
 	// Calculate totals
 	const totalInspLot = mcNoData.tableData.reduce(
 		(sum, row) => sum + row.inspLot,
-		0
+		0,
 	);
 	const avgNgPercent =
-		mcNoData.tableData.length > 0
-			? mcNoData.tableData.reduce((sum, row) => sum + row.ngPercent, 0) /
-			  mcNoData.tableData.length
-			: 0;
+		mcNoData.tableData.length > 0 ?
+			mcNoData.tableData.reduce((sum, row) => sum + row.ngPercent, 0) /
+			mcNoData.tableData.length
+		:	0;
 
-    const tableHTML = `
+	const tableHTML = `
       <table class="w-full text-sm text-left">
           <thead class="text-sm text-slate-600 dark:text-slate-400 font-bold uppercase bg-slate-200 dark:bg-slate-800/30">
               <tr>
@@ -2718,9 +2997,9 @@ const renderMcNoChart = () => {
                   ${mcNoData.labels
 										.map(
 											(mc) =>
-												`<th class="py-3 px-4 font-semibold text-center">${mc}</th>`
+												`<th class="py-3 px-4 font-semibold text-center">${mc}</th>`,
 										)
-										.join("")}
+										.join('')}
                   <th class="py-3 px-4 font-semibold text-center">TOTAL</th>
               </tr>
           </thead>
@@ -2731,12 +3010,12 @@ const renderMcNoChart = () => {
 										.map(
 											(row) =>
 												`<td class="py-3 px-4 text-slate-600 dark:text-slate-400 text-center">${row.inspLot.toFixed(
-													2
-												)}</td>`
+													2,
+												)}</td>`,
 										)
-										.join("")}
+										.join('')}
                   <td class="py-3 px-4 text-slate-800 dark:text-white font-bold text-center">${totalInspLot.toFixed(
-										2
+										2,
 									)}</td>
               </tr>
               <tr class="border-b border-slate-200 dark:border-slate-700/50">
@@ -2745,12 +3024,12 @@ const renderMcNoChart = () => {
 										.map(
 											(row) =>
 												`<td class="py-3 px-4 text-slate-600 dark:text-slate-400 text-center">${row.ngPercent.toFixed(
-													2
-												)}</td>`
+													2,
+												)}</td>`,
 										)
-										.join("")}
+										.join('')}
                   <td class="py-3 px-4 text-slate-800 dark:text-white font-bold text-center">${avgNgPercent.toFixed(
-										2
+										2,
 									)}</td>
               </tr>
           </tbody>
@@ -2763,63 +3042,64 @@ const renderMcNoChart = () => {
 	container.appendChild(mainDiv);
 
 	// Render Chart
-	const ctx = canvas.getContext("2d");
+	const ctx = canvas.getContext('2d');
 
 	// Different colors for each bar
 	const barColors = [
-		"#6366f1", // Indigo
-		"#ef4444", // Red
-		"#10b981", // Green
-		"#a855f7", // Purple
-		"#f59e0b", // Orange
-		"#06b6d4", // Cyan
-		"#ec4899", // Pink
-		"#8b5cf6", // Violet
-		"#14b8a6", // Teal
-		"#f97316", // Orange-600
+		'#6366f1', // Indigo
+		'#ef4444', // Red
+		'#10b981', // Green
+		'#a855f7', // Purple
+		'#f59e0b', // Orange
+		'#06b6d4', // Cyan
+		'#ec4899', // Pink
+		'#8b5cf6', // Violet
+		'#14b8a6', // Teal
+		'#f97316', // Orange-600
 	];
 
 	new Chart(ctx, {
-		type: "bar",
+		type: 'bar',
 		data: {
 			labels: mcNoData.labels,
 			datasets: [
 				{
-					label: "Inspected/Lot",
+					label: 'Inspected/Lot',
 					data: mcNoData.inspLot,
 					backgroundColor: mcNoData.labels.map(
-						(_, i) => barColors[i % barColors.length]
+						(_, i) => barColors[i % barColors.length],
 					),
 					order: 2,
-					yAxisID: "y",
+					yAxisID: 'y',
 					datalabels: {
-						anchor: "end",
-						align: "top",
-						color: document.documentElement.classList.contains("dark")
-							? "#fff"
-							: "#1e293b",
-						font: { size: 10, weight: "bold" },
+						anchor: 'end',
+						align: 'top',
+						color:
+							document.documentElement.classList.contains('dark') ?
+								'#fff'
+							:	'#1e293b',
+						font: { size: 10, weight: 'bold' },
 						formatter: (val) => val.toFixed(2),
 					},
 				},
 				{
-					label: "NG_%",
+					label: 'NG_%',
 					data: mcNoData.ngPercent,
-					type: "line",
-					borderColor: "#ef4444", // Red
-					backgroundColor: "#ef4444",
+					type: 'line',
+					borderColor: '#ef4444', // Red
+					backgroundColor: '#ef4444',
 					borderWidth: 3,
 					pointRadius: 6,
-					pointBackgroundColor: "#ef4444",
-					pointBorderColor: "#fff",
+					pointBackgroundColor: '#ef4444',
+					pointBorderColor: '#fff',
 					pointBorderWidth: 2,
-					yAxisID: "y1",
+					yAxisID: 'y1',
 					order: 1,
 					datalabels: {
-						align: "top",
+						align: 'top',
 						offset: 10,
-						color: "#ef4444",
-						font: { size: 10, weight: "bold" },
+						color: '#ef4444',
+						font: { size: 10, weight: 'bold' },
 						formatter: (val) => val.toFixed(2),
 					},
 				},
@@ -2831,62 +3111,68 @@ const renderMcNoChart = () => {
 			plugins: {
 				legend: {
 					labels: {
-						color: document.documentElement.classList.contains("dark")
-							? "#94a3b8"
-							: "#334155", // slate-700 for light mode
+						color:
+							document.documentElement.classList.contains('dark') ?
+								'#94a3b8'
+							:	'#334155', // slate-700 for light mode
 					},
 				},
 				tooltip: {
-					mode: "index",
+					mode: 'index',
 					intersect: false,
 				},
 			},
 			scales: {
 				y: {
-					type: "linear",
+					type: 'linear',
 					display: true,
-					position: "left",
+					position: 'left',
 					title: {
 						display: true,
-						text: "Qty Inspected/Lot",
-						color: document.documentElement.classList.contains("dark")
-							? "#94a3b8"
-							: "#334155", // slate-700 for light mode
+						text: 'Qty Inspected/Lot',
+						color:
+							document.documentElement.classList.contains('dark') ?
+								'#94a3b8'
+							:	'#334155', // slate-700 for light mode
 					},
 					grid: {
-						color: document.documentElement.classList.contains("dark")
-							? "#334155"
-							: "rgba(0,0,0,0.1)",
+						color:
+							document.documentElement.classList.contains('dark') ?
+								'#334155'
+							:	'rgba(0,0,0,0.1)',
 					},
 					ticks: {
-						color: document.documentElement.classList.contains("dark")
-							? "#94a3b8"
-							: "#475569",
+						color:
+							document.documentElement.classList.contains('dark') ?
+								'#94a3b8'
+							:	'#475569',
 					},
 				},
 				y1: {
-					type: "linear",
+					type: 'linear',
 					display: true,
-					position: "right",
-					title: { display: true, text: "NG (%)", color: "#ef4444" },
+					position: 'right',
+					title: { display: true, text: 'NG (%)', color: '#ef4444' },
 					grid: { display: false },
 					ticks: {
-						color: "#ef4444",
+						color: '#ef4444',
 					},
 				},
 				x: {
 					title: {
 						display: true,
-						text: "M/C No.",
-						color: document.documentElement.classList.contains("dark")
-							? "#fff"
-							: "#1e293b",
+						text: 'M/C No.',
+						color:
+							document.documentElement.classList.contains('dark') ?
+								'#fff'
+							:	'#1e293b',
 					},
 					grid: { display: false },
 					ticks: {
-						color: document.documentElement.classList.contains("dark")
-							? "#94a3b8"
-							: "#475569",
+						color:
+							document.documentElement.classList.contains('dark') ?
+								'#94a3b8'
+							:	'#475569',
 					},
 				},
 			},
@@ -2895,13 +3181,13 @@ const renderMcNoChart = () => {
 };
 
 const renderHousingHorn = () => {
-	console.log("renderHousingHorn called");
-	const container = document.getElementById("housingHornArea");
+	console.log('renderHousingHorn called');
+	const container = document.getElementById('housingHornArea');
 
 	if (!container) return;
 
 	if (!state.chartsData || !state.chartsData.housingHornData) {
-		console.log("No housingHornData in chartsData");
+		console.log('No housingHornData in chartsData');
 		return;
 	}
 
@@ -2909,68 +3195,68 @@ const renderHousingHorn = () => {
 
 	// Check if there's any data
 	if (hhData.tableDataPcs.length === 0) {
-		container.innerHTML = "";
+		container.innerHTML = '';
 		return;
 	}
 
 	// Clear previous content
-	container.innerHTML = "";
+	container.innerHTML = '';
 
 	// Create main container
-	const mainDiv = document.createElement("div");
-	mainDiv.className = "glass-panel p-6";
+	const mainDiv = document.createElement('div');
+	mainDiv.className = 'glass-panel p-6';
 
 	// Title
-	const title = document.createElement("h3");
-	title.className = "text-slate-800 dark:text-white font-semibold text-lg mb-1";
-	title.textContent = "Metrics for Housing Horn - PT.HDI - Barrel 4";
+	const title = document.createElement('h3');
+	title.className = 'text-slate-800 dark:text-white font-semibold text-lg mb-1';
+	title.textContent = 'Metrics for Housing Horn - PT.HDI - Barrel 4';
 	mainDiv.appendChild(title);
 
 	// Subtitle showing period
 	if (state.dateRange && state.dateRange.start && state.dateRange.end) {
-		const subtitle = document.createElement("p");
-		subtitle.className = "text-slate-500 dark:text-slate-400 text-sm mb-4";
+		const subtitle = document.createElement('p');
+		subtitle.className = 'text-slate-500 dark:text-slate-400 text-sm mb-4';
 		subtitle.textContent = `Periode dari Tanggal: ${state.dateRange.start} sampai Tanggal: ${state.dateRange.end}`;
 		mainDiv.appendChild(subtitle);
 	}
 
 	// Metrics Grid
-	const metricsGrid = document.createElement("div");
+	const metricsGrid = document.createElement('div');
 	metricsGrid.className =
-		"grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-6";
+		'grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-6';
 
 	const metrics = [
 		{
-			label: "OK (pcs)",
-			value: hhData.metrics.okPcs.toLocaleString("en-US", {
+			label: 'OK (pcs)',
+			value: hhData.metrics.okPcs.toLocaleString('en-US', {
 				minimumFractionDigits: 0,
 				maximumFractionDigits: 0,
 			}),
 		},
 		{
-			label: "NG (pcs)",
-			value: hhData.metrics.ngPcs.toLocaleString("en-US", {
+			label: 'NG (pcs)',
+			value: hhData.metrics.ngPcs.toLocaleString('en-US', {
 				minimumFractionDigits: 0,
 				maximumFractionDigits: 0,
 			}),
 		},
 		{
-			label: "Insp (pcs)",
-			value: hhData.metrics.inspPcs.toLocaleString("en-US", {
+			label: 'Insp (pcs)',
+			value: hhData.metrics.inspPcs.toLocaleString('en-US', {
 				minimumFractionDigits: 0,
 				maximumFractionDigits: 0,
 			}),
 		},
-		{ label: "OK (lot)", value: hhData.metrics.okLot.toFixed(2) },
-		{ label: "NG (lot)", value: hhData.metrics.ngLot.toFixed(2) },
-		{ label: "Insp (lot)", value: hhData.metrics.inspLot.toFixed(2) },
-		{ label: "NG (%)", value: hhData.metrics.ngPercent.toFixed(2) },
+		{ label: 'OK (lot)', value: hhData.metrics.okLot.toFixed(2) },
+		{ label: 'NG (lot)', value: hhData.metrics.ngLot.toFixed(2) },
+		{ label: 'Insp (lot)', value: hhData.metrics.inspLot.toFixed(2) },
+		{ label: 'NG (%)', value: hhData.metrics.ngPercent.toFixed(2) },
 	];
 
 	metrics.forEach((m) => {
-		const card = document.createElement("div");
+		const card = document.createElement('div');
 		card.className =
-			"bg-white dark:bg-slate-800/50 rounded-lg p-4 border border-slate-200 dark:border-slate-700/50";
+			'bg-white dark:bg-slate-800/50 rounded-lg p-4 border border-slate-200 dark:border-slate-700/50';
 		card.innerHTML = `
           <div class="text-slate-500 dark:text-slate-400 text-xs mb-1">${m.label}</div>
           <div class="text-slate-900 dark:text-white text-2xl font-bold">${m.value}</div>
@@ -2982,14 +3268,15 @@ const renderHousingHorn = () => {
 
 	// --- Helper to create Collapsible Table ---
 	const createCollapsibleTable = (title, tableData, type, open = false) => {
-		const details = document.createElement("details");
-		details.className = "mb-4 glass-panel overflow-hidden border border-slate-200 dark:border-slate-700";
+		const details = document.createElement('details');
+		details.className =
+			'mb-4 glass-panel overflow-hidden border border-slate-200 dark:border-slate-700';
 		if (open) details.open = true;
 
 		// Summary Header
-		const summary = document.createElement("summary");
+		const summary = document.createElement('summary');
 		summary.className =
-			"cursor-pointer p-4 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors flex justify-between items-center";
+			'cursor-pointer p-4 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors flex justify-between items-center';
 		summary.innerHTML = `
             <span class="text-slate-800 dark:text-white font-medium">${title}</span>
             <svg class="w-5 h-5 text-slate-400 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -2999,45 +3286,45 @@ const renderHousingHorn = () => {
 		details.appendChild(summary);
 
 		// Content Container
-		const contentDiv = document.createElement("div");
+		const contentDiv = document.createElement('div');
 		contentDiv.className =
-			"p-4 bg-slate-50 dark:bg-slate-800/30 border-t border-slate-200 dark:border-slate-700";
+			'p-4 bg-slate-50 dark:bg-slate-800/30 border-t border-slate-200 dark:border-slate-700';
 
 		// Controls (Export Button)
-		const controlsDiv = document.createElement("div");
-		controlsDiv.className = "flex justify-end items-center mb-4";
+		const controlsDiv = document.createElement('div');
+		controlsDiv.className = 'flex justify-end items-center mb-4';
 
-		const exportBtn = document.createElement("button");
+		const exportBtn = document.createElement('button');
 		exportBtn.className =
-			"bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded text-sm flex items-center shadow-sm transition-colors";
-		exportBtn.title = "Export to CSV";
+			'bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded text-sm flex items-center shadow-sm transition-colors';
+		exportBtn.title = 'Export to CSV';
 		exportBtn.innerHTML = `
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
             CSV
         `;
-		exportBtn.addEventListener("click", () =>
-			exportHousingHornToCSV(hhData, type)
+		exportBtn.addEventListener('click', () =>
+			exportHousingHornToCSV(hhData, type),
 		);
 		controlsDiv.appendChild(exportBtn);
 		contentDiv.appendChild(controlsDiv);
 
 		// Table Wrapper
-		const tableWrapper = document.createElement("div");
-		tableWrapper.className = "overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-700";
+		const tableWrapper = document.createElement('div');
+		tableWrapper.className =
+			'overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-700';
 
 		// Table HTML
-		const isPcs = type === "pcs";
-		const suffix = isPcs ? "(pcs)" : "(lot)";
-		const okKey = isPcs ? "okPcs" : "okLot";
-		const ngKey = isPcs ? "ngPcs" : "ngLot";
-		const ngmKey = isPcs ? "ngmPcs" : "ngmLot";
-		const inspKey = isPcs ? "totInspPcs" : "totInspLot";
+		const isPcs = type === 'pcs';
+		const suffix = isPcs ? '(pcs)' : '(lot)';
+		const okKey = isPcs ? 'okPcs' : 'okLot';
+		const ngKey = isPcs ? 'ngPcs' : 'ngLot';
+		const ngmKey = isPcs ? 'ngmPcs' : 'ngmLot';
+		const inspKey = isPcs ? 'totInspPcs' : 'totInspLot';
 		const metricOk = isPcs ? hhData.metrics.okPcs : hhData.metrics.okLot;
 		const metricNg = isPcs ? hhData.metrics.ngPcs : hhData.metrics.ngLot;
 		const metricInsp = isPcs ? hhData.metrics.inspPcs : hhData.metrics.inspLot;
 
-		const formatVal = (val) =>
-			isPcs ? val.toLocaleString() : val.toFixed(2);
+		const formatVal = (val) => (isPcs ? val.toLocaleString() : val.toFixed(2));
 
 		tableWrapper.innerHTML = `
             <table class="w-full text-sm text-left">
@@ -3058,38 +3345,38 @@ const renderHousingHorn = () => {
                         <tr class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
                             <td class="py-3 px-4">${row.partName}</td>
                             <td class="py-3 px-4 text-red-600 dark:text-red-500 text-right">${row.ngPercent.toFixed(
-															2
+															2,
 														)}</td>
                             <td class="py-3 px-4 text-right">${formatVal(
-															row[okKey]
+															row[okKey],
 														)}</td>
                             <td class="py-3 px-4 text-red-600 dark:text-red-500 text-right">${formatVal(
-															row[ngKey]
+															row[ngKey],
 														)}</td>
                             <td class="py-3 px-4 text-right">${formatVal(
-															row[ngmKey]
+															row[ngmKey],
 														)}</td>
                             <td class="py-3 px-4 text-right">${formatVal(
-															row[inspKey]
+															row[inspKey],
 														)}</td>
                         </tr>
-                    `
+                    `,
 											)
-											.join("")}
+											.join('')}
                     <tr class="bg-slate-100 dark:bg-slate-700/30 font-bold border-t-2 border-slate-200 dark:border-slate-600">
                         <td class="py-3 px-4 text-slate-900 dark:text-white">TOTAL</td>
                         <td class="py-3 px-4 text-red-600 dark:text-red-500 text-right">${hhData.metrics.ngPercent.toFixed(
-													2
+													2,
 												)}</td>
                         <td class="py-3 px-4 text-slate-900 dark:text-white text-right">${formatVal(
-													metricOk
+													metricOk,
 												)}</td>
                         <td class="py-3 px-4 text-red-600 dark:text-red-500 text-right">${formatVal(
-													metricNg
+													metricNg,
 												)}</td>
                         <td class="py-3 px-4 text-slate-900 dark:text-white text-right">0</td>
                         <td class="py-3 px-4 text-slate-900 dark:text-white text-right">${formatVal(
-													metricInsp
+													metricInsp,
 												)}</td>
                     </tr>
                 </tbody>
@@ -3103,17 +3390,17 @@ const renderHousingHorn = () => {
 
 	// Create Tables
 	const collapsibleLot = createCollapsibleTable(
-		"Details Data Housing Horn (lot) - PT. HDI - Barrel 4",
+		'Details Data Housing Horn (lot) - PT. HDI - Barrel 4',
 		hhData.tableDataLot,
-		"lot"
+		'lot',
 	);
 	mainDiv.appendChild(collapsibleLot);
 
 	const collapsiblePcs = createCollapsibleTable(
-		"Details Data Housing Horn (pcs) - PT. HDI - Barrel 4",
+		'Details Data Housing Horn (pcs) - PT. HDI - Barrel 4',
 		hhData.tableDataPcs,
-		"pcs",
-		true // Open by default
+		'pcs',
+		true, // Open by default
 	);
 	mainDiv.appendChild(collapsiblePcs);
 
@@ -3121,50 +3408,50 @@ const renderHousingHorn = () => {
 };
 
 const renderRekap = () => {
-	const container = document.getElementById("rekapArea");
+	const container = document.getElementById('rekapArea');
 	if (!container || !state.chartsData || !state.chartsData.rekapData) {
-		if (container) container.innerHTML = "";
+		if (container) container.innerHTML = '';
 		return;
 	}
 
 	const rekapData = state.chartsData.rekapData;
 
 	// Clear previous content
-	container.innerHTML = "";
+	container.innerHTML = '';
 
 	// Create main container
-	const mainDiv = document.createElement("div");
-	mainDiv.className = "glass-panel p-6";
+	const mainDiv = document.createElement('div');
+	mainDiv.className = 'glass-panel p-6';
 
 	// Title
-	const title = document.createElement("h3");
+	const title = document.createElement('h3');
 	title.className =
-		"text-slate-800 dark:text-white font-semibold text-lg mb-1 text-center";
-	title.textContent = "Lembar Panduan untuk LEADER input ke Grafik Harian";
+		'text-slate-800 dark:text-white font-semibold text-lg mb-1 text-center';
+	title.textContent = 'Lembar Panduan untuk LEADER input ke Grafik Harian';
 	mainDiv.appendChild(title);
 
 	// Subtitle
 	if (state.dateRange && state.dateRange.start && state.dateRange.end) {
-		const subtitle = document.createElement("p");
+		const subtitle = document.createElement('p');
 		subtitle.className =
-			"text-slate-500 dark:text-slate-400 text-sm mb-6 text-center";
+			'text-slate-500 dark:text-slate-400 text-sm mb-6 text-center';
 		subtitle.textContent = `Periode dari Tanggal: ${state.dateRange.start} sampai Tanggal: ${state.dateRange.end}`;
 		mainDiv.appendChild(subtitle);
 	}
 
 	// Grid for 4 columns
-	const gridDiv = document.createElement("div");
-	gridDiv.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6";
+	const gridDiv = document.createElement('div');
+	gridDiv.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6';
 
 	rekapData.forEach((category) => {
-		const catDiv = document.createElement("div");
+		const catDiv = document.createElement('div');
 		catDiv.className =
-			"bg-slate-50 dark:bg-slate-800/30 rounded-lg p-4 border border-slate-200 dark:border-slate-700/50";
+			'bg-slate-50 dark:bg-slate-800/30 rounded-lg p-4 border border-slate-200 dark:border-slate-700/50';
 
 		// Category Title
-		const catTitle = document.createElement("h4");
+		const catTitle = document.createElement('h4');
 		catTitle.className =
-			"text-slate-800 dark:text-white font-semibold text-sm mb-4 text-center";
+			'text-slate-800 dark:text-white font-semibold text-sm mb-4 text-center';
 		catTitle.textContent = category.label;
 		catDiv.appendChild(catTitle);
 
@@ -3189,13 +3476,13 @@ const renderRekap = () => {
 													}</td>
                           <td class="py-2 px-2 text-slate-700 dark:text-slate-300 text-right">${defect.total.toFixed(2)}</td>
                       </tr>
-                  `
+                  `,
 										)
-										.join("")}
+										.join('')}
                   <tr class="bg-slate-100 dark:bg-slate-700/30 font-bold">
                       <td class="py-2 px-2 text-slate-800 dark:text-white" colspan="2">TOTAL</td>
                       <td class="py-2 px-2 text-slate-800 dark:text-white text-right">${category.totalNG.toFixed(
-												2
+												2,
 											)}</td>
                   </tr>
               </tbody>
@@ -3205,17 +3492,17 @@ const renderRekap = () => {
 		catDiv.innerHTML += tableHTML;
 
 		// Summary metrics
-		const summaryDiv = document.createElement("div");
-		summaryDiv.className = "mt-4 space-y-1";
+		const summaryDiv = document.createElement('div');
+		summaryDiv.className = 'mt-4 space-y-1';
 		summaryDiv.innerHTML = `
           <div class="text-center">
               <span class="text-orange-600 dark:text-orange-400 font-bold">Total Insp(B/H): ${category.totalInsp.toFixed(
-								0
+								0,
 							)}</span>
           </div>
           <div class="text-center">
               <span class="text-orange-600 dark:text-orange-400 font-bold">Total NG%: ${category.ngPercent.toFixed(
-								2
+								2,
 							)} %</span>
           </div>
       `;
@@ -3242,37 +3529,37 @@ const renderInfoTrial = () => {
 	} = state.trialData;
 
 	// Create main title and period
-	const mainContent = document.getElementById("infoTrialContent");
+	const mainContent = document.getElementById('infoTrialContent');
 	if (!mainContent) return;
 
 	// Clear existing content first
-	mainContent.innerHTML = "";
+	mainContent.innerHTML = '';
 
 	// 1. Title Section
-	const titleSection = document.createElement("div");
-	titleSection.className = "mb-6";
+	const titleSection = document.createElement('div');
+	titleSection.className = 'mb-6';
 	titleSection.innerHTML = `
-        <h2 class="text-2xl font-bold text-slate-800 dark:text-white mb-2">Summary Trial</h2>
+        <h2 class="text-2xl font-bold text-slate-800 dark:text-white pt-16 mb-2">Summary Trial</h2>
         ${
-					state.dateRange && state.dateRange.start && state.dateRange.end
-						? `
+					state.dateRange && state.dateRange.start && state.dateRange.end ?
+						`
             <p class="text-slate-600 dark:text-slate-400">Periode dari Tanggal: ${state.dateRange.start} sampai Tanggal: ${state.dateRange.end}</p>
         `
-						: ""
+					:	''
 				}
     `;
 	mainContent.appendChild(titleSection);
 
 	// 2. Collapsible Full Data TRIAL Table (ALL COLUMNS)
-	const detailsCollapsible = document.createElement("details");
-	detailsCollapsible.className = "mb-6 glass-panel overflow-hidden";
+	const detailsCollapsible = document.createElement('details');
+	detailsCollapsible.className = 'mb-6 glass-panel overflow-hidden';
 
 	const formatDate = (dateVal) => {
-		if (!dateVal) return "";
+		if (!dateVal) return '';
 		try {
-			if (typeof dateVal === "string") return dateVal;
+			if (typeof dateVal === 'string') return dateVal;
 			const d = new Date(dateVal);
-			return d.toISOString().split("T")[0];
+			return d.toISOString().split('T')[0];
 		} catch {
 			return String(dateVal);
 		}
@@ -3333,81 +3620,81 @@ const renderInfoTrial = () => {
 																	idx + 1
 																}</td>
                                 <td class="py-2 px-2 text-slate-700 dark:text-slate-300">${
-																	row.line || ""
+																	row.line || ''
 																}</td>
                                 <td class="py-2 px-2 text-slate-600 dark:text-slate-400">${formatDate(
-																	row.date
+																	row.date,
 																)}</td>
                                 <td class="py-2 px-2 text-slate-600 dark:text-slate-400">${
-																	row.shift || ""
+																	row.shift || ''
 																}</td>
                                 <td class="py-2 px-2 text-slate-600 dark:text-slate-400">${
-																	row.custId || ""
+																	row.custId || ''
 																}</td>
                                 <td class="py-2 px-2 text-slate-600 dark:text-slate-400">${
-																	row.partId || ""
+																	row.partId || ''
 																}</td>
                                 <td class="py-2 px-2 text-slate-700 dark:text-slate-300 font-medium">${
-																	row.partName || ""
+																	row.partName || ''
 																}</td>
                                 <td class="py-2 px-2 text-slate-600 dark:text-slate-400">${
-																	row.kategori || ""
+																	row.kategori || ''
 																}</td>
                                 <td class="py-2 px-2 text-slate-600 dark:text-slate-400">${
-																	row.noJig || ""
+																	row.noJig || ''
 																}</td>
                                 <td class="py-2 px-2 text-slate-600 dark:text-slate-400">${
-																	row.noCard || ""
+																	row.noCard || ''
 																}</td>
                                 <td class="py-2 px-2 text-slate-600 dark:text-slate-400 text-right">${
 																	row.stdLoad || 0
 																}</td>
                                 <td class="py-2 px-2 text-slate-600 dark:text-slate-400">${
-																	row.noBH || ""
+																	row.noBH || ''
 																}</td>
                                 <td class="py-2 px-2 text-slate-600 dark:text-slate-400">${
-																	row.noBak || ""
+																	row.noBak || ''
 																}</td>
                                 <td class="py-2 px-2 text-slate-600 dark:text-slate-400">${
-																	row.keterangan || ""
+																	row.keterangan || ''
 																}</td>
                                 <td class="py-2 px-2 text-slate-600 dark:text-slate-400">${
-																	row.mcNo || ""
+																	row.mcNo || ''
 																}</td>
                                 <td class="py-2 px-2 text-slate-600 dark:text-slate-400 text-right">${row.inspBH.toFixed(
-																	2
+																	2,
 																)}</td>
                                 <td class="py-2 px-2 text-red-600 dark:text-red-400 text-right">${row.ngBH.toFixed(
-																	2
+																	2,
 																)}</td>
                                 <td class="py-2 px-2 text-green-600 dark:text-green-400 text-right">${row.okBH.toFixed(
-																	2
+																	2,
 																)}</td>
                                 <td class="py-2 px-2 text-slate-600 dark:text-slate-400 text-right">${row.ngPercent.toFixed(
-																	2
+																	2,
 																)}</td>
                                 <td class="py-2 px-2 text-green-600 dark:text-green-400 text-right">${row.okPcs.toFixed(
-																	2
+																	2,
 																)}</td>
                                 <td class="py-2 px-2 text-red-600 dark:text-red-400 text-right font-bold">${row.qtyNG.toFixed(
-																	2
+																	2,
 																)}</td>
                                 <td class="py-2 px-2 text-slate-600 dark:text-slate-400 text-right">${row.qInspec.toFixed(
-																	2
+																	2,
 																)}</td>
                                 <td class="py-2 px-2 text-slate-600 dark:text-slate-400 text-right">${row.inspLot.toFixed(
-																	2
+																	2,
 																)}</td>
                                 <td class="py-2 px-2 text-green-600 dark:text-green-400 text-right">${row.okLot.toFixed(
-																	2
+																	2,
 																)}</td>
                                 <td class="py-2 px-2 text-red-600 dark:text-red-400 text-right">${row.ngLot.toFixed(
-																	2
+																	2,
 																)}</td>
                             </tr>
-                        `
+                        `,
 													)
-													.join("")}
+													.join('')}
                     </tbody>
                 </table>
             </div>
@@ -3416,9 +3703,9 @@ const renderInfoTrial = () => {
 	mainContent.appendChild(detailsCollapsible);
 
 	// 3. Rekap Data Trial (by unique PartName)
-	const rekapSection = document.createElement("div");
-	rekapSection.id = "trialRekapSection";
-	rekapSection.className = "mb-6 glass-panel p-0 overflow-hidden";
+	const rekapSection = document.createElement('div');
+	rekapSection.id = 'trialRekapSection';
+	rekapSection.className = 'mb-6 glass-panel p-0 overflow-hidden';
 	rekapSection.innerHTML = `
         <div class="p-4 border-b border-glass-border bg-blue-100 dark:bg-slate-800/50 flex justify-between items-center">
             <h3 class="text-slate-800 dark:text-white font-semibold">Rekap Data Trial</h3>
@@ -3467,36 +3754,36 @@ const renderInfoTrial = () => {
 															row.keterangan
 														}</td>
                             <td class="py-3 px-4 text-xs text-red-600 dark:text-red-400 text-right font-bold">${row.ngPercent.toFixed(
-															2
+															2,
 														)}</td>
                             <td class="py-3 px-4 text-xs text-slate-600 dark:text-slate-400 text-right">${row.inspPcs.toLocaleString(
-															"en-US",
-															{ minimumFractionDigits: 2 }
+															'en-US',
+															{ minimumFractionDigits: 2 },
 														)}</td>
                             <td class="py-3 px-4 text-xs text-slate-600 dark:text-slate-400 text-right">${row.inspLot.toLocaleString(
-															"en-US",
-															{ minimumFractionDigits: 2 }
+															'en-US',
+															{ minimumFractionDigits: 2 },
 														)}</td>
                             <td class="py-3 px-4 text-xs text-red-600 dark:text-red-400 text-right font-bold">${row.ngPcs.toLocaleString(
-															"en-US",
-															{ minimumFractionDigits: 2 }
+															'en-US',
+															{ minimumFractionDigits: 2 },
 														)}</td>
                             <td class="py-3 px-4 text-xs text-red-600 dark:text-red-400 text-right font-bold">${row.ngLot.toLocaleString(
-															"en-US",
-															{ minimumFractionDigits: 2 }
+															'en-US',
+															{ minimumFractionDigits: 2 },
 														)}</td>
                             <td class="py-3 px-4 text-xs text-green-600 dark:text-green-400 text-right">${row.okPcs.toLocaleString(
-															"en-US",
-															{ minimumFractionDigits: 2 }
+															'en-US',
+															{ minimumFractionDigits: 2 },
 														)}</td>
                             <td class="py-3 px-4 text-xs text-green-600 dark:text-green-400 text-right">${row.okLot.toLocaleString(
-															"en-US",
-															{ minimumFractionDigits: 2 }
+															'en-US',
+															{ minimumFractionDigits: 2 },
 														)}</td>
                         </tr>
-                    `
+                    `,
 											)
-											.join("")}
+											.join('')}
                     <tr class="bg-blue-100 dark:bg-slate-700/30 font-bold border-t-2 border-slate-300 dark:border-slate-600">
                         <td class="py-3 px-4 text-xs text-slate-900 dark:text-white text-center">${
 													rekap.length + 1
@@ -3510,31 +3797,31 @@ const renderInfoTrial = () => {
                         <td class="py-3 px-4 text-xs text-slate-900 dark:text-white"></td>
                         <td class="py-3 px-4 text-xs text-slate-900 dark:text-white"></td>
                         <td class="py-3 px-4 text-xs text-red-900 dark:text-red-400 text-right">${rekapTotals.ngPercent.toFixed(
-													2
+													2,
 												)}</td>
                         <td class="py-3 px-4 text-xs text-slate-900 dark:text-white text-right">${rekapTotals.inspPcs.toLocaleString(
-													"en-US",
-													{ minimumFractionDigits: 2 }
+													'en-US',
+													{ minimumFractionDigits: 2 },
 												)}</td>
                         <td class="py-3 px-4 text-xs text-slate-900 dark:text-white text-right">${rekapTotals.inspLot.toLocaleString(
-													"en-US",
-													{ minimumFractionDigits: 2 }
+													'en-US',
+													{ minimumFractionDigits: 2 },
 												)}</td>
                         <td class="py-3 px-4 text-xs text-red-900 dark:text-red-400 text-right">${rekapTotals.ngPcs.toLocaleString(
-													"en-US",
-													{ minimumFractionDigits: 2 }
+													'en-US',
+													{ minimumFractionDigits: 2 },
 												)}</td>
                         <td class="py-3 px-4 text-xs text-red-900 dark:text-red-400 text-right font-bold">${rekapTotals.ngLot.toLocaleString(
-													"en-US",
-													{ minimumFractionDigits: 2 }
+													'en-US',
+													{ minimumFractionDigits: 2 },
 												)}</td>
                         <td class="py-3 px-4 text-xs text-green-900 dark:text-green-400 text-right">${rekapTotals.okPcs.toLocaleString(
-													"en-US",
-													{ minimumFractionDigits: 2 }
+													'en-US',
+													{ minimumFractionDigits: 2 },
 												)}</td>
                         <td class="py-3 px-4 text-xs text-green-900 dark:text-green-400 text-right font-bold">${rekapTotals.okLot.toLocaleString(
-													"en-US",
-													{ minimumFractionDigits: 2 }
+													'en-US',
+													{ minimumFractionDigits: 2 },
 												)}</td>
                     </tr>
                 </tbody>
@@ -3544,9 +3831,9 @@ const renderInfoTrial = () => {
 	mainContent.appendChild(rekapSection);
 
 	// 4. Rekap Data Jenis NG (TRIAL) per Part Name (ONLY non-zero columns)
-	const defectRekapSection = document.createElement("div");
-	defectRekapSection.id = "trialDefectRekapSection";
-	defectRekapSection.className = "mb-6 glass-panel p-0 overflow-hidden";
+	const defectRekapSection = document.createElement('div');
+	defectRekapSection.id = 'trialDefectRekapSection';
+	defectRekapSection.className = 'mb-6 glass-panel p-0 overflow-hidden';
 	defectRekapSection.innerHTML = `
         <div class="p-4 border-b border-glass-border bg-blue-100 dark:bg-slate-800/50 flex justify-between items-center">
             <h3 class="text-slate-800 dark:text-white font-semibold">Rekap Data Jenis NG (TRIAL) per Part Name</h3>
@@ -3565,9 +3852,9 @@ const renderInfoTrial = () => {
                         ${defectRekapColumns
 													.map(
 														(col) =>
-															`<th class="py-3 px-4 text-xs font-semibold">${col}(pcs)</th>`
+															`<th class="py-3 px-4 text-xs font-semibold">${col}(pcs)</th>`,
 													)
-													.join("")}
+													.join('')}
                         <th class="py-3 px-4 text-xs font-semibold">TOTAL</th>
                     </tr>
                 </thead>
@@ -3582,18 +3869,18 @@ const renderInfoTrial = () => {
                             ${defectRekapColumns
 															.map(
 																(col) =>
-																	`<td class="py-3 px-4 text-xs text-slate-600 dark:text-slate-400 text-right">${
+																	`<td class="py-3 px-4 text-xs text-slate-600 dark:text-slate-400 text-center">${
 																		row[col] || 0
-																	}</td>`
+																	}</td>`,
 															)
-															.join("")}
-                            <td class="py-3 px-4 text-xs text-slate-600 dark:text-slate-400 text-right font-bold">${
+															.join('')}
+                            <td class="py-3 px-4 text-xs text-slate-600 dark:text-slate-400 text-center font-bold">${
 															row.total
 														}</td>
                         </tr>
-                    `
+                    `,
 											)
-											.join("")}
+											.join('')}
                     <tr class="bg-blue-100 dark:bg-slate-700/30 font-bold border-t-2 border-slate-300 dark:border-slate-600">
                         <td class="py-3 px-4 text-xs text-slate-900 dark:text-white">${
 													defectRekapTotals.partName
@@ -3601,12 +3888,12 @@ const renderInfoTrial = () => {
                         ${defectRekapColumns
 													.map(
 														(col) =>
-															`<td class="py-3 px-4 text-xs text-slate-900 dark:text-white text-right">${
+															`<td class="py-3 px-4 text-xs text-slate-900 dark:text-white text-center">${
 																defectRekapTotals[col] || 0
-															}</td>`
+															}</td>`,
 													)
-													.join("")}
-                        <td class="py-3 px-4 text-xs text-slate-900 dark:text-white text-right">${
+													.join('')}
+                        <td class="py-3 px-4 text-xs text-slate-900 dark:text-white text-center">${
 													defectRekapTotals.total
 												}</td>
                     </tr>
@@ -3617,13 +3904,13 @@ const renderInfoTrial = () => {
 	mainContent.appendChild(defectRekapSection);
 
 	// 5. Charts Section (2 horizontal bar charts side by side)
-	const chartsSection = document.createElement("div");
-	chartsSection.id = "trialChartsSection";
-	chartsSection.className = "grid grid-cols-1 lg:grid-cols-2 gap-6";
+	const chartsSection = document.createElement('div');
+	chartsSection.id = 'trialChartsSection';
+	chartsSection.className = 'grid grid-cols-1 lg:grid-cols-2 gap-6';
 
 	// Left Chart - Defect Types
-	const leftChartDiv = document.createElement("div");
-	leftChartDiv.className = "glass-panel p-6";
+	const leftChartDiv = document.createElement('div');
+	leftChartDiv.className = 'glass-panel p-6';
 	leftChartDiv.innerHTML = `
         <h3 class="text-slate-800 dark:text-white font-medium mb-4">Grafik Jenis NG (TRIAL) - Total Qty NG (pcs) per Jenis NG</h3>
         <div class="h-96">
@@ -3633,8 +3920,8 @@ const renderInfoTrial = () => {
 	chartsSection.appendChild(leftChartDiv);
 
 	// Right Chart - Part Name OK vs NG
-	const rightChartDiv = document.createElement("div");
-	rightChartDiv.className = "glass-panel p-6";
+	const rightChartDiv = document.createElement('div');
+	rightChartDiv.className = 'glass-panel p-6';
 	rightChartDiv.innerHTML = `
         <h3 class="text-slate-800 dark:text-white font-medium mb-4">Grafik Qty OK & Qty NG (pcs) per PartName</h3>
         <div class="h-96">
@@ -3647,77 +3934,76 @@ const renderInfoTrial = () => {
 
 	// 6. Render Charts
 	setTimeout(() => {
-		const isDark = document.documentElement.classList.contains("dark");
-		const textColor = isDark ? "#94a3b8" : "#475569";
-		const labelColor = isDark ? "#fff" : "#1e293b";
-		const gridColor = isDark
-			? "rgba(255, 255, 255, 0.1)"
-			: "rgba(0, 0, 0, 0.1)";
+		const isDark = document.documentElement.classList.contains('dark');
+		const textColor = isDark ? '#94a3b8' : '#475569';
+		const labelColor = isDark ? '#fff' : '#1e293b';
+		const gridColor =
+			isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
 
 		// Export functionality for Full Data TRIAL
 		document
-			.getElementById("exportFullTrialBtn")
-			?.addEventListener("click", (e) => {
+			.getElementById('exportFullTrialBtn')
+			?.addEventListener('click', (e) => {
 				e.preventDefault();
 				e.stopPropagation();
 
 				// Prepare data
 				const exportData = fullData.map((row, index) => ({
 					No: index + 1,
-					Line: row.line || "",
+					Line: row.line || '',
 					Date: formatDate(row.date),
-					Shift: row.shift || "",
-					"Cust.ID": row.custId || "",
-					"Part.ID": row.partId || "",
-					PartName: row.partName || "",
-					Kategori: row.kategori || "",
-					"No.Jig": row.noJig || "",
-					NoCard: row.noCard || "",
-					"Std Load": row.stdLoad || 0,
-					"NoB/H": row.noBH || "",
-					NoBak: row.noBak || "",
-					Keterangan: row.keterangan || "",
-					"M/C No.": row.mcNo || "",
-					"Insp(B/H)": row.inspBH,
-					"NG(B/H)": row.ngBH,
-					"OK(B/H)": row.okBH,
-					"NG_%": row.ngPercent,
-					"OK(pcs)": row.okPcs,
-					"Qty(NG)": row.qtyNG,
+					Shift: row.shift || '',
+					'Cust.ID': row.custId || '',
+					'Part.ID': row.partId || '',
+					PartName: row.partName || '',
+					Kategori: row.kategori || '',
+					'No.Jig': row.noJig || '',
+					NoCard: row.noCard || '',
+					'Std Load': row.stdLoad || 0,
+					'NoB/H': row.noBH || '',
+					NoBak: row.noBak || '',
+					Keterangan: row.keterangan || '',
+					'M/C No.': row.mcNo || '',
+					'Insp(B/H)': row.inspBH,
+					'NG(B/H)': row.ngBH,
+					'OK(B/H)': row.okBH,
+					'NG_%': row.ngPercent,
+					'OK(pcs)': row.okPcs,
+					'Qty(NG)': row.qtyNG,
 					QInspec: row.qInspec,
-					"Insp(Lot)": row.inspLot,
-					"OK(Lot)": row.okLot,
-					"NG(Lot)": row.ngLot,
+					'Insp(Lot)': row.inspLot,
+					'OK(Lot)': row.okLot,
+					'NG(Lot)': row.ngLot,
 				}));
 
 				const ws = XLSX.utils.json_to_sheet(exportData);
 				const wb = XLSX.utils.book_new();
-				XLSX.utils.book_append_sheet(wb, ws, "Data TRIAL");
+				XLSX.utils.book_append_sheet(wb, ws, 'Data TRIAL');
 
-				const timestamp = new Date().toISOString().split("T")[0];
+				const timestamp = new Date().toISOString().split('T')[0];
 				XLSX.writeFile(wb, `Full_Data_TRIAL_${timestamp}.xlsx`);
 			});
 
 		// Defect Chart (Horizontal Bar)
-		const ctx1 = document.getElementById("trialDefectChart");
+		const ctx1 = document.getElementById('trialDefectChart');
 		if (ctx1) {
 			if (state.charts.trialDefect) state.charts.trialDefect.destroy();
 
-			state.charts.trialDefect = new Chart(ctx1.getContext("2d"), {
-				type: "bar",
+			state.charts.trialDefect = new Chart(ctx1.getContext('2d'), {
+				type: 'bar',
 				data: charts.defects,
 				options: {
-					indexAxis: "y",
+					indexAxis: 'y',
 					responsive: true,
 					maintainAspectRatio: false,
 					plugins: {
 						legend: { display: false },
 						datalabels: {
-							anchor: "end",
-							align: "end",
+							anchor: 'end',
+							align: 'end',
 							color: textColor,
-							font: { weight: "bold", size: 10 },
-							formatter: (value) => (value > 0 ? value : ""),
+							font: { weight: 'bold', size: 10 },
+							formatter: (value) => (value > 0 ? value : ''),
 						},
 					},
 					scales: {
@@ -3735,15 +4021,15 @@ const renderInfoTrial = () => {
 		}
 
 		// Part Chart (Horizontal Stacked Bar)
-		const ctx2 = document.getElementById("trialPartChart");
+		const ctx2 = document.getElementById('trialPartChart');
 		if (ctx2) {
 			if (state.charts.trialPart) state.charts.trialPart.destroy();
 
-			state.charts.trialPart = new Chart(ctx2.getContext("2d"), {
-				type: "bar",
+			state.charts.trialPart = new Chart(ctx2.getContext('2d'), {
+				type: 'bar',
 				data: charts.parts,
 				options: {
-					indexAxis: "y",
+					indexAxis: 'y',
 					responsive: true,
 					maintainAspectRatio: false,
 					scales: {
@@ -3761,12 +4047,12 @@ const renderInfoTrial = () => {
 					plugins: {
 						legend: {
 							labels: { color: labelColor },
-							position: "top",
+							position: 'top',
 						},
 						datalabels: {
-							color: "#74cfdfff", // Keep white primarily for contrast on colored bars
-							font: { weight: "bold", size: 10 },
-							formatter: (value) => (value > 0 ? value : ""),
+							color: '#74cfdfff', // Keep white primarily for contrast on colored bars
+							font: { weight: 'bold', size: 10 },
+							formatter: (value) => (value > 0 ? value : ''),
 						},
 					},
 				},
@@ -3777,54 +4063,54 @@ const renderInfoTrial = () => {
 	// Export functionality for Rekap Data Trial
 	setTimeout(() => {
 		document
-			.getElementById("exportRekapTrialBtn")
-			?.addEventListener("click", () => {
+			.getElementById('exportRekapTrialBtn')
+			?.addEventListener('click', () => {
 				// Prepare data in correct format for Excel export
 				const exportData = rekap.map((row, index) => ({
 					No: index + 1,
 					PartName: row.partName,
-					"Cust.ID": row.custId,
+					'Cust.ID': row.custId,
 					Line: row.line,
 					Keterangan: row.keterangan,
-					"NG (%)": row.ngPercent,
-					"Qty Inspected (pcs)": row.inspPcs,
-					"Inspected (Lot)": row.inspLot,
-					"Qty NG (pcs)": row.ngPcs,
-					"NG (Lot)": row.ngLot,
-					"Qty OK (pcs)": row.okPcs,
-					"OK (Lot)": row.okLot,
+					'NG (%)': row.ngPercent,
+					'Qty Inspected (pcs)': row.inspPcs,
+					'Inspected (Lot)': row.inspLot,
+					'Qty NG (pcs)': row.ngPcs,
+					'NG (Lot)': row.ngLot,
+					'Qty OK (pcs)': row.okPcs,
+					'OK (Lot)': row.okLot,
 				}));
 
 				// Add total row
 				exportData.push({
 					No: rekap.length + 1,
 					PartName: rekapTotals.partName,
-					"Cust.ID": rekapTotals.custId,
-					Line: "",
-					Keterangan: "",
-					"NG (%)": rekapTotals.ngPercent,
-					"Qty Inspected (pcs)": rekapTotals.inspPcs,
-					"Inspected (Lot)": rekapTotals.inspLot,
-					"Qty NG (pcs)": rekapTotals.ngPcs,
-					"NG (Lot)": rekapTotals.ngLot,
-					"Qty OK (pcs)": rekapTotals.okPcs,
-					"OK (Lot)": rekapTotals.okLot,
+					'Cust.ID': rekapTotals.custId,
+					Line: '',
+					Keterangan: '',
+					'NG (%)': rekapTotals.ngPercent,
+					'Qty Inspected (pcs)': rekapTotals.inspPcs,
+					'Inspected (Lot)': rekapTotals.inspLot,
+					'Qty NG (pcs)': rekapTotals.ngPcs,
+					'NG (Lot)': rekapTotals.ngLot,
+					'Qty OK (pcs)': rekapTotals.okPcs,
+					'OK (Lot)': rekapTotals.okLot,
 				});
 
 				// Create worksheet and workbook
 				const ws = XLSX.utils.json_to_sheet(exportData);
 				const wb = XLSX.utils.book_new();
-				XLSX.utils.book_append_sheet(wb, ws, "Rekap Data Trial");
+				XLSX.utils.book_append_sheet(wb, ws, 'Rekap Data Trial');
 
 				// Generate filename with timestamp
-				const timestamp = new Date().toISOString().split("T")[0];
+				const timestamp = new Date().toISOString().split('T')[0];
 				XLSX.writeFile(wb, `Rekap_Data_Trial_${timestamp}.xlsx`);
 			});
 
 		// Export functionality for Rekap Data Jenis NG
 		document
-			.getElementById("exportDefectRekapTrialBtn")
-			?.addEventListener("click", () => {
+			.getElementById('exportDefectRekapTrialBtn')
+			?.addEventListener('click', () => {
 				// Prepare data with dynamic columns
 				const exportData = defectRekap.map((row) => {
 					const rowData = {
@@ -3836,7 +4122,7 @@ const renderInfoTrial = () => {
 						rowData[`${col}(pcs)`] = row[col] || 0;
 					});
 
-					rowData["TOTAL"] = row.total;
+					rowData['TOTAL'] = row.total;
 
 					return rowData;
 				});
@@ -3848,17 +4134,17 @@ const renderInfoTrial = () => {
 				defectRekapColumns.forEach((col) => {
 					totalRow[`${col}(pcs)`] = defectRekapTotals[col] || 0;
 				});
-				totalRow["TOTAL"] = defectRekapTotals.total;
+				totalRow['TOTAL'] = defectRekapTotals.total;
 
 				exportData.push(totalRow);
 
 				// Create worksheet and workbook
 				const ws = XLSX.utils.json_to_sheet(exportData);
 				const wb = XLSX.utils.book_new();
-				XLSX.utils.book_append_sheet(wb, ws, "Rekap Jenis NG Trial");
+				XLSX.utils.book_append_sheet(wb, ws, 'Rekap Jenis NG Trial');
 
 				// Generate filename with timestamp
-				const timestamp = new Date().toISOString().split("T")[0];
+				const timestamp = new Date().toISOString().split('T')[0];
 				XLSX.writeFile(wb, `Rekap_Jenis_NG_Trial_${timestamp}.xlsx`);
 			});
 	}, 150);
@@ -3868,72 +4154,77 @@ const renderInfoTrial = () => {
 
 const setupFilteringEventListeners = (uniquePartNames) => {
 	// Tab switching
-	const filterTab1 = document.getElementById("filterTab1");
-	const filterTab2 = document.getElementById("filterTab2");
-	const filterTab3 = document.getElementById("filterTab3");
+	const filterTab1 = document.getElementById('filterTab1');
+	const filterTab2 = document.getElementById('filterTab2');
+	const filterTab3 = document.getElementById('filterTab3');
 
 	const filterByPartNameContent = document.getElementById(
-		"filterByPartNameContent"
+		'filterByPartNameContent',
 	);
-	const multiFilterContent = document.getElementById("multiFilterContent");
-	const filterLineContent = document.getElementById("filterLineContent");
+	const multiFilterContent = document.getElementById('multiFilterContent');
+	const filterLineContent = document.getElementById('filterLineContent');
 
 	const switchFilterTab = (tabNum) => {
 		// Remove active classes
 		[filterTab1, filterTab2, filterTab3].forEach((tab) => {
 			tab?.classList.remove(
-				"bg-blue-600",
-				"border-b-2",
-				"border-blue-600",
-				"text-white"
+				'bg-blue-600',
+				'border-b-2',
+				'border-blue-600',
+				'text-white',
 			);
-			tab?.classList.add("text-slate-400");
+			tab?.classList.add('text-slate-400');
 		});
 
 		// Hide all content
-		filterByPartNameContent?.classList.add("hidden");
-		multiFilterContent?.classList.add("hidden");
-		filterLineContent?.classList.add("hidden");
+		filterByPartNameContent?.classList.add('hidden');
+		multiFilterContent?.classList.add('hidden');
+		filterLineContent?.classList.add('hidden');
 
 		// Show selected tab
 		if (tabNum === 1) {
 			filterTab1?.classList.add(
-				"bg-blue-600",
-				"border-b-2",
-				"border-blue-600",
-				"text-white"
+				'bg-blue-600',
+				'border-b-2',
+				'border-blue-600',
+				'text-white',
 			);
-			filterTab1?.classList.remove("text-slate-400");
-			filterByPartNameContent?.classList.remove("hidden");
+			filterTab1?.classList.remove('text-slate-400');
+			filterByPartNameContent?.classList.remove('hidden');
 			// Refresh data to match trial toggle state
 			if (filteringState.selectedPartNames.length > 0) applyPartNameFilter();
 		} else if (tabNum === 2) {
 			filterTab2?.classList.add(
-				"bg-blue-600",
-				"border-b-2",
-				"border-blue-600",
-				"text-white"
+				'bg-blue-600',
+				'border-b-2',
+				'border-blue-600',
+				'text-white',
 			);
-			filterTab2?.classList.remove("text-slate-400");
-			multiFilterContent?.classList.remove("hidden");
+			filterTab2?.classList.remove('text-slate-400');
+			multiFilterContent?.classList.remove('hidden');
 			// Initialize multi filter UI when tab is clicked
 			setTimeout(() => {
 				initMultiFilterUI();
 				// Also refresh if there are existing results
-				const resultsContainer = document.getElementById("multiFilterResultsContainer");
-				if (resultsContainer && !resultsContainer.classList.contains("hidden")) {
+				const resultsContainer = document.getElementById(
+					'multiFilterResultsContainer',
+				);
+				if (
+					resultsContainer &&
+					!resultsContainer.classList.contains('hidden')
+				) {
 					applyMultiFilter();
 				}
 			}, 50);
 		} else if (tabNum === 3) {
 			filterTab3?.classList.add(
-				"bg-blue-600",
-				"border-b-2",
-				"border-blue-600",
-				"text-white"
+				'bg-blue-600',
+				'border-b-2',
+				'border-blue-600',
+				'text-white',
 			);
-			filterTab3?.classList.remove("text-slate-400");
-			filterLineContent?.classList.remove("hidden");
+			filterTab3?.classList.remove('text-slate-400');
+			filterLineContent?.classList.remove('hidden');
 			// Tab 3 data is handled by setupDailyChartListeners and its internal state
 			processDailyData();
 			renderDailyChart();
@@ -3941,37 +4232,51 @@ const setupFilteringEventListeners = (uniquePartNames) => {
 	};
 
 	// Trial Checkbox Listener
-	const trialCheckbox = document.getElementById("includeTrialFilterCheckbox");
+	const trialCheckbox = document.getElementById('includeTrialFilterCheckbox');
 	if (trialCheckbox) {
-		trialCheckbox.addEventListener("change", (e) => {
+		trialCheckbox.addEventListener('change', (e) => {
 			const isChecked = e.target.checked;
 			filteringState.includeTrialData = isChecked;
-			
+
 			// Detect the active tab by checking which content div is currently visible
-			const isTab1Active = !document.getElementById("filterByPartNameContent").classList.contains("hidden");
-			const isTab2Active = !document.getElementById("multiFilterContent").classList.contains("hidden");
-			const isTab3Active = !document.getElementById("filterLineContent").classList.contains("hidden");
+			const isTab1Active = !document
+				.getElementById('filterByPartNameContent')
+				.classList.contains('hidden');
+			const isTab2Active = !document
+				.getElementById('multiFilterContent')
+				.classList.contains('hidden');
+			const isTab3Active = !document
+				.getElementById('filterLineContent')
+				.classList.contains('hidden');
 
 			if (isTab1Active) {
 				// Refresh Tab 1: Filter by PartName
 				applyPartNameFilter();
 			} else if (isTab2Active) {
 				// Refresh Tab 2: Multi Filter - only if results are currently shown
-				const resultsContainer = document.getElementById("multiFilterResultsContainer");
-				if (resultsContainer && !resultsContainer.classList.contains("hidden")) {
+				const resultsContainer = document.getElementById(
+					'multiFilterResultsContainer',
+				);
+				if (
+					resultsContainer &&
+					!resultsContainer.classList.contains('hidden')
+				) {
 					applyMultiFilter();
 				}
 			} else if (isTab3Active) {
 				// Refresh Tab 3: Periodical Chart
 				processDailyData();
 				renderDailyChart();
-				
+
 				if (filteringState.selectedDefectType) {
 					processDefectDailyData(filteringState.selectedDefectType);
 					renderDefectDailyChart(filteringState.selectedDefectType);
-					
+
 					// Also refresh the part-level details if they exist
-					if (typeof processDefectPartData === "function" && typeof renderDefectPartTables === "function") {
+					if (
+						typeof processDefectPartData === 'function' &&
+						typeof renderDefectPartTables === 'function'
+					) {
 						processDefectPartData();
 						renderDefectPartTables();
 					}
@@ -3980,46 +4285,46 @@ const setupFilteringEventListeners = (uniquePartNames) => {
 		});
 	}
 
-	filterTab1?.addEventListener("click", () => switchFilterTab(1));
-	filterTab2?.addEventListener("click", () => switchFilterTab(2));
-	filterTab3?.addEventListener("click", () => switchFilterTab(3));
+	filterTab1?.addEventListener('click', () => switchFilterTab(1));
+	filterTab2?.addEventListener('click', () => switchFilterTab(2));
+	filterTab3?.addEventListener('click', () => switchFilterTab(3));
 
 	// PartName multi-select functionality
-	const searchInput = document.getElementById("partNameSearchInput");
-	const dropdown = document.getElementById("partNameDropdown");
-	const tagsContainer = document.getElementById("partNameTagsContainer");
-	const applyBtn = document.getElementById("applyPartNameFilterBtn");
-	const clearBtn = document.getElementById("clearPartNameFilterBtn");
+	const searchInput = document.getElementById('partNameSearchInput');
+	const dropdown = document.getElementById('partNameDropdown');
+	const tagsContainer = document.getElementById('partNameTagsContainer');
+	const applyBtn = document.getElementById('applyPartNameFilterBtn');
+	const clearBtn = document.getElementById('clearPartNameFilterBtn');
 
 	// Show/hide dropdown on focus AND click
-	searchInput?.addEventListener("focus", () => {
-		dropdown?.classList.remove("hidden");
+	searchInput?.addEventListener('focus', () => {
+		dropdown?.classList.remove('hidden');
 	});
 
-	searchInput?.addEventListener("click", () => {
-		dropdown?.classList.remove("hidden");
+	searchInput?.addEventListener('click', () => {
+		dropdown?.classList.remove('hidden');
 	});
 
 	// Filter dropdown options based on search
-	searchInput?.addEventListener("input", (e) => {
+	searchInput?.addEventListener('input', (e) => {
 		const searchTerm = e.target.value.toLowerCase();
-		const options = dropdown?.querySelectorAll(".partname-option");
+		const options = dropdown?.querySelectorAll('.partname-option');
 
 		options?.forEach((option) => {
-			const partName = option.getAttribute("data-partname").toLowerCase();
+			const partName = option.getAttribute('data-partname').toLowerCase();
 			if (partName.includes(searchTerm)) {
-				option.classList.remove("hidden");
+				option.classList.remove('hidden');
 			} else {
-				option.classList.add("hidden");
+				option.classList.add('hidden');
 			}
 		});
 	});
 
 	// Handle option click
-	dropdown?.addEventListener("click", (e) => {
-		const option = e.target.closest(".partname-option");
+	dropdown?.addEventListener('click', (e) => {
+		const option = e.target.closest('.partname-option');
 		if (option) {
-			const partName = option.getAttribute("data-partname");
+			const partName = option.getAttribute('data-partname');
 
 			// Add to selected if not already selected
 			if (!filteringState.selectedPartNames.includes(partName)) {
@@ -4029,20 +4334,20 @@ const setupFilteringEventListeners = (uniquePartNames) => {
 			}
 
 			// Clear search and hide dropdown
-			searchInput.value = "";
-			dropdown.classList.add("hidden");
+			searchInput.value = '';
+			dropdown.classList.add('hidden');
 
 			// Reset dropdown options visibility
-			dropdown.querySelectorAll(".partname-option").forEach((opt) => {
-				opt.classList.remove("hidden");
+			dropdown.querySelectorAll('.partname-option').forEach((opt) => {
+				opt.classList.remove('hidden');
 			});
 		}
 	});
 
 	// Hide dropdown when clicking outside
-	document.addEventListener("click", (e) => {
+	document.addEventListener('click', (e) => {
 		if (!searchInput?.contains(e.target) && !dropdown?.contains(e.target)) {
-			dropdown?.classList.add("hidden");
+			dropdown?.classList.add('hidden');
 		}
 	});
 
@@ -4054,9 +4359,9 @@ const setupFilteringEventListeners = (uniquePartNames) => {
 				(partName) => `
             <div class="flex items-center gap-2 px-3 py-1.5 bg-red-600 text-white text-sm rounded">
                 <span>${
-									partName.length > 20
-										? partName.substring(0, 20) + "..."
-										: partName
+									partName.length > 20 ?
+										partName.substring(0, 20) + '...'
+									:	partName
 								}</span>
                 <button class="remove-tag hover:bg-red-700 rounded-full p-0.5" data-partname="${partName}">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -4064,14 +4369,14 @@ const setupFilteringEventListeners = (uniquePartNames) => {
                     </svg>
                 </button>
             </div>
-        `
+        `,
 			)
-			.join("");
+			.join('');
 
 		// Add remove tag event listeners
-		tagsContainer.querySelectorAll(".remove-tag").forEach((btn) => {
-			btn.addEventListener("click", (e) => {
-				const partName = e.currentTarget.getAttribute("data-partname");
+		tagsContainer.querySelectorAll('.remove-tag').forEach((btn) => {
+			btn.addEventListener('click', (e) => {
+				const partName = e.currentTarget.getAttribute('data-partname');
 				filteringState.selectedPartNames =
 					filteringState.selectedPartNames.filter((p) => p !== partName);
 				renderPartNameTags();
@@ -4087,12 +4392,12 @@ const setupFilteringEventListeners = (uniquePartNames) => {
 	};
 
 	// Apply filter
-	applyBtn?.addEventListener("click", () => {
+	applyBtn?.addEventListener('click', () => {
 		applyPartNameFilter();
 	});
 
 	// Clear filter
-	clearBtn?.addEventListener("click", () => {
+	clearBtn?.addEventListener('click', () => {
 		filteringState.selectedPartNames = [];
 		filteringState.filteredData = [];
 		filteringState.partNamePeriodicalData = [];
@@ -4102,49 +4407,51 @@ const setupFilteringEventListeners = (uniquePartNames) => {
 		}
 		renderPartNameTags();
 		updateFilterButtons();
-		document.getElementById("filterResultsContainer")?.classList.add("hidden");
+		document.getElementById('filterResultsContainer')?.classList.add('hidden');
 	});
 
 	// Export CSV
 	const exportPartNamePreviewBtn = document.getElementById(
-		"exportPartNamePreviewBtn"
+		'exportPartNamePreviewBtn',
 	);
-	exportPartNamePreviewBtn?.addEventListener("click", () => {
+	exportPartNamePreviewBtn?.addEventListener('click', () => {
 		if (filteringState.filteredData.length === 0) return;
 
 		// Use XLSX to export to CSV
 		const ws = XLSX.utils.json_to_sheet(filteringState.filteredData);
 		const wb = XLSX.utils.book_new();
-		XLSX.utils.book_append_sheet(wb, ws, "FilteredData");
-		XLSX.writeFile(wb, "Filtered_Data_By_PartName.csv");
+		XLSX.utils.book_append_sheet(wb, ws, 'FilteredData');
+		XLSX.writeFile(wb, 'Filtered_Data_By_PartName.csv');
 	});
 
 	// Multi Filter Event Listeners
-	const applyMultiFilterBtn = document.getElementById("applyMultiFilterBtn");
-	const clearMultiFilterBtn = document.getElementById("clearMultiFilterBtn");
+	const applyMultiFilterBtn = document.getElementById('applyMultiFilterBtn');
+	const clearMultiFilterBtn = document.getElementById('clearMultiFilterBtn');
 
 	if (applyMultiFilterBtn) {
-		applyMultiFilterBtn.addEventListener("click", applyMultiFilter);
+		applyMultiFilterBtn.addEventListener('click', applyMultiFilter);
 	}
 
 	if (clearMultiFilterBtn) {
-		clearMultiFilterBtn.addEventListener("click", clearMultiFilter);
+		clearMultiFilterBtn.addEventListener('click', clearMultiFilter);
 	}
 
 	// Export Multi Preview
-	const multiPreviewDetails = document.getElementById("multiPreviewDetails");
-	const exportMultiPreviewBtn = document.getElementById("exportMultiPreviewBtn");
-	
+	const multiPreviewDetails = document.getElementById('multiPreviewDetails');
+	const exportMultiPreviewBtn = document.getElementById(
+		'exportMultiPreviewBtn',
+	);
+
 	if (multiPreviewDetails && exportMultiPreviewBtn) {
-		multiPreviewDetails.addEventListener("toggle", function() {
-			const wrapper = this.querySelector(".export-btn-wrapper");
+		multiPreviewDetails.addEventListener('toggle', function () {
+			const wrapper = this.querySelector('.export-btn-wrapper');
 			if (wrapper) {
-				if (this.open) wrapper.classList.remove("hidden");
-				else wrapper.classList.add("hidden");
+				if (this.open) wrapper.classList.remove('hidden');
+				else wrapper.classList.add('hidden');
 			}
 		});
-		
-		exportMultiPreviewBtn.addEventListener("click", (e) => {
+
+		exportMultiPreviewBtn.addEventListener('click', (e) => {
 			e.preventDefault();
 			e.stopPropagation();
 			exportMultiPreviewDataToCSV();
@@ -4152,19 +4459,21 @@ const setupFilteringEventListeners = (uniquePartNames) => {
 	}
 
 	// Export Multi Grouped
-	const multiGroupedDetails = document.getElementById("multiGroupedDetails");
-	const exportMultiGroupedBtn = document.getElementById("exportMultiGroupedBtn");
-	
+	const multiGroupedDetails = document.getElementById('multiGroupedDetails');
+	const exportMultiGroupedBtn = document.getElementById(
+		'exportMultiGroupedBtn',
+	);
+
 	if (multiGroupedDetails && exportMultiGroupedBtn) {
-		multiGroupedDetails.addEventListener("toggle", function() {
-			const wrapper = this.querySelector(".export-btn-wrapper");
+		multiGroupedDetails.addEventListener('toggle', function () {
+			const wrapper = this.querySelector('.export-btn-wrapper');
 			if (wrapper) {
-				if (this.open) wrapper.classList.remove("hidden");
-				else wrapper.classList.add("hidden");
+				if (this.open) wrapper.classList.remove('hidden');
+				else wrapper.classList.add('hidden');
 			}
 		});
-		
-		exportMultiGroupedBtn.addEventListener("click", (e) => {
+
+		exportMultiGroupedBtn.addEventListener('click', (e) => {
 			e.preventDefault();
 			e.stopPropagation();
 			exportMultiGroupedDataToCSV();
@@ -4172,9 +4481,11 @@ const setupFilteringEventListeners = (uniquePartNames) => {
 	}
 
 	// PartName Periodical Chart Timeframe listener
-	const partNameTimeframeSelect = document.getElementById("partNameTimeframeSelect");
+	const partNameTimeframeSelect = document.getElementById(
+		'partNameTimeframeSelect',
+	);
 	if (partNameTimeframeSelect) {
-		partNameTimeframeSelect.addEventListener("change", (e) => {
+		partNameTimeframeSelect.addEventListener('change', (e) => {
 			filteringState.partNameSelectedTimeframe = e.target.value;
 			processPartNamePeriodicalData();
 			renderPartNamePeriodicalChart();
@@ -4182,9 +4493,11 @@ const setupFilteringEventListeners = (uniquePartNames) => {
 	}
 
 	// Multi Filter Periodical Chart Timeframe listener
-	const multiFilterTimeframeSelect = document.getElementById("multiFilterTimeframeSelect");
+	const multiFilterTimeframeSelect = document.getElementById(
+		'multiFilterTimeframeSelect',
+	);
 	if (multiFilterTimeframeSelect) {
-		multiFilterTimeframeSelect.addEventListener("change", (e) => {
+		multiFilterTimeframeSelect.addEventListener('change', (e) => {
 			filteringState.multiFilterSelectedTimeframe = e.target.value;
 			processMultiFilterPeriodicalData();
 			renderMultiFilterPeriodicalChart();
@@ -4193,39 +4506,53 @@ const setupFilteringEventListeners = (uniquePartNames) => {
 };
 
 const processPartNamePeriodicalData = () => {
-	if (filteringState.selectedPartNames.length === 0 || !state.processedData) return;
+	if (filteringState.selectedPartNames.length === 0 || !state.processedData)
+		return;
 
-	const timeframe = filteringState.partNameSelectedTimeframe || "Monthly";
+	const timeframe = filteringState.partNameSelectedTimeframe || 'Monthly';
 
 	// Group by timeframe
 	const groups = {};
 
 	filteringState.filteredData.forEach((row) => {
-		const dateObj = row["DateObj"];
+		const dateObj = row['DateObj'];
 		if (!dateObj || isNaN(dateObj)) return;
 
 		let groupKey;
-		const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+		const monthNames = [
+			'Jan',
+			'Feb',
+			'Mar',
+			'Apr',
+			'May',
+			'Jun',
+			'Jul',
+			'Aug',
+			'Sep',
+			'Oct',
+			'Nov',
+			'Dec',
+		];
 
-		if (timeframe === "Weekly") {
-			const dayOfWeek = dateObj.getDay(); 
+		if (timeframe === 'Weekly') {
+			const dayOfWeek = dateObj.getDay();
 			const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
 			const monday = new Date(dateObj);
 			monday.setDate(dateObj.getDate() + diff);
-			
-			const d = String(monday.getDate()).padStart(2, "0");
+
+			const d = String(monday.getDate()).padStart(2, '0');
 			const m = monthNames[monday.getMonth()];
 			const y = String(monday.getFullYear()).slice(-2);
 			groupKey = `W${getWeekNumber(monday)} (${d}-${m}-${y})`;
-		} else if (timeframe === "Monthly") {
+		} else if (timeframe === 'Monthly') {
 			const m = monthNames[dateObj.getMonth()];
 			const y = String(dateObj.getFullYear()).slice(-2);
 			groupKey = `${m}-${y}`;
-		} else if (timeframe === "Yearly") {
+		} else if (timeframe === 'Yearly') {
 			groupKey = String(dateObj.getFullYear());
 		} else {
 			// Daily
-			const d = String(dateObj.getDate()).padStart(2, "0");
+			const d = String(dateObj.getDate()).padStart(2, '0');
 			const m = monthNames[dateObj.getMonth()];
 			const y = String(dateObj.getFullYear()).slice(-2);
 			groupKey = `${d}-${m}-${y}`;
@@ -4240,29 +4567,29 @@ const processPartNamePeriodicalData = () => {
 				sumNGPercent: 0,
 				count: 0,
 			};
-			
-			if (timeframe === "Weekly") {
+
+			if (timeframe === 'Weekly') {
 				const dayOfWeek = dateObj.getDay();
 				const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
 				groups[groupKey].dateObj.setDate(dateObj.getDate() + diff);
-			} else if (timeframe === "Monthly") {
+			} else if (timeframe === 'Monthly') {
 				groups[groupKey].dateObj.setDate(1);
-			} else if (timeframe === "Yearly") {
+			} else if (timeframe === 'Yearly') {
 				groups[groupKey].dateObj.setMonth(0, 1);
 			}
 		}
 
-		groups[groupKey].inspLot += Number(row["Insp(Lot)"]) || 0;
-		groups[groupKey].ngLot += Number(row["NG(Lot)"]) || 0;
+		groups[groupKey].inspLot += Number(row['Insp(Lot)']) || 0;
+		groups[groupKey].ngLot += Number(row['NG(Lot)']) || 0;
 
-		if (row["NG_%"] !== undefined && row["NG_%"] !== null) {
-			groups[groupKey].sumNGPercent += Number(row["NG_%"]);
+		if (row['NG_%'] !== undefined && row['NG_%'] !== null) {
+			groups[groupKey].sumNGPercent += Number(row['NG_%']);
 			groups[groupKey].count += 1;
 		}
 	});
 
 	const dailyArray = Object.values(groups).sort(
-		(a, b) => a.dateObj - b.dateObj
+		(a, b) => a.dateObj - b.dateObj,
 	);
 
 	dailyArray.forEach((group) => {
@@ -4273,11 +4600,11 @@ const processPartNamePeriodicalData = () => {
 };
 
 const renderPartNamePeriodicalChart = () => {
-	const canvas = document.getElementById("partNamePeriodicalChart");
-	const titleElement = document.getElementById("partNamePeriodicalChartTitle");
+	const canvas = document.getElementById('partNamePeriodicalChart');
+	const titleElement = document.getElementById('partNamePeriodicalChartTitle');
 
 	if (!canvas) return;
-	
+
 	if (filteringState.partNamePeriodicalData.length === 0) {
 		if (state.charts.partNamePeriodicalChart) {
 			state.charts.partNamePeriodicalChart.destroy();
@@ -4286,16 +4613,19 @@ const renderPartNamePeriodicalChart = () => {
 		return;
 	}
 
-	const timeframe = filteringState.partNameSelectedTimeframe || "Monthly";
-	const timeframeLabel = timeframe === "Daily" ? "Harian" : 
-						 timeframe === "Weekly" ? "Mingguan" :
-						 timeframe === "Monthly" ? "Bulanan" : "Tahunan";
+	const timeframe = filteringState.partNameSelectedTimeframe || 'Monthly';
+	const timeframeLabel =
+		timeframe === 'Daily' ? 'Harian'
+		: timeframe === 'Weekly' ? 'Mingguan'
+		: timeframe === 'Monthly' ? 'Bulanan'
+		: 'Tahunan';
 
 	// Update title
 	if (titleElement) {
-		const partsText = filteringState.selectedPartNames.length > 2 
-			? `${filteringState.selectedPartNames.length} parts selected`
-			: filteringState.selectedPartNames.join(", ");
+		const partsText =
+			filteringState.selectedPartNames.length > 2 ?
+				`${filteringState.selectedPartNames.length} parts selected`
+			:	filteringState.selectedPartNames.join(', ');
 		titleElement.textContent = `Rata-rata NG (%) ${timeframeLabel} & Total Inspected (Lot) - ${partsText}`;
 	}
 
@@ -4312,38 +4642,38 @@ const renderPartNamePeriodicalChart = () => {
 	const maxInsp = Math.max(...inspData, 0);
 	const maxNG = Math.max(...ngData, 0);
 
-	const isDark = document.documentElement.classList.contains("dark");
-	const gridColor = isDark ? "#334155" : "rgba(0, 0, 0, 0.1)";
-	const tickColor = isDark ? "#94a3b8" : "#475569";
-	const titleColor = isDark ? "#ffffff" : "#1e293b";
+	const isDark = document.documentElement.classList.contains('dark');
+	const gridColor = isDark ? '#334155' : 'rgba(0, 0, 0, 0.1)';
+	const tickColor = isDark ? '#94a3b8' : '#475569';
+	const titleColor = isDark ? '#ffffff' : '#1e293b';
 
-	const ctx = canvas.getContext("2d");
+	const ctx = canvas.getContext('2d');
 	state.charts.partNamePeriodicalChart = new Chart(ctx, {
-		type: "bar",
+		type: 'bar',
 		data: {
 			labels: labels,
 			datasets: [
 				{
-					label: "Total Inspected (Lot)",
+					label: 'Total Inspected (Lot)',
 					data: inspData,
-					backgroundColor: "#364474ff",
-					borderColor: "#364474ff",
+					backgroundColor: '#364474ff',
+					borderColor: '#364474ff',
 					borderWidth: 1,
-					yAxisID: "y",
+					yAxisID: 'y',
 					order: 2,
 				},
 				{
-					label: "NG (%)",
+					label: 'NG (%)',
 					data: ngData,
-					type: "line",
-					borderColor: "#ef4444",
-					backgroundColor: "#ef4444",
+					type: 'line',
+					borderColor: '#ef4444',
+					backgroundColor: '#ef4444',
 					borderWidth: 2,
 					pointRadius: 4,
-					pointBackgroundColor: "#ef4444",
-					pointBorderColor: "#fff",
+					pointBackgroundColor: '#ef4444',
+					pointBorderColor: '#fff',
 					pointBorderWidth: 1,
-					yAxisID: "y1",
+					yAxisID: 'y1',
 					order: 1,
 					tension: 0.4,
 				},
@@ -4353,12 +4683,12 @@ const renderPartNamePeriodicalChart = () => {
 			responsive: true,
 			maintainAspectRatio: false,
 			interaction: {
-				mode: "index",
+				mode: 'index',
 				intersect: false,
 			},
 			plugins: {
 				legend: {
-					position: "bottom",
+					position: 'bottom',
 					labels: {
 						color: tickColor,
 						font: { size: 11 },
@@ -4370,16 +4700,16 @@ const renderPartNamePeriodicalChart = () => {
 			},
 			scales: {
 				y: {
-					type: "linear",
+					type: 'linear',
 					display: true,
-					position: "left",
+					position: 'left',
 					beginAtZero: true,
 					suggestedMax: maxInsp * 1.1,
 					title: {
 						display: true,
-						text: "Total Inspected (Lot)",
-						color: "#ecb34aff",
-						font: { size: 11, weight: "bold" },
+						text: 'Total Inspected (Lot)',
+						color: '#ecb34aff',
+						font: { size: 11, weight: 'bold' },
 					},
 					grid: { color: gridColor },
 					ticks: {
@@ -4388,33 +4718,35 @@ const renderPartNamePeriodicalChart = () => {
 					},
 				},
 				y1: {
-					type: "linear",
+					type: 'linear',
 					display: true,
-					position: "right",
+					position: 'right',
 					beginAtZero: true,
 					min: 0,
 					suggestedMax: maxNG * 1.1,
 					title: {
 						display: true,
-						text: "NG (%)",
-						color: "#ef4444",
-						font: { size: 11, weight: "bold" },
+						text: 'NG (%)',
+						color: '#ef4444',
+						font: { size: 11, weight: 'bold' },
 					},
 					grid: { drawOnChartArea: false },
 					ticks: {
-						color: "#ef4444",
+						color: '#ef4444',
 						font: { size: 10 },
 						callback: function (value) {
-							return value.toFixed(2) + "%";
+							return value.toFixed(2) + '%';
 						},
 					},
 				},
 				x: {
 					title: {
 						display: true,
-						text: timeframe === "Daily" ? "Tanggal" : 
-							  timeframe === "Weekly" ? "Minggu" :
-							  timeframe === "Monthly" ? "Bulan" : "Tahun",
+						text:
+							timeframe === 'Daily' ? 'Tanggal'
+							: timeframe === 'Weekly' ? 'Minggu'
+							: timeframe === 'Monthly' ? 'Bulan'
+							: 'Tahun',
 						color: titleColor,
 						font: { size: 11 },
 					},
@@ -4434,37 +4766,50 @@ const renderPartNamePeriodicalChart = () => {
 const processMultiFilterPeriodicalData = () => {
 	if (filteringState.multiFilteredData.length === 0) return;
 
-	const timeframe = filteringState.multiFilterSelectedTimeframe || "Daily";
+	const timeframe = filteringState.multiFilterSelectedTimeframe || 'Daily';
 
 	// Group by timeframe
 	const groups = {};
 
 	filteringState.multiFilteredData.forEach((row) => {
-		const dateObj = row["DateObj"];
+		const dateObj = row['DateObj'];
 		if (!dateObj || isNaN(dateObj)) return;
 
 		let groupKey;
-		const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+		const monthNames = [
+			'Jan',
+			'Feb',
+			'Mar',
+			'Apr',
+			'May',
+			'Jun',
+			'Jul',
+			'Aug',
+			'Sep',
+			'Oct',
+			'Nov',
+			'Dec',
+		];
 
-		if (timeframe === "Weekly") {
-			const dayOfWeek = dateObj.getDay(); 
+		if (timeframe === 'Weekly') {
+			const dayOfWeek = dateObj.getDay();
 			const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
 			const monday = new Date(dateObj);
 			monday.setDate(dateObj.getDate() + diff);
-			
-			const d = String(monday.getDate()).padStart(2, "0");
+
+			const d = String(monday.getDate()).padStart(2, '0');
 			const m = monthNames[monday.getMonth()];
 			const y = String(monday.getFullYear()).slice(-2);
 			groupKey = `W${getWeekNumber(monday)} (${d}-${m}-${y})`;
-		} else if (timeframe === "Monthly") {
+		} else if (timeframe === 'Monthly') {
 			const m = monthNames[dateObj.getMonth()];
 			const y = String(dateObj.getFullYear()).slice(-2);
 			groupKey = `${m}-${y}`;
-		} else if (timeframe === "Yearly") {
+		} else if (timeframe === 'Yearly') {
 			groupKey = String(dateObj.getFullYear());
 		} else {
 			// Daily
-			const d = String(dateObj.getDate()).padStart(2, "0");
+			const d = String(dateObj.getDate()).padStart(2, '0');
 			const m = monthNames[dateObj.getMonth()];
 			const y = String(dateObj.getFullYear()).slice(-2);
 			groupKey = `${d}-${m}-${y}`;
@@ -4479,29 +4824,29 @@ const processMultiFilterPeriodicalData = () => {
 				sumNGPercent: 0,
 				count: 0,
 			};
-			
-			if (timeframe === "Weekly") {
+
+			if (timeframe === 'Weekly') {
 				const dayOfWeek = dateObj.getDay();
 				const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
 				groups[groupKey].dateObj.setDate(dateObj.getDate() + diff);
-			} else if (timeframe === "Monthly") {
+			} else if (timeframe === 'Monthly') {
 				groups[groupKey].dateObj.setDate(1);
-			} else if (timeframe === "Yearly") {
+			} else if (timeframe === 'Yearly') {
 				groups[groupKey].dateObj.setMonth(0, 1);
 			}
 		}
 
-		groups[groupKey].inspLot += Number(row["Insp(Lot)"]) || 0;
-		groups[groupKey].ngLot += Number(row["NG(Lot)"]) || 0;
+		groups[groupKey].inspLot += Number(row['Insp(Lot)']) || 0;
+		groups[groupKey].ngLot += Number(row['NG(Lot)']) || 0;
 
-		if (row["NG_%"] !== undefined && row["NG_%"] !== null) {
-			groups[groupKey].sumNGPercent += Number(row["NG_%"]);
+		if (row['NG_%'] !== undefined && row['NG_%'] !== null) {
+			groups[groupKey].sumNGPercent += Number(row['NG_%']);
 			groups[groupKey].count += 1;
 		}
 	});
 
 	const periodicalArray = Object.values(groups).sort(
-		(a, b) => a.dateObj - b.dateObj
+		(a, b) => a.dateObj - b.dateObj,
 	);
 
 	periodicalArray.forEach((group) => {
@@ -4512,11 +4857,13 @@ const processMultiFilterPeriodicalData = () => {
 };
 
 const renderMultiFilterPeriodicalChart = () => {
-	const canvas = document.getElementById("multiFilterPeriodicalChart");
-	const titleElement = document.getElementById("multiFilterPeriodicalChartTitle");
+	const canvas = document.getElementById('multiFilterPeriodicalChart');
+	const titleElement = document.getElementById(
+		'multiFilterPeriodicalChartTitle',
+	);
 
 	if (!canvas) return;
-	
+
 	if (filteringState.multiFilterPeriodicalData.length === 0) {
 		if (state.charts.multiFilterPeriodicalChart) {
 			state.charts.multiFilterPeriodicalChart.destroy();
@@ -4525,10 +4872,12 @@ const renderMultiFilterPeriodicalChart = () => {
 		return;
 	}
 
-	const timeframe = filteringState.multiFilterSelectedTimeframe || "Daily";
-	const timeframeLabel = timeframe === "Daily" ? "Harian" : 
-						 timeframe === "Weekly" ? "Mingguan" :
-						 timeframe === "Monthly" ? "Bulanan" : "Tahunan";
+	const timeframe = filteringState.multiFilterSelectedTimeframe || 'Daily';
+	const timeframeLabel =
+		timeframe === 'Daily' ? 'Harian'
+		: timeframe === 'Weekly' ? 'Mingguan'
+		: timeframe === 'Monthly' ? 'Bulanan'
+		: 'Tahunan';
 
 	// Update title
 	if (titleElement) {
@@ -4542,44 +4891,48 @@ const renderMultiFilterPeriodicalChart = () => {
 
 	// Prepare data
 	const labels = filteringState.multiFilterPeriodicalData.map((d) => d.date);
-	const inspData = filteringState.multiFilterPeriodicalData.map((d) => d.inspLot);
-	const ngData = filteringState.multiFilterPeriodicalData.map((d) => d.ngPercent);
+	const inspData = filteringState.multiFilterPeriodicalData.map(
+		(d) => d.inspLot,
+	);
+	const ngData = filteringState.multiFilterPeriodicalData.map(
+		(d) => d.ngPercent,
+	);
 
 	const maxInsp = Math.max(...inspData, 0);
 	const maxNG = Math.max(...ngData, 0);
 
-	const isDark = document.documentElement.classList.contains("dark");
-	const gridColor = isDark ? "#334155" : "rgba(0, 0, 0, 0.1)";
-	const tickColor = isDark ? "#94a3b8" : "#475569";
-	const titleColor = isDark ? "#ffffff" : "#1e293b";
+	const isDark = document.documentElement.classList.contains('dark');
+	const gridColor = isDark ? '#334155' : 'rgba(0, 0, 0, 0.1)';
+	const tickColor = isDark ? '#94a3b8' : '#475569';
+	const titleColor = isDark ? '#ffffff' : '#1e293b';
 
-	const ctx = canvas.getContext("2d");
+	const ctx = canvas.getContext('2d');
 	state.charts.multiFilterPeriodicalChart = new Chart(ctx, {
-		type: "bar",
+		type: 'bar',
 		data: {
 			labels: labels,
 			datasets: [
 				{
-					label: "Total Inspected (Lot)",
+					label: 'Total Inspected (Lot)',
 					data: inspData,
-					backgroundColor: "#364474ff",
-					borderColor: "#364474ff",
+					backgroundColor: '#364474ff',
+					borderColor: '#364474ff',
 					borderWidth: 1,
-					yAxisID: "y",
+					yAxisID: 'y',
 					order: 2,
 				},
 				{
-					label: "NG (%)",
+					label: 'NG (%)',
 					data: ngData,
-					type: "line",
-					borderColor: "#ef4444",
-					backgroundColor: "#ef4444",
+					type: 'line',
+					borderColor: '#ef4444',
+					backgroundColor: '#ef4444',
 					borderWidth: 2,
 					pointRadius: 4,
-					pointBackgroundColor: "#ef4444",
-					pointBorderColor: "#fff",
+					pointBackgroundColor: '#ef4444',
+					pointBorderColor: '#fff',
 					pointBorderWidth: 1,
-					yAxisID: "y1",
+					yAxisID: 'y1',
 					order: 1,
 					tension: 0.4,
 				},
@@ -4589,12 +4942,12 @@ const renderMultiFilterPeriodicalChart = () => {
 			responsive: true,
 			maintainAspectRatio: false,
 			interaction: {
-				mode: "index",
+				mode: 'index',
 				intersect: false,
 			},
 			plugins: {
 				legend: {
-					position: "bottom",
+					position: 'bottom',
 					labels: {
 						color: tickColor,
 						font: { size: 11 },
@@ -4606,16 +4959,16 @@ const renderMultiFilterPeriodicalChart = () => {
 			},
 			scales: {
 				y: {
-					type: "linear",
+					type: 'linear',
 					display: true,
-					position: "left",
+					position: 'left',
 					beginAtZero: true,
 					suggestedMax: maxInsp * 1.1,
 					title: {
 						display: true,
-						text: "Total Inspected (Lot)",
-						color: "#364474ff",
-						font: { size: 11, weight: "bold" },
+						text: 'Total Inspected (Lot)',
+						color: '#364474ff',
+						font: { size: 11, weight: 'bold' },
 					},
 					grid: { color: gridColor },
 					ticks: {
@@ -4624,33 +4977,35 @@ const renderMultiFilterPeriodicalChart = () => {
 					},
 				},
 				y1: {
-					type: "linear",
+					type: 'linear',
 					display: true,
-					position: "right",
+					position: 'right',
 					beginAtZero: true,
 					min: 0,
 					suggestedMax: maxNG * 1.1,
 					title: {
 						display: true,
-						text: "NG (%)",
-						color: "#ef4444",
-						font: { size: 11, weight: "bold" },
+						text: 'NG (%)',
+						color: '#ef4444',
+						font: { size: 11, weight: 'bold' },
 					},
 					grid: { drawOnChartArea: false },
 					ticks: {
-						color: "#ef4444",
+						color: '#ef4444',
 						font: { size: 10 },
 						callback: function (value) {
-							return value.toFixed(2) + "%";
+							return value.toFixed(2) + '%';
 						},
 					},
 				},
 				x: {
 					title: {
 						display: true,
-						text: timeframe === "Daily" ? "Tanggal" : 
-							  timeframe === "Weekly" ? "Minggu" :
-							  timeframe === "Monthly" ? "Bulan" : "Tahun",
+						text:
+							timeframe === 'Daily' ? 'Tanggal'
+							: timeframe === 'Weekly' ? 'Minggu'
+							: timeframe === 'Monthly' ? 'Bulan'
+							: 'Tahun',
 						color: titleColor,
 						font: { size: 11 },
 					},
@@ -4669,8 +5024,8 @@ const renderMultiFilterPeriodicalChart = () => {
 
 const applyPartNameFilter = () => {
 	if (filteringState.selectedPartNames.length === 0 || !state.processedData) {
-		const resultsContainer = document.getElementById("filterResultsContainer");
-		resultsContainer?.classList.add("hidden");
+		const resultsContainer = document.getElementById('filterResultsContainer');
+		resultsContainer?.classList.add('hidden');
 		filteringState.filteredData = [];
 		return;
 	}
@@ -4683,15 +5038,15 @@ const applyPartNameFilter = () => {
 	});
 
 	// Show results
-	const resultsContainer = document.getElementById("filterResultsContainer");
-	resultsContainer?.classList.remove("hidden");
+	const resultsContainer = document.getElementById('filterResultsContainer');
+	resultsContainer?.classList.remove('hidden');
 
 	// Update preview text
-	const previewText = document.getElementById("filterPreviewText");
+	const previewText = document.getElementById('filterPreviewText');
 	if (previewText) {
 		previewText.textContent = `Found ${
 			filteringState.filteredData.length
-		} records for: ${filteringState.selectedPartNames.join(", ")}`;
+		} records for: ${filteringState.selectedPartNames.join(', ')}`;
 	}
 
 	// Render tables
@@ -4704,7 +5059,7 @@ const applyPartNameFilter = () => {
 };
 
 const renderParetoDefectChart = () => {
-	const canvas = document.getElementById("paretoDefectChart");
+	const canvas = document.getElementById('paretoDefectChart');
 	if (!canvas) return;
 
 	if (filteringState.filteredData.length === 0) {
@@ -4717,38 +5072,38 @@ const renderParetoDefectChart = () => {
 
 	// Get all defect columns
 	const allDefectColumns = [
-		"Warna",
-		"Buram",
-		"Berbayang",
-		"Kotor",
-		"Tdk Terplating",
-		"Rontok/ Blister",
-		"Tipis/ EE No Plating",
-		"Flek Kuning",
-		"Terbakar",
-		"Watermark",
-		"Jig Mark/ Renggang",
-		"Lecet/ Scratch",
-		"Seret",
-		"Flek Hitam",
-		"Flek Tangan",
-		"Belang/ Dempet",
-		"Bintik",
-		"Kilap",
-		"Tebal",
-		"Flek Putih",
-		"Spark",
-		"Kotor H/ Oval",
-		"Terkikis/ Crack",
-		"Dimensi/ Penyok",
-		"MTL/ SLipMelintir",
+		'Warna',
+		'Buram',
+		'Berbayang',
+		'Kotor',
+		'Tdk Terplating',
+		'Rontok/ Blister',
+		'Tipis/ EE No Plating',
+		'Flek Kuning',
+		'Terbakar',
+		'Watermark',
+		'Jig Mark/ Renggang',
+		'Lecet/ Scratch',
+		'Seret',
+		'Flek Hitam',
+		'Flek Tangan',
+		'Belang/ Dempet',
+		'Bintik',
+		'Kilap',
+		'Tebal',
+		'Flek Putih',
+		'Spark',
+		'Kotor H/ Oval',
+		'Terkikis/ Crack',
+		'Dimensi/ Penyok',
+		'MTL/ SLipMelintir',
 	];
 
 	// Calculate totals for each defect type (excluding MTL for total calculation)
 	const defectTotals = {};
 	filteringState.filteredData.forEach((row) => {
 		allDefectColumns.forEach((defectName) => {
-			const colName = defectName + "(pcs)";
+			const colName = defectName + '(pcs)';
 			const value = Number(row[colName]) || 0;
 
 			if (!defectTotals[defectName]) {
@@ -4764,7 +5119,7 @@ const renderParetoDefectChart = () => {
 		.map((defect) => ({
 			name: defect,
 			value: defectTotals[defect],
-			includedInTotal: defect !== "MTL/ SLipMelintir",
+			includedInTotal: defect !== 'MTL/ SLipMelintir',
 		}))
 		.sort((a, b) => b.value - a.value);
 
@@ -4782,7 +5137,7 @@ const renderParetoDefectChart = () => {
 	const cumulativePercents = [];
 
 	defectsArray.forEach((defect) => {
-		labels.push(defect.name + "(pcs)");
+		labels.push(defect.name + '(pcs)');
 		values.push(defect.value);
 
 		if (defect.includedInTotal) {
@@ -4791,7 +5146,7 @@ const renderParetoDefectChart = () => {
 		} else {
 			// For MTL, show previous cumulative
 			cumulativePercents.push(
-				cumulativePercents[cumulativePercents.length - 1] || 0
+				cumulativePercents[cumulativePercents.length - 1] || 0,
 			);
 		}
 	});
@@ -4802,33 +5157,33 @@ const renderParetoDefectChart = () => {
 	}
 
 	// Create chart
-	const ctx = canvas.getContext("2d");
+	const ctx = canvas.getContext('2d');
 	window.paretoDefectChartInstance = new Chart(ctx, {
-		type: "bar",
+		type: 'bar',
 		data: {
 			labels: labels,
 			datasets: [
 				{
-					type: "bar",
-					label: "Qty NG (pcs)",
+					type: 'bar',
+					label: 'Qty NG (pcs)',
 					data: values,
-					backgroundColor: "rgba(59, 130, 246, 0.8)",
-					borderColor: "rgba(59, 130, 246, 1)",
+					backgroundColor: 'rgba(59, 130, 246, 0.8)',
+					borderColor: 'rgba(59, 130, 246, 1)',
 					borderWidth: 1,
-					yAxisID: "y",
+					yAxisID: 'y',
 					order: 2,
 				},
 				{
-					type: "line",
-					label: "Cumulative %",
+					type: 'line',
+					label: 'Cumulative %',
 					data: cumulativePercents,
-					borderColor: "rgba(251, 191, 36, 1)",
-					backgroundColor: "rgba(251, 191, 36, 0.2)",
+					borderColor: 'rgba(251, 191, 36, 1)',
+					backgroundColor: 'rgba(251, 191, 36, 0.2)',
 					borderWidth: 2,
 					pointRadius: 5,
 					pointHoverRadius: 7,
-					pointBackgroundColor: "rgba(251, 191, 36, 1)",
-					yAxisID: "y1",
+					pointBackgroundColor: 'rgba(251, 191, 36, 1)',
+					yAxisID: 'y1',
 					order: 1,
 					tension: 0.3,
 					borderDash: [5, 5],
@@ -4839,7 +5194,7 @@ const renderParetoDefectChart = () => {
 			responsive: true,
 			maintainAspectRatio: false,
 			interaction: {
-				mode: "index",
+				mode: 'index',
 				intersect: false,
 			},
 			plugins: {
@@ -4848,9 +5203,9 @@ const renderParetoDefectChart = () => {
 				},
 				legend: {
 					display: true,
-					position: "bottom",
+					position: 'bottom',
 					labels: {
-						color: "#94a3b8",
+						color: '#94a3b8',
 						font: { size: 12 },
 						padding: 15,
 						usePointStyle: true,
@@ -4859,13 +5214,13 @@ const renderParetoDefectChart = () => {
 				tooltip: {
 					callbacks: {
 						label: function (context) {
-							let label = context.dataset.label || "";
+							let label = context.dataset.label || '';
 							if (label) {
-								label += ": ";
+								label += ': ';
 							}
 							if (context.parsed.y !== null) {
-								if (context.dataset.yAxisID === "y1") {
-									label += context.parsed.y + "%";
+								if (context.dataset.yAxisID === 'y1') {
+									label += context.parsed.y + '%';
 								} else {
 									label += context.parsed.y.toLocaleString();
 								}
@@ -4877,58 +5232,58 @@ const renderParetoDefectChart = () => {
 				datalabels: {
 					display: function (context) {
 						// Show values on bars
-						return context.dataset.type === "bar";
+						return context.dataset.type === 'bar';
 					},
-					color: "#fff",
-					anchor: "end",
-					align: "top",
+					color: '#fff',
+					anchor: 'end',
+					align: 'top',
 					offset: 4,
-					font: { size: 10, weight: "bold" },
-					formatter: (value) => (value > 0 ? value : ""),
+					font: { size: 10, weight: 'bold' },
+					formatter: (value) => (value > 0 ? value : ''),
 				},
 			},
 			scales: {
 				x: {
-					grid: { color: "rgba(148, 163, 184, 0.1)" },
+					grid: { color: 'rgba(148, 163, 184, 0.1)' },
 					ticks: {
-						color: "#94a3b8",
+						color: '#94a3b8',
 						font: { size: 11 },
 						maxRotation: 45,
 						minRotation: 45,
 					},
 				},
 				y: {
-					type: "linear",
-					position: "left",
+					type: 'linear',
+					position: 'left',
 					title: {
 						display: true,
-						text: "Qty NG (pcs)",
-						color: "#94a3b8",
+						text: 'Qty NG (pcs)',
+						color: '#94a3b8',
 						font: { size: 12 },
 					},
-					grid: { color: "rgba(148, 163, 184, 0.1)" },
+					grid: { color: 'rgba(148, 163, 184, 0.1)' },
 					ticks: {
-						color: "#94a3b8",
+						color: '#94a3b8',
 						font: { size: 11 },
 					},
 				},
 				y1: {
-					type: "linear",
-					position: "right",
+					type: 'linear',
+					position: 'right',
 					min: 0,
 					max: 100,
 					title: {
 						display: true,
-						text: "Cumulative %",
-						color: "#94a3b8",
+						text: 'Cumulative %',
+						color: '#94a3b8',
 						font: { size: 12 },
 					},
 					grid: { drawOnChartArea: false },
 					ticks: {
-						color: "#94a3b8",
+						color: '#94a3b8',
 						font: { size: 11 },
 						callback: function (value) {
-							return value + "%";
+							return value + '%';
 						},
 					},
 				},
@@ -4939,75 +5294,75 @@ const renderParetoDefectChart = () => {
 };
 
 const renderFullPreviewTable = () => {
-	const headerRow = document.getElementById("fullPreviewTableHeader");
-	const tbody = document.getElementById("fullPreviewTableBody");
+	const headerRow = document.getElementById('fullPreviewTableHeader');
+	const tbody = document.getElementById('fullPreviewTableBody');
 
 	if (!headerRow || !tbody) return;
 
 	if (filteringState.filteredData.length === 0) {
-		headerRow.innerHTML = "";
-		tbody.innerHTML = "";
+		headerRow.innerHTML = '';
+		tbody.innerHTML = '';
 		return;
 	}
 
 	// Get all column names from first row
 	const allColumns =
-		filteringState.filteredData.length > 0
-			? Object.keys(filteringState.filteredData[0])
-			: [];
+		filteringState.filteredData.length > 0 ?
+			Object.keys(filteringState.filteredData[0])
+		:	[];
 
 	// Define column order (matching app.py)
 	const columnOrder = [
-		"Line",
-		"Date",
-		"Shift",
-		"NoJig",
-		"NoCard",
-		"Std Load",
-		"NoBH_NoLoMTL",
-		"NoBak",
-		"Part.ID",
-		"PartName",
-		"OK(pcs)",
-		"QInspec",
-		"Insp(B/H)",
-		"OK(B/H)",
-		"NG(B/H)",
-		"% NG",
-		"NG_%",
-		"Warna",
-		"Buram",
-		"Berbayang",
-		"Kotor",
-		"Tdk Terplating",
-		"Rontok/ Blister",
-		"Tipis/ EE No Plating",
-		"Flek Kuning",
-		"Terbakar",
-		"Watermark",
-		"Jig Mark/ Renggang",
-		"Lecet/ Scratch",
-		"Seret",
-		"Flek Hitam",
-		"Flek Tangan",
-		"Belang/ Dempet",
-		"Bintik",
-		"Kilap",
-		"Tebal",
-		"Flek Putih",
-		"Spark",
-		"Kotor H/ Oval",
-		"Terkikis/ Crack",
-		"Dimensi/ Penyok",
-		"MTL/ SLipMelintir",
-		"Kategori",
+		'Line',
+		'Date',
+		'Shift',
+		'NoJig',
+		'NoCard',
+		'Std Load',
+		'NoBH_NoLoMTL',
+		'NoBak',
+		'Part.ID',
+		'PartName',
+		'OK(pcs)',
+		'QInspec',
+		'Insp(B/H)',
+		'OK(B/H)',
+		'NG(B/H)',
+		'% NG',
+		'NG_%',
+		'Warna',
+		'Buram',
+		'Berbayang',
+		'Kotor',
+		'Tdk Terplating',
+		'Rontok/ Blister',
+		'Tipis/ EE No Plating',
+		'Flek Kuning',
+		'Terbakar',
+		'Watermark',
+		'Jig Mark/ Renggang',
+		'Lecet/ Scratch',
+		'Seret',
+		'Flek Hitam',
+		'Flek Tangan',
+		'Belang/ Dempet',
+		'Bintik',
+		'Kilap',
+		'Tebal',
+		'Flek Putih',
+		'Spark',
+		'Kotor H/ Oval',
+		'Terkikis/ Crack',
+		'Dimensi/ Penyok',
+		'MTL/ SLipMelintir',
+		'Kategori',
 	];
 
 	// Filter columns that actually exist in data and sort by columnOrder
 	const displayColumns = columnOrder.filter((col) => allColumns.includes(col));
 	// Add any remaining columns not in columnOrder
 	const remainingColumns = allColumns.filter(
-		(col) => !columnOrder.includes(col)
+		(col) => !columnOrder.includes(col),
 	);
 	const finalColumns = [...displayColumns, ...remainingColumns];
 
@@ -5020,7 +5375,7 @@ const renderFullPreviewTable = () => {
 	headerRow.innerHTML = headerHTML;
 
 	// Build rows (limit to first 100 rows for performance)
-	let rowHTML = "";
+	let rowHTML = '';
 	const displayRows = filteringState.filteredData.slice(0, 100);
 
 	displayRows.forEach((row, idx) => {
@@ -5030,8 +5385,8 @@ const renderFullPreviewTable = () => {
 		}</td>`;
 
 		finalColumns.forEach((col) => {
-			const value = row[col] !== undefined && row[col] !== null ? row[col] : "";
-			const displayValue = typeof value === "number" ? value.toFixed(2) : value;
+			const value = row[col] !== undefined && row[col] !== null ? row[col] : '';
+			const displayValue = typeof value === 'number' ? value.toFixed(2) : value;
 			rowHTML += `<td class="py-3 px-4 text-slate-700 dark:text-white border border-slate-200 dark:border-slate-700/50 whitespace-nowrap">${displayValue}</td>`;
 		});
 
@@ -5051,44 +5406,44 @@ const renderFullPreviewTable = () => {
 };
 
 const renderDefectByPartNameTable = () => {
-	const headerRow = document.getElementById("defectTableHeader");
-	const tbody = document.getElementById("defectTableBody");
+	const headerRow = document.getElementById('defectTableHeader');
+	const tbody = document.getElementById('defectTableBody');
 
 	if (!headerRow || !tbody) return;
 
 	if (filteringState.filteredData.length === 0) {
-		headerRow.innerHTML = "";
-		tbody.innerHTML = "";
+		headerRow.innerHTML = '';
+		tbody.innerHTML = '';
 		return;
 	}
 
 	// Get all defect columns (columns ending with (pcs))
 	const allDefectColumns = [
-		"Warna",
-		"Buram",
-		"Berbayang",
-		"Kotor",
-		"Tdk Terplating",
-		"Rontok/ Blister",
-		"Tipis/ EE No Plating",
-		"Flek Kuning",
-		"Terbakar",
-		"Watermark",
-		"Jig Mark/ Renggang",
-		"Lecet/ Scratch",
-		"Seret",
-		"Flek Hitam",
-		"Flek Tangan",
-		"Belang/ Dempet",
-		"Bintik",
-		"Kilap",
-		"Tebal",
-		"Flek Putih",
-		"Spark",
-		"Kotor H/ Oval",
-		"Terkikis/ Crack",
-		"Dimensi/ Penyok",
-		"MTL/ SLipMelintir",
+		'Warna',
+		'Buram',
+		'Berbayang',
+		'Kotor',
+		'Tdk Terplating',
+		'Rontok/ Blister',
+		'Tipis/ EE No Plating',
+		'Flek Kuning',
+		'Terbakar',
+		'Watermark',
+		'Jig Mark/ Renggang',
+		'Lecet/ Scratch',
+		'Seret',
+		'Flek Hitam',
+		'Flek Tangan',
+		'Belang/ Dempet',
+		'Bintik',
+		'Kilap',
+		'Tebal',
+		'Flek Putih',
+		'Spark',
+		'Kotor H/ Oval',
+		'Terkikis/ Crack',
+		'Dimensi/ Penyok',
+		'MTL/ SLipMelintir',
 	];
 
 	// Group by PartName and calculate sums for ALL defect types
@@ -5103,7 +5458,7 @@ const renderDefectByPartNameTable = () => {
 
 		// Sum up all defect columns
 		allDefectColumns.forEach((defectName) => {
-			const colName = defectName + "(pcs)";
+			const colName = defectName + '(pcs)';
 			const value = Number(row[colName]) || 0;
 
 			if (!partNameGroups[partName][defectName]) {
@@ -5120,7 +5475,7 @@ const renderDefectByPartNameTable = () => {
 
 	// Filter to only show defect columns with values > 0
 	const activeDefects = allDefectColumns.filter(
-		(defect) => defectTotals[defect] > 0
+		(defect) => defectTotals[defect] > 0,
 	);
 
 	// Build header - PartName first, then defects, then Total NG
@@ -5134,7 +5489,7 @@ const renderDefectByPartNameTable = () => {
 	headerRow.innerHTML = headerHTML;
 
 	// Build table rows
-	let rowHTML = "";
+	let rowHTML = '';
 	let rowIndex = 0;
 	let grandTotalNG = 0;
 	const columnTotals = {};
@@ -5145,7 +5500,7 @@ const renderDefectByPartNameTable = () => {
 
 		// Calculate row total (excluding MTL/SLipMelintir)
 		allDefectColumns.forEach((defect) => {
-			if (defect !== "MTL/ SLipMelintir") {
+			if (defect !== 'MTL/ SLipMelintir') {
 				rowTotalNG += data[defect] || 0;
 			}
 		});
@@ -5190,11 +5545,11 @@ const renderDefectByPartNameTable = () => {
 };
 
 const renderSummaryByPartNameTable = () => {
-	const tbody = document.getElementById("summaryTableBody");
+	const tbody = document.getElementById('summaryTableBody');
 	if (!tbody) return;
 
 	if (filteringState.filteredData.length === 0) {
-		tbody.innerHTML = "";
+		tbody.innerHTML = '';
 		return;
 	}
 
@@ -5204,7 +5559,7 @@ const renderSummaryByPartNameTable = () => {
 		const partName = row.partName;
 		if (!partNameSummary[partName]) {
 			partNameSummary[partName] = {
-				custId: row["Cust.ID"] || "", // Store first Cust.ID for this PartName
+				custId: row['Cust.ID'] || '', // Store first Cust.ID for this PartName
 				qInspec: 0,
 				okPcs: 0,
 				qtyNg: 0,
@@ -5218,14 +5573,14 @@ const renderSummaryByPartNameTable = () => {
 		partNameSummary[partName].qInspec +=
 			Number(row.QInspec) || Number(row.qInspec) || 0;
 		partNameSummary[partName].okPcs +=
-			Number(row["OK(pcs)"]) || Number(row.okPcs) || 0;
+			Number(row['OK(pcs)']) || Number(row.okPcs) || 0;
 		partNameSummary[partName].qtyNg +=
-			Number(row["Qty(NG)"]) || Number(row.qtyNg) || 0;
+			Number(row['Qty(NG)']) || Number(row.qtyNg) || 0;
 		partNameSummary[partName].mtlCount +=
-			Number(row["MTL/ SLipMelintir(pcs)"]) || 0;
+			Number(row['MTL/ SLipMelintir(pcs)']) || 0;
 		partNameSummary[partName].count += 1;
 		partNameSummary[partName].sumNgPercent +=
-			Number(row["NG_%"]) || Number(row.ngPercent) || 0;
+			Number(row['NG_%']) || Number(row.ngPercent) || 0;
 	});
 
 	// Build table rows
@@ -5260,7 +5615,7 @@ const renderSummaryByPartNameTable = () => {
 								}</td>
                 <td class="py-3 px-4 text-slate-600 dark:text-white">${partName}</td>
                 <td class="py-3 px-4 text-red-600 dark:text-red-600 text-right">${avgNgPercent.toFixed(
-									4
+									4,
 								)}</td>
                 <td class="py-3 px-4 text-slate-600 dark:text-white text-right">${data.qInspec.toLocaleString()}</td>
                 <td class="py-3 px-4 text-green-400 text-right">${data.okPcs.toLocaleString()}</td>
@@ -5271,7 +5626,7 @@ const renderSummaryByPartNameTable = () => {
             </tr>
         `;
 			})
-			.join("") +
+			.join('') +
 		`
         <tr class="bg-slate-700/30 font-bold border-t-2 border-slate-600">
             <td class="py-3 px-4 text-slate-600 dark:text-white text-center">${
@@ -5279,10 +5634,11 @@ const renderSummaryByPartNameTable = () => {
 						}</td>
             <td class="py-3 px-4 text-slate-600 dark:text-white">-</td>
             <td class="py-3 px-4 text-slate-600 dark:text-white">TOTAL</td>
-            <td class="py-3 px-4 text-red-600 dark:text-red-600 text-right">${(totals.count >
-						0	
-							? totals.sumNgPercent / totals.count
-							: 0
+            <td class="py-3 px-4 text-red-600 dark:text-red-600 text-right">${((
+							totals.count > 0
+						) ?
+							totals.sumNgPercent / totals.count
+						:	0
 						).toFixed(4)}</td>
             <td class="py-3 px-4 text-slate-600 dark:text-white text-right">${totals.qInspec.toLocaleString()}</td>
             <td class="py-3 px-4 text-slate-600 dark:text-white text-right">${totals.okPcs.toLocaleString()}</td>
@@ -5303,7 +5659,7 @@ const initMultiFilterUI = () => {
 		.filter((v) => v)
 		.sort();
 	const allCustomers = [
-		...new Set(state.processedData.map((r) => r["Cust.ID"])),
+		...new Set(state.processedData.map((r) => r['Cust.ID'])),
 	]
 		.filter((v) => v)
 		.sort();
@@ -5317,7 +5673,7 @@ const initMultiFilterUI = () => {
 		.sort((a, b) => a - b);
 
 	const formatDateToYYYYMMDD = (date) => {
-		if (!date || isNaN(date)) return "";
+		if (!date || isNaN(date)) return '';
 		const y = date.getFullYear();
 		const m = String(date.getMonth() + 1).padStart(2, '0');
 		const d = String(date.getDate()).padStart(2, '0');
@@ -5327,13 +5683,13 @@ const initMultiFilterUI = () => {
 	if (dates.length > 0) {
 		const minDate = dates[0];
 		const maxDate = dates[dates.length - 1];
-		
-		const startDateInput = document.getElementById("multiFilterStartDate");
-		const endDateInput = document.getElementById("multiFilterEndDate");
-		
+
+		const startDateInput = document.getElementById('multiFilterStartDate');
+		const endDateInput = document.getElementById('multiFilterEndDate');
+
 		if (startDateInput) startDateInput.value = formatDateToYYYYMMDD(minDate);
 		if (endDateInput) endDateInput.value = formatDateToYYYYMMDD(maxDate);
-		
+
 		filteringState.multiFilterStartDate = minDate;
 		filteringState.multiFilterEndDate = maxDate;
 	}
@@ -5341,7 +5697,7 @@ const initMultiFilterUI = () => {
 	// Function to update customer list based on selected lines
 	const updateCustomerList = () => {
 		const selectedLines = Array.from(
-			document.querySelectorAll(".multiLineCheckbox:checked")
+			document.querySelectorAll('.multiLineCheckbox:checked'),
 		).map((cb) => cb.value);
 
 		let customersToShow = allCustomers;
@@ -5349,18 +5705,18 @@ const initMultiFilterUI = () => {
 		// If any line is selected, filter customers by those lines
 		if (selectedLines.length > 0) {
 			const filteredData = state.processedData.filter((r) =>
-				selectedLines.includes(r.Line)
+				selectedLines.includes(r.Line),
 			);
-			customersToShow = [...new Set(filteredData.map((r) => r["Cust.ID"]))]
+			customersToShow = [...new Set(filteredData.map((r) => r['Cust.ID']))]
 				.filter((v) => v)
 				.sort();
 		}
 
-		const customerContainer = document.getElementById("multiCustomerContainer");
+		const customerContainer = document.getElementById('multiCustomerContainer');
 		if (customerContainer) {
 			// Save currently selected customers that are still valid
 			const currentlySelected = Array.from(
-				document.querySelectorAll(".multiCustomerCheckbox:checked")
+				document.querySelectorAll('.multiCustomerCheckbox:checked'),
 			)
 				.map((cb) => cb.value)
 				.filter((cust) => customersToShow.includes(cust));
@@ -5370,13 +5726,13 @@ const initMultiFilterUI = () => {
 					(cust) => `
 				<label class="flex items-center gap-2 cursor-pointer">
 					<input type="checkbox" value="${cust}" class="multiCustomerCheckbox w-4 h-4" ${
-						currentlySelected.includes(cust) ? "checked" : ""
+						currentlySelected.includes(cust) ? 'checked' : ''
 					} />
 					<span class="text-slate-600 dark:text-white text-sm">${cust}</span>
 				</label>
-			`
+			`,
 				)
-				.join("");
+				.join('');
 
 			// Add Select All for Customers logic if it exists (re-rendered)
 			// Need to verify if we need to add the select all checkbox here or if it was added statically initially.
@@ -5393,20 +5749,20 @@ const initMultiFilterUI = () => {
 			customerContainer.innerHTML = selectAllHtml + customerContainer.innerHTML;
 
 			// Add event listener for Select All Customers
-			const selectAllCb = document.getElementById("selectAllCustomers");
-			const checkboxes = document.querySelectorAll(".multiCustomerCheckbox");
-			
+			const selectAllCb = document.getElementById('selectAllCustomers');
+			const checkboxes = document.querySelectorAll('.multiCustomerCheckbox');
+
 			if (selectAllCb) {
-				selectAllCb.addEventListener("change", (e) => {
-					checkboxes.forEach(cb => cb.checked = e.target.checked);
+				selectAllCb.addEventListener('change', (e) => {
+					checkboxes.forEach((cb) => (cb.checked = e.target.checked));
 					updateExcludeList(); // Trigger PartName update
 				});
 
 				// Update Select All state when individual checkboxes change
-				checkboxes.forEach(cb => {
-					cb.addEventListener("change", () => {
-						const allChecked = Array.from(checkboxes).every(c => c.checked);
-						const someChecked = Array.from(checkboxes).some(c => c.checked);
+				checkboxes.forEach((cb) => {
+					cb.addEventListener('change', () => {
+						const allChecked = Array.from(checkboxes).every((c) => c.checked);
+						const someChecked = Array.from(checkboxes).some((c) => c.checked);
 						selectAllCb.checked = allChecked;
 						selectAllCb.indeterminate = someChecked && !allChecked;
 						updateExcludeList(); // Trigger PartName update
@@ -5419,57 +5775,72 @@ const initMultiFilterUI = () => {
 
 	// Function to update Exclude PartName list based on selected Lines and Customers
 	const updateExcludeList = () => {
-		const excludeContainer = document.getElementById("multiExcludeContainer");
-		const excludeSearch = document.getElementById("multiExcludeSearch");
+		const excludeContainer = document.getElementById('multiExcludeContainer');
+		const excludeSearch = document.getElementById('multiExcludeSearch');
 		if (!excludeContainer) return;
 
-		const searchTerm = excludeSearch ? excludeSearch.value.toLowerCase() : "";
-		const selectedLines = Array.from(document.querySelectorAll(".multiLineCheckbox:checked")).map(cb => cb.value);
-		const selectedCustomers = Array.from(document.querySelectorAll(".multiCustomerCheckbox:checked")).map(cb => cb.value);
+		const searchTerm = excludeSearch ? excludeSearch.value.toLowerCase() : '';
+		const selectedLines = Array.from(
+			document.querySelectorAll('.multiLineCheckbox:checked'),
+		).map((cb) => cb.value);
+		const selectedCustomers = Array.from(
+			document.querySelectorAll('.multiCustomerCheckbox:checked'),
+		).map((cb) => cb.value);
 
 		let filteredData = state.processedData;
 		// Filter by Line first (context)
 		if (selectedLines.length > 0) {
-			filteredData = filteredData.filter(r => selectedLines.includes(r.Line));
+			filteredData = filteredData.filter((r) => selectedLines.includes(r.Line));
 		}
 		// Then filter by Customer if any selected
 		if (selectedCustomers.length > 0) {
-			filteredData = filteredData.filter(r => selectedCustomers.includes(r["Cust.ID"]));
+			filteredData = filteredData.filter((r) =>
+				selectedCustomers.includes(r['Cust.ID']),
+			);
 		}
 
-		const partNamesToShow = [...new Set(filteredData.map(r => r.partName || r.PartName))]
-			.filter(v => v)
-			.filter(pn => pn.toLowerCase().includes(searchTerm))
+		const partNamesToShow = [
+			...new Set(filteredData.map((r) => r.partName || r.PartName)),
+		]
+			.filter((v) => v)
+			.filter((pn) => pn.toLowerCase().includes(searchTerm))
 			.sort();
 
 		excludeContainer.innerHTML = partNamesToShow
-			.map(pn => `
+			.map(
+				(pn) => `
 				<label class="flex items-center gap-2 cursor-pointer partname-exclude-item">
-					<input type="checkbox" value="${pn}" class="multiExcludeCheckbox w-4 h-4" ${filteringState.multiFilterExcludedPartNames.includes(pn) ? "checked" : ""} />
+					<input type="checkbox" value="${pn}" class="multiExcludeCheckbox w-4 h-4" ${filteringState.multiFilterExcludedPartNames.includes(pn) ? 'checked' : ''} />
 					<span class="text-slate-600 dark:text-white text-sm truncate" title="${pn}">${pn}</span>
 				</label>
-			`).join("");
+			`,
+			)
+			.join('');
 
 		if (partNamesToShow.length === 0) {
-			excludeContainer.innerHTML = '<div class="text-xs text-slate-500 italic p-2">Tidak ada PartName</div>';
+			excludeContainer.innerHTML =
+				'<div class="text-xs text-slate-500 italic p-2">Tidak ada PartName</div>';
 		}
 
 		// Add change listeners to checkboxes to update state immediately
-		excludeContainer.querySelectorAll(".multiExcludeCheckbox").forEach(cb => {
-			cb.addEventListener("change", () => {
+		excludeContainer.querySelectorAll('.multiExcludeCheckbox').forEach((cb) => {
+			cb.addEventListener('change', () => {
 				if (cb.checked) {
 					if (!filteringState.multiFilterExcludedPartNames.includes(cb.value)) {
 						filteringState.multiFilterExcludedPartNames.push(cb.value);
 					}
 				} else {
-					filteringState.multiFilterExcludedPartNames = filteringState.multiFilterExcludedPartNames.filter(v => v !== cb.value);
+					filteringState.multiFilterExcludedPartNames =
+						filteringState.multiFilterExcludedPartNames.filter(
+							(v) => v !== cb.value,
+						);
 				}
 			});
 		});
 	};
 
 	// Populate Line checkboxes
-	const lineContainer = document.getElementById("multiLineContainer");
+	const lineContainer = document.getElementById('multiLineContainer');
 	if (lineContainer) {
 		const selectAllHtml = `
 			<div class="mb-2 pb-2 border-b border-slate-200 dark:border-slate-600">
@@ -5479,7 +5850,7 @@ const initMultiFilterUI = () => {
 				</label>
 			</div>
 		`;
-		
+
 		const checkboxesHtml = lines
 			.map(
 				(line) => `
@@ -5487,22 +5858,22 @@ const initMultiFilterUI = () => {
                 <input type="checkbox" value="${line}" class="multiLineCheckbox w-4 h-4" />
                 <span class="text-slate-600 dark:text-white text-sm">${line}</span>
             </label>
-        `
+        `,
 			)
-			.join("");
+			.join('');
 
 		lineContainer.innerHTML = selectAllHtml + checkboxesHtml;
 
 		// Add event listeners to line checkboxes
-		const checkboxes = document.querySelectorAll(".multiLineCheckbox");
-		const selectAllCb = document.getElementById("selectAllLines");
+		const checkboxes = document.querySelectorAll('.multiLineCheckbox');
+		const selectAllCb = document.getElementById('selectAllLines');
 
 		checkboxes.forEach((checkbox) => {
-			checkbox.addEventListener("change", () => {
+			checkbox.addEventListener('change', () => {
 				updateCustomerList();
 				// Update Select All state
-				const allChecked = Array.from(checkboxes).every(c => c.checked);
-				const someChecked = Array.from(checkboxes).some(c => c.checked);
+				const allChecked = Array.from(checkboxes).every((c) => c.checked);
+				const someChecked = Array.from(checkboxes).some((c) => c.checked);
 				if (selectAllCb) {
 					selectAllCb.checked = allChecked;
 					selectAllCb.indeterminate = someChecked && !allChecked;
@@ -5512,25 +5883,25 @@ const initMultiFilterUI = () => {
 
 		// Add event listener for Select All Lines
 		if (selectAllCb) {
-			selectAllCb.addEventListener("change", (e) => {
-				checkboxes.forEach(cb => cb.checked = e.target.checked);
+			selectAllCb.addEventListener('change', (e) => {
+				checkboxes.forEach((cb) => (cb.checked = e.target.checked));
 				updateCustomerList();
 			});
 		}
 	}
 
 	// Initial populate of customer checkboxes
-	const customerContainer = document.getElementById("multiCustomerContainer");
+	const customerContainer = document.getElementById('multiCustomerContainer');
 	if (customerContainer) {
 	}
 	updateCustomerList();
 
 	// Populate Column checkboxes (exclude PartName & NG_% - they're mandatory)
-	const columnContainer = document.getElementById("multiColumnContainer");
+	const columnContainer = document.getElementById('multiColumnContainer');
 	if (columnContainer) {
-		const excludedCols = ["PartName", "NG_%"];
+		const excludedCols = ['PartName', 'NG_%'];
 		const selectableCols = allColumns.filter(
-			(col) => !excludedCols.includes(col)
+			(col) => !excludedCols.includes(col),
 		);
 
 		columnContainer.innerHTML = `
@@ -5544,9 +5915,9 @@ const initMultiFilterUI = () => {
                             <input type="checkbox" value="${col}" checked disabled class="w-4 h-4" />
                             <span class="text-slate-600 dark:text-white text-sm">${col}</span>
                         </label>
-                    `
+                    `,
 											)
-											.join("")}
+											.join('')}
                 </div>
             </div>
             <div>
@@ -5565,26 +5936,26 @@ const initMultiFilterUI = () => {
                             <input type="checkbox" value="${col}" class="multiColumnCheckbox w-4 h-4" />
                             <span class="text-slate-600 dark:text-white text-sm">${col}</span>
                         </label>
-                    `
+                    `,
 											)
-											.join("")}
+											.join('')}
                 </div>
             </div>
         `;
 
 		// Add event listeners for Columns
-		const checkboxes = document.querySelectorAll(".multiColumnCheckbox");
-		const selectAllCb = document.getElementById("selectAllColumns");
+		const checkboxes = document.querySelectorAll('.multiColumnCheckbox');
+		const selectAllCb = document.getElementById('selectAllColumns');
 
 		if (selectAllCb) {
-			selectAllCb.addEventListener("change", (e) => {
-				checkboxes.forEach(cb => cb.checked = e.target.checked);
+			selectAllCb.addEventListener('change', (e) => {
+				checkboxes.forEach((cb) => (cb.checked = e.target.checked));
 			});
 
-			checkboxes.forEach(cb => {
-				cb.addEventListener("change", () => {
-					const allChecked = Array.from(checkboxes).every(c => c.checked);
-					const someChecked = Array.from(checkboxes).some(c => c.checked);
+			checkboxes.forEach((cb) => {
+				cb.addEventListener('change', () => {
+					const allChecked = Array.from(checkboxes).every((c) => c.checked);
+					const someChecked = Array.from(checkboxes).some((c) => c.checked);
 					selectAllCb.checked = allChecked;
 					selectAllCb.indeterminate = someChecked && !allChecked;
 				});
@@ -5593,9 +5964,9 @@ const initMultiFilterUI = () => {
 	}
 
 	// Add search listener for Exclude list
-	const excludeSearch = document.getElementById("multiExcludeSearch");
+	const excludeSearch = document.getElementById('multiExcludeSearch');
 	if (excludeSearch) {
-		excludeSearch.addEventListener("input", () => {
+		excludeSearch.addEventListener('input', () => {
 			updateExcludeList();
 		});
 	}
@@ -5606,24 +5977,24 @@ const applyMultiFilter = () => {
 
 	// Get selected values
 	const selectedLines = Array.from(
-		document.querySelectorAll(".multiLineCheckbox:checked")
+		document.querySelectorAll('.multiLineCheckbox:checked'),
 	).map((cb) => cb.value);
 	const selectedCustomers = Array.from(
-		document.querySelectorAll(".multiCustomerCheckbox:checked")
+		document.querySelectorAll('.multiCustomerCheckbox:checked'),
 	).map((cb) => cb.value);
 	const selectedColumns = [
-		"PartName",
-		"NG_%",
+		'PartName',
+		'NG_%',
 		...Array.from(
-			document.querySelectorAll(".multiColumnCheckbox:checked")
+			document.querySelectorAll('.multiColumnCheckbox:checked'),
 		).map((cb) => cb.value),
 	];
 
-	const startDateVal = document.getElementById("multiFilterStartDate").value;
-	const endDateVal = document.getElementById("multiFilterEndDate").value;
+	const startDateVal = document.getElementById('multiFilterStartDate').value;
+	const endDateVal = document.getElementById('multiFilterEndDate').value;
 
 	const formatDateToYYYYMMDD = (date) => {
-		if (!date || isNaN(date)) return "";
+		if (!date || isNaN(date)) return '';
 		const y = date.getFullYear();
 		const m = String(date.getMonth() + 1).padStart(2, '0');
 		const d = String(date.getDate()).padStart(2, '0');
@@ -5634,7 +6005,8 @@ const applyMultiFilter = () => {
 	filteringState.multiFilterLines = selectedLines;
 	filteringState.multiFilterCustomers = selectedCustomers;
 	filteringState.multiFilterColumns = selectedColumns;
-	filteringState.multiFilterStartDate = startDateVal ? new Date(startDateVal) : null;
+	filteringState.multiFilterStartDate =
+		startDateVal ? new Date(startDateVal) : null;
 	filteringState.multiFilterEndDate = endDateVal ? new Date(endDateVal) : null;
 
 	// Filter data
@@ -5644,89 +6016,157 @@ const applyMultiFilter = () => {
 			selectedLines.length === 0 || selectedLines.includes(row.Line);
 		const custMatch =
 			selectedCustomers.length === 0 ||
-			selectedCustomers.includes(row["Cust.ID"]);
+			selectedCustomers.includes(row['Cust.ID']);
 		const dateMatch =
-			(!startDateVal || rowDateStr >= startDateVal) && (!endDateVal || rowDateStr <= endDateVal);
+			(!startDateVal || rowDateStr >= startDateVal) &&
+			(!endDateVal || rowDateStr <= endDateVal);
 		const trialMatch = filteringState.includeTrialData || !row.isTrial;
-		
+
 		// Exclude PartName logic
 		const partName = row.partName || row.PartName;
-		const isExcluded = filteringState.multiFilterExcludedPartNames.includes(partName);
+		const isExcluded =
+			filteringState.multiFilterExcludedPartNames.includes(partName);
 
 		return lineMatch && custMatch && dateMatch && trialMatch && !isExcluded;
 	});
 
 	// Sort by NG_% Descending
 	filteringState.multiFilteredData.sort((a, b) => {
-		const valA = parseFloat(a["NG_%"]) || 0;
-		const valB = parseFloat(b["NG_%"]) || 0;
+		const valA = parseFloat(a['NG_%']) || 0;
+		const valB = parseFloat(b['NG_%']) || 0;
 		return valB - valA;
 	});
 
 	// Group by PartName and calculate aggregates
 	const grouped = {};
 	const allDefectBaseNames = [
-		"Warna", "Buram", "Berbayang", "Kotor", "Tdk Terplating",
-		"Rontok/ Blister", "Tipis/ EE No Plating", "Flek Kuning", "Terbakar",
-		"Watermark", "Jig Mark/ Renggang", "Lecet/ Scratch", "Seret",
-		"Flek Hitam", "Flek Tangan", "Belang/ Dempet", "Bintik", "Kilap",
-		"Tebal", "Flek Putih", "Spark", "Kotor H/ Oval", "Terkikis/ Crack",
-		"Dimensi/ Penyok", "MTL/ SLipMelintir"
+		'Warna',
+		'Buram',
+		'Berbayang',
+		'Kotor',
+		'Tdk Terplating',
+		'Rontok/ Blister',
+		'Tipis/ EE No Plating',
+		'Flek Kuning',
+		'Terbakar',
+		'Watermark',
+		'Jig Mark/ Renggang',
+		'Lecet/ Scratch',
+		'Seret',
+		'Flek Hitam',
+		'Flek Tangan',
+		'Belang/ Dempet',
+		'Bintik',
+		'Kilap',
+		'Tebal',
+		'Flek Putih',
+		'Spark',
+		'Kotor H/ Oval',
+		'Terkikis/ Crack',
+		'Dimensi/ Penyok',
+		'MTL/ SLipMelintir',
 	];
+
+	// Determine extra selected numeric columns (non-defect, non-mandatory)
+	const specialCols = new Set([
+		'PartName',
+		'NG_%',
+		'QInspec',
+		'OK(pcs)',
+		'Qty(NG)',
+		...allDefectBaseNames,
+		...allDefectBaseNames.map((d) => d + '(pcs)'),
+	]);
+	const selectedCols = filteringState.multiFilterColumns || [];
+	const extraSelectedColumns = selectedCols.filter((c) => !specialCols.has(c));
 
 	filteringState.multiFilteredData.forEach((row) => {
 		const partName = row.PartName || row.partName;
 		if (!grouped[partName]) {
 			grouped[partName] = {
 				PartName: partName,
-				"NG_%_Sum": 0,
-				"QInspec": 0,
-				"OK(pcs)": 0,
-				"Qty(NG)": 0,
+				'NG_%_Sum': 0,
+				QInspec: 0,
+				'OK(pcs)': 0,
+				'Qty(NG)': 0,
 				count: 0,
-				defects: {} // To store defect sums
+				defectsPcs: {},
+				defectsLot: {},
+				extras: {},
 			};
-			allDefectBaseNames.forEach(d => grouped[partName].defects[d] = 0);
+			allDefectBaseNames.forEach((d) => {
+				grouped[partName].defectsPcs[d] = 0;
+				grouped[partName].defectsLot[d] = 0;
+			});
+			extraSelectedColumns.forEach((c) => {
+				grouped[partName].extras[c] = 0;
+			});
 		}
-		
+
 		const group = grouped[partName];
 		group.count += 1;
-		group["NG_%_Sum"] += parseFloat(row["NG_%"]) || 0;
-		group["QInspec"] += parseFloat(row["QInspec"]) || 0;
-		group["OK(pcs)"] += parseFloat(row["OK(pcs)"]) || 0;
-		group["Qty(NG)"] += parseFloat(row["Qty(NG)"]) || 0;
+		group['NG_%_Sum'] += parseFloat(row['NG_%']) || 0;
+		group['QInspec'] += parseFloat(row['QInspec']) || 0;
+		group['OK(pcs)'] += parseFloat(row['OK(pcs)']) || 0;
+		group['Qty(NG)'] += parseFloat(row['Qty(NG)']) || 0;
 
-		allDefectBaseNames.forEach(d => {
-			const val = parseFloat(row[d + "(pcs)"]) || 0;
-			group.defects[d] += val;
+		allDefectBaseNames.forEach((d) => {
+			const pcsVal = parseFloat(row[d + '(pcs)']) || 0;
+			const lotVal = parseFloat(row[d]) || 0;
+			group.defectsPcs[d] += pcsVal;
+			group.defectsLot[d] += lotVal;
+		});
+		// Aggregate extras (numeric only)
+		extraSelectedColumns.forEach((c) => {
+			const val = parseFloat(row[c]);
+			group.extras[c] += isNaN(val) ? 0 : val;
 		});
 	});
 
-	filteringState.multiGroupedData = Object.values(grouped).map(group => {
+	filteringState.multiGroupedData = Object.values(grouped).map((group) => {
 		const row = {
 			PartName: group.PartName,
-			"NG_%": group.count > 0 ? (group["NG_%_Sum"] / group.count).toFixed(2) : 0,
-			"QInspec": group["QInspec"],
-			"OK(pcs)": group["OK(pcs)"],
-			"Qty(NG)": group["Qty(NG)"],
-			count: group.count
+			'NG_%':
+				group.count > 0 ? (group['NG_%_Sum'] / group.count).toFixed(2) : 0,
+			QInspec: group['QInspec'],
+			'OK(pcs)': group['OK(pcs)'],
+			'Qty(NG)': group['Qty(NG)'],
+			count: group.count,
 		};
-		//Flatten defects into the row
-		allDefectBaseNames.forEach(d => row[d] = group.defects[d]);
+		allDefectBaseNames.forEach((d) => {
+			row[d] = group.defectsLot[d];
+			row[d + '(pcs)'] = group.defectsPcs[d];
+		});
+		extraSelectedColumns.forEach((c) => {
+			row[c] = group.extras[c];
+		});
 		return row;
 	});
 
 	// Sort Grouped Data by NG_% Descending
 	filteringState.multiGroupedData.sort((a, b) => {
-		const valA = parseFloat(a["NG_%"]) || 0;
-		const valB = parseFloat(b["NG_%"]) || 0;
+		const valA = parseFloat(a['NG_%']) || 0;
+		const valB = parseFloat(b['NG_%']) || 0;
 		return valB - valA;
 	});
 
 	// Show results
 	document
-		.getElementById("multiFilterResultsContainer")
-		.classList.remove("hidden");
+		.getElementById('multiFilterResultsContainer')
+		.classList.remove('hidden');
+
+	// Debug logging to help diagnose column selections
+	try {
+		const selectedCols = filteringState.multiFilterColumns;
+		const hasDefectSelections = selectedCols.some((c) =>
+			allDefectBaseNames.includes(String(c).replace('(pcs)', '')),
+		);
+		if (!hasDefectSelections) {
+			console.warn(
+				'[MultiFilter] Tidak ada kolom defect yang dipilih atau cocok dengan daftar defect. Tabel Rekap hanya akan menampilkan kolom standar.',
+			);
+		}
+	} catch {}
 
 	// Render tables
 	renderMultiPreviewTable();
@@ -5736,8 +6176,8 @@ const applyMultiFilter = () => {
 };
 
 const renderMultiPreviewTable = () => {
-	const headerRow = document.getElementById("multiPreviewTableHeader");
-	const tbody = document.getElementById("multiPreviewTableBody");
+	const headerRow = document.getElementById('multiPreviewTableHeader');
+	const tbody = document.getElementById('multiPreviewTableBody');
 
 	if (!headerRow || !tbody || filteringState.multiFilteredData.length === 0)
 		return;
@@ -5753,7 +6193,7 @@ const renderMultiPreviewTable = () => {
 	headerRow.innerHTML = headerHTML;
 
 	// Build rows (limit to 50 for performance)
-	let rowHTML = "";
+	let rowHTML = '';
 	const displayRows = filteringState.multiFilteredData.slice(0, 50);
 
 	displayRows.forEach((row, idx) => {
@@ -5763,8 +6203,8 @@ const renderMultiPreviewTable = () => {
 		}</td>`;
 
 		displayColumns.forEach((col) => {
-			const value = row[col] !== undefined && row[col] !== null ? row[col] : "";
-			const displayValue = typeof value === "number" ? value.toFixed(2) : value;
+			const value = row[col] !== undefined && row[col] !== null ? row[col] : '';
+			const displayValue = typeof value === 'number' ? value.toFixed(2) : value;
 			rowHTML += `<td class="py-3 px-4 text-slate-700 dark:text-white border border-slate-200 dark:border-slate-700/30 whitespace-nowrap">${displayValue}</td>`;
 		});
 
@@ -5783,29 +6223,62 @@ const renderMultiPreviewTable = () => {
 };
 
 const renderMultiGroupedTable = () => {
-	const headerRow = document.getElementById("multiGroupedTableHeader");
-	const tbody = document.getElementById("multiGroupedTableBody");
+	const headerRow = document.getElementById('multiGroupedTableHeader');
+	const tbody = document.getElementById('multiGroupedTableBody');
 
 	if (!headerRow || !tbody) return;
 
-	// Determine which defect columns to show (sum > 0 across displayed rows)
-	// OR per the request: "bernilai >0 satuan (pcs) sesuai dengan partname yang ditampilkan"
-	// This implies we filter columns based on the filtered dataset.
+	// Determine which defect columns to show based on explicit user selection
+	// Supports both Lot (no suffix) and Pcs (suffix "(pcs)") independently
 	const allDefectBaseNames = [
-		"Warna", "Buram", "Berbayang", "Kotor", "Tdk Terplating",
-		"Rontok/ Blister", "Tipis/ EE No Plating", "Flek Kuning", "Terbakar",
-		"Watermark", "Jig Mark/ Renggang", "Lecet/ Scratch", "Seret",
-		"Flek Hitam", "Flek Tangan", "Belang/ Dempet", "Bintik", "Kilap",
-		"Tebal", "Flek Putih", "Spark", "Kotor H/ Oval", "Terkikis/ Crack",
-		"Dimensi/ Penyok", "MTL/ SLipMelintir"
+		'Warna',
+		'Buram',
+		'Berbayang',
+		'Kotor',
+		'Tdk Terplating',
+		'Rontok/ Blister',
+		'Tipis/ EE No Plating',
+		'Flek Kuning',
+		'Terbakar',
+		'Watermark',
+		'Jig Mark/ Renggang',
+		'Lecet/ Scratch',
+		'Seret',
+		'Flek Hitam',
+		'Flek Tangan',
+		'Belang/ Dempet',
+		'Bintik',
+		'Kilap',
+		'Tebal',
+		'Flek Putih',
+		'Spark',
+		'Kotor H/ Oval',
+		'Terkikis/ Crack',
+		'Dimensi/ Penyok',
+		'MTL/ SLipMelintir',
 	];
 
-	// Find columns that have at least one > 0 value in the grouped data
-	const activeDefects = allDefectBaseNames.filter(defect => {
-		return filteringState.multiGroupedData.some(row => row[defect] > 0);
-	});
+	// Build explicit column list exactly as selected in the UI
+	const selectedDefectColumns = filteringState.multiFilterColumns.filter(
+		(col) => {
+			const base = String(col).replace('(pcs)', '');
+			return allDefectBaseNames.includes(base) || col.endsWith('(pcs)');
+		},
+	);
 
-	filteringState.activeMultiGroupDefects = activeDefects; // Save for export
+	// Split for rendering convenience
+	const activeLotDefects = selectedDefectColumns.filter((c) =>
+		allDefectBaseNames.includes(c),
+	);
+	const activePcsDefects = selectedDefectColumns
+		.filter((c) => c.endsWith('(pcs)'))
+		.map((c) => c.replace('(pcs)', ''));
+
+	// Persist active defects for export (store exact column keys)
+	filteringState.activeMultiGroupDefects = [
+		...activeLotDefects,
+		...activePcsDefects.map((d) => d + '(pcs)'),
+	];
 
 	// Build header
 	let headerHTML =
@@ -5814,32 +6287,85 @@ const renderMultiGroupedTable = () => {
 		'<th class="py-3 px-4 font-semibold bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-white border border-slate-300 dark:border-slate-600 whitespace-nowrap">PartName</th>';
 	headerHTML +=
 		'<th class="py-3 px-4 font-semibold bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-white border border-slate-300 dark:border-slate-600 text-right whitespace-nowrap">NG_%</th>';
-	headerHTML +=
-		'<th class="py-3 px-4 font-semibold bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-white border border-slate-300 dark:border-slate-600 text-right whitespace-nowrap">QInspec</th>';
-	headerHTML +=
-		'<th class="py-3 px-4 font-semibold bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-white border border-slate-300 dark:border-slate-600 text-right whitespace-nowrap">OK(pcs)</th>';
-	headerHTML +=
-		'<th class="py-3 px-4 font-semibold bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-white border border-slate-300 dark:border-slate-600 text-right whitespace-nowrap">Qty(NG)</th>';
-	
-	activeDefects.forEach(defect => {
+
+	if (filteringState.multiFilterColumns.includes('QInspec')) {
+		headerHTML +=
+			'<th class="py-3 px-4 font-semibold bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-white border border-slate-300 dark:border-slate-600 text-right whitespace-nowrap">QInspec</th>';
+	}
+	if (filteringState.multiFilterColumns.includes('OK(pcs)')) {
+		headerHTML +=
+			'<th class="py-3 px-4 font-semibold bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-white border border-slate-300 dark:border-slate-600 text-right whitespace-nowrap">OK(pcs)</th>';
+	}
+	if (filteringState.multiFilterColumns.includes('Qty(NG)')) {
+		headerHTML +=
+			'<th class="py-3 px-4 font-semibold bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-white border border-slate-300 dark:border-slate-600 text-right whitespace-nowrap">Qty(NG)</th>';
+	}
+
+	// Extra selected columns (non-defect numeric aggregates)
+	const specialCols = new Set([
+		'PartName',
+		'NG_%',
+		'QInspec',
+		'OK(pcs)',
+		'Qty(NG)',
+		...allDefectBaseNames,
+		...allDefectBaseNames.map((d) => d + '(pcs)'),
+	]);
+	const extraColumns = filteringState.multiFilterColumns.filter(
+		(c) => !specialCols.has(c),
+	);
+	const sampleRow = filteringState.multiGroupedData[0] || {};
+	const extrasToShow = extraColumns.filter((c) =>
+		Object.prototype.hasOwnProperty.call(sampleRow, c),
+	);
+	filteringState.activeMultiGroupExtras = extrasToShow;
+	extrasToShow.forEach((col) => {
+		headerHTML += `<th class="py-3 px-4 font-semibold bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-white border border-slate-300 dark:border-slate-600 text-right whitespace-nowrap">${col}</th>`;
+	});
+
+	activeLotDefects.forEach((defect) => {
+		headerHTML += `<th class="py-3 px-4 font-semibold bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-white border border-slate-300 dark:border-slate-600 text-right whitespace-nowrap">${defect}</th>`;
+	});
+	activePcsDefects.forEach((defect) => {
 		headerHTML += `<th class="py-3 px-4 font-semibold bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-white border border-slate-300 dark:border-slate-600 text-right whitespace-nowrap">${defect}(pcs)</th>`;
 	});
 
 	headerRow.innerHTML = headerHTML;
 
 	// Build rows
-	let rowHTML = "";
+	let rowHTML = '';
 	filteringState.multiGroupedData.forEach((row, idx) => {
 		rowHTML += `<tr class="border-b border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors">`;
 		rowHTML += `<td class="py-3 px-4 text-slate-700 dark:text-white text-center border border-slate-300 dark:border-slate-600 whitespace-nowrap">${idx + 1}</td>`;
 		rowHTML += `<td class="py-3 px-4 text-slate-700 dark:text-white border border-slate-300 dark:border-slate-600 whitespace-nowrap">${row.PartName}</td>`;
-		rowHTML += `<td class="py-3 px-4 text-slate-700 dark:text-white border border-slate-300 dark:border-slate-600 text-right whitespace-nowrap">${row["NG_%"]}</td>`;
-		rowHTML += `<td class="py-3 px-4 text-slate-700 dark:text-white border border-slate-300 dark:border-slate-600 text-right whitespace-nowrap">${row["QInspec"].toLocaleString()}</td>`;
-		rowHTML += `<td class="py-3 px-4 text-slate-700 dark:text-white border border-slate-300 dark:border-slate-600 text-right whitespace-nowrap">${row["OK(pcs)"].toLocaleString()}</td>`;
-		rowHTML += `<td class="py-3 px-4 text-slate-700 dark:text-white border border-slate-300 dark:border-slate-600 text-right whitespace-nowrap">${row["Qty(NG)"].toLocaleString()}</td>`;
-		
-		activeDefects.forEach(defect => {
-			rowHTML += `<td class="py-3 px-4 text-slate-700 dark:text-white border border-slate-300 dark:border-slate-600 text-right whitespace-nowrap">${row[defect].toLocaleString()}</td>`;
+		rowHTML += `<td class="py-3 px-4 text-slate-700 dark:text-white border border-slate-300 dark:border-slate-600 text-right whitespace-nowrap">${row['NG_%']}</td>`;
+
+		if (filteringState.multiFilterColumns.includes('QInspec')) {
+			rowHTML += `<td class="py-3 px-4 text-slate-700 dark:text-white border border-slate-300 dark:border-slate-600 text-right whitespace-nowrap">${row['QInspec'].toLocaleString()}</td>`;
+		}
+		if (filteringState.multiFilterColumns.includes('OK(pcs)')) {
+			rowHTML += `<td class="py-3 px-4 text-slate-700 dark:text-white border border-slate-300 dark:border-slate-600 text-right whitespace-nowrap">${row['OK(pcs)'].toLocaleString()}</td>`;
+		}
+		if (filteringState.multiFilterColumns.includes('Qty(NG)')) {
+			rowHTML += `<td class="py-3 px-4 text-slate-700 dark:text-white border border-slate-300 dark:border-slate-600 text-right whitespace-nowrap">${row['Qty(NG)'].toLocaleString()}</td>`;
+		}
+
+		// Extras
+		extrasToShow.forEach((col) => {
+			const val = row[col];
+			const num = parseFloat(val);
+			const display =
+				typeof val === 'number' || (!isNaN(num) && isFinite(num)) ?
+					(num || 0).toLocaleString()
+				:	'-';
+			rowHTML += `<td class="py-3 px-4 text-slate-700 dark:text-white border border-slate-300 dark:border-slate-600 text-right whitespace-nowrap">${display}</td>`;
+		});
+
+		activeLotDefects.forEach((defect) => {
+			rowHTML += `<td class="py-3 px-4 text-slate-700 dark:text-white border border-slate-300 dark:border-slate-600 text-right whitespace-nowrap">${(row[defect] || 0).toLocaleString()}</td>`;
+		});
+		activePcsDefects.forEach((defect) => {
+			rowHTML += `<td class="py-3 px-4 text-slate-700 dark:text-white border border-slate-300 dark:border-slate-600 text-right whitespace-nowrap">${(row[defect + '(pcs)'] || 0).toLocaleString()}</td>`;
 		});
 
 		rowHTML += `</tr>`;
@@ -5851,7 +6377,7 @@ const renderMultiGroupedTable = () => {
 const clearMultiFilter = () => {
 	filteringState.multiFilterLines = [];
 	filteringState.multiFilterCustomers = [];
-	filteringState.multiFilterColumns = ["PartName", "NG_%"];
+	filteringState.multiFilterColumns = ['PartName', 'NG_%'];
 	filteringState.multiFilterExcludedPartNames = [];
 	filteringState.multiFilteredData = [];
 	filteringState.multiGroupedData = [];
@@ -5862,11 +6388,11 @@ const clearMultiFilter = () => {
 	}
 
 	document
-		.getElementById("multiFilterResultsContainer")
-		.classList.add("hidden");
+		.getElementById('multiFilterResultsContainer')
+		.classList.add('hidden');
 	document
 		.querySelectorAll(
-			".multiLineCheckbox, .multiCustomerCheckbox, .multiColumnCheckbox, .multiExcludeCheckbox"
+			'.multiLineCheckbox, .multiCustomerCheckbox, .multiColumnCheckbox, .multiExcludeCheckbox',
 		)
 		.forEach((cb) => (cb.checked = false));
 };
@@ -5879,23 +6405,23 @@ const filteringState = {
 	selectedPartNames: [],
 	filteredData: [],
 	// Daily Chart Filter State
-	selectedLine: "Barrel 4",
+	selectedLine: 'Barrel 4',
 	selectedDefectType: null,
-	selectedTimeframe: "Daily", // Default timeframe
+	selectedTimeframe: 'Daily', // Default timeframe
 	selectedPartNamesForDefect: [], // Part names for defect filter
 	dailyData: [],
 	dailyDefectData: [],
 	dailyDefectPartData: [], // Detailed data by PartName
 	// PartName Periodical Chart State
-	partNameSelectedTimeframe: "Monthly", // Default to Monthly as per user image
+	partNameSelectedTimeframe: 'Monthly', // Default to Monthly as per user image
 	partNamePeriodicalData: [],
 	// Multi Filter State
-	multiFilterSelectedTimeframe: "Daily", // Default to Daily as per user request
+	multiFilterSelectedTimeframe: 'Daily', // Default to Daily as per user request
 	multiFilterPeriodicalData: [],
 	multiFilterLines: [],
 	multiFilterCustomers: [],
 	multiFilterExcludedPartNames: [],
-	multiFilterColumns: ["PartName", "NG_%"], // Default columns (PartName & NG_% are mandatory)
+	multiFilterColumns: ['PartName', 'NG_%'], // Default columns (PartName & NG_% are mandatory)
 	multiFilterStartDate: null,
 	multiFilterEndDate: null,
 	multiFilteredData: [],
@@ -5903,22 +6429,23 @@ const filteringState = {
 };
 
 const renderFiltering = () => {
-	const container = document.getElementById("filteringContent");
+	const container = document.getElementById('filteringContent');
 	if (!container) return;
 
 	// Get unique part names from processed data (empty array if no data yet)
-	const uniquePartNames = state.processedData
-		? [...new Set(state.processedData.map((row) => row.partName))]
+	const uniquePartNames =
+		state.processedData ?
+			[...new Set(state.processedData.map((row) => row.partName))]
 				.filter((p) => p)
 				.sort()
-		: [];
+		:	[];
 
 	container.innerHTML = `
-        <div class="mb-6">
+        <div class=" pt-16 mb-6">
             <h2 class="text-2xl font-bold text-blue dark:text-white mb-2">Filtering Data</h2>
             <p class="text-slate-400">Periode dari Tanggal: ${
-							state.dateRange?.start || ""
-						} sampai Tanggal: ${state.dateRange?.end || ""}</p>
+							state.dateRange?.start || ''
+						} sampai Tanggal: ${state.dateRange?.end || ''}</p>
         </div>
 
         <!-- Trial Data Inclusion Toggle -->
@@ -5945,8 +6472,8 @@ const renderFiltering = () => {
         <!-- Filter by PartName Content -->
         <div id="filterByPartNameContent">
             ${
-							!state.processedData
-								? `
+							!state.processedData ?
+								`
                 <div class="glass-panel p-6 mb-6">
                     <p class="text-yellow-500 text-center">
                         <svg class="w-12 h-12 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -5956,7 +6483,7 @@ const renderFiltering = () => {
                     </p>
                 </div>
             `
-								: `
+							:	`
                 <div class="glass-panel p-6 mb-6 relative z-20">
                     <label class="block text-slate-900 dark:text-white font-medium mb-3">Pilih PartName:</label>
                     
@@ -5981,17 +6508,17 @@ const renderFiltering = () => {
                         <!-- Dropdown list -->
                         <div id="partNameDropdown" class="hidden absolute z-50 w-full mt-1 bg-slate-800 border border-slate-600 rounded max-h-60 overflow-y-auto shadow-2xl">
                             ${
-															uniquePartNames.length > 0
-																? uniquePartNames
-																		.map(
-																			(partName) => `
+															uniquePartNames.length > 0 ?
+																uniquePartNames
+																	.map(
+																		(partName) => `
                                 <div class="px-4 py-2 hover:bg-slate-700 cursor-pointer text-white text-sm partname-option" data-partname="${partName}">
                                     ${partName}
                                 </div>
-                            `
-																		)
-																		.join("")
-																: '<div class="px-4 py-2 text-slate-500 text-sm">No part names available</div>'
+                            `,
+																	)
+																	.join('')
+															:	'<div class="px-4 py-2 text-slate-500 text-sm">No part names available</div>'
 														}
                         </div>
                     </div>
@@ -6118,8 +6645,8 @@ const renderFiltering = () => {
         <!-- Multi Filtering Data Content -->
         <div id="multiFilterContent" class="hidden">
             ${
-							!state.processedData
-								? `
+							!state.processedData ?
+								`
                     <div class="glass-panel p-6 mb-6">
                         <p class="text-yellow-500 text-center">
                             <svg class="w-12 h-12 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -6129,7 +6656,7 @@ const renderFiltering = () => {
                         </p>
                     </div>
                     `
-								: `
+							:	`
                     <!-- Header Info -->
                     <div class="glass-panel p-6 mb-6 border-l-4 border-blue-500">
                         <h3 class="text-slate-900 dark:text-white font-semibold text-lg mb-2">Multi Filtering Data</h3>
@@ -6282,8 +6809,8 @@ const renderFiltering = () => {
         <!-- Filter Line for Daily Chart Content -->
         <div id="filterLineContent" class="hidden">
             ${
-							!state.processedData
-								? `
+							!state.processedData ?
+								`
                 <div class="glass-panel p-6 mb-6">
                     <p class="text-yellow-500 text-center">
                         <svg class="w-12 h-12 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -6293,7 +6820,7 @@ const renderFiltering = () => {
                     </p>
                 </div>
             `
-								: `
+							:	`
                 <div class="glass-panel p-6 mb-6 border-l-4 border-blue-500">
                     <h3 class="text-slate-900 dark:text-white font-semibold text-lg mb-2">Filtering Data berdasarkan Line, Jenis NG dan PartName</h3>
                     <p class="text-slate-400 text-sm">Filtering data secara bertingkat berdasarkan Line, Jenis NG dan PartName untuk analisis lebih detail</p>
@@ -6526,11 +7053,11 @@ const renderFiltering = () => {
                                 <tr>
                                     <th class="py-3 px-4 font-semibold text-center">#</th>
                                     <th class="py-3 px-4 font-semibold">PartName</th>
+                             		<th class="py-3 px-4 font-semibold text-right" id="defectPartSummaryPercentHeader"></th>
                                     <th class="py-3 px-4 font-semibold text-right border-l-2 border-blue-500" id="defectPartSummaryColHeaderPcs"></th>
                                     <th class="py-3 px-4 font-semibold text-right border-r-2 border-blue-500">Qty Inspected (pcs)</th>
                                     <th class="py-3 px-4 font-semibold text-right" id="defectPartSummaryColHeader"></th>
                                     <th class="py-3 px-4 font-semibold text-right border-r-2 border-blue-500">Qty Inspected (lot)</th>
-                                    <th class="py-3 px-4 font-semibold text-right" id="defectPartSummaryPercentHeader"></th>
                                 </tr>
                             </thead>
                             <tbody id="defectPartSummaryTableBody">
@@ -6560,22 +7087,24 @@ const renderFiltering = () => {
 // === DAILY CHART FILTERING FUNCTIONS ===
 
 const setupDailyChartListeners = () => {
-	const dailyLineSelect = document.getElementById("dailyLineSelect");
-	const dailyDefectSelect = document.getElementById("dailyDefectSelect");
-	const timeframeSelect = document.getElementById("timeframeSelect");
-	const defectTimeframeSelect = document.getElementById("defectTimeframeSelect");
+	const dailyLineSelect = document.getElementById('dailyLineSelect');
+	const dailyDefectSelect = document.getElementById('dailyDefectSelect');
+	const timeframeSelect = document.getElementById('timeframeSelect');
+	const defectTimeframeSelect = document.getElementById(
+		'defectTimeframeSelect',
+	);
 
 	const handleTimeframeChange = (newTimeframe) => {
 		filteringState.selectedTimeframe = newTimeframe;
-		
+
 		// Sync selectors
 		if (timeframeSelect) timeframeSelect.value = newTimeframe;
 		if (defectTimeframeSelect) defectTimeframeSelect.value = newTimeframe;
-		
+
 		// Update Main Chart
 		processDailyData();
 		renderDailyChart();
-		
+
 		// Update Defect Chart if active
 		if (filteringState.selectedDefectType) {
 			processDefectDailyData(filteringState.selectedDefectType);
@@ -6584,94 +7113,123 @@ const setupDailyChartListeners = () => {
 	};
 
 	if (timeframeSelect) {
-		timeframeSelect.addEventListener("change", (e) => handleTimeframeChange(e.target.value));
+		timeframeSelect.addEventListener('change', (e) =>
+			handleTimeframeChange(e.target.value),
+		);
 	}
 	if (defectTimeframeSelect) {
-		defectTimeframeSelect.addEventListener("change", (e) => handleTimeframeChange(e.target.value));
+		defectTimeframeSelect.addEventListener('change', (e) =>
+			handleTimeframeChange(e.target.value),
+		);
 	}
 
 	// --- Export Buttons Logic ---
 	// 1. Daily Data Table Export
-	const dailyDataDetails = document.getElementById("dailyDataDetails");
-	const exportDailyDataBtn = document.getElementById("exportDailyDataBtn");
-	
+	const dailyDataDetails = document.getElementById('dailyDataDetails');
+	const exportDailyDataBtn = document.getElementById('exportDailyDataBtn');
+
 	if (dailyDataDetails && exportDailyDataBtn) {
-		dailyDataDetails.addEventListener("toggle", function() {
-			const wrapper = this.querySelector(".export-btn-wrapper");
+		dailyDataDetails.addEventListener('toggle', function () {
+			const wrapper = this.querySelector('.export-btn-wrapper');
 			if (wrapper) {
-				if (this.open) wrapper.classList.remove("hidden");
-				else wrapper.classList.add("hidden");
+				if (this.open) wrapper.classList.remove('hidden');
+				else wrapper.classList.add('hidden');
 			}
 		});
-		
-		exportDailyDataBtn.addEventListener("click", (e) => {
+
+		exportDailyDataBtn.addEventListener('click', (e) => {
 			e.preventDefault();
 			e.stopPropagation();
-			exportDailyDataToCSV(filteringState.dailyData, filteringState.selectedLine);
+			exportDailyDataToCSV(
+				filteringState.dailyData,
+				filteringState.selectedLine,
+			);
 		});
 	}
 
 	// 2. Defect Daily Data Table Export
-	const defectDailyDetails = document.getElementById("defectDailyTableContainer");
-	const exportDefectDailyDataBtn = document.getElementById("exportDefectDailyDataBtn");
+	const defectDailyDetails = document.getElementById(
+		'defectDailyTableContainer',
+	);
+	const exportDefectDailyDataBtn = document.getElementById(
+		'exportDefectDailyDataBtn',
+	);
 
 	if (defectDailyDetails && exportDefectDailyDataBtn) {
-		defectDailyDetails.addEventListener("toggle", function() {
-			const wrapper = this.querySelector(".export-btn-wrapper");
+		defectDailyDetails.addEventListener('toggle', function () {
+			const wrapper = this.querySelector('.export-btn-wrapper');
 			if (wrapper) {
-				if (this.open) wrapper.classList.remove("hidden");
-				else wrapper.classList.add("hidden");
+				if (this.open) wrapper.classList.remove('hidden');
+				else wrapper.classList.add('hidden');
 			}
 		});
 
-		exportDefectDailyDataBtn.addEventListener("click", (e) => {
+		exportDefectDailyDataBtn.addEventListener('click', (e) => {
 			e.preventDefault();
 			e.stopPropagation();
-			exportDefectDailyDataToCSV(filteringState.dailyDefectData, filteringState.selectedLine, filteringState.selectedDefectType);
+			exportDefectDailyDataToCSV(
+				filteringState.dailyDefectData,
+				filteringState.selectedLine,
+				filteringState.selectedDefectType,
+			);
 		});
 	}
 
 	// 3. Defect Part Detail Table Export
-	const defectPartDetailDetails = document.getElementById("defectPartDetailTableContainer");
-	const exportDefectPartDetailBtn = document.getElementById("exportDefectPartDetailBtn");
+	const defectPartDetailDetails = document.getElementById(
+		'defectPartDetailTableContainer',
+	);
+	const exportDefectPartDetailBtn = document.getElementById(
+		'exportDefectPartDetailBtn',
+	);
 
 	if (defectPartDetailDetails && exportDefectPartDetailBtn) {
-		defectPartDetailDetails.addEventListener("toggle", function() {
-			const wrapper = this.querySelector(".export-btn-wrapper");
+		defectPartDetailDetails.addEventListener('toggle', function () {
+			const wrapper = this.querySelector('.export-btn-wrapper');
 			if (wrapper) {
-				if (this.open) wrapper.classList.remove("hidden");
-				else wrapper.classList.add("hidden");
+				if (this.open) wrapper.classList.remove('hidden');
+				else wrapper.classList.add('hidden');
 			}
 		});
 
-		exportDefectPartDetailBtn.addEventListener("click", (e) => {
+		exportDefectPartDetailBtn.addEventListener('click', (e) => {
 			e.preventDefault();
 			e.stopPropagation();
 			// Note: data variable name verified as partDetailData from renderDefectPartTables function
-			exportDefectPartDetailDataToCSV(filteringState.partDetailData, filteringState.selectedLine, filteringState.selectedDefectType);
+			exportDefectPartDetailDataToCSV(
+				filteringState.partDetailData,
+				filteringState.selectedLine,
+				filteringState.selectedDefectType,
+			);
 		});
 	}
 
 	// 4. Defect Part Summary Table Export
-	const exportDefectPartSummaryBtn = document.getElementById("exportDefectPartSummaryBtn");
+	const exportDefectPartSummaryBtn = document.getElementById(
+		'exportDefectPartSummaryBtn',
+	);
 	if (exportDefectPartSummaryBtn) {
-		exportDefectPartSummaryBtn.addEventListener("click", (e) => {
+		exportDefectPartSummaryBtn.addEventListener('click', (e) => {
 			e.preventDefault();
 			e.stopPropagation();
 			// Note: data variable name verified as partSummaryData from renderDefectPartTables function
-			exportDefectPartSummaryDataToCSV(filteringState.partSummaryData, filteringState.selectedLine, filteringState.selectedDefectType);
+			exportDefectPartSummaryDataToCSV(
+				filteringState.partSummaryData,
+				filteringState.selectedLine,
+				filteringState.selectedDefectType,
+			);
 		});
 	}
 
 	if (dailyLineSelect) {
-		dailyLineSelect.addEventListener("change", (e) => {
+		dailyLineSelect.addEventListener('change', (e) => {
 			filteringState.selectedLine = e.target.value;
 			processDailyData();
 			renderDailyChart();
 
 			// Reset defect filter when line changes
 			if (dailyDefectSelect) {
-				dailyDefectSelect.value = "";
+				dailyDefectSelect.value = '';
 				filteringState.selectedDefectType = null;
 				filteringState.selectedPartNamesForDefect = []; // Reset PartName selections
 				hideDefectCharts();
@@ -6685,7 +7243,7 @@ const setupDailyChartListeners = () => {
 	}
 
 	if (dailyDefectSelect) {
-		dailyDefectSelect.addEventListener("change", (e) => {
+		dailyDefectSelect.addEventListener('change', (e) => {
 			const defectType = e.target.value;
 			filteringState.selectedDefectType = defectType || null;
 
@@ -6704,48 +7262,59 @@ const processDailyData = () => {
 	if (!state.processedData) return;
 
 	const selectedLine = filteringState.selectedLine;
-	const timeframe = filteringState.selectedTimeframe || "Daily";
+	const timeframe = filteringState.selectedTimeframe || 'Daily';
 
 	// Filter data for selected line and include trial data
-	const lineData = state.processedData.filter(
-		(row) => {
-			const lineMatch = row["Line"] === selectedLine;
-			const trialMatch = filteringState.includeTrialData || !row.isTrial;
-			const categoryMatch = row.Kategori !== 'kosong' || row.isTrial;
-			return lineMatch && trialMatch && categoryMatch;
-		}
-	);
+	const lineData = state.processedData.filter((row) => {
+		const lineMatch = row['Line'] === selectedLine;
+		const trialMatch = filteringState.includeTrialData || !row.isTrial;
+		const categoryMatch = row.Kategori !== 'kosong' || row.isTrial;
+		return lineMatch && trialMatch && categoryMatch;
+	});
 
 	// Group by timeframe
 	const groups = {};
 
 	lineData.forEach((row) => {
-		const dateObj = row["DateObj"];
+		const dateObj = row['DateObj'];
 		if (!dateObj || isNaN(dateObj)) return;
 
 		let groupKey;
-		const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+		const monthNames = [
+			'Jan',
+			'Feb',
+			'Mar',
+			'Apr',
+			'May',
+			'Jun',
+			'Jul',
+			'Aug',
+			'Sep',
+			'Oct',
+			'Nov',
+			'Dec',
+		];
 
-		if (timeframe === "Weekly") {
+		if (timeframe === 'Weekly') {
 			// Monday to Saturday grouping
 			const dayOfWeek = dateObj.getDay(); // 0 is Sunday, 1 is Monday
 			const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
 			const monday = new Date(dateObj);
 			monday.setDate(dateObj.getDate() + diff);
-			
-			const d = String(monday.getDate()).padStart(2, "0");
+
+			const d = String(monday.getDate()).padStart(2, '0');
 			const m = monthNames[monday.getMonth()];
 			const y = String(monday.getFullYear()).slice(-2);
 			groupKey = `W${getWeekNumber(monday)} (${d}-${m}-${y})`;
-		} else if (timeframe === "Monthly") {
+		} else if (timeframe === 'Monthly') {
 			const m = monthNames[dateObj.getMonth()];
 			const y = String(dateObj.getFullYear()).slice(-2);
 			groupKey = `${m}-${y}`;
-		} else if (timeframe === "Yearly") {
+		} else if (timeframe === 'Yearly') {
 			groupKey = String(dateObj.getFullYear());
 		} else {
 			// Daily
-			const d = String(dateObj.getDate()).padStart(2, "0");
+			const d = String(dateObj.getDate()).padStart(2, '0');
 			const m = monthNames[dateObj.getMonth()];
 			const y = String(dateObj.getFullYear()).slice(-2);
 			groupKey = `${d}-${m}-${y}`;
@@ -6760,31 +7329,31 @@ const processDailyData = () => {
 				sumNGPercent: 0,
 				count: 0,
 			};
-			
+
 			// For Weekly, Monthly, Yearly, we want dateObj to be the start of the period for sorting
-			if (timeframe === "Weekly") {
+			if (timeframe === 'Weekly') {
 				const dayOfWeek = dateObj.getDay();
 				const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
 				groups[groupKey].dateObj.setDate(dateObj.getDate() + diff);
-			} else if (timeframe === "Monthly") {
+			} else if (timeframe === 'Monthly') {
 				groups[groupKey].dateObj.setDate(1);
-			} else if (timeframe === "Yearly") {
+			} else if (timeframe === 'Yearly') {
 				groups[groupKey].dateObj.setMonth(0, 1);
 			}
 		}
 
-		groups[groupKey].inspLot += Number(row["Insp(Lot)"]) || 0;
-		groups[groupKey].ngLot += Number(row["NG(Lot)"]) || 0;
+		groups[groupKey].inspLot += Number(row['Insp(Lot)']) || 0;
+		groups[groupKey].ngLot += Number(row['NG(Lot)']) || 0;
 
-		if (row["NG_%"] !== undefined && row["NG_%"] !== null) {
-			groups[groupKey].sumNGPercent += Number(row["NG_%"]);
+		if (row['NG_%'] !== undefined && row['NG_%'] !== null) {
+			groups[groupKey].sumNGPercent += Number(row['NG_%']);
 			groups[groupKey].count += 1;
 		}
 	});
 
 	// Convert to array and sort by date
 	const dailyArray = Object.values(groups).sort(
-		(a, b) => a.dateObj - b.dateObj
+		(a, b) => a.dateObj - b.dateObj,
 	);
 
 	// Calculate average NG%
@@ -6796,17 +7365,19 @@ const processDailyData = () => {
 };
 
 const renderDailyChart = () => {
-	const canvas = document.getElementById("dailyChart");
-	const titleElement = document.getElementById("dailyChartTitle");
-	const tableBody = document.getElementById("dailyDataTableBody");
-	const dateHeader = document.querySelector("#dailyDataDetails th:first-child");
+	const canvas = document.getElementById('dailyChart');
+	const titleElement = document.getElementById('dailyChartTitle');
+	const tableBody = document.getElementById('dailyDataTableBody');
+	const dateHeader = document.querySelector('#dailyDataDetails th:first-child');
 
 	if (!canvas || filteringState.dailyData.length === 0) return;
 
-	const timeframe = filteringState.selectedTimeframe || "Daily";
-	const timeframeLabel = timeframe === "Daily" ? "Harian" : 
-						 timeframe === "Weekly" ? "Mingguan" :
-						 timeframe === "Monthly" ? "Bulanan" : "Tahunan";
+	const timeframe = filteringState.selectedTimeframe || 'Daily';
+	const timeframeLabel =
+		timeframe === 'Daily' ? 'Harian'
+		: timeframe === 'Weekly' ? 'Mingguan'
+		: timeframe === 'Monthly' ? 'Bulanan'
+		: 'Tahunan';
 
 	// Update title
 	if (titleElement) {
@@ -6815,7 +7386,7 @@ const renderDailyChart = () => {
 
 	// Update table header
 	if (dateHeader) {
-		dateHeader.textContent = timeframe === "Daily" ? "Tanggal" : "Periode";
+		dateHeader.textContent = timeframe === 'Daily' ? 'Tanggal' : 'Periode';
 	}
 
 	// Update table
@@ -6828,18 +7399,18 @@ const renderDailyChart = () => {
 									day.date
 								}</td>
                 <td class="py-2 px-3 text-slate-600 dark:text-slate-400 text-right">${day.inspLot.toFixed(
-									2
+									2,
 								)}</td>
                 <td class="py-2 px-3 text-slate-600 dark:text-slate-400 text-right">${day.ngLot.toFixed(
-									2
+									2,
 								)}</td>
                 <td class="py-2 px-3 text-slate-600 dark:text-slate-400 text-right">${day.ngPercent.toFixed(
-									4
+									4,
 								)}</td>
             </tr>
-        `
+        `,
 			)
-			.join("");
+			.join('');
 	}
 
 	// Destroy existing chart
@@ -6856,39 +7427,39 @@ const renderDailyChart = () => {
 	const maxInsp = Math.max(...inspData);
 	const maxNG = Math.max(...ngData);
 
-	const isDark = document.documentElement.classList.contains("dark");
-	const gridColor = isDark ? "#334155" : "rgba(0, 0, 0, 0.1)";
-	const tickColor = isDark ? "#94a3b8" : "#475569";
-	const titleColor = isDark ? "#ffffff" : "#1e293b";
+	const isDark = document.documentElement.classList.contains('dark');
+	const gridColor = isDark ? '#334155' : 'rgba(0, 0, 0, 0.1)';
+	const tickColor = isDark ? '#94a3b8' : '#475569';
+	const titleColor = isDark ? '#ffffff' : '#1e293b';
 
 	// Create chart
-	const ctx = canvas.getContext("2d");
+	const ctx = canvas.getContext('2d');
 	state.charts.dailyChart = new Chart(ctx, {
-		type: "bar",
+		type: 'bar',
 		data: {
 			labels: labels,
 			datasets: [
 				{
-					label: "Total Inspected (Lot)",
+					label: 'Total Inspected (Lot)',
 					data: inspData,
-					backgroundColor: "#ecb34aff",
-					borderColor: "#ecb34aff",
+					backgroundColor: '#ecb34aff',
+					borderColor: '#ecb34aff',
 					borderWidth: 1,
-					yAxisID: "y",
+					yAxisID: 'y',
 					order: 2,
 				},
 				{
-					label: "NG (%)",
+					label: 'NG (%)',
 					data: ngData,
-					type: "line",
-					borderColor: "#ef4444",
-					backgroundColor: "#ef4444",
+					type: 'line',
+					borderColor: '#ef4444',
+					backgroundColor: '#ef4444',
 					borderWidth: 2,
 					pointRadius: 4,
-					pointBackgroundColor: "#ef4444",
-					pointBorderColor: "#fff",
+					pointBackgroundColor: '#ef4444',
+					pointBorderColor: '#fff',
 					pointBorderWidth: 1,
-					yAxisID: "y1",
+					yAxisID: 'y1',
 					order: 1,
 					tension: 0.4,
 				},
@@ -6898,12 +7469,12 @@ const renderDailyChart = () => {
 			responsive: true,
 			maintainAspectRatio: false,
 			interaction: {
-				mode: "index",
+				mode: 'index',
 				intersect: false,
 			},
 			plugins: {
 				legend: {
-					position: "bottom",
+					position: 'bottom',
 					labels: {
 						color: tickColor,
 						font: { size: 11 },
@@ -6919,16 +7490,16 @@ const renderDailyChart = () => {
 			},
 			scales: {
 				y: {
-					type: "linear",
+					type: 'linear',
 					display: true,
-					position: "left",
+					position: 'left',
 					beginAtZero: true,
 					suggestedMax: maxInsp * 1.1,
 					title: {
 						display: true,
-						text: "Total Inspected (Lot)",
-						color: "#ecb34aff",
-						font: { size: 11, weight: "bold" },
+						text: 'Total Inspected (Lot)',
+						color: '#ecb34aff',
+						font: { size: 11, weight: 'bold' },
 					},
 					grid: {
 						color: gridColor,
@@ -6939,35 +7510,37 @@ const renderDailyChart = () => {
 					},
 				},
 				y1: {
-					type: "linear",
+					type: 'linear',
 					display: true,
-					position: "right",
+					position: 'right',
 					beginAtZero: true,
 					min: 0,
 					suggestedMax: maxNG * 1.1,
 					title: {
 						display: true,
-						text: "NG (%)",
-						color: "#ef4444",
-						font: { size: 11, weight: "bold" },
+						text: 'NG (%)',
+						color: '#ef4444',
+						font: { size: 11, weight: 'bold' },
 					},
 					grid: {
 						drawOnChartArea: false,
 					},
 					ticks: {
-						color: "#ef4444",
+						color: '#ef4444',
 						font: { size: 10 },
 						callback: function (value) {
-							return value.toFixed(2) + "%";
+							return value.toFixed(2) + '%';
 						},
 					},
 				},
 				x: {
 					title: {
 						display: true,
-						text: timeframe === "Daily" ? "Tanggal" : 
-							  timeframe === "Weekly" ? "Minggu" :
-							  timeframe === "Monthly" ? "Bulan" : "Tahun",
+						text:
+							timeframe === 'Daily' ? 'Tanggal'
+							: timeframe === 'Weekly' ? 'Minggu'
+							: timeframe === 'Monthly' ? 'Bulan'
+							: 'Tahun',
 						color: titleColor,
 						font: { size: 11 },
 					},
@@ -6988,47 +7561,58 @@ const processDefectDailyData = (defectType) => {
 	if (!state.processedData) return;
 
 	const selectedLine = filteringState.selectedLine;
-	const timeframe = filteringState.selectedTimeframe || "Daily";
+	const timeframe = filteringState.selectedTimeframe || 'Daily';
 
 	// Filter data for selected line and include trial data
-	const lineData = state.processedData.filter(
-		(row) => {
-			const lineMatch = row["Line"] === selectedLine;
-			const trialMatch = filteringState.includeTrialData || !row.isTrial;
-			const categoryMatch = row.Kategori !== 'kosong' || row.isTrial;
-			return lineMatch && trialMatch && categoryMatch;
-		}
-	);
+	const lineData = state.processedData.filter((row) => {
+		const lineMatch = row['Line'] === selectedLine;
+		const trialMatch = filteringState.includeTrialData || !row.isTrial;
+		const categoryMatch = row.Kategori !== 'kosong' || row.isTrial;
+		return lineMatch && trialMatch && categoryMatch;
+	});
 
 	// Group by timeframe
 	const groups = {};
 
 	lineData.forEach((row) => {
-		const dateObj = row["DateObj"];
+		const dateObj = row['DateObj'];
 		if (!dateObj || isNaN(dateObj)) return;
 
 		let groupKey;
-		const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+		const monthNames = [
+			'Jan',
+			'Feb',
+			'Mar',
+			'Apr',
+			'May',
+			'Jun',
+			'Jul',
+			'Aug',
+			'Sep',
+			'Oct',
+			'Nov',
+			'Dec',
+		];
 
-		if (timeframe === "Weekly") {
+		if (timeframe === 'Weekly') {
 			const dayOfWeek = dateObj.getDay();
 			const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
 			const monday = new Date(dateObj);
 			monday.setDate(dateObj.getDate() + diff);
-			
-			const d = String(monday.getDate()).padStart(2, "0");
+
+			const d = String(monday.getDate()).padStart(2, '0');
 			const m = monthNames[monday.getMonth()];
 			const y = String(monday.getFullYear()).slice(-2);
 			groupKey = `W${getWeekNumber(monday)} (${d}-${m}-${y})`;
-		} else if (timeframe === "Monthly") {
+		} else if (timeframe === 'Monthly') {
 			const m = monthNames[dateObj.getMonth()];
 			const y = String(dateObj.getFullYear()).slice(-2);
 			groupKey = `${m}-${y}`;
-		} else if (timeframe === "Yearly") {
+		} else if (timeframe === 'Yearly') {
 			groupKey = String(dateObj.getFullYear());
 		} else {
 			// Daily
-			const d = String(dateObj.getDate()).padStart(2, "0");
+			const d = String(dateObj.getDate()).padStart(2, '0');
 			const m = monthNames[dateObj.getMonth()];
 			const y = String(dateObj.getFullYear()).slice(-2);
 			groupKey = `${d}-${m}-${y}`;
@@ -7043,27 +7627,27 @@ const processDefectDailyData = (defectType) => {
 				inspLot: 0,
 				inspPcs: 0,
 			};
-			
-			if (timeframe === "Weekly") {
+
+			if (timeframe === 'Weekly') {
 				const dayOfWeek = dateObj.getDay();
 				const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
 				groups[groupKey].dateObj.setDate(dateObj.getDate() + diff);
-			} else if (timeframe === "Monthly") {
+			} else if (timeframe === 'Monthly') {
 				groups[groupKey].dateObj.setDate(1);
-			} else if (timeframe === "Yearly") {
+			} else if (timeframe === 'Yearly') {
 				groups[groupKey].dateObj.setMonth(0, 1);
 			}
 		}
 
 		groups[groupKey].defectLot += Number(row[defectType]) || 0;
-		groups[groupKey].defectPcs += Number(row[defectType + "(pcs)"]) || 0;
-		groups[groupKey].inspLot += Number(row["Insp(Lot)"]) || 0;
-		groups[groupKey].inspPcs += Number(row["QInspec"]) || 0;
+		groups[groupKey].defectPcs += Number(row[defectType + '(pcs)']) || 0;
+		groups[groupKey].inspLot += Number(row['Insp(Lot)']) || 0;
+		groups[groupKey].inspPcs += Number(row['QInspec']) || 0;
 	});
 
 	// Convert to array and sort by date
 	const dailyArray = Object.values(groups).sort(
-		(a, b) => a.dateObj - b.dateObj
+		(a, b) => a.dateObj - b.dateObj,
 	);
 
 	// Calculate NG% for this defect
@@ -7075,24 +7659,28 @@ const processDefectDailyData = (defectType) => {
 };
 
 const renderDefectDailyChart = (defectType) => {
-	const canvas = document.getElementById("defectDailyChart");
-	const container = document.getElementById("defectDailyChartContainer");
-	const titleElement = document.getElementById("defectDailyChartTitle");
-	const tableContainer = document.getElementById("defectDailyTableContainer");
-	const tableTitle = document.getElementById("defectTableTitle");
-	const tableBody = document.getElementById("defectDailyDataTableBody");
-	const dateHeader = document.querySelector("#defectDailyTableContainer th:first-child");
+	const canvas = document.getElementById('defectDailyChart');
+	const container = document.getElementById('defectDailyChartContainer');
+	const titleElement = document.getElementById('defectDailyChartTitle');
+	const tableContainer = document.getElementById('defectDailyTableContainer');
+	const tableTitle = document.getElementById('defectTableTitle');
+	const tableBody = document.getElementById('defectDailyDataTableBody');
+	const dateHeader = document.querySelector(
+		'#defectDailyTableContainer th:first-child',
+	);
 
 	if (!canvas || filteringState.dailyDefectData.length === 0) return;
 
-	const timeframe = filteringState.selectedTimeframe || "Daily";
-	const timeframeLabel = timeframe === "Daily" ? "Harian" : 
-						 timeframe === "Weekly" ? "Mingguan" :
-						 timeframe === "Monthly" ? "Bulanan" : "Tahunan";
+	const timeframe = filteringState.selectedTimeframe || 'Daily';
+	const timeframeLabel =
+		timeframe === 'Daily' ? 'Harian'
+		: timeframe === 'Weekly' ? 'Mingguan'
+		: timeframe === 'Monthly' ? 'Bulanan'
+		: 'Tahunan';
 
 	// Show containers
-	if (container) container.classList.remove("hidden");
-	if (tableContainer) tableContainer.classList.remove("hidden");
+	if (container) container.classList.remove('hidden');
+	if (tableContainer) tableContainer.classList.remove('hidden');
 
 	// Update titles
 	if (titleElement) {
@@ -7101,10 +7689,10 @@ const renderDefectDailyChart = (defectType) => {
 	if (tableTitle) {
 		tableTitle.textContent = defectType;
 	}
-	
+
 	// Update table header
 	if (dateHeader) {
-		dateHeader.textContent = timeframe === "Daily" ? "Tanggal" : "Periode";
+		dateHeader.textContent = timeframe === 'Daily' ? 'Tanggal' : 'Periode';
 	}
 
 	// Update table
@@ -7118,19 +7706,19 @@ const renderDefectDailyChart = (defectType) => {
 								}</td>
                 <td class="py-2 px-3 text-slate-600 dark:text-slate-400 text-right font-medium">${day.defectPcs.toLocaleString()}</td>
                 <td class="py-2 px-3 text-slate-600 dark:text-slate-400 text-right">${day.defectLot.toFixed(
-									4
+									4,
 								)}</td>
                 <td class="py-2 px-3 text-slate-600 dark:text-slate-400 text-right font-medium">${day.inspPcs.toLocaleString()}</td>
                 <td class="py-2 px-3 text-slate-600 dark:text-slate-400 text-right">${day.inspLot.toFixed(
-									0
+									0,
 								)}</td>
                 <td class="py-2 px-3 text-slate-600 dark:text-slate-400 text-right">${day.ngPercent.toFixed(
-									4
+									4,
 								)}</td>
             </tr>
-        `
+        `,
 			)
-			.join("");
+			.join('');
 	}
 
 	// Destroy existing chart
@@ -7147,39 +7735,39 @@ const renderDefectDailyChart = (defectType) => {
 	const maxDefect = Math.max(...defectData);
 	const maxNG = Math.max(...ngData);
 
-	const isDark = document.documentElement.classList.contains("dark");
-	const gridColor = isDark ? "#334155" : "rgba(0, 0, 0, 0.1)";
-	const tickColor = isDark ? "#94a3b8" : "#475569";
-	const titleColor = isDark ? "#ffffff" : "#1e293b";
+	const isDark = document.documentElement.classList.contains('dark');
+	const gridColor = isDark ? '#334155' : 'rgba(0, 0, 0, 0.1)';
+	const tickColor = isDark ? '#94a3b8' : '#475569';
+	const titleColor = isDark ? '#ffffff' : '#1e293b';
 
 	// Create chart
-	const ctx = canvas.getContext("2d");
+	const ctx = canvas.getContext('2d');
 	state.charts.defectDailyChart = new Chart(ctx, {
-		type: "bar",
+		type: 'bar',
 		data: {
 			labels: labels,
 			datasets: [
 				{
 					label: `Qty ${defectType} (Lot)`,
 					data: defectData,
-					backgroundColor: "#3a4661ff",
-					borderColor: "#3a4661ff",
+					backgroundColor: '#3a4661ff',
+					borderColor: '#3a4661ff',
 					borderWidth: 1,
-					yAxisID: "y",
+					yAxisID: 'y',
 					order: 2,
 				},
 				{
 					label: `${defectType} (%)`,
 					data: ngData,
-					type: "line",
-					borderColor: "#ef4444",
-					backgroundColor: "#ef4444",
+					type: 'line',
+					borderColor: '#ef4444',
+					backgroundColor: '#ef4444',
 					borderWidth: 2,
 					pointRadius: 4,
-					pointBackgroundColor: "#ef4444",
-					pointBorderColor: "#fff",
+					pointBackgroundColor: '#ef4444',
+					pointBorderColor: '#fff',
 					pointBorderWidth: 1,
-					yAxisID: "y1",
+					yAxisID: 'y1',
 					order: 1,
 					tension: 0.4,
 				},
@@ -7189,12 +7777,12 @@ const renderDefectDailyChart = (defectType) => {
 			responsive: true,
 			maintainAspectRatio: false,
 			interaction: {
-				mode: "index",
+				mode: 'index',
 				intersect: false,
 			},
 			plugins: {
 				legend: {
-					position: "bottom",
+					position: 'bottom',
 					labels: {
 						color: tickColor,
 						font: { size: 11 },
@@ -7210,16 +7798,16 @@ const renderDefectDailyChart = (defectType) => {
 			},
 			scales: {
 				y: {
-					type: "linear",
+					type: 'linear',
 					display: true,
-					position: "left",
+					position: 'left',
 					beginAtZero: true,
 					suggestedMax: maxDefect * 1.1,
 					title: {
 						display: true,
 						text: `Qty ${defectType} (Lot)`,
-						color: "#3a4661ff",
-						font: { size: 11, weight: "bold" },
+						color: '#3a4661ff',
+						font: { size: 11, weight: 'bold' },
 					},
 					grid: {
 						color: gridColor,
@@ -7230,35 +7818,37 @@ const renderDefectDailyChart = (defectType) => {
 					},
 				},
 				y1: {
-					type: "linear",
+					type: 'linear',
 					display: true,
-					position: "right",
+					position: 'right',
 					beginAtZero: true,
 					min: 0,
 					suggestedMax: maxNG * 1.1,
 					title: {
 						display: true,
 						text: `${defectType} (%)`,
-						color: "#ef4444",
-						font: { size: 11, weight: "bold" },
+						color: '#ef4444',
+						font: { size: 11, weight: 'bold' },
 					},
 					grid: {
 						drawOnChartArea: false,
 					},
 					ticks: {
-						color: "#ef4444",
+						color: '#ef4444',
 						font: { size: 10 },
 						callback: function (value) {
-							return value.toFixed(2) + "%";
+							return value.toFixed(2) + '%';
 						},
 					},
 				},
 				x: {
 					title: {
 						display: true,
-						text: timeframe === "Daily" ? "Tanggal" : 
-							  timeframe === "Weekly" ? "Minggu" :
-							  timeframe === "Monthly" ? "Bulan" : "Tahun",
+						text:
+							timeframe === 'Daily' ? 'Tanggal'
+							: timeframe === 'Weekly' ? 'Minggu'
+							: timeframe === 'Monthly' ? 'Bulan'
+							: 'Tahun',
 						color: titleColor,
 						font: { size: 11 },
 					},
@@ -7284,11 +7874,11 @@ const renderDefectDailyChart = (defectType) => {
 };
 
 const hideDefectCharts = () => {
-	const container = document.getElementById("defectDailyChartContainer");
-	const tableContainer = document.getElementById("defectDailyTableContainer");
+	const container = document.getElementById('defectDailyChartContainer');
+	const tableContainer = document.getElementById('defectDailyTableContainer');
 
-	if (container) container.classList.add("hidden");
-	if (tableContainer) tableContainer.classList.add("hidden");
+	if (container) container.classList.add('hidden');
+	if (tableContainer) tableContainer.classList.add('hidden');
 
 	// Destroy chart
 	if (state.charts.defectDailyChart) {
@@ -7303,19 +7893,19 @@ const hideDefectCharts = () => {
 // === PARTNAME FILTER FOR DEFECT FUNCTIONS ===
 
 const setupPartNameFilterForDefect = () => {
-	const searchInput = document.getElementById("defectPartNameSearchInput");
-	const dropdown = document.getElementById("defectPartNameDropdown");
-	const tagsContainer = document.getElementById("defectPartNameTagsContainer");
+	const searchInput = document.getElementById('defectPartNameSearchInput');
+	const dropdown = document.getElementById('defectPartNameDropdown');
+	const tagsContainer = document.getElementById('defectPartNameTagsContainer');
 
 	if (!searchInput || !dropdown || !state.processedData) return;
 
 	// Get unique part names for current line and defect type
 	const lineData = state.processedData.filter(
 		(row) =>
-			row["Line"] === filteringState.selectedLine &&
+			row['Line'] === filteringState.selectedLine &&
 			!row.isTrial &&
-			row.Kategori !== "kosong" &&
-			Number(row[filteringState.selectedDefectType]) > 0
+			row.Kategori !== 'kosong' &&
+			Number(row[filteringState.selectedDefectType]) > 0,
 	);
 
 	const partNames = [...new Set(lineData.map((row) => row.partName))]
@@ -7329,45 +7919,45 @@ const setupPartNameFilterForDefect = () => {
         <div class="px-4 py-2 hover:bg-blue-100 dark:hover:bg-slate-700 cursor-pointer text-slate-900 dark:text-white text-sm defect-partname-option" data-partname="${partName}">
             ${partName}
         </div>
-    `
+    `,
 		)
-		.join("");
+		.join('');
 
 	// Show dropdown on focus
-	searchInput.addEventListener("focus", () => {
-		dropdown.classList.remove("hidden");
+	searchInput.addEventListener('focus', () => {
+		dropdown.classList.remove('hidden');
 	});
 
 	// Hide dropdown on click outside
-	document.addEventListener("click", (e) => {
+	document.addEventListener('click', (e) => {
 		if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
-			dropdown.classList.add("hidden");
+			dropdown.classList.add('hidden');
 		}
 	});
 
 	// Filter dropdown items
-	searchInput.addEventListener("input", (e) => {
+	searchInput.addEventListener('input', (e) => {
 		const searchTerm = e.target.value.toLowerCase();
-		const options = dropdown.querySelectorAll(".defect-partname-option");
+		const options = dropdown.querySelectorAll('.defect-partname-option');
 
 		options.forEach((option) => {
-			const partName = option.getAttribute("data-partname").toLowerCase();
+			const partName = option.getAttribute('data-partname').toLowerCase();
 			if (partName.includes(searchTerm)) {
-				option.classList.remove("hidden");
+				option.classList.remove('hidden');
 			} else {
-				option.classList.add("hidden");
+				option.classList.add('hidden');
 			}
 		});
 
-		dropdown.classList.remove("hidden");
+		dropdown.classList.remove('hidden');
 	});
 
 	// Add partname to selection
-	dropdown.addEventListener("click", (e) => {
-		const option = e.target.closest(".defect-partname-option");
+	dropdown.addEventListener('click', (e) => {
+		const option = e.target.closest('.defect-partname-option');
 		if (!option) return;
 
-		const partName = option.getAttribute("data-partname");
+		const partName = option.getAttribute('data-partname');
 
 		// Add if not already selected
 		if (!filteringState.selectedPartNamesForDefect.includes(partName)) {
@@ -7377,8 +7967,8 @@ const setupPartNameFilterForDefect = () => {
 			renderDefectPartTables();
 		}
 
-		searchInput.value = "";
-		dropdown.classList.add("hidden");
+		searchInput.value = '';
+		dropdown.classList.add('hidden');
 	});
 
 	// Render tags initially
@@ -7386,11 +7976,11 @@ const setupPartNameFilterForDefect = () => {
 };
 
 const renderDefectPartNameTags = () => {
-	const tagsContainer = document.getElementById("defectPartNameTagsContainer");
+	const tagsContainer = document.getElementById('defectPartNameTagsContainer');
 	if (!tagsContainer) return;
 
 	if (filteringState.selectedPartNamesForDefect.length === 0) {
-		tagsContainer.innerHTML = "";
+		tagsContainer.innerHTML = '';
 		// Don't hide tables, instead show all PartNames
 		processDefectPartData();
 		renderDefectPartTables();
@@ -7402,9 +7992,9 @@ const renderDefectPartNameTags = () => {
 			(partName) => `
         <div class="flex items-center gap-2 px-3 py-1.5 bg-red-600 text-white text-sm rounded">
             <span>${
-							partName.length > 30
-								? partName.substring(0, 30) + "..."
-								: partName
+							partName.length > 30 ?
+								partName.substring(0, 30) + '...'
+							:	partName
 						}</span>
             <button class="remove-defect-partname-tag hover:bg-red-700 rounded-full p-0.5" data-partname="${partName}">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -7412,19 +8002,19 @@ const renderDefectPartNameTags = () => {
                 </svg>
             </button>
         </div>
-    `
+    `,
 		)
-		.join("");
+		.join('');
 
 	// Add remove event listeners
 	tagsContainer
-		.querySelectorAll(".remove-defect-partname-tag")
+		.querySelectorAll('.remove-defect-partname-tag')
 		.forEach((btn) => {
-			btn.addEventListener("click", (e) => {
-				const partName = e.currentTarget.getAttribute("data-partname");
+			btn.addEventListener('click', (e) => {
+				const partName = e.currentTarget.getAttribute('data-partname');
 				filteringState.selectedPartNamesForDefect =
 					filteringState.selectedPartNamesForDefect.filter(
-						(p) => p !== partName
+						(p) => p !== partName,
 					);
 				renderDefectPartNameTags();
 			});
@@ -7446,7 +8036,7 @@ const processDefectPartData = () => {
 			const trialMatch = filteringState.includeTrialData || !row.isTrial;
 			const categoryMatch = row.Kategori !== 'kosong' || row.isTrial;
 			if (
-				row["Line"] === selectedLine &&
+				row['Line'] === selectedLine &&
 				trialMatch &&
 				categoryMatch &&
 				Number(row[defectType]) > 0
@@ -7456,28 +8046,28 @@ const processDefectPartData = () => {
 		});
 
 		// Step 2: Get ALL data for those PartNames (including rows with defect = 0)
-		filteredData = state.processedData.filter(
-			(row) => {
-				const trialMatch = filteringState.includeTrialData || !row.isTrial;
-				const categoryMatch = row.Kategori !== 'kosong' || row.isTrial;
-				return row["Line"] === selectedLine &&
-					trialMatch &&
-					categoryMatch &&
-					partNamesWithDefect.has(row.partName);
-			}
-		);
+		filteredData = state.processedData.filter((row) => {
+			const trialMatch = filteringState.includeTrialData || !row.isTrial;
+			const categoryMatch = row.Kategori !== 'kosong' || row.isTrial;
+			return (
+				row['Line'] === selectedLine &&
+				trialMatch &&
+				categoryMatch &&
+				partNamesWithDefect.has(row.partName)
+			);
+		});
 	} else {
 		// Filter by selected PartNames - get ALL their data
-		filteredData = state.processedData.filter(
-			(row) => {
-				const trialMatch = filteringState.includeTrialData || !row.isTrial;
-				const categoryMatch = row.Kategori !== 'kosong' || row.isTrial;
-				return row["Line"] === selectedLine &&
-					trialMatch &&
-					categoryMatch &&
-					filteringState.selectedPartNamesForDefect.includes(row.partName);
-			}
-		);
+		filteredData = state.processedData.filter((row) => {
+			const trialMatch = filteringState.includeTrialData || !row.isTrial;
+			const categoryMatch = row.Kategori !== 'kosong' || row.isTrial;
+			return (
+				row['Line'] === selectedLine &&
+				trialMatch &&
+				categoryMatch &&
+				filteringState.selectedPartNamesForDefect.includes(row.partName)
+			);
+		});
 	}
 
 	let detailArray = [];
@@ -7488,24 +8078,24 @@ const processDefectPartData = () => {
 		const detailData = {};
 
 		filteredData.forEach((row) => {
-			const dateObj = row["DateObj"];
+			const dateObj = row['DateObj'];
 			if (!dateObj || isNaN(dateObj)) return;
 
 			// Format date
-			const day = String(dateObj.getDate()).padStart(2, "0");
+			const day = String(dateObj.getDate()).padStart(2, '0');
 			const monthNames = [
-				"Jan",
-				"Feb",
-				"Mar",
-				"Apr",
-				"May",
-				"Jun",
-				"Jul",
-				"Aug",
-				"Sep",
-				"Oct",
-				"Nov",
-				"Dec",
+				'Jan',
+				'Feb',
+				'Mar',
+				'Apr',
+				'May',
+				'Jun',
+				'Jul',
+				'Aug',
+				'Sep',
+				'Oct',
+				'Nov',
+				'Dec',
 			];
 			const month = monthNames[dateObj.getMonth()];
 			const year = String(dateObj.getFullYear()).slice(-2);
@@ -7518,7 +8108,7 @@ const processDefectPartData = () => {
 			if (!detailData[key]) {
 				detailData[key] = {
 					date: dateKey, // Use formatted date for display
-					dateObj: row["DateObj"],
+					dateObj: row['DateObj'],
 					partName: partName,
 					defectLot: 0,
 					defectPcs: 0,
@@ -7529,9 +8119,9 @@ const processDefectPartData = () => {
 			}
 
 			detailData[key].defectLot += Number(row[defectType]) || 0;
-			detailData[key].defectPcs += Number(row[defectType + "(pcs)"]) || 0;
-			detailData[key].inspLot += Number(row["Insp(Lot)"]) || 0;
-			detailData[key].inspPcs += Number(row["QInspec"]) || 0;
+			detailData[key].defectPcs += Number(row[defectType + '(pcs)']) || 0;
+			detailData[key].inspLot += Number(row['Insp(Lot)']) || 0;
+			detailData[key].inspPcs += Number(row['QInspec']) || 0;
 		});
 
 		detailArray = Object.values(detailData)
@@ -7555,9 +8145,9 @@ const processDefectPartData = () => {
 				};
 			}
 			summaryData[partName].defectLot += Number(row[defectType]) || 0;
-			summaryData[partName].defectPcs += Number(row[defectType + "(pcs)"]) || 0;
-			summaryData[partName].inspLot += Number(row["Insp(Lot)"]) || 0;
-			summaryData[partName].inspPcs += Number(row["QInspec"]) || 0;
+			summaryData[partName].defectPcs += Number(row[defectType + '(pcs)']) || 0;
+			summaryData[partName].inspLot += Number(row['Insp(Lot)']) || 0;
+			summaryData[partName].inspPcs += Number(row['QInspec']) || 0;
 		});
 
 		summaryArray = Object.values(summaryData)
@@ -7574,38 +8164,38 @@ const processDefectPartData = () => {
 
 const renderDefectPartTables = () => {
 	const detailContainer = document.getElementById(
-		"defectPartDetailTableContainer"
+		'defectPartDetailTableContainer',
 	);
 	const summaryContainer = document.getElementById(
-		"defectPartSummaryTableContainer"
+		'defectPartSummaryTableContainer',
 	);
 
 	// Headers
-	const detailColHeader = document.getElementById("defectPartDetailColHeader");
+	const detailColHeader = document.getElementById('defectPartDetailColHeader');
 	const detailColHeaderPcs = document.getElementById(
-		"defectPartDetailColHeaderPcs"
+		'defectPartDetailColHeaderPcs',
 	);
 	const detailPercentHeader = document.getElementById(
-		"defectPartDetailPercentHeader"
+		'defectPartDetailPercentHeader',
 	);
 	const summaryColHeader = document.getElementById(
-		"defectPartSummaryColHeader"
+		'defectPartSummaryColHeader',
 	);
 	const summaryColHeaderPcs = document.getElementById(
-		"defectPartSummaryColHeaderPcs"
+		'defectPartSummaryColHeaderPcs',
 	);
 	const summaryPercentHeader = document.getElementById(
-		"defectPartSummaryPercentHeader"
+		'defectPartSummaryPercentHeader',
 	);
 
 	// Bodies
-	const detailBody = document.getElementById("defectPartDetailTableBody");
-	const summaryBody = document.getElementById("defectPartSummaryTableBody");
+	const detailBody = document.getElementById('defectPartDetailTableBody');
+	const summaryBody = document.getElementById('defectPartSummaryTableBody');
 
 	if (filteringState.selectedDefectType) {
 		// Show containers
-		if (detailContainer) detailContainer.classList.remove("hidden");
-		if (summaryContainer) summaryContainer.classList.remove("hidden");
+		if (detailContainer) detailContainer.classList.remove('hidden');
+		if (summaryContainer) summaryContainer.classList.remove('hidden');
 
 		// Update Headers
 		const defectName = filteringState.selectedDefectType;
@@ -7633,21 +8223,21 @@ const renderDefectPartTables = () => {
 											row.partName
 										}</td>
 										<td class="py-2 px-3 text-slate-600 dark:text-slate-400 text-right font-medium">${row.ngPercent.toFixed(
-											2
+											2,
 										)}%</td>
                     <td class="py-2 px-3 text-slate-600 dark:text-slate-400 text-right">${row.defectPcs.toLocaleString()}</td>
                     <td class="py-2 px-3 text-slate-600 dark:text-slate-400 text-right">${row.defectLot.toFixed(
-											2
+											2,
 										)}</td>
                     <td class="py-2 px-3 text-slate-600 dark:text-slate-400 text-right">${row.inspPcs.toLocaleString()}</td>
                     <td class="py-2 px-3 text-slate-600 dark:text-slate-400 text-right">${row.inspLot.toFixed(
-											2
+											2,
 										)}</td>
                     
                 </tr>
-            `
+            `,
 				)
-				.join("");
+				.join('');
 
 			if (filteringState.partDetailData.length === 0) {
 				detailBody.innerHTML = `<tr><td colspan="7" class="py-4 text-center text-slate-500">No data available for selected filter</td></tr>`;
@@ -7667,21 +8257,21 @@ const renderDefectPartTables = () => {
 											row.partName
 										}</td>
 										<td class="py-3 px-4 text-slate-600 dark:text-slate-400 text-right font-medium">${row.ngPercent.toFixed(
-											2
+											2,
 										)}%</td>
                     <td class="py-3 px-4 text-slate-600 dark:text-slate-400 text-right border-l-2 border-blue-500/30">${row.defectPcs.toLocaleString()}</td>
                     <td class="py-3 px-4 text-slate-600 dark:text-slate-400 text-right border-r-2 border-blue-500/30">${row.inspPcs.toLocaleString()}</td>
                     <td class="py-3 px-4 text-slate-600 dark:text-slate-400 text-right">${row.defectLot.toFixed(
-											2
+											2,
 										)}</td>
                     <td class="py-3 px-4 text-slate-600 dark:text-slate-400 text-right border-r-2 border-blue-500/30">${row.inspLot.toFixed(
-											2
+											2,
 										)}</td>
                     
                 </tr>
-            `
+            `,
 				)
-				.join("");
+				.join('');
 
 			if (filteringState.partSummaryData.length === 0) {
 				summaryBody.innerHTML = `<tr><td colspan="7" class="py-4 text-center text-slate-500">No data available</td></tr>`;
@@ -7691,63 +8281,62 @@ const renderDefectPartTables = () => {
 };
 
 const hidePartNameFilter = () => {
-	const filterSection = document.getElementById("partNameFilterSection");
-	if (filterSection) filterSection.classList.add("hidden");
+	const filterSection = document.getElementById('partNameFilterSection');
+	if (filterSection) filterSection.classList.add('hidden');
 
 	hidePartNameTables();
 };
 
 const showPartNameFilter = () => {
-	const filterSection = document.getElementById("partNameFilterSection");
-	if (filterSection) filterSection.classList.remove("hidden");
+	const filterSection = document.getElementById('partNameFilterSection');
+	if (filterSection) filterSection.classList.remove('hidden');
 };
 
 const hidePartNameTables = () => {
 	const detailContainer = document.getElementById(
-		"defectPartDetailTableContainer"
+		'defectPartDetailTableContainer',
 	);
 	const summaryContainer = document.getElementById(
-		"defectPartSummaryTableContainer"
+		'defectPartSummaryTableContainer',
 	);
 
-	if (detailContainer) detailContainer.classList.add("hidden");
-	if (summaryContainer) summaryContainer.classList.add("hidden");
+	if (detailContainer) detailContainer.classList.add('hidden');
+	if (summaryContainer) summaryContainer.classList.add('hidden');
 };
 
 // Export Housing HORN data to CSV
 const exportHousingHornToCSV = (hhData, tableType) => {
 	if (!hhData) {
-		alert("No data available to export");
+		alert('No data available to export');
 		return;
 	}
 
-	let csvContent = "";
-	let filename = "";
+	let csvContent = '';
+	let filename = '';
 
-	if (tableType === "lot") {
+	if (tableType === 'lot') {
 		// Export LOT table
 		filename = `Housing_Horn_LOT_${new Date().toISOString().split('T')[0]}.csv`;
 
 		// Headers
-		csvContent = "PartName,NG (%),OK (lot),NG (lot),NGM (lot),Tot.Insp (lot)\n";
+		csvContent = 'PartName,NG (%),OK (lot),NG (lot),NGM (lot),Tot.Insp (lot)\n';
 
 		// Data rows
-		hhData.tableDataLot.forEach(row => {
+		hhData.tableDataLot.forEach((row) => {
 			csvContent += `"${row.partName}",${row.ngPercent.toFixed(2)},${row.okLot.toFixed(2)},${row.ngLot.toFixed(2)},${row.ngmLot.toFixed(2)},${row.totInspLot.toFixed(2)}\n`;
 		});
 
 		// Total row
 		csvContent += `"TOTAL",${hhData.metrics.ngPercent.toFixed(2)},${hhData.metrics.okLot.toFixed(2)},${hhData.metrics.ngLot.toFixed(2)},0,${hhData.metrics.inspLot.toFixed(2)}\n`;
-
-	} else if (tableType === "pcs") {
+	} else if (tableType === 'pcs') {
 		// Export PCS table
 		filename = `Housing_Horn_PCS_${new Date().toISOString().split('T')[0]}.csv`;
 
 		// Headers
-		csvContent = "PartName,NG (%),OK (pcs),NG (pcs),NGM (pcs),Tot.Insp (pcs)\n";
+		csvContent = 'PartName,NG (%),OK (pcs),NG (pcs),NGM (pcs),Tot.Insp (pcs)\n';
 
 		// Data rows
-		hhData.tableDataPcs.forEach(row => {
+		hhData.tableDataPcs.forEach((row) => {
 			csvContent += `"${row.partName}",${row.ngPercent.toFixed(2)},${row.okPcs},${row.ngPcs},${row.ngmPcs},${row.totInspPcs}\n`;
 		});
 
@@ -7762,67 +8351,77 @@ const exportHousingHornToCSV = (hhData, tableType) => {
 
 // Export Multi Preview Data
 const exportMultiPreviewDataToCSV = () => {
-    const data = filteringState.multiFilteredData;
-    const columns = filteringState.multiFilterColumns;
+	const data = filteringState.multiFilteredData;
+	const columns = filteringState.multiFilterColumns;
 
-    if (!data || data.length === 0) {
-        alert("No data to export");
-        return;
-    }
+	if (!data || data.length === 0) {
+		alert('No data to export');
+		return;
+	}
 
-    // Headers
-    let csvContent = columns.join(",") + "\n";
+	// Headers
+	let csvContent = columns.join(',') + '\n';
 
-    // Rows
-    data.forEach(row => {
-        const rowStr = columns.map(col => {
-            let val = row[col];
-            if (val === undefined || val === null) val = "";
-            // Handle quotes/commas in string
-            if (typeof val === 'string' && (val.includes(',') || val.includes('"') || val.includes('\n'))) {
-                val = `"${val.replace(/"/g, '""')}"`;
-            }
-            return val;
-        }).join(",");
-        csvContent += rowStr + "\n";
-    });
+	// Rows
+	data.forEach((row) => {
+		const rowStr = columns
+			.map((col) => {
+				let val = row[col];
+				if (val === undefined || val === null) val = '';
+				// Handle quotes/commas in string
+				if (
+					typeof val === 'string' &&
+					(val.includes(',') || val.includes('"') || val.includes('\n'))
+				) {
+					val = `"${val.replace(/"/g, '""')}"`;
+				}
+				return val;
+			})
+			.join(',');
+		csvContent += rowStr + '\n';
+	});
 
-    const filename = `Multi_Filter_Result_${new Date().toISOString().split('T')[0]}.csv`;
-    downloadCSV(csvContent, filename);
+	const filename = `Multi_Filter_Result_${new Date().toISOString().split('T')[0]}.csv`;
+	downloadCSV(csvContent, filename);
 };
 
 // Export Multi Grouped Data
 const exportMultiGroupedDataToCSV = () => {
 	const data = filteringState.multiGroupedData;
 	const activeDefects = filteringState.activeMultiGroupDefects || [];
-	
+	const activeExtras = filteringState.activeMultiGroupExtras || [];
+
 	if (!data || data.length === 0) {
-		alert("No data to export");
+		alert('No data to export');
 		return;
 	}
 
 	// Headers
-	let header = ["No", "PartName", "NG_%", "QInspec", "OK(pcs)", "Qty(NG)"];
-	activeDefects.forEach(d => header.push(`${d}(pcs)`));
+	let header = ['No', 'PartName', 'NG_%', 'QInspec', 'OK(pcs)', 'Qty(NG)'];
+	activeExtras.forEach((c) => header.push(c));
+	activeDefects.forEach((d) => header.push(d));
 
-	let csvContent = header.join(",") + "\n";
+	let csvContent = header.join(',') + '\n';
 
 	// Rows
 	data.forEach((row, idx) => {
 		let rowData = [
 			idx + 1,
 			`"${row.PartName}"`,
-			row["NG_%"],
-			row["QInspec"],
-			row["OK(pcs)"],
-			row["Qty(NG)"]
+			row['NG_%'],
+			row['QInspec'],
+			row['OK(pcs)'],
+			row['Qty(NG)'],
 		];
 
-		activeDefects.forEach(d => {
+		activeExtras.forEach((c) => {
+			rowData.push(row[c]);
+		});
+		activeDefects.forEach((d) => {
 			rowData.push(row[d]);
 		});
 
-		csvContent += rowData.join(",") + "\n";
+		csvContent += rowData.join(',') + '\n';
 	});
 
 	const filename = `Multi_Filter_Rekap_${new Date().toISOString().split('T')[0]}.csv`;
@@ -7832,81 +8431,83 @@ const exportMultiGroupedDataToCSV = () => {
 // Export Daily Data Table
 const exportDailyDataToCSV = (data, line) => {
 	if (!data || data.length === 0) {
-		alert("No data available to export");
+		alert('No data available to export');
 		return;
 	}
-	
+
 	const filename = `Daily_Data_${line.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.csv`;
-	let csvContent = "Tanggal,Total Inspected (Lot),QTY NG (Lot),NG (%)\n";
-	
-	data.forEach(row => {
+	let csvContent = 'Tanggal,Total Inspected (Lot),QTY NG (Lot),NG (%)\n';
+
+	data.forEach((row) => {
 		csvContent += `${row.date},${row.inspLot.toFixed(2)},${row.ngLot.toFixed(2)},${row.ngPercent.toFixed(4)}\n`;
 	});
-	
+
 	downloadCSV(csvContent, filename);
 };
 
 // Export Defect Daily Data Table
 const exportDefectDailyDataToCSV = (data, line, defectType) => {
 	if (!data || data.length === 0) {
-		alert("No data available to export");
+		alert('No data available to export');
 		return;
 	}
-	
+
 	const filename = `Daily_${defectType.replace(/\s+/g, '_')}_${line.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.csv`;
-	let csvContent = "Tanggal,Qty NG (pcs),Qty NG (Lot),INSPECTED (pcs),INSPECTED (Lot),NG (%)\n";
-	
-	data.forEach(row => {
+	let csvContent =
+		'Tanggal,Qty NG (pcs),Qty NG (Lot),INSPECTED (pcs),INSPECTED (Lot),NG (%)\n';
+
+	data.forEach((row) => {
 		csvContent += `${row.date},${row.defectPcs},${row.defectLot.toFixed(4)},${row.inspPcs},${row.inspLot.toFixed(0)},${row.ngPercent.toFixed(4)}\n`;
 	});
-	
+
 	downloadCSV(csvContent, filename);
 };
 
 // Export Defect Part Detail Data Table
 const exportDefectPartDetailDataToCSV = (data, line, defectType) => {
 	if (!data || data.length === 0) {
-		alert("No data available to export");
+		alert('No data available to export');
 		return;
 	}
-	
+
 	const filename = `Detail_${defectType.replace(/\s+/g, '_')}_PartName_${line.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.csv`;
 	let csvContent = `Tanggal,PartName,${defectType} (pcs),${defectType} (Lot),Qty Inspected (pcs),Tot Inspected (lot),${defectType} NG (%)\n`;
-	
-	data.forEach(row => {
+
+	data.forEach((row) => {
 		csvContent += `${row.date},"${row.partName}",${row.defectPcs},${row.defectLot.toFixed(2)},${row.inspPcs},${row.inspLot.toFixed(2)},${row.ngPercent.toFixed(2)}\n`;
 	});
-	
+
 	downloadCSV(csvContent, filename);
 };
 
 // Export Defect Part Summary Data Table
 const exportDefectPartSummaryDataToCSV = (data, line, defectType) => {
 	if (!data || data.length === 0) {
-		alert("No data available to export");
+		alert('No data available to export');
 		return;
 	}
-	
+
 	const filename = `Summary_${defectType.replace(/\s+/g, '_')}_PartName_${line.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.csv`;
 	let csvContent = `No,PartName,${defectType} (pcs),Qty Inspected (pcs),${defectType} (Lot),Qty Inspected (lot),${defectType} NG (%)\n`;
-	
+
 	data.forEach((row, index) => {
 		csvContent += `${index + 1},"${row.partName}",${row.defectPcs},${row.inspPcs},${row.defectLot.toFixed(2)},${row.inspLot.toFixed(2)},${row.ngPercent.toFixed(2)}\n`;
 	});
-	
+
 	downloadCSV(csvContent, filename);
 };
 
 // Export Category Table
 const exportCategoryTableToCSV = (data) => {
 	if (!data || data.length === 0) {
-		alert("No data available to export");
+		alert('No data available to export');
 		return;
 	}
 	const filename = `Category_Table_${new Date().toISOString().split('T')[0]}.csv`;
-	let csvContent = "Kategori,Qty Inspected (pcs),QTY NG (pcs),Qty Inspected (lot),Qty NG (lot),NG (%)\n";
+	let csvContent =
+		'Kategori,Qty Inspected (pcs),QTY NG (pcs),Qty Inspected (lot),Qty NG (lot),NG (%)\n';
 
-	data.forEach(row => {
+	data.forEach((row) => {
 		csvContent += `"${row.category}",${row.qtyInspectedPcs},${row.qtyNgPcs},${row.qtyInspectedLot.toFixed(2)},${row.qtyNgLot.toFixed(2)},${row.ngPercent.toFixed(2)}\n`;
 	});
 
@@ -7916,26 +8517,26 @@ const exportCategoryTableToCSV = (data) => {
 // Export Category Line Table
 const exportCategoryLineTableToCSV = (data, metricKey, title) => {
 	if (!data || !data.rows) {
-		alert("No data available to export");
+		alert('No data available to export');
 		return;
 	}
 	const filename = `${title.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.csv`;
-	let csvContent = "Kategori,Barrel 4,Nickel,Rack 1,Total\n";
+	let csvContent = 'Kategori,Barrel 4,Nickel,Rack 1,Total\n';
 
 	const { rows, grandTotal } = data;
 
-	rows.forEach(row => {
-		 const b4 = row.lines["Barrel 4"][metricKey];
-		 const ni = row.lines["Nickel"][metricKey];
-		 const r1 = row.lines["Rack 1"][metricKey];
-		 const tot = row.total[metricKey];
-		 csvContent += `"${row.category}",${b4},${ni},${r1},${tot}\n`;
+	rows.forEach((row) => {
+		const b4 = row.lines['Barrel 4'][metricKey];
+		const ni = row.lines['Nickel'][metricKey];
+		const r1 = row.lines['Rack 1'][metricKey];
+		const tot = row.total[metricKey];
+		csvContent += `"${row.category}",${b4},${ni},${r1},${tot}\n`;
 	});
 
 	// Footer
-	const gtB4 = grandTotal.lines["Barrel 4"][metricKey];
-	const gtNi = grandTotal.lines["Nickel"][metricKey];
-	const gtR1 = grandTotal.lines["Rack 1"][metricKey];
+	const gtB4 = grandTotal.lines['Barrel 4'][metricKey];
+	const gtNi = grandTotal.lines['Nickel'][metricKey];
+	const gtR1 = grandTotal.lines['Rack 1'][metricKey];
 	const gtTot = grandTotal.total[metricKey];
 	csvContent += `"Total",${gtB4},${gtNi},${gtR1},${gtTot}\n`;
 
@@ -7945,11 +8546,11 @@ const exportCategoryLineTableToCSV = (data, metricKey, title) => {
 // Helper function to download CSV
 const downloadCSV = (content, filename) => {
 	const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
-	const link = document.createElement("a");
+	const link = document.createElement('a');
 	const url = URL.createObjectURL(blob);
-	
-	link.setAttribute("href", url);
-	link.setAttribute("download", filename);
+
+	link.setAttribute('href', url);
+	link.setAttribute('download', filename);
 	link.style.visibility = 'hidden';
 	document.body.appendChild(link);
 	link.click();

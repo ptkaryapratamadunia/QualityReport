@@ -650,7 +650,7 @@ def cleaning_process(df):
 				'DNIAF GAS RIN U 0270',
 				'DNIAF RIN Q/K',
 				'DNIAF RIN XU/D16D 0190',
-				'DNIAF WAS U16' // added 13Feb2026 after found in PPC Meeting
+				'DNIAF WAS U16' # added 13Feb2026 after found in PPC Meeting
 		]  # daftar Part.ID
 		df.loc[(df['Line'] == 'Barrel 4') & (df['Part.ID'].isin(daftar_SMP)), 'Kategori'] = 'SMP'
 

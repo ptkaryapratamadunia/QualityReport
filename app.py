@@ -2812,12 +2812,17 @@ def cleaning_process(df):
 				summary_trial = dataframe2.groupby(['PartName','Cust.ID','Line']).agg({
 					'Keterangan': 'first', 	#added 17Sept2025
 					'NG_%': 'mean',
+					'Insp(B/H)': 'sum',		#added 04Mar2026
+					'NG(B/H)': 'sum',		#added 04Mar2026
 					'QInspec': 'sum',
 					'Qty(NG)': 'sum'
+					
 				}).reset_index()
 				summary_trial['Qty OK (pcs)'] = summary_trial['QInspec'] - summary_trial['Qty(NG)']
 				summary_trial = summary_trial.rename(columns={
 					'NG_%': 'NG (%)',
+					'Insp(B/H)': 'Insp(Lot)',	#added 04Mar2026
+					'NG(B/H)': 'NG(Lot)',		#added 04Mar2026
 					'QInspec': 'Qty Inspected (pcs)',
 					'Qty(NG)': 'Qty NG (pcs)'
 				})
@@ -2830,7 +2835,9 @@ def cleaning_process(df):
 					'NG (%)': summary_trial['NG (%)'].mean(),
 					'Qty Inspected (pcs)': summary_trial['Qty Inspected (pcs)'].sum(),
 					'Qty NG (pcs)': summary_trial['Qty NG (pcs)'].sum(),
-					'Qty OK (pcs)': summary_trial['Qty OK (pcs)'].sum()
+					'Qty OK (pcs)': summary_trial['Qty OK (pcs)'].sum(),
+					'Insp(Lot)': summary_trial['Insp(Lot)'].sum(),	#added 04Mar2026
+					'NG(Lot)': summary_trial['NG(Lot)'].sum()		#added 04Mar2026
 				}
 				summary_trial = pd.concat([summary_trial, pd.DataFrame([total_row])], ignore_index=True)
 				summary_trial = summary_trial.round(2).map(format_with_comma2)

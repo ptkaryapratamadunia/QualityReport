@@ -2912,14 +2912,14 @@ with kiri:	#Table NG (%) by Line & Month - 16Jun2025
 				pt_MesinNo_transposed = pt_MesinNo.set_index('M/C No.').transpose()
 				pt_MesinNo_transposed = pt_MesinNo_transposed.round(2).map(format_with_comma2)
 				st.dataframe(pt_MesinNo_transposed)
-		#endregion
-		#--------------------------------------
+			#endregion
+			#--------------------------------------
 
-		st.markdown("---")
+			st.markdown("---")
 
-		with sum_tab2: # Summary Trial 
-			st.subheader("Summary Trial")
-			DateRange(df_ori_pcs)
+			with sum_tab2: # Summary Trial 
+				st.subheader("Summary Trial")
+				DateRange(df_ori_pcs)
 			# dataframe2 = df[df['NoCard'].str.contains("TRIAL", case=False, na=False)]   # Data dengan "TRIAL"
 			with st.expander("Data TRIAL", expanded=False):
 				st.dataframe(dataframe2, use_container_width=True)

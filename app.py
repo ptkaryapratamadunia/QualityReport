@@ -811,37 +811,18 @@ def cleaning_process(df):
 		
 		# Membuat tabel pivot Qty NG(%) by MONTH and LINE---------------
 		# Changed to F1 formula (NG:Total)*100 instead of average - agregat produksi populasi
-	
-def calculate_ng_percent(g):
-			"""Calculate NG% using F1 formula: (NG : Total) * 100"""
-			total_ng = g['NG(Lot)'].sum()
-			total_insp = g['Insp(Lot)'].sum()
-			return (total_ng / total_insp * 100) if total_insp != 0 else 0
+		# Calculate NG% for each line and date combination
+		ng_percent_data = []
+		for date in df['Date'].unique():
+			row_data = {'Date': date}
+			for line in df['Line'].unique():
+				df_subset = df[(df['Date'] == date) & (df['Line'] == line)]
+				total_ng = df_subset['NG(Lot)'].sum()
+				total_insp = df_subset['Insp(Lot)'].sum()
+				row_data[line] = (total_ng / total_insp * 100) if total_insp != 0 else 0
+			ng_percent_data.append(row_data)
 		
-		# Create pivot table with aggregated calculation
-		pivot_df_bulan_line = pd.pivot_table(df.copy(), index='Date', columns='Line', aggfunc={'NG(Lot)': 'sum', 'Insp(Lot)': 'sum'}, fill_value=0)
-		# Calculate NG% for each line
-		ng_percent_dict = {}
-		for line in df['Line'].unique():
-			df_line = df[df['Line'] == line]
-			for date in df['Date'].unique():
-				df_date_line = df_line[df_line['Date'] == date]
-				total_ng = df_date_line['NG(Lot)'].sum()
-				total_insp = df_date_line['Insp(Lot)'].sum()
-				if total_insp != 0:
-					ng_percent_dict[(date, line)] = total_ng / total_insp * 100
-				else:
-					ng_percent_dict[(date, line)] = 0
-		
-		# Reshape to pivot table format
-		pivot_df_bulan_line = pd.DataFrame([
-			{
-				'Date': date,
-				line: ng_percent_dict.get((date, line), 0)
-				for line in df['Line'].unique()
-			}
-			for date in sorted(df['Date'].unique())
-		]).set_index('Date')
+		pivot_df_bulan_line = pd.DataFrame(ng_percent_data).set_index('Date')
 		
 		# Add total row using F1 formula
 		total_ng = df['NG(Lot)'].sum()
@@ -1977,6 +1958,8 @@ def calculate_ng_percent(g):
 
 				metrik1, metrik2, metrik3, metrik4, metrik5, metrik6, metrik7 = st.columns(7)
 				with metrik1:
+					st.metric("OK (pcs)", f"{total_ok_pcs:,.0f}")
+				with metrik2:
 					st.metric("NG (pcs)", f"{total_ng_pcs:,.0f}")
 				with metrik3:
 					st.metric("Insp (pcs)", f"{total_insp_pcs:,.0f}")

@@ -941,8 +941,8 @@ def cleaning_process(df):
 			DateRange(df_ori_pcs)
 		
 			kiri,tengah,kanan=st.columns(3)
-with kiri:	#Table NG (%) by Line & Month - 16Jun2025
-			st.write('Table NG (%) by Line & Month')
+			with kiri:	#Table NG (%) by Line & Month - 16Jun2025
+				st.write('Table NG (%) by Line & Month')
 			
 			try:
 				# Make a copy to avoid modifying original

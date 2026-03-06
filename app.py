@@ -811,25 +811,21 @@ def cleaning_process(df):
 		
 		# Membuat tabel pivot Qty NG(%) by MONTH and LINE---------------
 		# Changed to F1 formula (NG:Total)*100 instead of average - agregat produksi populasi
-		# Calculate NG% for each line and date combination
-		ng_percent_data = []
-		for date in df['Date'].unique():
-			row_data = {'Date': date}
-			for line in df['Line'].unique():
-				df_subset = df[(df['Date'] == date) & (df['Line'] == line)]
-				total_ng = df_subset['NG(Lot)'].sum()
-				total_insp = df_subset['Insp(Lot)'].sum()
-				row_data[line] = (total_ng / total_insp * 100) if total_insp != 0 else 0
-			ng_percent_data.append(row_data)
+		# Bismillah - 06Mar2026 @fix by Antigravity
+		ng_agg_monthly = df.groupby(['Date', 'Line']).agg({'NG(Lot)': 'sum', 'Insp(Lot)': 'sum'}).reset_index()
+		ng_agg_monthly['NG_%'] = (ng_agg_monthly['NG(Lot)'] / ng_agg_monthly['Insp(Lot)'] * 100).fillna(0)
+		pivot_df_bulan_line = ng_agg_monthly.pivot(index='Date', columns='Line', values='NG_%')
 		
-		pivot_df_bulan_line = pd.DataFrame(ng_percent_data).set_index('Date')
+		# Total row for each line (F1)
+		line_totals_ng = df.groupby('Line')['NG(Lot)'].sum()
+		line_totals_insp = df.groupby('Line')['Insp(Lot)'].sum()
+		line_totals_pct = (line_totals_ng / line_totals_insp * 100).fillna(0)
 		
-		# Add total row using F1 formula
-		total_ng = df['NG(Lot)'].sum()
-		total_insp = df['Insp(Lot)'].sum()
-		total_ng_persen = (total_ng / total_insp * 100) if total_insp != 0 else 0
-		total_row = pd.Series({col: total_ng_persen for col in pivot_df_bulan_line.columns}, name='Total')
-		pivot_df_bulan_line = pd.concat([pivot_df_bulan_line, pd.DataFrame([total_row])])
+		# Convert to DataFrame to append
+		total_row_df = pd.DataFrame(line_totals_pct).transpose()
+		total_row_df.index = ['Total']
+		
+		pivot_df_bulan_line = pd.concat([pivot_df_bulan_line, total_row_df])
 		
 		# For grafik, use aggregated monthly NG%
 		df_for_grafik = df.copy()
@@ -992,12 +988,15 @@ def cleaning_process(df):
 				# Set index dan format
 				if 'Date' in df_display_left.columns:
 					df_display_left = df_display_left.set_index('Date')
-				# Convert all values to numeric first, then format
-				df_display_left = df_display_left.astype(float)
+				
+				# Convert all values to numeric safely, skip non-numeric
+				for col in df_display_left.columns:
+					df_display_left[col] = pd.to_numeric(df_display_left[col], errors='coerce')
+				
 				df_display_left = df_display_left.map(lambda x: f"{x:.2f}" if pd.notnull(x) else "")
 				st.dataframe(df_display_left, use_container_width=True)
 			except Exception as e:
-				st.error(f"Error: {str(e)}")
+				st.error(f"Error pada Tabel NG%: {str(e)}")
 			
 			# Buat tabel NG (%) bulanan untuk masing-masing Line
 			# df['Date'] = pd.to_datetime(df['Date'], errors='coerce')
@@ -1072,12 +1071,15 @@ def cleaning_process(df):
 					# Set index dan format
 					if 'Date' in df_display.columns:
 						df_display = df_display.set_index('Date')
-					# Convert all values to numeric first, then format
-					df_display = df_display.astype(float)
+					
+					# Convert all values to numeric safely
+					for col in df_display.columns:
+						df_display[col] = pd.to_numeric(df_display[col], errors='coerce')
+						
 					df_display = df_display.map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
 					st.dataframe(df_display, use_container_width=True)
 				except Exception as e:
-					st.error(f"Error: {str(e)}")
+					st.error(f"Error pada Tabel Qty NG: {str(e)}")
 
 			with kanan:	#Table Qty Inspected (lot) by Line & Month - 16Jun2025
 				st.write('Table Qty Inspected (lot) by Line & Month')
@@ -1114,29 +1116,27 @@ def cleaning_process(df):
 					# Set index dan format
 					if 'Date' in df_display3.columns:
 						df_display3 = df_display3.set_index('Date')
-					# Convert all values to numeric first, then format
-					df_display3 = df_display3.astype(float)
+					
+					# Convert all values to numeric safely
+					for col in df_display3.columns:
+						df_display3[col] = pd.to_numeric(df_display3[col], errors='coerce')
+						
 					df_display3 = df_display3.map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
 					st.dataframe(df_display3, use_container_width=True)
 				except Exception as e:
-					st.error(f"Error: {str(e)}")
+					st.error(f"Error pada Tabel Qty Insp: {str(e)}")
 
 		#3 kolom buat tabel by Line and Shift - 26Nov2024
 			col1,col2,col3,=st.columns(3)
 				
 			with col1: #NG % by Line and Shift - 26Nov2024
 				
-				pt_NGpersen_line_by_shift = pd.pivot_table(
-					df,
-					values='NG_%',
-					index='Line',
-					columns='Shift',
-					aggfunc='mean',
-					margins=True,
-					margins_name='Total'
-				)
-				# Bulatkan nilai-nilai ke angka bulat terdekat
-				pt_NGpersen_line_by_shift = pt_NGpersen_line_by_shift.round(2)
+				# Use F1 formula for Shift table: (Sum NG / Sum Insp) * 100
+				pt_NGsum = pd.pivot_table(df, values='NG(Lot)', index='Line', columns='Shift', aggfunc='sum', margins=True, margins_name='Total')
+				pt_InspSum = pd.pivot_table(df, values='Insp(Lot)', index='Line', columns='Shift', aggfunc='sum', margins=True, margins_name='Total')
+				pt_NGpersen_line_by_shift = (pt_NGsum / pt_InspSum * 100).fillna(0).round(2)
+				
+				# Format for display
 				pt_NGpersen_line_by_shift = pt_NGpersen_line_by_shift.map(lambda x: f"{x:.2f}" if pd.notnull(x) else "")
 				pt_NGpersen_line_by_shift_transposed = pt_NGpersen_line_by_shift.transpose()
 
@@ -1270,8 +1270,10 @@ def cleaning_process(df):
 				if 'Barrel 4' in df['Line'].unique():
 					df_barrel4 = df[df['Line'] == 'Barrel 4']
 
-					# Menggambar grafik batang
-					data_grafik = pd.pivot_table(df_barrel4, values='NG_%', index='Date', aggfunc='mean').reset_index()
+					# Menggambar grafik batang (F1 Agregat)
+					data_grafik_sum = df_barrel4.groupby('Date').agg({'NG(Lot)': 'sum', 'Insp(Lot)': 'sum'}).reset_index()
+					data_grafik_sum['NG_%'] = (data_grafik_sum['NG(Lot)'] / data_grafik_sum['Insp(Lot)'] * 100).fillna(0)
+					data_grafik = data_grafik_sum[['Date', 'NG_%']]
 					data_grafik['Date'] = pd.to_datetime(data_grafik['Date'], format='%b-%Y')
 					data_grafik = data_grafik.sort_values(by='Date')
 					data_grafik['Date'] = data_grafik['Date'].dt.strftime('%b-%Y')
@@ -1338,8 +1340,10 @@ def cleaning_process(df):
 				if 'Rack 1' in df['Line'].unique():
 					df_rack1 = df[df['Line'] == 'Rack 1']
 
-					# Menggambar grafik batang
-					data_grafik = pd.pivot_table(df_rack1, values='NG_%', index='Date', aggfunc='mean').reset_index()
+					# Menggambar grafik batang (F1 Agregat)
+					data_grafik_sum = df_rack1.groupby('Date').agg({'NG(Lot)': 'sum', 'Insp(Lot)': 'sum'}).reset_index()
+					data_grafik_sum['NG_%'] = (data_grafik_sum['NG(Lot)'] / data_grafik_sum['Insp(Lot)'] * 100).fillna(0)
+					data_grafik = data_grafik_sum[['Date', 'NG_%']]
 					data_grafik['Date'] = pd.to_datetime(data_grafik['Date'], format='%b-%Y')
 					data_grafik = data_grafik.sort_values(by='Date')
 					data_grafik['Date'] = data_grafik['Date'].dt.strftime('%b-%Y')
@@ -1450,8 +1454,10 @@ def cleaning_process(df):
 			#---------
 			# Membuat tabel pivot NG by Customer and LINE---------------
 
-			# Pivot table creation for B4
-			pt_customer_line = pd.pivot_table(df, values='NG_%', index='Cust.ID', columns='Line', aggfunc='mean', margins=True, margins_name='Total')
+			# Pivot table calculation using F1 Agregat (Sum NG / Sum Insp) * 100
+			pt_customer_NGsum = pd.pivot_table(df, values='NG(Lot)', index='Cust.ID', columns='Line', aggfunc='sum', margins=True, margins_name='Total')
+			pt_customer_Inspsum = pd.pivot_table(df, values='Insp(Lot)', index='Cust.ID', columns='Line', aggfunc='sum', margins=True, margins_name='Total')
+			pt_customer_line = (pt_customer_NGsum / pt_customer_Inspsum * 100).fillna(0)
 			
 
 			dew1, dew2=st.columns(2)
@@ -1789,12 +1795,10 @@ def cleaning_process(df):
 			# Bulatkan nilai-nilai ke angka bulat terdekat
 			pt_customer_line2 = pt_customer_line2.map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
 
-			# ---------------------------------------
-			# Membuat tabel pivot NG by Kategori and LINE---------------
-
-			pt_kategori_line=pd.pivot_table(df,values='NG_%',index='Kategori',columns='Line',aggfunc='mean',margins=True,margins_name='Total')
-			pt_kategori_line2=pd.pivot_table(df,values='Insp(Lot)',index='Kategori',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
-			pt_kategori_line3=pd.pivot_table(df,values='NG(Lot)',index='Kategori',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
+			# Membuat tabel pivot NG by Kategori and LINE (F1 Agregat)
+			pt_kategori_line2 = pd.pivot_table(df, values='Insp(Lot)', index='Kategori', columns='Line', aggfunc='sum', margins=True, margins_name='Total')
+			pt_kategori_line3 = pd.pivot_table(df, values='NG(Lot)', index='Kategori', columns='Line', aggfunc='sum', margins=True, margins_name='Total')
+			pt_kategori_line = (pt_kategori_line3 / pt_kategori_line2 * 100).fillna(0)
 
 			#pt by kategori pcs 
 			pt_kategori_line_NGpcs=pd.pivot_table(df,values='Qty(NG)',index='Kategori',columns='Line',aggfunc='sum',margins=True,margins_name='Total')
@@ -1908,8 +1912,9 @@ def cleaning_process(df):
 			ibnu,zahra=st.columns([3,1])
 			
 			with ibnu:	#Grafik NG% by Line& Kategori
-				# Hitung agregasi untuk setiap kategori
-				NG_by_kategori = df.groupby('Kategori').agg({'NG_%': 'mean', 'Insp(Lot)': 'sum'}).reset_index()
+				# Hitung agregasi untuk setiap kategori (F1 Agregat)
+				NG_by_kategori = df.groupby('Kategori').agg({'NG(Lot)': 'sum', 'Insp(Lot)': 'sum'}).reset_index()
+				NG_by_kategori['NG_%'] = (NG_by_kategori['NG(Lot)'] / NG_by_kategori['Insp(Lot)'] * 100).fillna(0)
 
 				# Create a figure with one subplot
 				fig = go.Figure()

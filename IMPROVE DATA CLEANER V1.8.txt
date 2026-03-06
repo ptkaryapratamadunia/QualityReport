@@ -1,0 +1,34 @@
+IMPROVE DATA CLEANER V1.8
+Pada gambar hitungan excel:
+- F1 → dipakai untuk statistik agregat produksi (representatif populasi).
+- B1 → dipakai untuk analisis rata-rata performa part (diagnosis teknis).
+karena saya ingin memilih pilihan F1 sesuai tujuannya, maka saya ingin semua perhitungan yang relevan diubah sesuai rumus F1 yaitu (NG : Total)*100 bukan average per part. Perbaiki kodenya untuk itu
+
+From Claude Haiku 4.5 - 06 Maret 2026:
+
+✅ Ringkasan Perubahan F1 Formula Selesai
+Saya telah mengubah semua perhitungan NG(%) dalam app.py dari menggunakan rata-rata per part (B1) menjadi formula F1: (NG : Total) × 100 untuk representasi statistik agregat produksi populasi.
+
+Lokasi Perubahan:
+1. Metric Summary - Total NG (%) [Line ~926]
+
+Sebelum: NG_persen = df['NG_%'].mean() (rata-rata)
+Sesudah: NG_persen = (tot_NG_lot / tot_Qty_lot * 100) (agregat F1)
+2. Pivot Table Summary Data - NG (%) by Line & Month [Line ~813-854]
+
+Sebelum: pd.pivot_table(..., values='NG_%', aggfunc='mean') (rata-rata per baris)
+Sesudah: Menghitung (NG(Lot) / Insp(Lot)) × 100 untuk setiap line dan date secara agregat
+3. Summary Data - Total Row [Line ~967-982]
+
+Sebelum: Menggunakan .mean() untuk baris total
+Sesudah: Menghitung F1 formula (total_ng_line / total_insp_line × 100) untuk setiap line
+4. Housing Horn Metrics [Line ~1975]
+
+Sebelum: ng_percent = df_housing['NG_%'].mean() (rata-rata per part)
+Sesudah: ng_percent = (total_ng_lot / total_insp_lot * 100) (agregat F1)
+5. Housing Horn Pivot Table - NG per Part [Line ~2003-2012]
+
+Sebelum: df_housing.groupby('PartName')['NG_%'].mean() (rata-rata)
+Sesudah: Menghitung (NG(Lot) / Insp(Lot)) × 100 untuk setiap part secara agregat
+Hasil:
+Sekarang semua metrik NG(%) menampilkan hasil berdasarkan formula F1 yang representatif populasi, sesuai dengan tujuan Anda untuk statistik agregat produksi (bukan diagnosis teknis per part).

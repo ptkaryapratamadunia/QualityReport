@@ -941,29 +941,47 @@ def cleaning_process(df):
 				st.write('Table NG (%) by Line & Month')
 				pivot_df_bulan_line = pivot_df_bulan_line.round(2)
 				pivot_df_bulan_line = pivot_df_bulan_line.reset_index()
-				# Urutkan, tetap tampilkan baris 'Total'
-				pivot_df_bulan_line = pivot_df_bulan_line.sort_values(
-					by='Date', 
-					key=lambda x: pd.to_datetime(x.where(x != 'Total', '2100-01'), format='%b-%Y', errors='coerce')
-				).set_index('Date')
-				# Hitung baris Total menggunakan F1 formula (NG:Total)*100 bukannya mean
-				if 'Total' not in pivot_df_bulan_line.index:
+				
+				# Pisahkan baris Total jika ada
+				total_row_data = None
+				if 'Total' in pivot_df_bulan_line['Date'].values:
+					mask = pivot_df_bulan_line['Date'] == 'Total'
+					total_row_data = pivot_df_bulan_line[mask].copy()
+					pivot_df_bulan_line = pivot_df_bulan_line[~mask]
+				
+				# Urutkan berdasarkan Date
+				try:
+					pivot_df_bulan_line['Date_sort'] = pd.to_datetime(pivot_df_bulan_line['Date'], format='%b-%Y', errors='coerce')
+					pivot_df_bulan_line = pivot_df_bulan_line.sort_values('Date_sort')
+					pivot_df_bulan_line = pivot_df_bulan_line.drop('Date_sort', axis=1)
+				except:
+					pass
+				
+				# Tambahkan kembali Total row jika ada
+				if total_row_data is not None:
+					pivot_df_bulan_line = pd.concat([pivot_df_bulan_line, total_row_data], ignore_index=True)
+				
+				# Hitung baris Total menggunakan F1 formula jika belum ada
+				if 'Total' not in pivot_df_bulan_line['Date'].values:
 					# Calculate total using F1 formula for each line
-					total_row_data = {}
-					for col in pivot_df_bulan_line.columns:
+					total_row_data_dict = {'Date': 'Total'}
+					line_columns = [col for col in pivot_df_bulan_line.columns if col != 'Date']
+					for col in line_columns:
 						try:
 							# Get data for this line from original df
 							df_line = df[df['Line'] == col]
 							total_ng_line = df_line['NG(Lot)'].sum()
 							total_insp_line = df_line['Insp(Lot)'].sum()
-							total_row_data[col] = (total_ng_line / total_insp_line * 100) if total_insp_line != 0 else 0
+							total_row_data_dict[col] = (total_ng_line / total_insp_line * 100) if total_insp_line != 0 else 0
 						except:
-							total_row_data[col] = pivot_df_bulan_line[col].mean()
-					total_row = pd.Series(total_row_data, name='Total')
-					pivot_df_bulan_line = pd.concat([pivot_df_bulan_line, pd.DataFrame([total_row])])
+							total_row_data_dict[col] = pivot_df_bulan_line[col].mean()
+					total_row = pd.DataFrame([total_row_data_dict])
+					pivot_df_bulan_line = pd.concat([pivot_df_bulan_line, total_row], ignore_index=True)
+				
+				pivot_df_bulan_line = pivot_df_bulan_line.set_index('Date')
 				pivot_df_bulan_line = pivot_df_bulan_line.round(2)
 				pivot_df_bulan_line = pivot_df_bulan_line.map(lambda x: f"{x:.2f}" if pd.notnull(x) else "")
-				st.dataframe(pivot_df_bulan_line,use_container_width=True)
+				st.dataframe(pivot_df_bulan_line, use_container_width=True)
 				
 				# Buat tabel NG (%) bulanan untuk masing-masing Line
 				# df['Date'] = pd.to_datetime(df['Date'], errors='coerce')

@@ -1072,9 +1072,12 @@ def cleaning_process(df):
 					# Set index dan format
 					if 'Date' in df_display.columns:
 						df_display = df_display.set_index('Date')
-				# Convert all values to numeric first, then format
-				df_display = df_display.astype(float)
-				df_display = df_display.map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
+					# Convert all values to numeric first, then format
+					df_display = df_display.astype(float)
+					df_display = df_display.map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
+					st.dataframe(df_display, use_container_width=True)
+				except Exception as e:
+					st.error(f"Error: {str(e)}")
 
 			with kanan:	#Table Qty Inspected (lot) by Line & Month - 16Jun2025
 				st.write('Table Qty Inspected (lot) by Line & Month')

@@ -824,8 +824,10 @@ def cleaning_process(df):
 		# Convert to DataFrame to append
 		total_row_df = pd.DataFrame(line_totals_pct).transpose()
 		total_row_df.index = ['Total']
+		total_row_df.index.name = 'Date'
 		
 		pivot_df_bulan_line = pd.concat([pivot_df_bulan_line, total_row_df])
+		pivot_df_bulan_line.index.name = 'Date'
 		
 		# For grafik, use aggregated monthly NG%
 		df_for_grafik = df.copy()
@@ -941,15 +943,14 @@ def cleaning_process(df):
 				st.write('Table NG (%) by Line & Month')
 			
 				try:
-					# Make a copy to avoid modifying original
 					df_display_left = pivot_df_bulan_line.copy()
 					df_display_left = df_display_left.round(2)
 					df_display_left = df_display_left.reset_index()
 					
-					# Pastikan kolom Date ada
-					# if 'Date' not in df_display_left.columns:
-					# 	df_display_left.columns.name = None
-					# 	df_display_left = df_display_left.rename_axis('Date').reset_index()
+					# Ensure 'Date' column is present even if index was named 'index'
+					if 'index' in df_display_left.columns and 'Date' not in df_display_left.columns:
+						df_display_left = df_display_left.rename(columns={'index': 'Date'})
+					
 					
 					# Pisahkan total jika ada
 					total_data = None
@@ -970,7 +971,7 @@ def cleaning_process(df):
 					if total_data is not None:
 						df_display_left = pd.concat([df_display_left, total_data], ignore_index=True)
 					
-					# Hitung total row menggunakan F1 formula jika belum ada
+					# Hitung total row menggunakan F1 formula jika belum ada - Revised at 06Mar2026 by Antigravity
 					if 'Date' in df_display_left.columns and 'Total' not in df_display_left['Date'].values:
 						total_row_dict = {'Date': 'Total'}
 						line_columns = [col for col in df_display_left.columns if col != 'Date']

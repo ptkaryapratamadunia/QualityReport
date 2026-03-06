@@ -992,7 +992,9 @@ def cleaning_process(df):
 				# Set index dan format
 				if 'Date' in df_display_left.columns:
 					df_display_left = df_display_left.set_index('Date')
-				df_display_left = df_display_left.map(lambda x: f"{float(x):.2f}" if pd.notnull(x) else "")
+				# Convert all values to numeric first, then format
+				df_display_left = df_display_left.astype(float)
+				df_display_left = df_display_left.map(lambda x: f"{x:.2f}" if pd.notnull(x) else "")
 				st.dataframe(df_display_left, use_container_width=True)
 			except Exception as e:
 				st.error(f"Error: {str(e)}")
@@ -1070,10 +1072,9 @@ def cleaning_process(df):
 					# Set index dan format
 					if 'Date' in df_display.columns:
 						df_display = df_display.set_index('Date')
-					df_display = df_display.map(lambda x: f"{float(x):,.2f}" if pd.notnull(x) else "")
-					st.dataframe(df_display, use_container_width=True)
-				except Exception as e:
-					st.error(f"Error: {str(e)}")
+				# Convert all values to numeric first, then format
+				df_display = df_display.astype(float)
+				df_display = df_display.map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
 
 			with kanan:	#Table Qty Inspected (lot) by Line & Month - 16Jun2025
 				st.write('Table Qty Inspected (lot) by Line & Month')
@@ -1110,12 +1111,14 @@ def cleaning_process(df):
 					# Set index dan format
 					if 'Date' in df_display3.columns:
 						df_display3 = df_display3.set_index('Date')
-					df_display3 = df_display3.map(lambda x: f"{float(x):,.2f}" if pd.notnull(x) else "")
+					# Convert all values to numeric first, then format
+					df_display3 = df_display3.astype(float)
+					df_display3 = df_display3.map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
 					st.dataframe(df_display3, use_container_width=True)
 				except Exception as e:
 					st.error(f"Error: {str(e)}")
 
-			#3 kolom buat tabel by Line and Shift - 26Nov2024
+		#3 kolom buat tabel by Line and Shift - 26Nov2024
 			col1,col2,col3,=st.columns(3)
 				
 			with col1: #NG % by Line and Shift - 26Nov2024

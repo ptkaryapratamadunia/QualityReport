@@ -947,9 +947,9 @@ def cleaning_process(df):
 					df_display_left = df_display_left.reset_index()
 					
 					# Pastikan kolom Date ada
-					if 'Date' not in df_display_left.columns:
-						df_display_left.columns.name = None
-						df_display_left = df_display_left.rename_axis('Date').reset_index()
+					# if 'Date' not in df_display_left.columns:
+					# 	df_display_left.columns.name = None
+					# 	df_display_left = df_display_left.rename_axis('Date').reset_index()
 					
 					# Pisahkan total jika ada
 					total_data = None

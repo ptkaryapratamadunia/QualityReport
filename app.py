@@ -2920,9 +2920,9 @@ with kiri:	#Table NG (%) by Line & Month - 16Jun2025
 			with sum_tab2: # Summary Trial 
 				st.subheader("Summary Trial")
 				DateRange(df_ori_pcs)
-			# dataframe2 = df[df['NoCard'].str.contains("TRIAL", case=False, na=False)]   # Data dengan "TRIAL"
-			with st.expander("Data TRIAL", expanded=False):
-				st.dataframe(dataframe2, use_container_width=True)
+				# dataframe2 = df[df['NoCard'].str.contains("TRIAL", case=False, na=False)]   # Data dengan "TRIAL"
+				with st.expander("Data TRIAL", expanded=False):
+					st.dataframe(dataframe2, use_container_width=True)
 				
 				# Create summary_trial with groupby aggregation
 				summary_trial = dataframe2.groupby('PartName').agg({
@@ -3097,60 +3097,60 @@ with kiri:	#Table NG (%) by Line & Month - 16Jun2025
 					summary_trial_sorted = summary_trial.copy()
 					if 'TOTAL' in summary_trial_sorted['PartName'].values:
 						summary_trial_sorted = summary_trial_sorted[summary_trial_sorted['PartName'] != 'TOTAL']
-					summary_trial_sorted = summary_trial_sorted.sort_values(
+						summary_trial_sorted = summary_trial_sorted.sort_values(
 						by=['Qty OK (pcs)', 'Qty NG (pcs)'], 
 						ascending=[True, True]
-					)
+						)
 
-					fig = go.Figure()
-					fig.add_trace(go.Bar(
-						y=summary_trial_sorted['PartName'],
-						x=summary_trial_sorted['Qty OK (pcs)'],
-						name='Qty OK (pcs)',
-						marker_color='#B0DB9C',
-						text=summary_trial_sorted['Qty OK (pcs)'],
-						textposition='inside',
-						hovertemplate='Qty OK (pcs): %{text}',
-						orientation='h'  # horizontal bars
-					))
-					fig.add_trace(go.Bar(
-						y=summary_trial_sorted['PartName'],
-						x=summary_trial_sorted['Qty NG (pcs)'],
-						name='Qty NG (pcs)',
-						marker_color='#F564A9',
-						text=summary_trial_sorted['Qty NG (pcs)'],
-						textposition='inside',
-						hovertemplate='Qty NG (pcs): %{text}',
-						orientation='h'  # horizontal bars
-					))
-					fig.update_layout(
-						title='Grafik Qty OK & Qty NG (pcs) per PartName',
-						yaxis_title='PartName',
-						xaxis_title='Qty (pcs)',
-						barmode='stack',
-						legend=dict(orientation="v", yanchor="bottom", y=1.02, xanchor="right", x=1),
-						autosize=True,
-						width=800,
-						height=500,
-						margin=dict(l=0, r=0, t=50, b=0),
-						font=dict(color='black')
-					)
-					st.plotly_chart(fig, use_container_width=True)
+						fig = go.Figure()
+						fig.add_trace(go.Bar(
+							y=summary_trial_sorted['PartName'],
+							x=summary_trial_sorted['Qty OK (pcs)'],
+							name='Qty OK (pcs)',
+							marker_color='#B0DB9C',
+							text=summary_trial_sorted['Qty OK (pcs)'],
+							textposition='inside',
+							hovertemplate='Qty OK (pcs): %{text}',
+							orientation='h'  # horizontal bars
+						))
+						fig.add_trace(go.Bar(
+							y=summary_trial_sorted['PartName'],
+							x=summary_trial_sorted['Qty NG (pcs)'],
+							name='Qty NG (pcs)',
+							marker_color='#F564A9',
+							text=summary_trial_sorted['Qty NG (pcs)'],
+							textposition='inside',
+							hovertemplate='Qty NG (pcs): %{text}',
+							orientation='h'  # horizontal bars
+						))
+						fig.update_layout(
+							title='Grafik Qty OK & Qty NG (pcs) per PartName',
+							yaxis_title='PartName',
+							xaxis_title='Qty (pcs)',
+							barmode='stack',
+							legend=dict(orientation="v", yanchor="bottom", y=1.02, xanchor="right", x=1),
+							autosize=True,
+							width=800,
+							height=500,
+							margin=dict(l=0, r=0, t=50, b=0),
+							font=dict(color='black')
+						)
+						st.plotly_chart(fig, use_container_width=True)
 				
-				# Jika tidak ada data TRIAL	
-			else:
-				st.info("Tidak ada data TRIAL untuk ditampilkan.")
+					# Jika tidak ada data TRIAL	
+					else:
+						st.info("Tidak ada data TRIAL untuk ditampilkan.")
 
-	#endregion TRIAL
+				#endregion TRIAL
 
-		with sum_tab3: # Summary NG by Line
-			#menampilkan tabel berdasarkan filter - 19Nov2024
-			#----------
-			st.subheader("Filtering Data")
-			DateRange(df_ori_pcs)
+			with sum_tab3: # Summary NG by Line
+				#menampilkan tabel berdasarkan filter - 19Nov2024
+				#----------
+				st.subheader("Filtering Data")
+				DateRange(df_ori_pcs)
 
-			# Daftar kolom jenis NG (pastikan sesuai dengan kolom di df_ori_pcs)
-			jenis_ng_columns = [
+				# Daftar kolom jenis NG (pastikan sesuai dengan kolom di df_ori_pcs)
+				jenis_ng_columns = [
 				# 'Warna', 'Buram', 'Berbayang', 'Kotor', 'Tdk Terplating', 'Rontok/ Blister',
 				# 'Tipis/ EE No Plating', 'Flek Kuning', 'Terbakar', 'Watermark', 'Jig Mark/ Renggang',
 				# 'Lecet/ Scratch', 'Seret', 'Flek Hitam', 'Flek Tangan', 'Belang/ Dempet', 'Bintik',

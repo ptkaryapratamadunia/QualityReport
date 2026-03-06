@@ -941,83 +941,74 @@ def cleaning_process(df):
 			DateRange(df_ori_pcs)
 		
 			kiri,tengah,kanan=st.columns(3)
-			with kiri:	#Table NG (%) by Line & Month-edited use formula  16Jun2025
-				st.write('Table NG (%) by Line & Month')
+with kiri:	#Table NG (%) by Line & Month - 16Jun2025
+			st.write('Table NG (%) by Line & Month')
+			
+			try:
+				# Make a copy to avoid modifying original
+				df_display_left = pivot_df_bulan_line.copy()
+				df_display_left = df_display_left.round(2)
+				df_display_left = df_display_left.reset_index()
 				
-				try:
-					pivot_df_bulan_line = pivot_df_bulan_line.round(2)
-					pivot_df_bulan_line = pivot_df_bulan_line.reset_index()
-					
-					# Pastikan kolom Date ada
-					if 'Date' not in pivot_df_bulan_line.columns:
-						pivot_df_bulan_line.columns.name = None
-						pivot_df_bulan_line = pivot_df_bulan_line.rename_axis('Date').reset_index()
-					
-					# Pisahkan baris Total jika ada
-					total_row_data = None
-					if 'Date' in pivot_df_bulan_line.columns and 'Total' in pivot_df_bulan_line['Date'].values:
-						mask = pivot_df_bulan_line['Date'] == 'Total'
-						total_row_data = pivot_df_bulan_line[mask].copy()
-						pivot_df_bulan_line = pivot_df_bulan_line[~mask]
-					
-					# Urutkan berdasarkan Date
-					if 'Date' in pivot_df_bulan_line.columns:
-						try:
-							pivot_df_bulan_line['Date_sort'] = pd.to_datetime(pivot_df_bulan_line['Date'], format='%b-%Y', errors='coerce')
-							pivot_df_bulan_line = pivot_df_bulan_line.sort_values('Date_sort')
-							pivot_df_bulan_line = pivot_df_bulan_line.drop('Date_sort', axis=1)
-						except:
-							pass
-					
-					# Tambahkan kembali Total row jika ada
-					if total_row_data is not None:
-						pivot_df_bulan_line = pd.concat([pivot_df_bulan_line, total_row_data], ignore_index=True)
-					
-					# Hitung baris Total menggunakan F1 formula jika belum ada
-					if 'Date' in pivot_df_bulan_line.columns and 'Total' not in pivot_df_bulan_line['Date'].values:
-						# Calculate total using F1 formula for each line
-						total_row_data_dict = {}
-						line_columns = [col for col in pivot_df_bulan_line.columns if col != 'Date']
-						for col in line_columns:
-							try:
-								# Get data for this line from original df
-								df_line = df[df['Line'] == col]
-								total_ng_line = df_line['NG(Lot)'].sum()
-								total_insp_line = df_line['Insp(Lot)'].sum()
-								total_row_data_dict[col] = float((total_ng_line / total_insp_line * 100) if total_insp_line != 0 else 0)
-							except:
-								if col in pivot_df_bulan_line.columns:
-									total_row_data_dict[col] = float(pivot_df_bulan_line[col].sum())
-						total_row_data_dict['Date'] = 'Total'
-						total_row = pd.DataFrame([total_row_data_dict])
-						pivot_df_bulan_line = pd.concat([pivot_df_bulan_line, total_row], ignore_index=True)
-					
-					if 'Date' in pivot_df_bulan_line.columns:
-						pivot_df_bulan_line = pivot_df_bulan_line.set_index('Date')
-					pivot_df_bulan_line = pivot_df_bulan_line.round(2)
-					# Format dengan error handling untuk menangani string values
-					def format_number(x):
-						try:
-							return f"{float(x):.2f}"
-						except:
-							return str(x) if pd.notnull(x) else ""
-					pivot_df_bulan_line = pivot_df_bulan_line.applymap(format_number)
-					st.dataframe(pivot_df_bulan_line, use_container_width=True)
-				except Exception as e:
-					st.error(f"Error processing Summary Data: {str(e)}")
+				# Pastikan kolom Date ada
+				if 'Date' not in df_display_left.columns:
+					df_display_left.columns.name = None
+					df_display_left = df_display_left.rename_axis('Date').reset_index()
 				
-				# Buat tabel NG (%) bulanan untuk masing-masing Line
-				# df['Date'] = pd.to_datetime(df['Date'], errors='coerce')
-				# df['MonthYear'] = df['Date'].dt.strftime('%b-%Y')
+				# Pisahkan total jika ada
+				total_data = None
+				if 'Date' in df_display_left.columns and 'Total' in df_display_left['Date'].values:
+					mask = df_display_left['Date'] == 'Total'
+					total_data = df_display_left[mask].copy()
+					df_display_left = df_display_left[~mask]
+				
+				# Sort by date
+				if 'Date' in df_display_left.columns:
+					try:
+						df_display_left['Date_sort'] = pd.to_datetime(df_display_left['Date'], format='%b-%Y', errors='coerce')
+						df_display_left = df_display_left.sort_values('Date_sort').drop('Date_sort', axis=1)
+					except:
+						pass
+				
+				# Gabung kembali total jika ada
+				if total_data is not None:
+					df_display_left = pd.concat([df_display_left, total_data], ignore_index=True)
+				
+				# Hitung total row menggunakan F1 formula jika belum ada
+				if 'Date' in df_display_left.columns and 'Total' not in df_display_left['Date'].values:
+					total_row_dict = {'Date': 'Total'}
+					line_columns = [col for col in df_display_left.columns if col != 'Date']
+					for col in line_columns:
+						try:
+							# Use F1 formula: (NG/Insp)*100 for this line
+							df_line = df[df['Line'] == col]
+							total_ng = df_line['NG(Lot)'].sum()
+							total_insp = df_line['Insp(Lot)'].sum()
+							total_row_dict[col] = float((total_ng / total_insp * 100) if total_insp != 0 else 0)
+						except:
+							total_row_dict[col] = df_display_left[col].sum()
+					df_display_left = pd.concat([df_display_left, pd.DataFrame([total_row_dict])], ignore_index=True)
+				
+				# Set index dan format
+				if 'Date' in df_display_left.columns:
+					df_display_left = df_display_left.set_index('Date')
+				df_display_left = df_display_left.map(lambda x: f"{float(x):.2f}" if pd.notnull(x) else "")
+				st.dataframe(df_display_left, use_container_width=True)
+			except Exception as e:
+				st.error(f"Error: {str(e)}")
+			
+			# Buat tabel NG (%) bulanan untuk masing-masing Line
+			# df['Date'] = pd.to_datetime(df['Date'], errors='coerce')
+			# df['MonthYear'] = df['Date'].dt.strftime('%b-%Y')
 
-				# # Hitung NG (%) per bulan untuk setiap Line
-				# ng_bulanan = (
-				# 	df.groupby('MonthYear').apply(
-				# 		lambda g: pd.Series({
-				# 			'NG B4 (%)': 100 * g.loc[g['Line'] == 'Barrel 4', 'NG(Lot)'].sum() / g.loc[g['Line'] == 'Barrel 4', 'Insp(Lot)'].sum() if g.loc[g['Line'] == 'Barrel 4', 'Insp(Lot)'].sum() != 0 else np.nan,
-				# 			'NG Ni (%)': 100 * g.loc[g['Line'] == 'Nickel', 'NG(Lot)'].sum() / g.loc[g['Line'] == 'Nickel', 'Insp(Lot)'].sum() if g.loc[g['Line'] == 'Nickel', 'Insp(Lot)'].sum() != 0 else np.nan,
-				# 			'NG R1 (%)': 100 * g.loc[g['Line'] == 'Rack 1', 'NG(Lot)'].sum() / g.loc[g['Line'] == 'Rack 1', 'Insp(Lot)'].sum() if g.loc[g['Line'] == 'Rack 1', 'Insp(Lot)'].sum() != 0 else np.nan,
-				# 		})
+			# # Hitung NG (%) per bulan untuk setiap Line
+			# ng_bulanan = (
+			# 	df.groupby('MonthYear').apply(
+			# 		lambda g: pd.Series({
+			# 			'NG B4 (%)': 100 * g.loc[g['Line'] == 'Barrel 4', 'NG(Lot)'].sum() / g.loc[g['Line'] == 'Barrel 4', 'Insp(Lot)'].sum() if g.loc[g['Line'] == 'Barrel 4', 'Insp(Lot)'].sum() != 0 else np.nan,
+			# 			'NG Ni (%)': 100 * g.loc[g['Line'] == 'Nickel', 'NG(Lot)'].sum() / g.loc[g['Line'] == 'Nickel', 'Insp(Lot)'].sum() if g.loc[g['Line'] == 'Nickel', 'Insp(Lot)'].sum() != 0 else np.nan,
+			# 			'NG R1 (%)': 100 * g.loc[g['Line'] == 'Rack 1', 'NG(Lot)'].sum() / g.loc[g['Line'] == 'Rack 1', 'Insp(Lot)'].sum() if g.loc[g['Line'] == 'Rack 1', 'Insp(Lot)'].sum() != 0 else np.nan,
+			# 		})
 				# 	)
 				# ).reset_index().rename(columns={'MonthYear': 'Date'})
 
@@ -1044,89 +1035,85 @@ def cleaning_process(df):
 
 				# # Tampilkan tabel tanpa kolom index (hide_index=True)
 				# st.dataframe(ng_bulanan, use_container_width=True, hide_index=True)
-			with tengah:	#Table Qty NG (lot) by Line & Month-edited add total row 16Jun2025
+			with tengah:	#Table Qty NG (lot) by Line & Month - 16Jun2025
 				st.write('Table Qty NG (lot) by Line & Month')
-				# Ubah kolom selain 'Date' ke numerik agar bisa dijumlahkan
-				for col in pivot_df_bulan_line2.columns:
-					if col != 'Date':
-						pivot_df_bulan_line2[col] = pd.to_numeric(pivot_df_bulan_line2[col], errors='coerce')
-				# Reset index dan urutkan, tetap tampilkan baris 'Total' - dengan error handling
 				try:
-					pivot_df_bulan_line2 = pivot_df_bulan_line2.reset_index()
+					# Make a copy to avoid modifying original
+					df_display = pivot_df_bulan_line2.copy()
+					df_display = df_display.round(2)
+					df_display = df_display.reset_index()
 					
 					# Pisahkan total jika ada
-					if 'Date' in pivot_df_bulan_line2.columns and 'Total' in pivot_df_bulan_line2['Date'].values:
-						mask = pivot_df_bulan_line2['Date'] == 'Total'
-						total_data = pivot_df_bulan_line2[mask]
-						pivot_df_bulan_line2 = pivot_df_bulan_line2[~mask]
-						# Sort tanpa Total
-						pivot_df_bulan_line2['Date_sort'] = pd.to_datetime(pivot_df_bulan_line2['Date'], format='%b-%Y', errors='coerce')
-						pivot_df_bulan_line2 = pivot_df_bulan_line2.sort_values('Date_sort')
-						pivot_df_bulan_line2 = pivot_df_bulan_line2.drop('Date_sort', axis=1)
-						# Gabung kembali Total
-						pivot_df_bulan_line2 = pd.concat([pivot_df_bulan_line2, total_data], ignore_index=True)
-					else:
-						pivot_df_bulan_line2['Date_sort'] = pd.to_datetime(pivot_df_bulan_line2['Date'], format='%b-%Y', errors='coerce')
-						pivot_df_bulan_line2 = pivot_df_bulan_line2.sort_values('Date_sort')
-						pivot_df_bulan_line2 = pivot_df_bulan_line2.drop('Date_sort', axis=1)
+					total_data = None
+					if 'Date' in df_display.columns and 'Total' in df_display['Date'].values:
+						mask = df_display['Date'] == 'Total'
+						total_data = df_display[mask].copy()
+						df_display = df_display[~mask]
 					
-					if 'Date' in pivot_df_bulan_line2.columns:
-						pivot_df_bulan_line2 = pivot_df_bulan_line2.set_index('Date')
-				except:
-					pass
-				# Hitung baris Total (sum semua baris kecuali 'Total' jika sudah ada)
-				if 'Total' not in pivot_df_bulan_line2.index:
-					total_row = pivot_df_bulan_line2.loc[pivot_df_bulan_line2.index != 'Total'].sum(numeric_only=True)
-					total_row.name = 'Total'
-					pivot_df_bulan_line2 = pd.concat([pivot_df_bulan_line2, pd.DataFrame([total_row])])
-				# Format angka dengan error handling
-				def format_number_comma(x):
-					try:
-						return f"{float(x):,.2f}"
-					except:
-						return str(x) if pd.notnull(x) else ""
-				pivot_df_bulan_line2 = pivot_df_bulan_line2.applymap(format_number_comma)
-				st.dataframe(pivot_df_bulan_line2,use_container_width=True)
+					# Sort by date
+					if 'Date' in df_display.columns:
+						df_display['Date_sort'] = pd.to_datetime(df_display['Date'], format='%b-%Y', errors='coerce')
+						df_display = df_display.sort_values('Date_sort').drop('Date_sort', axis=1)
+					
+					# Gabung kembali Total jika ada
+					if total_data is not None:
+						df_display = pd.concat([df_display, total_data], ignore_index=True)
+					
+					# Hitung total row jika belum ada
+					if 'Total' not in df_display['Date'].values:
+						total_row_dict = {'Date': 'Total'}
+						for col in df_display.columns:
+							if col != 'Date':
+								total_row_dict[col] = df_display[col].sum()
+						df_display = pd.concat([df_display, pd.DataFrame([total_row_dict])], ignore_index=True)
+					
+					# Set index dan format
+					if 'Date' in df_display.columns:
+						df_display = df_display.set_index('Date')
+					df_display = df_display.map(lambda x: f"{float(x):,.2f}" if pd.notnull(x) else "")
+					st.dataframe(df_display, use_container_width=True)
+				except Exception as e:
+					st.error(f"Error: {str(e)}")
 
-		with kanan:	#Table Qty Inspected (lot) by Line & Month-edited add total row 16Jun2025
-			st.write('Table Qty Inspected (lot) by Line & Month')
-			try:
-				pivot_df_bulan_line3 = pivot_df_bulan_line3.round(2)
-				# Format dengan error handling
-				def format_number_comma3(x):
-					try:
-						return f"{float(x):,.2f}"
-					except:
-						return str(x) if pd.notnull(x) else ""
-				pivot_df_bulan_line3 = pivot_df_bulan_line3.applymap(format_number_comma3)
-				pivot_df_bulan_line3 = pivot_df_bulan_line3.reset_index()
-				
-				# Pisahkan total jika ada
-				if 'Date' in pivot_df_bulan_line3.columns and 'Total' in pivot_df_bulan_line3['Date'].values:
-					mask = pivot_df_bulan_line3['Date'] == 'Total'
-					total_data = pivot_df_bulan_line3[mask]
-					pivot_df_bulan_line3 = pivot_df_bulan_line3[~mask]
-					# Sort tanpa Total
-					pivot_df_bulan_line3['Date_sort'] = pd.to_datetime(pivot_df_bulan_line3['Date'], format='%b-%Y', errors='coerce')
-					pivot_df_bulan_line3 = pivot_df_bulan_line3.sort_values('Date_sort')
-					pivot_df_bulan_line3 = pivot_df_bulan_line3.drop('Date_sort', axis=1)
-					# Gabung kembali Total
-					pivot_df_bulan_line3 = pd.concat([pivot_df_bulan_line3, total_data], ignore_index=True)
-				else:
-					pivot_df_bulan_line3['Date_sort'] = pd.to_datetime(pivot_df_bulan_line3['Date'], format='%b-%Y', errors='coerce')
-					pivot_df_bulan_line3 = pivot_df_bulan_line3.sort_values('Date_sort')
-					pivot_df_bulan_line3 = pivot_df_bulan_line3.drop('Date_sort', axis=1)
-				
-				if 'Date' in pivot_df_bulan_line3.columns:
-					pivot_df_bulan_line3 = pivot_df_bulan_line3.set_index('Date')
-			except:
-				pass
-				# Hitung baris Total (sum semua baris kecuali 'Total' jika sudah ada)
-			if 'Total' not in pivot_df_bulan_line3.index:
-					total_row = pivot_df_bulan_line3.loc[pivot_df_bulan_line3.index != 'Total'].sum(numeric_only=True)
-					total_row.name = 'Total'
-					pivot_df_bulan_line3 = pd.concat([pivot_df_bulan_line3, pd.DataFrame([total_row])])
-			st.dataframe(pivot_df_bulan_line3, use_container_width=True)
+			with kanan:	#Table Qty Inspected (lot) by Line & Month - 16Jun2025
+				st.write('Table Qty Inspected (lot) by Line & Month')
+				try:
+					# Make a copy to avoid modifying original
+					df_display3 = pivot_df_bulan_line3.copy()
+					df_display3 = df_display3.round(2)
+					df_display3 = df_display3.reset_index()
+					
+					# Pisahkan total jika ada
+					total_data = None
+					if 'Date' in df_display3.columns and 'Total' in df_display3['Date'].values:
+						mask = df_display3['Date'] == 'Total'
+						total_data = df_display3[mask].copy()
+						df_display3 = df_display3[~mask]
+					
+					# Sort by date
+					if 'Date' in df_display3.columns:
+						df_display3['Date_sort'] = pd.to_datetime(df_display3['Date'], format='%b-%Y', errors='coerce')
+						df_display3 = df_display3.sort_values('Date_sort').drop('Date_sort', axis=1)
+					
+					# Gabung kembali Total jika ada
+					if total_data is not None:
+						df_display3 = pd.concat([df_display3, total_data], ignore_index=True)
+					
+					# Hitung total row jika belum ada
+					if 'Total' not in df_display3['Date'].values:
+						total_row_dict = {'Date': 'Total'}
+						for col in df_display3.columns:
+							if col != 'Date':
+								total_row_dict[col] = df_display3[col].sum()
+						df_display3 = pd.concat([df_display3, pd.DataFrame([total_row_dict])], ignore_index=True)
+					
+					# Set index dan format
+					if 'Date' in df_display3.columns:
+						df_display3 = df_display3.set_index('Date')
+					df_display3 = df_display3.map(lambda x: f"{float(x):,.2f}" if pd.notnull(x) else "")
+					st.dataframe(df_display3, use_container_width=True)
+				except Exception as e:
+					st.error(f"Error: {str(e)}")
 
 			#3 kolom buat tabel by Line and Shift - 26Nov2024
 			col1,col2,col3,=st.columns(3)
@@ -2925,32 +2912,28 @@ def cleaning_process(df):
 				pt_MesinNo_transposed = pt_MesinNo.set_index('M/C No.').transpose()
 				pt_MesinNo_transposed = pt_MesinNo_transposed.round(2).map(format_with_comma2)
 				st.dataframe(pt_MesinNo_transposed)
-			#endregion
-			#--------------------------------------
+		#endregion
+		#--------------------------------------
 
-			st.markdown("---")
+		st.markdown("---")
 
-		
-		
-	#region Summary Trial
 		with sum_tab2: # Summary Trial 
 			st.subheader("Summary Trial")
 			DateRange(df_ori_pcs)
 			# dataframe2 = df[df['NoCard'].str.contains("TRIAL", case=False, na=False)]   # Data dengan "TRIAL"
 			with st.expander("Data TRIAL", expanded=False):
 				st.dataframe(dataframe2, use_container_width=True)
-
-			# Summary Trial Table
-			if not dataframe2.empty:
-			
-				summary_trial = dataframe2.groupby(['PartName','Cust.ID','Line']).agg({
-					'Keterangan': 'first', 	#added 17Sept2025
+				
+				# Create summary_trial with groupby aggregation
+				summary_trial = dataframe2.groupby('PartName').agg({
+					'Cust.ID': 'first',
+					'Line': 'first',
+					'Keterangan': 'first',
 					'NG_%': 'mean',
-					'Insp(B/H)': 'sum',		#added 04Mar2026
-					'NG(B/H)': 'sum',		#added 04Mar2026
+					'Insp(B/H)': 'sum',
+					'NG(B/H)': 'sum',
 					'QInspec': 'sum',
 					'Qty(NG)': 'sum'
-					
 				}).reset_index()
 				summary_trial['Qty OK (pcs)'] = summary_trial['QInspec'] - summary_trial['Qty(NG)']
 				summary_trial = summary_trial.rename(columns={

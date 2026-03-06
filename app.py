@@ -810,9 +810,55 @@ def cleaning_process(df):
 
 		
 		# Membuat tabel pivot Qty NG(%) by MONTH and LINE---------------
-		pivot_df_bulan_line = pd.pivot_table(df, values='NG_%', index='Date', columns='Line', aggfunc='mean', margins=True, margins_name='Total')
+		# Changed to F1 formula (NG:Total)*100 instead of average - agregat produksi populasi
+	
+def calculate_ng_percent(g):
+			"""Calculate NG% using F1 formula: (NG : Total) * 100"""
+			total_ng = g['NG(Lot)'].sum()
+			total_insp = g['Insp(Lot)'].sum()
+			return (total_ng / total_insp * 100) if total_insp != 0 else 0
 		
-		pivot_df_bulan_line_grafik= pd.pivot_table(df, values='NG_%', index='Date', aggfunc='mean')
+		# Create pivot table with aggregated calculation
+		pivot_df_bulan_line = pd.pivot_table(df.copy(), index='Date', columns='Line', aggfunc={'NG(Lot)': 'sum', 'Insp(Lot)': 'sum'}, fill_value=0)
+		# Calculate NG% for each line
+		ng_percent_dict = {}
+		for line in df['Line'].unique():
+			df_line = df[df['Line'] == line]
+			for date in df['Date'].unique():
+				df_date_line = df_line[df_line['Date'] == date]
+				total_ng = df_date_line['NG(Lot)'].sum()
+				total_insp = df_date_line['Insp(Lot)'].sum()
+				if total_insp != 0:
+					ng_percent_dict[(date, line)] = total_ng / total_insp * 100
+				else:
+					ng_percent_dict[(date, line)] = 0
+		
+		# Reshape to pivot table format
+		pivot_df_bulan_line = pd.DataFrame([
+			{
+				'Date': date,
+				line: ng_percent_dict.get((date, line), 0)
+				for line in df['Line'].unique()
+			}
+			for date in sorted(df['Date'].unique())
+		]).set_index('Date')
+		
+		# Add total row using F1 formula
+		total_ng = df['NG(Lot)'].sum()
+		total_insp = df['Insp(Lot)'].sum()
+		total_ng_persen = (total_ng / total_insp * 100) if total_insp != 0 else 0
+		total_row = pd.Series({col: total_ng_persen for col in pivot_df_bulan_line.columns}, name='Total')
+		pivot_df_bulan_line = pd.concat([pivot_df_bulan_line, pd.DataFrame([total_row])])
+		
+		# For grafik, use aggregated monthly NG%
+		df_for_grafik = df.copy()
+		df_for_grafik['Date'] = df_for_grafik['Date'].astype(str)
+		monthly_stats = df_for_grafik.groupby('Date').agg({
+			'NG(Lot)': 'sum',
+			'Insp(Lot)': 'sum'
+		}).reset_index()
+		monthly_stats['NG_%'] = (monthly_stats['NG(Lot)'] / monthly_stats['Insp(Lot)']) * 100
+		pivot_df_bulan_line_grafik = monthly_stats.set_index('Date')['NG_%']
 		# Membuat tabel pivot Qty NG(Lot) by MONTH and LINE---------------
 		pivot_df_bulan_line2= pd.pivot_table(df, values='NG(Lot)', index=['Date'],columns=['Line'], aggfunc='sum',margins=True,margins_name='Total')		
 
@@ -877,7 +923,8 @@ def cleaning_process(df):
 
 		with bariskanan:#Total NG (%)			
 			# container2=st.container(border=True)
-			NG_persen=df['NG_%'].mean()
+			# Changed to F1 formula (NG:Total)*100 instead of average
+			NG_persen = (tot_NG_lot / tot_Qty_lot * 100) if tot_Qty_lot != 0 else 0
 			# NG_persen= 100 * df['NG(B/H)'].sum() / df['Insp(B/H)'].sum() if df['Insp(B/H)'].sum() != 0 else 0 --> BEFORE
 			# NG_persen= 100 * df['NG(Lot)'].sum() / df['Insp(Lot)'].sum() if df['Insp(Lot)'].sum() != 0 else 0 #--> AFTER changed to Batch 25Aug2025
 			# container2.write(f"Tot. NG (%)	: {tot_NG_persen:.2f}")
@@ -917,10 +964,20 @@ def cleaning_process(df):
 					by='Date', 
 					key=lambda x: pd.to_datetime(x.where(x != 'Total', '2100-01'), format='%b-%Y', errors='coerce')
 				).set_index('Date')
-				# Hitung baris Total (mean semua baris kecuali 'Total' jika sudah ada)
+				# Hitung baris Total menggunakan F1 formula (NG:Total)*100 bukannya mean
 				if 'Total' not in pivot_df_bulan_line.index:
-					total_row = pivot_df_bulan_line.loc[pivot_df_bulan_line.index != 'Total'].mean(numeric_only=True)
-					total_row.name = 'Total'
+					# Calculate total using F1 formula for each line
+					total_row_data = {}
+					for col in pivot_df_bulan_line.columns:
+						try:
+							# Get data for this line from original df
+							df_line = df[df['Line'] == col]
+							total_ng_line = df_line['NG(Lot)'].sum()
+							total_insp_line = df_line['Insp(Lot)'].sum()
+							total_row_data[col] = (total_ng_line / total_insp_line * 100) if total_insp_line != 0 else 0
+						except:
+							total_row_data[col] = pivot_df_bulan_line[col].mean()
+					total_row = pd.Series(total_row_data, name='Total')
 					pivot_df_bulan_line = pd.concat([pivot_df_bulan_line, pd.DataFrame([total_row])])
 				pivot_df_bulan_line = pivot_df_bulan_line.round(2)
 				pivot_df_bulan_line = pivot_df_bulan_line.map(lambda x: f"{x:.2f}" if pd.notnull(x) else "")
@@ -1915,12 +1972,11 @@ def cleaning_process(df):
 				total_ok_lot = df_housing['OK(Lot)'].sum() if 'OK(Lot)' in df_housing.columns else 0
 				total_ng_lot = df_housing['NG(Lot)'].sum() if 'NG(Lot)' in df_housing.columns else 0
 				total_insp_lot = df_housing['Insp(Lot)'].sum() if 'Insp(Lot)' in df_housing.columns else 0
-				ng_percent = df_housing['NG_%'].mean() if 'NG_%' in df_housing.columns else 0
+				# Changed to F1 formula (NG:Total)*100 instead of average
+				ng_percent = (total_ng_lot / total_insp_lot * 100) if total_insp_lot != 0 else 0
 
 				metrik1, metrik2, metrik3, metrik4, metrik5, metrik6, metrik7 = st.columns(7)
 				with metrik1:
-					st.metric("OK (pcs)", f"{total_ok_pcs:,.0f}")
-				with metrik2:
 					st.metric("NG (pcs)", f"{total_ng_pcs:,.0f}")
 				with metrik3:
 					st.metric("Insp (pcs)", f"{total_insp_pcs:,.0f}")
@@ -1945,8 +2001,15 @@ def cleaning_process(df):
 					aggfunc='sum',
 					fill_value=0
 				).reset_index()
-				# Tambahkan kolom NG (%) (mean dari NG_% per PartName)
-				ng_persen_pcs = df_housing.groupby('PartName')['NG_%'].mean().reset_index().rename(columns={'NG_%': 'NG (%)'})
+				# Tambahkan kolom NG (%) menggunakan F1 formula (NG:Total)*100 untuk setiap part
+				ng_persen_pcs_list = []
+				for part in df_housing['PartName'].unique():
+					df_part = df_housing[df_housing['PartName'] == part]
+					total_ng = df_part['NG(Lot)'].sum()
+					total_insp = df_part['Insp(Lot)'].sum()
+					ng_pct = (total_ng / total_insp * 100) if total_insp != 0 else 0
+					ng_persen_pcs_list.append({'PartName': part, 'NG (%)': ng_pct})
+				ng_persen_pcs = pd.DataFrame(ng_persen_pcs_list)
 				pivot_pcs = pd.merge(pivot_pcs, ng_persen_pcs, on='PartName', how='left')
 				pivot_pcs = pivot_pcs.rename(columns={
 					'OK(pcs)': 'OK (pcs)',

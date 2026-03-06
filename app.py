@@ -940,102 +940,102 @@ def cleaning_process(df):
 			with kiri:	#Table NG (%) by Line & Month - 16Jun2025
 				st.write('Table NG (%) by Line & Month')
 			
-			try:
-				# Make a copy to avoid modifying original
-				df_display_left = pivot_df_bulan_line.copy()
-				df_display_left = df_display_left.round(2)
-				df_display_left = df_display_left.reset_index()
-				
-				# Pastikan kolom Date ada
-				if 'Date' not in df_display_left.columns:
-					df_display_left.columns.name = None
-					df_display_left = df_display_left.rename_axis('Date').reset_index()
-				
-				# Pisahkan total jika ada
-				total_data = None
-				if 'Date' in df_display_left.columns and 'Total' in df_display_left['Date'].values:
-					mask = df_display_left['Date'] == 'Total'
-					total_data = df_display_left[mask].copy()
-					df_display_left = df_display_left[~mask]
-				
-				# Sort by date
-				if 'Date' in df_display_left.columns:
-					try:
-						df_display_left['Date_sort'] = pd.to_datetime(df_display_left['Date'], format='%b-%Y', errors='coerce')
-						df_display_left = df_display_left.sort_values('Date_sort').drop('Date_sort', axis=1)
-					except:
-						pass
-				
-				# Gabung kembali total jika ada
-				if total_data is not None:
-					df_display_left = pd.concat([df_display_left, total_data], ignore_index=True)
-				
-				# Hitung total row menggunakan F1 formula jika belum ada
-				if 'Date' in df_display_left.columns and 'Total' not in df_display_left['Date'].values:
-					total_row_dict = {'Date': 'Total'}
-					line_columns = [col for col in df_display_left.columns if col != 'Date']
-					for col in line_columns:
+				try:
+					# Make a copy to avoid modifying original
+					df_display_left = pivot_df_bulan_line.copy()
+					df_display_left = df_display_left.round(2)
+					df_display_left = df_display_left.reset_index()
+					
+					# Pastikan kolom Date ada
+					if 'Date' not in df_display_left.columns:
+						df_display_left.columns.name = None
+						df_display_left = df_display_left.rename_axis('Date').reset_index()
+					
+					# Pisahkan total jika ada
+					total_data = None
+					if 'Date' in df_display_left.columns and 'Total' in df_display_left['Date'].values:
+						mask = df_display_left['Date'] == 'Total'
+						total_data = df_display_left[mask].copy()
+						df_display_left = df_display_left[~mask]
+					
+					# Sort by date
+					if 'Date' in df_display_left.columns:
 						try:
-							# Use F1 formula: (NG/Insp)*100 for this line
-							df_line = df[df['Line'] == col]
-							total_ng = df_line['NG(Lot)'].sum()
-							total_insp = df_line['Insp(Lot)'].sum()
-							total_row_dict[col] = float((total_ng / total_insp * 100) if total_insp != 0 else 0)
+							df_display_left['Date_sort'] = pd.to_datetime(df_display_left['Date'], format='%b-%Y', errors='coerce')
+							df_display_left = df_display_left.sort_values('Date_sort').drop('Date_sort', axis=1)
 						except:
-							total_row_dict[col] = df_display_left[col].sum()
-					df_display_left = pd.concat([df_display_left, pd.DataFrame([total_row_dict])], ignore_index=True)
+							pass
+					
+					# Gabung kembali total jika ada
+					if total_data is not None:
+						df_display_left = pd.concat([df_display_left, total_data], ignore_index=True)
+					
+					# Hitung total row menggunakan F1 formula jika belum ada
+					if 'Date' in df_display_left.columns and 'Total' not in df_display_left['Date'].values:
+						total_row_dict = {'Date': 'Total'}
+						line_columns = [col for col in df_display_left.columns if col != 'Date']
+						for col in line_columns:
+							try:
+								# Use F1 formula: (NG/Insp)*100 for this line
+								df_line = df[df['Line'] == col]
+								total_ng = df_line['NG(Lot)'].sum()
+								total_insp = df_line['Insp(Lot)'].sum()
+								total_row_dict[col] = float((total_ng / total_insp * 100) if total_insp != 0 else 0)
+							except:
+								total_row_dict[col] = df_display_left[col].sum()
+						df_display_left = pd.concat([df_display_left, pd.DataFrame([total_row_dict])], ignore_index=True)
+					
+					# Set index dan format
+					if 'Date' in df_display_left.columns:
+						df_display_left = df_display_left.set_index('Date')
+					
+					# Convert all values to numeric safely, skip non-numeric
+					for col in df_display_left.columns:
+						df_display_left[col] = pd.to_numeric(df_display_left[col], errors='coerce')
+					
+					df_display_left = df_display_left.map(lambda x: f"{x:.2f}" if pd.notnull(x) else "")
+					st.dataframe(df_display_left, use_container_width=True)
+				except Exception as e:
+					st.error(f"Error pada Tabel NG%: {str(e)}")
 				
-				# Set index dan format
-				if 'Date' in df_display_left.columns:
-					df_display_left = df_display_left.set_index('Date')
-				
-				# Convert all values to numeric safely, skip non-numeric
-				for col in df_display_left.columns:
-					df_display_left[col] = pd.to_numeric(df_display_left[col], errors='coerce')
-				
-				df_display_left = df_display_left.map(lambda x: f"{x:.2f}" if pd.notnull(x) else "")
-				st.dataframe(df_display_left, use_container_width=True)
-			except Exception as e:
-				st.error(f"Error pada Tabel NG%: {str(e)}")
-			
-			# Buat tabel NG (%) bulanan untuk masing-masing Line
-			# df['Date'] = pd.to_datetime(df['Date'], errors='coerce')
-			# df['MonthYear'] = df['Date'].dt.strftime('%b-%Y')
+				# Buat tabel NG (%) bulanan untuk masing-masing Line
+				# df['Date'] = pd.to_datetime(df['Date'], errors='coerce')
+				# df['MonthYear'] = df['Date'].dt.strftime('%b-%Y')
 
-			# # Hitung NG (%) per bulan untuk setiap Line
-			# ng_bulanan = (
-			# 	df.groupby('MonthYear').apply(
-			# 		lambda g: pd.Series({
-			# 			'NG B4 (%)': 100 * g.loc[g['Line'] == 'Barrel 4', 'NG(Lot)'].sum() / g.loc[g['Line'] == 'Barrel 4', 'Insp(Lot)'].sum() if g.loc[g['Line'] == 'Barrel 4', 'Insp(Lot)'].sum() != 0 else np.nan,
-			# 			'NG Ni (%)': 100 * g.loc[g['Line'] == 'Nickel', 'NG(Lot)'].sum() / g.loc[g['Line'] == 'Nickel', 'Insp(Lot)'].sum() if g.loc[g['Line'] == 'Nickel', 'Insp(Lot)'].sum() != 0 else np.nan,
-			# 			'NG R1 (%)': 100 * g.loc[g['Line'] == 'Rack 1', 'NG(Lot)'].sum() / g.loc[g['Line'] == 'Rack 1', 'Insp(Lot)'].sum() if g.loc[g['Line'] == 'Rack 1', 'Insp(Lot)'].sum() != 0 else np.nan,
-			# 		})
-				# 	)
-				# ).reset_index().rename(columns={'MonthYear': 'Date'})
+				# # Hitung NG (%) per bulan untuk setiap Line
+				# ng_bulanan = (
+				# 	df.groupby('MonthYear').apply(
+				# 		lambda g: pd.Series({
+				# 			'NG B4 (%)': 100 * g.loc[g['Line'] == 'Barrel 4', 'NG(Lot)'].sum() / g.loc[g['Line'] == 'Barrel 4', 'Insp(Lot)'].sum() if g.loc[g['Line'] == 'Barrel 4', 'Insp(Lot)'].sum() != 0 else np.nan,
+				# 			'NG Ni (%)': 100 * g.loc[g['Line'] == 'Nickel', 'NG(Lot)'].sum() / g.loc[g['Line'] == 'Nickel', 'Insp(Lot)'].sum() if g.loc[g['Line'] == 'Nickel', 'Insp(Lot)'].sum() != 0 else np.nan,
+				# 			'NG R1 (%)': 100 * g.loc[g['Line'] == 'Rack 1', 'NG(Lot)'].sum() / g.loc[g['Line'] == 'Rack 1', 'Insp(Lot)'].sum() if g.loc[g['Line'] == 'Rack 1', 'Insp(Lot)'].sum() != 0 else np.nan,
+				# 		})
+					# 	)
+					# ).reset_index().rename(columns={'MonthYear': 'Date'})
 
-				# # Hapus baris yang semua nilainya NaN (selain kolom Date)
-				# ng_bulanan = ng_bulanan.dropna(subset=['NG B4 (%)', 'NG Ni (%)', 'NG R1 (%)'], how='all')
+					# # Hapus baris yang semua nilainya NaN (selain kolom Date)
+					# ng_bulanan = ng_bulanan.dropna(subset=['NG B4 (%)', 'NG Ni (%)', 'NG R1 (%)'], how='all')
 
-				# # Hapus kolom yang seluruh nilainya NaN (selain kolom Date)
-				# cols_to_check = ['NG B4 (%)', 'NG Ni (%)', 'NG R1 (%)']
-				# cols_to_drop = [col for col in cols_to_check if ng_bulanan[col].isna().all()]
-				# ng_bulanan = ng_bulanan.drop(columns=cols_to_drop)
+					# # Hapus kolom yang seluruh nilainya NaN (selain kolom Date)
+					# cols_to_check = ['NG B4 (%)', 'NG Ni (%)', 'NG R1 (%)']
+					# cols_to_drop = [col for col in cols_to_check if ng_bulanan[col].isna().all()]
+					# ng_bulanan = ng_bulanan.drop(columns=cols_to_drop)
 
-				# # Tambahkan baris TotAverage hanya jika ada data
-				# avg_dict = {'Date': 'TotAverage'}
-				# for col in cols_to_check:
-				# 	if col in ng_bulanan.columns:
-				# 		avg_dict[col] = f"{ng_bulanan[col].mean(skipna=True):.2f}" if pd.notnull(ng_bulanan[col].mean(skipna=True)) else ""
-				# if len(avg_dict) > 1:
-				# 	ng_bulanan = pd.concat([ng_bulanan, pd.DataFrame([avg_dict])], ignore_index=True)
+					# # Tambahkan baris TotAverage hanya jika ada data
+					# avg_dict = {'Date': 'TotAverage'}
+					# for col in cols_to_check:
+					# 	if col in ng_bulanan.columns:
+					# 		avg_dict[col] = f"{ng_bulanan[col].mean(skipna=True):.2f}" if pd.notnull(ng_bulanan[col].mean(skipna=True)) else ""
+					# if len(avg_dict) > 1:
+					# 	ng_bulanan = pd.concat([ng_bulanan, pd.DataFrame([avg_dict])], ignore_index=True)
 
-				# # Format angka 2 digit di belakang koma, kosongkan jika NaN
-				# for col in cols_to_check:
-				# 	if col in ng_bulanan.columns:
-				# 		ng_bulanan[col] = pd.to_numeric(ng_bulanan[col], errors='coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "")
+					# # Format angka 2 digit di belakang koma, kosongkan jika NaN
+					# for col in cols_to_check:
+					# 	if col in ng_bulanan.columns:
+					# 		ng_bulanan[col] = pd.to_numeric(ng_bulanan[col], errors='coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "")
 
-				# # Tampilkan tabel tanpa kolom index (hide_index=True)
-				# st.dataframe(ng_bulanan, use_container_width=True, hide_index=True)
+					# # Tampilkan tabel tanpa kolom index (hide_index=True)
+					# st.dataframe(ng_bulanan, use_container_width=True, hide_index=True)
 			with tengah:	#Table Qty NG (lot) by Line & Month - 16Jun2025
 				st.write('Table Qty NG (lot) by Line & Month')
 				try:

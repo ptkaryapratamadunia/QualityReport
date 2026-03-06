@@ -840,12 +840,13 @@ def cleaning_process(df):
 		}).reset_index()
 		monthly_stats['NG_%'] = (monthly_stats['NG(Lot)'] / monthly_stats['Insp(Lot)']) * 100
 		pivot_df_bulan_line_grafik = monthly_stats.set_index('Date')['NG_%']
+		
 		# Membuat tabel pivot Qty NG(Lot) by MONTH and LINE---------------
-		pivot_df_bulan_line2= pd.pivot_table(df, values='NG(Lot)', index=['Date'],columns=['Line'], aggfunc='sum',margins=True,margins_name='Total')		
-
+		pivot_df_bulan_line2 = pd.pivot_table(df, values='NG(Lot)', index=['Date'], columns=['Line'], aggfunc='sum', margins=True, margins_name='Total')
+		
 		# Membuat tabel pivot Qty Insp(Lot) by MONTH and LINE---------------
-		pivot_df_bulan_line3= pd.pivot_table(df, values='Insp(Lot)', index='Date',columns='Line', aggfunc='sum',margins=True,margins_name='Total')
-		pivot_df_bulan_line3_grafik= pd.pivot_table(df, values='Insp(Lot)', index='Date', aggfunc='sum')
+		pivot_df_bulan_line3 = pd.pivot_table(df, values='Insp(Lot)', index='Date', columns='Line', aggfunc='sum', margins=True, margins_name='Total')
+		pivot_df_bulan_line3_grafik = pd.pivot_table(df, values='Insp(Lot)', index='Date', aggfunc='sum')
 
 		bariskiri,bt1,bt2,bt3,bariskanan=st.columns(5)
 		#Metrics column

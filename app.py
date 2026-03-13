@@ -179,7 +179,7 @@ def login_page():
 		st.markdown('</div></div>', unsafe_allow_html=True)
 		st.markdown('---')
 	with kol5:#judul Apps
-		st.markdown("""<h3 style="align-content:right;align-items:right;color:green;margin-top:-10px;margin-bottom:0px;"> 📊 QUALITY DASHBOARD </h3>""", unsafe_allow_html=True)
+		st.markdown("""<h3 style="align-content:right;align-items:right;color:green;margin-top:-10px;margin-bottom:0px;"> 📊V8 QUALITY DASHBOARD </h3>""", unsafe_allow_html=True)
 		
 		st.markdown("""<div style="text-align: center; font-weight: bold;color:blue;">Quality Performance Plating Line</div>""", unsafe_allow_html=True)
 	

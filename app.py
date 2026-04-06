@@ -3479,7 +3479,7 @@ def cleaning_process(df):
 
 				with Filter_tab3:# Filter data berdasarkan Line untuk grafik harian
 					st.info("Filtering Data berdasarkan Line, Jenis NG dan PartName untuk menampilkan grafik harian")
-					df_with_pcs['Date'] = pd.to_datetime(df_with_pcs['Date'], errors='coerce').dt.date  # pastikan hanya tanggal (tanpa waktu)
+					df_with_pcs['Date'] = pd.to_datetime(df_with_pcs['Date'], errors='coerce').dt.normalize()  # pastikan hanya tanggal (tanpa waktu)
 					date_min = df_with_pcs['Date'].min()
 					date_max = df_with_pcs['Date'].max()
 
@@ -3580,11 +3580,7 @@ def cleaning_process(df):
 					st.write("Filter Data Harian Berdasarkan Jenis NG")
 				#region Pilihan Jenis NG untuk filter
 					# Pilihan Jenis NG untuk filter
-					df_with_pcs['Date'] = pd.to_datetime(df_with_pcs['Date'], errors='coerce').dt.date  # pastikan hanya tanggal (tanpa waktu)
-					date_min = df_with_pcs['Date'].min()
-					date_max = df_with_pcs['Date'].max()
-
-					# Daftar kolom Jenis NG yang tersedia (kecuali kolom non-NG)
+				df_with_pcs['Date'] = pd.to_datetime(df_with_pcs['Date'], errors='coerce').dt.normalize()  # pastikan hanya tanggal (tanpa waktu)
 					jenis_ng_columns = [
 						'Warna', 'Buram', 'Berbayang', 'Kotor', 'Tdk Terplating', 'Rontok/ Blister',
 						'Tipis/ EE No Plating', 'Flek Kuning', 'Terbakar', 'Watermark', 'Jig Mark/ Renggang',

@@ -3707,10 +3707,7 @@ def cleaning_process(df):
 				#region tabel hasil filter by Line, Jenis NG dan Partname
 					st.write("Tabel Hasil Filter Berdasarkan Line, Jenis NG dan Part Name")
 					# Pilihan Jenis NG untuk filter
-					df_with_pcs['Date'] = pd.to_datetime(df_with_pcs['Date'], errors='coerce').dt.date  # pastikan hanya tanggal (tanpa waktu)
-					date_min = df_with_pcs['Date'].min()
-					date_max = df_with_pcs['Date'].max()
-
+				df_with_pcs['Date'] = pd.to_datetime(df_with_pcs['Date'], errors='coerce').dt.normalize()  # pastikan hanya tanggal (tanpa waktu)
 					# --- Filter PartName dari dataframe hasil filter Line dan Jenis NG sebelumnya ---
 
 					# partname_options hanya dari df_daily (sudah terfilter Line dan Jenis NG)

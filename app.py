@@ -3580,7 +3580,10 @@ def cleaning_process(df):
 					st.write("Filter Data Harian Berdasarkan Jenis NG")
 				#region Pilihan Jenis NG untuk filter
 					# Pilihan Jenis NG untuk filter
-				df_with_pcs['Date'] = pd.to_datetime(df_with_pcs['Date'], errors='coerce').dt.normalize()  # pastikan hanya tanggal (tanpa waktu)
+					df_with_pcs['Date'] = pd.to_datetime(df_with_pcs['Date'], errors='coerce').dt.normalize()  # pastikan hanya tanggal (tanpa waktu)
+					date_min = df_with_pcs['Date'].min()
+					date_max = df_with_pcs['Date'].max()
+
 					jenis_ng_columns = [
 						'Warna', 'Buram', 'Berbayang', 'Kotor', 'Tdk Terplating', 'Rontok/ Blister',
 						'Tipis/ EE No Plating', 'Flek Kuning', 'Terbakar', 'Watermark', 'Jig Mark/ Renggang',

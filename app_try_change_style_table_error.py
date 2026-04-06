@@ -53,6 +53,48 @@ st.markdown("""
     html, body, [data-testid="stAppViewContainer"], .stApp, .stMarkdown ,.stDataFrame, .stTable, .stTextInput, .stSelectbox, .stButton, .stExpander, .stAlert, .stMetric, .stPlotlyChart, .stHeader, .stSubheader, .stTitle, .stInfo, .stWarning, .stError, .stSuccess, .stWrite, .stText, .stCaption {
         font-family: 'Nunito'!important;
     }
+    
+    /* Enhanced Table Styling for st.table */
+    .stTable table {
+        border: 2px solid #2c3e50 !important;
+        border-collapse: collapse !important;
+        color: #000000 !important;
+        width: 100% !important;
+    }
+    
+    .stTable thead tr th {
+        background-color: #ecf0f1 !important;
+        border: 2px solid #555555 !important;
+        color: #000000 !important;
+        font-weight: 800 !important; /* Bold Header */
+        text-align: center !important;
+        padding: 10px !important;
+        font-size: 14px !important;
+    }
+    
+    .stTable tbody tr td {
+        border: 1px solid #777777 !important; /* Visible cell borders */
+        color: #000000 !important;
+        font-weight: 500 !important; /* Solid content text */
+        padding: 8px !important;
+        background-color: #ffffff !important;
+        font-size: 13px !important;
+    }
+
+    /* Making st.dataframe borders more visible */
+    [data-testid="stDataFrame"] {
+        border: 2px solid #333333 !important;
+        border-radius: 4px;
+    }
+    
+    /* Target specifically the headers and cells in standard tables if not using stTable class */
+    table th {
+        font-weight: bold !important;
+        color: black !important;
+    }
+    table td {
+        color: black !important;
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -137,7 +179,7 @@ def login_page():
 		st.markdown('</div></div>', unsafe_allow_html=True)
 		st.markdown('---')
 	with kol5:#judul Apps
-		st.markdown("""<h3 style="align-content:right;align-items:right;color:green;margin-top:-10px;margin-bottom:0px;"> 📊 QUALITY DASHBOARD V8</h3>""", unsafe_allow_html=True)
+		st.markdown("""<h3 style="align-content:right;align-items:right;color:green;margin-top:-10px;margin-bottom:0px;"> 📊V8 QUALITY DASHBOARD </h3>""", unsafe_allow_html=True)
 		
 		st.markdown("""<div style="text-align: center; font-weight: bold;color:blue;">Quality Performance Plating Line</div>""", unsafe_allow_html=True)
 	
@@ -710,18 +752,13 @@ def cleaning_process(df):
 
 		#Bismillah - akan merubah satuan LOT dalam pengertian BATCH yang sama untuk semua LINE 25Aug2025
 		#1. menambah kolom 'Insp(Lot)' dengan mengisi nilainya dari kolom Insp(B/H) dengan kondisi tertentu yaitu jika kolom Line='Barrel 4' atau 'Nickel' maka Insp(Lot)=[(insp(B/H)/2)] dan jika Line='Rack 1' maka Insp(Lot)=Insp(B/H)
-		df['Insp(Lot)'] = df.apply(lambda row: (row['Insp(B/H)'] / 2) if row['Line'] in ['Barrel 4', 'Nickel'] else row['Insp(B/H)'] if row['Line'] == 'Rack 1' else 0, axis=1)
+		df['Insp(Lot)'] = df.apply(lambda row: (row['Insp(B/H)'] / 2) if row['Line'] in ['Barrel 4', 'Nickel'] else row['Insp(B/H)'] if row['Line'] == 'Rack 1' else '', axis=1)
 
 		#2. menambah kolom 'OK(Lot)' dengan mengisi nilainya dari kolom OK(B/H) dengan kondisi tertentu yaitu jika kolom Line='Barrel 4' atau 'Nickel' maka OK(Lot)=[(OK(B/H)/2)] dan jika Line='Rack 1' maka OK(Lot)=OK(B/H)
-		df['OK(Lot)'] = df.apply(lambda row: (row['OK(B/H)'] / 2) if row['Line'] in ['Barrel 4', 'Nickel'] else row['OK(B/H)'] if row['Line'] == 'Rack 1' else 0, axis=1)
+		df['OK(Lot)'] = df.apply(lambda row: (row['OK(B/H)'] / 2) if row['Line'] in ['Barrel 4', 'Nickel'] else row['OK(B/H)'] if row['Line'] == 'Rack 1' else '', axis=1)
 
 		#3. menambah kolom 'NG(Lot)' dengan mengisi nilainya dari kolom NG(B/H) dengan kondisi tertentu yaitu jika kolom Line='Barrel 4' atau 'Nickel' maka NG(Lot)=[(NG(B/H)/2)] dan jika Line='Rack 1' maka NG(Lot)=NG(B/H)
-		df['NG(Lot)'] = df.apply(lambda row: (row['NG(B/H)'] / 2) if row['Line'] in ['Barrel 4', 'Nickel'] else row['NG(B/H)'] if row['Line'] == 'Rack 1' else 0, axis=1)
-
-		# Konversi kolom Lot ke numeric type untuk menghindari error operasi matematis
-		df['Insp(Lot)'] = pd.to_numeric(df['Insp(Lot)'], errors='coerce').fillna(0)
-		df['OK(Lot)'] = pd.to_numeric(df['OK(Lot)'], errors='coerce').fillna(0)
-		df['NG(Lot)'] = pd.to_numeric(df['NG(Lot)'], errors='coerce').fillna(0)
+		df['NG(Lot)'] = df.apply(lambda row: (row['NG(B/H)'] / 2) if row['Line'] in ['Barrel 4', 'Nickel'] else row['NG(B/H)'] if row['Line'] == 'Rack 1' else '', axis=1)
 
 		# Mengubah tipe data kolom 'SHift ' menjadi string
 		# df['Shift'] = df['Shift'].astype(str)
@@ -1000,7 +1037,7 @@ def cleaning_process(df):
 						df_display_left[col] = pd.to_numeric(df_display_left[col], errors='coerce')
 					
 					df_display_left = df_display_left.map(lambda x: f"{x:.2f}" if pd.notnull(x) else "")
-					st.dataframe(df_display_left, use_container_width=True)
+					st.table(df_display_left)
 				except Exception as e:
 					st.error(f"Error pada Tabel NG%: {str(e)}")
 				
@@ -1128,7 +1165,7 @@ def cleaning_process(df):
 						df_display3[col] = pd.to_numeric(df_display3[col], errors='coerce')
 						
 					df_display3 = df_display3.map(lambda x: f"{x:,.2f}" if pd.notnull(x) else "")
-					st.dataframe(df_display3, use_container_width=True)
+					st.table(df_display3)
 				except Exception as e:
 					st.error(f"Error pada Tabel Qty Insp: {str(e)}")
 
@@ -1151,7 +1188,7 @@ def cleaning_process(df):
 				# 	pt_NGpersen_line_by_shift_transposed = pt_NGpersen_line_by_shift_transposed.drop('Total', axis=0)
 
 				st.write('NG (%) by Line & Shift')
-				st.dataframe(pt_NGpersen_line_by_shift_transposed, use_container_width=True)
+				st.table(pt_NGpersen_line_by_shift_transposed)
 				
 			with col2:	#Qty NG Lot by Line and Shift - 26Nov2024
 				
@@ -1164,7 +1201,7 @@ def cleaning_process(df):
 				# 	pt_NGLot_line_by_shift_transposed = pt_NGLot_line_by_shift_transposed.drop('Total', axis=0)
 
 				st.write('Qty NG(lot) by Line-Shift')
-				st.dataframe(pt_NGLot_line_by_shift_transposed,use_container_width=True)
+				st.table(pt_NGLot_line_by_shift_transposed)
 
 			with col3:	#Qty Inspected Lot by Line and Shift - 26Nov2024
 				pt_InspLot_line_by_shift = pd.pivot_table(df, values='Insp(Lot)', index='Line', columns='Shift', aggfunc='sum', margins=True, margins_name='Total')
@@ -1177,7 +1214,7 @@ def cleaning_process(df):
 				# 	pt_InspLot_line_by_shift_transposed = pt_InspLot_line_by_shift_transposed.drop('Total', axis=0)
 
 				st.write('Qty Insp(lot) by Line-Shift')
-				st.dataframe(pt_InspLot_line_by_shift_transposed,use_container_width=True)	
+				st.table(pt_InspLot_line_by_shift_transposed)
 				
 			
 
@@ -2155,14 +2192,16 @@ def cleaning_process(df):
 				with st.expander("Klik untuk melihat details Data Housing Horn (lot) - PT. HDI - Barrel 4", expanded=False):
 					st.table(
 						pivot_lot.style.set_table_styles([
-							{'selector': 'th, td', 'props': [('font-family', 'Nunito'), ('font-size', '12px')]}
+							{'selector': 'th', 'props': [('font-family', 'Nunito'), ('font-size', '14px'), ('font-weight', 'bold'), ('background-color', '#eee'), ('color', 'black'), ('border', '2px solid #444'), ('text-align', 'center')]},
+							{'selector': 'td', 'props': [('font-family', 'Nunito'), ('font-size', '14px'), ('color', 'black'), ('border', '1px solid #666')]}
 						])
 					)
 					# st.dataframe(pivot_lot, use_container_width=True)
 				with st.expander("Klik untuk melihat details Data Housing Horn (pcs) - PT. HDI - Barrel 4", expanded=False):
 					st.table(
 						pivot_pcs.style.set_table_styles([
-							{'selector': 'th, td', 'props': [('font-family', 'Nunito'), ('font-size', '12px')]}
+							{'selector': 'th', 'props': [('font-family', 'Nunito'), ('font-size', '14px'), ('font-weight', 'bold'), ('background-color', '#eee'), ('color', 'black'), ('border', '2px solid #444'), ('text-align', 'center')]},
+							{'selector': 'td', 'props': [('font-family', 'Nunito'), ('font-size', '14px'), ('color', 'black'), ('border', '1px solid #666')]}
 						])
 					)
 					# st.dataframe(pivot_pcs, use_container_width=True)

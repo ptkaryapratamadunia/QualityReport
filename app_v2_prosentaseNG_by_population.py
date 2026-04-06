@@ -137,7 +137,7 @@ def login_page():
 		st.markdown('</div></div>', unsafe_allow_html=True)
 		st.markdown('---')
 	with kol5:#judul Apps
-		st.markdown("""<h3 style="align-content:right;align-items:right;color:green;margin-top:-10px;margin-bottom:0px;"> 📊 QUALITY DASHBOARD V8</h3>""", unsafe_allow_html=True)
+		st.markdown("""<h3 style="align-content:right;align-items:right;color:green;margin-top:-10px;margin-bottom:0px;"> 📊 QUALITY DASHBOARD </h3>""", unsafe_allow_html=True)
 		
 		st.markdown("""<div style="text-align: center; font-weight: bold;color:blue;">Quality Performance Plating Line</div>""", unsafe_allow_html=True)
 	
@@ -710,18 +710,13 @@ def cleaning_process(df):
 
 		#Bismillah - akan merubah satuan LOT dalam pengertian BATCH yang sama untuk semua LINE 25Aug2025
 		#1. menambah kolom 'Insp(Lot)' dengan mengisi nilainya dari kolom Insp(B/H) dengan kondisi tertentu yaitu jika kolom Line='Barrel 4' atau 'Nickel' maka Insp(Lot)=[(insp(B/H)/2)] dan jika Line='Rack 1' maka Insp(Lot)=Insp(B/H)
-		df['Insp(Lot)'] = df.apply(lambda row: (row['Insp(B/H)'] / 2) if row['Line'] in ['Barrel 4', 'Nickel'] else row['Insp(B/H)'] if row['Line'] == 'Rack 1' else 0, axis=1)
+		df['Insp(Lot)'] = df.apply(lambda row: (row['Insp(B/H)'] / 2) if row['Line'] in ['Barrel 4', 'Nickel'] else row['Insp(B/H)'] if row['Line'] == 'Rack 1' else '', axis=1)
 
 		#2. menambah kolom 'OK(Lot)' dengan mengisi nilainya dari kolom OK(B/H) dengan kondisi tertentu yaitu jika kolom Line='Barrel 4' atau 'Nickel' maka OK(Lot)=[(OK(B/H)/2)] dan jika Line='Rack 1' maka OK(Lot)=OK(B/H)
-		df['OK(Lot)'] = df.apply(lambda row: (row['OK(B/H)'] / 2) if row['Line'] in ['Barrel 4', 'Nickel'] else row['OK(B/H)'] if row['Line'] == 'Rack 1' else 0, axis=1)
+		df['OK(Lot)'] = df.apply(lambda row: (row['OK(B/H)'] / 2) if row['Line'] in ['Barrel 4', 'Nickel'] else row['OK(B/H)'] if row['Line'] == 'Rack 1' else '', axis=1)
 
 		#3. menambah kolom 'NG(Lot)' dengan mengisi nilainya dari kolom NG(B/H) dengan kondisi tertentu yaitu jika kolom Line='Barrel 4' atau 'Nickel' maka NG(Lot)=[(NG(B/H)/2)] dan jika Line='Rack 1' maka NG(Lot)=NG(B/H)
-		df['NG(Lot)'] = df.apply(lambda row: (row['NG(B/H)'] / 2) if row['Line'] in ['Barrel 4', 'Nickel'] else row['NG(B/H)'] if row['Line'] == 'Rack 1' else 0, axis=1)
-
-		# Konversi kolom Lot ke numeric type untuk menghindari error operasi matematis
-		df['Insp(Lot)'] = pd.to_numeric(df['Insp(Lot)'], errors='coerce').fillna(0)
-		df['OK(Lot)'] = pd.to_numeric(df['OK(Lot)'], errors='coerce').fillna(0)
-		df['NG(Lot)'] = pd.to_numeric(df['NG(Lot)'], errors='coerce').fillna(0)
+		df['NG(Lot)'] = df.apply(lambda row: (row['NG(B/H)'] / 2) if row['Line'] in ['Barrel 4', 'Nickel'] else row['NG(B/H)'] if row['Line'] == 'Rack 1' else '', axis=1)
 
 		# Mengubah tipe data kolom 'SHift ' menjadi string
 		# df['Shift'] = df['Shift'].astype(str)
@@ -829,10 +824,8 @@ def cleaning_process(df):
 		# Convert to DataFrame to append
 		total_row_df = pd.DataFrame(line_totals_pct).transpose()
 		total_row_df.index = ['Total']
-		total_row_df.index.name = 'Date'
 		
 		pivot_df_bulan_line = pd.concat([pivot_df_bulan_line, total_row_df])
-		pivot_df_bulan_line.index.name = 'Date'
 		
 		# For grafik, use aggregated monthly NG%
 		df_for_grafik = df.copy()
@@ -948,14 +941,15 @@ def cleaning_process(df):
 				st.write('Table NG (%) by Line & Month')
 			
 				try:
+					# Make a copy to avoid modifying original
 					df_display_left = pivot_df_bulan_line.copy()
 					df_display_left = df_display_left.round(2)
 					df_display_left = df_display_left.reset_index()
 					
-					# Ensure 'Date' column is present even if index was named 'index'
-					if 'index' in df_display_left.columns and 'Date' not in df_display_left.columns:
-						df_display_left = df_display_left.rename(columns={'index': 'Date'})
-					
+					# Pastikan kolom Date ada
+					# if 'Date' not in df_display_left.columns:
+					# 	df_display_left.columns.name = None
+					# 	df_display_left = df_display_left.rename_axis('Date').reset_index()
 					
 					# Pisahkan total jika ada
 					total_data = None
@@ -976,7 +970,7 @@ def cleaning_process(df):
 					if total_data is not None:
 						df_display_left = pd.concat([df_display_left, total_data], ignore_index=True)
 					
-					# Hitung total row menggunakan F1 formula jika belum ada - Revised at 06Mar2026 by Antigravity
+					# Hitung total row menggunakan F1 formula jika belum ada
 					if 'Date' in df_display_left.columns and 'Total' not in df_display_left['Date'].values:
 						total_row_dict = {'Date': 'Total'}
 						line_columns = [col for col in df_display_left.columns if col != 'Date']

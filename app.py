@@ -3705,30 +3705,30 @@ def cleaning_process(df):
 				#endregion
 					st.markdown("---")	
 				#region tabel hasil filter by Line, Jenis NG dan Partname
-					st.write("Tabel Hasil Filter Berdasarkan Line, Jenis NG dan Part Name")
-					# Pilihan Jenis NG untuk filter
+				st.write("Tabel Hasil Filter Berdasarkan Line, Jenis NG dan Part Name")
+				# Pilihan Jenis NG untuk filter
 				df_with_pcs['Date'] = pd.to_datetime(df_with_pcs['Date'], errors='coerce').dt.normalize()  # pastikan hanya tanggal (tanpa waktu)
-					# --- Filter PartName dari dataframe hasil filter Line dan Jenis NG sebelumnya ---
+				date_min = df_with_pcs['Date'].min()
+				date_max = df_with_pcs['Date'].max()
 
-					# partname_options hanya dari df_daily (sudah terfilter Line dan Jenis NG)
-					partname_options = df_daily['PartName'].dropna().unique().tolist()
-					selected_partname = st.multiselect("Pilih PartName:", partname_options, key="filter_partname_for_table")
+				partname_options = df_daily['PartName'].dropna().unique().tolist()
+				selected_partname = st.multiselect("Pilih PartName:", partname_options, key="filter_partname_for_table")
 
-					if selected_partname:
-						df_partname_filtered = df_daily[df_daily['PartName'].isin(selected_partname)].copy()
-					else:
-						df_partname_filtered = df_daily.copy()
+				if selected_partname:
+					df_partname_filtered = df_daily[df_daily['PartName'].isin(selected_partname)].copy()
+				else:
+					df_partname_filtered = df_daily.copy()
 
 					# Buat tabel harian: Date, PartName, Jenis NG (lot), Insp(B/H), JenisNG_%
 					# selected_jenisNG sudah didefinisikan di step sebelumnya
 					tabel_harian = df_partname_filtered.groupby(['Date', 'PartName'], as_index=False).agg({
-						selected_jenisNG: 'sum',
+					selected_jenisNG: 'sum',
 						'Insp(Lot)': 'sum'
 					})
 
 					# Hitung JenisNG_% (handle pembagi 0)
 					tabel_harian['JenisNG_%'] = np.where(
-						tabel_harian['Insp(Lot)'] == 0,
+					tabel_harian['Insp(Lot)'] == 0,
 						0,
 						(tabel_harian[selected_jenisNG] / tabel_harian['Insp(Lot)']) * 100
 					)
@@ -3741,7 +3741,7 @@ def cleaning_process(df):
 
 					# Tambahkan baris TOTAL
 					total_row = {
-						'Date': 'TOTAL',
+					'Date': 'TOTAL',
 						'PartName': '',
 						selected_jenisNG: tabel_harian[selected_jenisNG].sum(),
 						'Insp(Lot)': tabel_harian['Insp(Lot)'].sum(),

@@ -2970,8 +2970,8 @@ def cleaning_process(df):
 					'Qty Inspected (pcs)': summary_trial['Qty Inspected (pcs)'].sum(),
 					'Qty NG (pcs)': summary_trial['Qty NG (pcs)'].sum(),
 					'Qty OK (pcs)': summary_trial['Qty OK (pcs)'].sum(),
-					'Insp(Lot)': summary_trial['Insp(Lot)'].sum()/2,	#added 04Mar2026
-					'NG(Lot)': summary_trial['NG(Lot)'].sum()/2		#added 04Mar2026
+					'Insp(Lot)': summary_trial['Insp(Lot)'].sum(),	#added 04Mar2026
+					'NG(Lot)': summary_trial['NG(Lot)'].sum()	#added 04Mar2026
 				}
 				summary_trial = pd.concat([summary_trial, pd.DataFrame([total_row])], ignore_index=True)
 				summary_trial = summary_trial.round(2).map(format_with_comma2)

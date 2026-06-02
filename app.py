@@ -2947,16 +2947,16 @@ def cleaning_process(df):
 					'Line': 'first',
 					'Keterangan': 'first',
 					'NG_%': 'mean',
-					'Insp(B/H)': 'sum',
-					'NG(B/H)': 'sum',
+					'Insp(Lot)': 'sum', #change from Insp(B/H) 02juN2026
+					'NG(Lot)': 'sum',	#change from NG(B/H)
 					'QInspec': 'sum',
 					'Qty(NG)': 'sum'
 				}).reset_index()
 				summary_trial['Qty OK (pcs)'] = summary_trial['QInspec'] - summary_trial['Qty(NG)']
 				summary_trial = summary_trial.rename(columns={
 					'NG_%': 'NG (%)',
-					'Insp(B/H)': 'Insp(Lot)',	#added 04Mar2026
-					'NG(B/H)': 'NG(Lot)',		#added 04Mar2026
+					'Insp(Lot)': 'Insp(Lot)',	#added 04Mar2026
+					'NG(Lot)': 'NG(Lot)',		#added 04Mar2026
 					'QInspec': 'Qty Inspected (pcs)',
 					'Qty(NG)': 'Qty NG (pcs)'
 				})

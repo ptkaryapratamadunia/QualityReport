@@ -2942,10 +2942,10 @@ def cleaning_process(df):
 					st.dataframe(dataframe2, use_container_width=True)
 				
 				# Create summary_trial with groupby aggregation
-				summary_trial = dataframe2.groupby('PartName','Keterangan').agg({
+				summary_trial = dataframe2.groupby('PartName').agg({
 					'Cust.ID': 'first',
 					'Line': 'first',
-					#'Keterangan': 'first',
+					'Keterangan': '',
 					'NG_%': 'mean',
 					'Insp(Lot)': 'sum', #change from Insp(B/H) 02juN2026
 					'NG(Lot)': 'sum',	#change from NG(B/H)

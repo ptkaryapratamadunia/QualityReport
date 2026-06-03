@@ -2942,16 +2942,37 @@ def cleaning_process(df):
 					st.dataframe(dataframe2, use_container_width=True)
 				
 				# Create summary_trial with groupby aggregation
-				summary_trial = dataframe2.groupby(['PartName','Keterangan']).agg({
-					'Cust.ID': 'first',
-					'Line': 'first',
-					#'Keterangan': 'first',
-					'NG_%': 'mean',
-					'Insp(Lot)': 'sum', #change from Insp(B/H) 02juN2026
-					'NG(Lot)': 'sum',	#change from NG(B/H)
-					'QInspec': 'sum',
-					'Qty(NG)': 'sum'
-				}).reset_index()
+				# summary_trial = dataframe2.groupby(['PartName','Keterangan']).agg({
+				# 	'Cust.ID': 'first',
+				# 	'Line': 'first',
+				# 	'Keterangan': 'first',
+				# 	'NG_%': 'mean',
+				# 	'Insp(Lot)': 'sum', #change from Insp(B/H) 02juN2026
+				# 	'NG(Lot)': 'sum',	#change from NG(B/H)
+				# 	'QInspec': 'sum',
+				# 	'Qty(NG)': 'sum'
+				# }).reset_index()
+				#new
+				dataframe2['GroupKey'] = np.where(
+					dataframe2['Keterangan'].isna() | (dataframe2['Keterangan'] == ''),
+					dataframe2['PartName'],   # kalau kosong, pakai PartName saja
+					dataframe2['PartName'] + '|' + dataframe2['Keterangan']  # kalau ada, gabungkan
+				)
+
+				summary_trial = (
+					dataframe2
+					.groupby('GroupKey')
+					.agg({
+						'Cust.ID': 'first',
+						'Line': 'first',
+						'NG_%': 'mean',
+						'Insp(Lot)': 'sum',
+						'NG(Lot)': 'sum',
+						'QInspec': 'sum',
+						'Qty(NG)': 'sum'
+					})
+					.reset_index()
+				)
 				summary_trial['Qty OK (pcs)'] = summary_trial['QInspec'] - summary_trial['Qty(NG)']
 				summary_trial = summary_trial.rename(columns={
 					'NG_%': 'NG (%)',

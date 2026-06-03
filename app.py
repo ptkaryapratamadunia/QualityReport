@@ -2945,7 +2945,7 @@ def cleaning_process(df):
 				summary_trial = dataframe2.groupby('PartName').agg({
 					'Cust.ID': 'first',
 					'Line': 'first',
-					'Keterangan': '',
+					'Keterangan': 'first',
 					'NG_%': 'mean',
 					'Insp(Lot)': 'sum', #change from Insp(B/H) 02juN2026
 					'NG(Lot)': 'sum',	#change from NG(B/H)

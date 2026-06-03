@@ -2982,7 +2982,8 @@ def cleaning_process(df):
 					'Insp(Lot)': 'Insp(Lot)',	#added 04Mar2026
 					'NG(Lot)': 'NG(Lot)',		#added 04Mar2026
 					'QInspec': 'Qty Inspected (pcs)',
-					'Qty(NG)': 'Qty NG (pcs)'
+					'Qty(NG)': 'Qty NG (pcs)',
+					'GroupKey': 'PartName'	#ubah nama kolom GroupKey kembali ke PartName untuk ditampilkan di tabel summary_trial
 				})
 
 				# Tambahkan baris TOTAL

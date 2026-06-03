@@ -2942,6 +2942,7 @@ def cleaning_process(df):
 					st.dataframe(dataframe2, use_container_width=True)
 				
 				# Create summary_trial with groupby aggregation
+				# old ------- gak dipakai lagi karena masalah Part Trial di keterangan beda tapi gabung ke Partname yg sama : 03Jun2026 thanks Copilot!
 				# summary_trial = dataframe2.groupby(['PartName','Keterangan']).agg({
 				# 	'Cust.ID': 'first',
 				# 	'Line': 'first',
@@ -2952,11 +2953,12 @@ def cleaning_process(df):
 				# 	'QInspec': 'sum',
 				# 	'Qty(NG)': 'sum'
 				# }).reset_index()
-				#new
+
+				#new --------------- solved problem Part Trial di keterangan beda tapi gabung ke Partname yg sama : 03Jun2026 thanks Copilot!
 				dataframe2['GroupKey'] = np.where(
 					dataframe2['Keterangan'].isna() | (dataframe2['Keterangan'] == ''),
 					dataframe2['PartName'],   # kalau kosong, pakai PartName saja
-					dataframe2['PartName'] + '|' + dataframe2['Keterangan']  # kalau ada, gabungkan
+					dataframe2['PartName'] + ' |' + dataframe2['Keterangan']  # kalau ada, gabungkan
 				)
 
 				summary_trial = (
@@ -2973,6 +2975,7 @@ def cleaning_process(df):
 					})
 					.reset_index()
 				)
+
 				summary_trial['Qty OK (pcs)'] = summary_trial['QInspec'] - summary_trial['Qty(NG)']
 				summary_trial = summary_trial.rename(columns={
 					'NG_%': 'NG (%)',

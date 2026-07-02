@@ -127,7 +127,8 @@ def login_page():
 		username = st.text_input("Username", key="username")
 		password = st.text_input("Password", type="password", key="password")
 		if st.button("Login"):
-			if username == "kpd" and password == "dckpd2024":
+			if username == "kpd" and password == "@Alhamdulillah888":
+       		# Mulai 2 Juli 2026 - DC V1.0 - streamlit ini resmi ditutup, karena sudah ada versi baru di DC V2.0 atau DC_Pro. dibuat menggunakan ReactJS dan NextJS, sehingga lebih cepat dan lebih aman. 
 				st.session_state["logged_in"] = True
 				# Reload halaman dengan mengatur ulang parameter URL
 				st.query_params.clear()
